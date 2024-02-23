@@ -274,9 +274,7 @@ namespace PalworldRandomizer
         public string Print()
         {
             string text = $"  {Data.palName[name]}{(name.EndsWith("_Flower") ? "-Flower" : "")}"
-                + $"{(isPal ? 
-                (name.StartsWith("BOSS_", StringComparison.InvariantCultureIgnoreCase)
-                || name.StartsWith("GYM_", StringComparison.InvariantCultureIgnoreCase) ? " {BOSS}" : "") : $" ({name})")} <> Lv. "
+                + $"{(isPal ? (isBoss ? " {BOSS}" : "") : $" ({name})")} <> Lv. "
                 + (minLevel == maxLevel ? minLevel : $"{minLevel}-{maxLevel}")
                 + ", Count: "
                 + (minGroupSize == maxGroupSize ? minGroupSize : $"{minGroupSize}-{maxGroupSize}");

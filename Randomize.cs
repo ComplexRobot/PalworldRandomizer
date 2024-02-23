@@ -1071,9 +1071,9 @@ namespace PalworldRandomizer
                         if (list[1].Length == 0)
                             continue;
                         int spawnIndex = int.Parse(list[1]);
-                        if (area.spawnEntries.Count < spawnIndex + 1)
+                        while (area.spawnEntries.Count < spawnIndex + 1)
                         {
-                            area.spawnEntries.AddRange(Enumerable.Repeat(new SpawnEntry(), spawnIndex + 1 - area.spawnEntries.Count));
+                            area.spawnEntries.Add(new());
                         }
                         SpawnEntry spawnEntry = area.spawnEntries[spawnIndex];
                         if (list[2].Length != 0)
@@ -1092,6 +1092,7 @@ namespace PalworldRandomizer
                         });
                     }
                     List<AreaData> areaList = [.. areaDict.Values];
+                    areaList.ForEach(area => area.spawnExportData.spawnEntries.RemoveAll(entry => entry.spawnList.Count == 0));
                     areaList.Sort((x, y) => string.Compare(x.filename, y.filename));
                     AreaForEachIfDiff(areaList, area => area.modified = true);
                     PalSpawnWindow.Instance.areaList.ItemsSource = areaList;
