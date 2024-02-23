@@ -9,7 +9,7 @@
         Closed="Window_Closed"
         Title="Palworld Randomizer" Height="600" Width="1000" Background="#FF181818">
     <StackPanel Margin="5">
-        <TextBlock FontWeight="Bold">Pal Spawn Randomizer v1.0 Beta 5.1</TextBlock>
+        <TextBlock FontWeight="Bold">Pal Spawn Randomizer v1.0 Beta 5.2</TextBlock>
         <Border BorderBrush="Gray" BorderThickness="0,0,0,1"/>
         <GroupBox Margin="5">
             <GroupBox.Header>

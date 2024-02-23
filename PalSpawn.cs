@@ -273,7 +273,7 @@ namespace PalworldRandomizer
         public uint maxGroupSize { get; set; } = 1;
         public string Print()
         {
-            string text = $"  {Randomize.palName[name]}{(name.EndsWith("_Flower") ? "-Flower" : "")}"
+            string text = $"  {Data.palName[name]}{(name.EndsWith("_Flower") ? "-Flower" : "")}"
                 + $"{(isPal ? 
                 (name.StartsWith("BOSS_", StringComparison.InvariantCultureIgnoreCase)
                 || name.StartsWith("GYM_", StringComparison.InvariantCultureIgnoreCase) ? " {BOSS}" : "") : $" ({name})")} <> Lv. "
@@ -301,7 +301,7 @@ namespace PalworldRandomizer
         {
             get
             {
-                return $"{Randomize.palName[name]}{(name.EndsWith("_Flower") ? "🌺" : "")}{(isBoss ? "😈" : "")}";
+                return $"{Data.palName[name]}{(name.EndsWith("_Flower") ? "🌺" : "")}{(isBoss ? "😈" : "")}";
             }
         }
         public string simpleName
@@ -310,21 +310,21 @@ namespace PalworldRandomizer
             {
                 if (!isPal)
                     return name;
-                return $"{Randomize.palName[name]}{(name.EndsWith("_Flower") ? "🌺" : "")}";
+                return $"{Data.palName[name]}{(name.EndsWith("_Flower") ? "🌺" : "")}";
             }
         }
         public bool isBoss
         {
             get
             {
-                return Randomize.data[name].IsBoss;
+                return Data.palData[name].IsBoss;
             }
             set
             {
                 if (value != isBoss)
                 {
                     if (value)
-                        name = Randomize.bossName[name];
+                        name = Data.bossName[name];
                     else
                         name = name[(name.IndexOf('_') + 1)..];
                 }
@@ -334,7 +334,7 @@ namespace PalworldRandomizer
         {
             get
             {
-                return Randomize.palIcon[name];
+                return Data.palIcon[name];
             }
         }
     }

@@ -40,7 +40,7 @@ namespace PalworldRandomizer
             if (MessageBox.Show(this, "Are you sure you want to revert back to vanilla spawns?", "Revert All Spawns", MessageBoxButton.OKCancel, MessageBoxImage.Warning)
                 == MessageBoxResult.OK)
             {
-                areaList.ItemsSource = Randomize.AreaDataCopy();
+                areaList.ItemsSource = Data.AreaDataCopy();
             }
         }
 

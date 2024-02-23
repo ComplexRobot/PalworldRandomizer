@@ -7,7 +7,7 @@ using System.Windows.Interop;
 
 namespace PalworldRandomizer
 {
-    internal partial class SharedWindow
+    internal static partial class SharedWindow
     {
         [LibraryImport("dwmapi.dll")]
         private static partial int DwmSetWindowAttribute(IntPtr hwnd, int attr, [In] int[] attrValue, int attrSize);

@@ -14,24 +14,20 @@ using UAssetAPI.PropertyTypes.Structs;
 
 namespace PalworldRandomizer
 {
-    public static class Randomize
+    public static class Data
     {
-        public static Dictionary<string, CharacterData> data = [];
-        public static Dictionary<string, string> palName = [];
-        public static Dictionary<string, string> simpleName = [];
-        public static Dictionary<string, string> palIcon = [];
-        public static List<string> palList = [];
-        public static Dictionary<string, string> bossName = [];
-        public static List<string> towerBossNames = [];
-        private static Dictionary<string, List<SpawnEntry>> soloEntries = new(StringComparer.InvariantCultureIgnoreCase);
-        private static Dictionary<string, List<SpawnEntry>> bossEntries = new(StringComparer.InvariantCultureIgnoreCase);
-        private static List<SpawnEntry> groupEntries = [];
-        public static Dictionary<string, AreaData> areaData = [];
-        public static List<AreaData> generatedAreaList { get; set; } = [];
-        private static Dictionary<string, SpawnEntry> basicSpawns = [];
-        private static Dictionary<string, SpawnEntry> bossSpawns = [];
-        private static List<SpawnEntry> humanSpawns = [];
-        private static string[] humanNames =
+        public static Dictionary<string, CharacterData> palData { get; private set; } = [];
+        public static Dictionary<string, string> palName { get; private set; } = [];
+        public static Dictionary<string, string> simpleName { get; private set; } = [];
+        public static Dictionary<string, string> palIcon { get; private set; } = [];
+        public static List<string> palList { get; private set; } = [];
+        public static Dictionary<string, string> bossName { get; private set; } = [];
+        public static List<string> towerBossNames { get; private set; } = [];
+        public static Dictionary<string, List<SpawnEntry>> soloEntries { get; private set; } = new(StringComparer.InvariantCultureIgnoreCase);
+        public static Dictionary<string, List<SpawnEntry>> bossEntries { get; private set; } = new(StringComparer.InvariantCultureIgnoreCase);
+        public static List<SpawnEntry> groupEntries { get; private set; } = [];
+        public static Dictionary<string, AreaData> areaData { get; private set; } = [];
+        public static readonly string[] humanNames =
         [
             "Believer_Bat",
             "Believer_CrossBow",
@@ -48,18 +44,18 @@ namespace PalworldRandomizer
             "Male_Scientist01_LaserRifle",
             "Scientist_FlameThrower"
         ];
-        private static string[] policeNames =
+        public static readonly string[] policeNames =
         [
             "Police_Handgun",
             "Police_Rifle",
             "Police_Shotgun"
         ];
-        private static string[] guardNames =
+        public static readonly string[] guardNames =
         [
             "Guard_Rifle",
             "Guard_Shotgun"
         ];
-        private static string[] traderNames =
+        public static readonly string[] traderNames =
         [
             "SalesPerson",
             "SalesPerson_Desert",
@@ -68,7 +64,7 @@ namespace PalworldRandomizer
             "SalesPerson_Volcano2",
             "SalesPerson_Wander"
         ];
-        private static string[] palTraderNames =
+        public static readonly string[] palTraderNames =
         [
             "PalDealer",
             "PalDealer_Desert",
@@ -79,12 +75,12 @@ namespace PalworldRandomizer
 
         public static void Initialize()
         {
-            data = UAssetData.CreatePalData();
+            palData = UAssetData.CreatePalData();
             UAsset palNames = UAssetData.LoadAsset("Data\\DT_PalNameText.uasset");
             UAsset humanNames = UAssetData.LoadAsset("Data\\DT_HumanNameText.uasset");
             ResourceManager resourceManager = new(Assembly.GetExecutingAssembly().GetName().Name + ".g", Assembly.GetExecutingAssembly());
             HashSet<string> resourceNames = new(resourceManager.GetResourceSet(CultureInfo.InvariantCulture, true, true)!.Cast<DictionaryEntry>()
-                .ToList().ConvertAll(x => (string) x.Key), StringComparer.InvariantCultureIgnoreCase);
+                .Select(x => (string) x.Key), StringComparer.InvariantCultureIgnoreCase);
             resourceManager.ReleaseAllResources();
             Dictionary<string, string> weapons = new()
             {
@@ -99,14 +95,14 @@ namespace PalworldRandomizer
                 { "BowGun", "/Resources/Images/InventoryItemIcon/T_itemicon_Weapon_BowGun.png" },
                 { "LaserRifle", "/Resources/Images/InventoryItemIcon/T_itemicon_Essential_SkillUnlock_AssaultRifle.png" }
             };
-            foreach (KeyValuePair<string, CharacterData> keyPair in data)
+            foreach (KeyValuePair<string, CharacterData> keyPair in palData)
             {
                 if (keyPair.Value.IsPal)
                 {
                     palName.Add(keyPair.Key,
                         ((TextPropertyData) ((DataTableExport) palNames.Exports[0]).Table.Data.Find(property =>
-                        (data[keyPair.Key].OverrideNameTextID != null &&
-                        string.Compare(((TextPropertyData) property.Value[0]).Value.Value, $"{data[keyPair.Key].OverrideNameTextID}_TextData", true) == 0)
+                        (palData[keyPair.Key].OverrideNameTextID != "" &&
+                        string.Compare(((TextPropertyData) property.Value[0]).Value.Value, $"{palData[keyPair.Key].OverrideNameTextID}_TextData", true) == 0)
                         || string.Compare(((TextPropertyData) property.Value[0]).Value.Value, $"PAL_NAME_{keyPair.Key}_TextData", true) == 0)!.Value[0])
                         .CultureInvariantString.Value.Trim());
                     bool isTowerBoss = keyPair.Key.StartsWith("GYM_", StringComparison.InvariantCultureIgnoreCase);
@@ -114,7 +110,7 @@ namespace PalworldRandomizer
                     if (keyPair.Value.ZukanIndex > 0)
                     {
                         palList.Add(keyPair.Key);
-                        bossName.Add(keyPair.Key, data.Keys.ToList().Find(key => string.Compare(key, $"BOSS_{keyPair.Key}", true) == 0)!);
+                        bossName.Add(keyPair.Key, palData.Keys.ToList().Find(key => string.Compare(key, $"BOSS_{keyPair.Key}", true) == 0)!);
                         simpleName.Add(new SpawnData(keyPair.Key).simpleName, keyPair.Key);
                     }
                     if (isTowerBoss)
@@ -127,7 +123,7 @@ namespace PalworldRandomizer
                         string resourceKey = keyPair.Key.EndsWith("_Flower") ? keyPair.Key[..keyPair.Key.LastIndexOf('_')] : keyPair.Key;
                         resourceKey = isBoss ? resourceKey[(resourceKey.IndexOf('_') + 1)..] : resourceKey;
                         string resourceName = $"Resources/Images/PalIcon/T_{resourceKey}_icon_normal.png";
-                        if (data[resourceKey].ZukanIndex > 0 && resourceNames.Contains(resourceName))
+                        if (palData[resourceKey].ZukanIndex > 0 && resourceNames.Contains(resourceName))
                         {
                             palIcon.Add(keyPair.Key, $"/{resourceName}");
                         }
@@ -136,13 +132,13 @@ namespace PalworldRandomizer
                 else
                 {
                     StructPropertyData? property = ((DataTableExport) humanNames.Exports[0]).Table.Data.Find(property =>
-                        ((TextPropertyData) property.Value[0]).Value.Value == $"{data[keyPair.Key].OverrideNameTextID}_TextData");
+                        ((TextPropertyData) property.Value[0]).Value.Value == $"{palData[keyPair.Key].OverrideNameTextID}_TextData");
                     if (property != null)
                     {
                         palName.Add(keyPair.Key,
                         ((TextPropertyData) property.Value[0]).CultureInvariantString.Value.Trim());
-                        simpleName.Add(new SpawnData(keyPair.Key){ isPal = false }.simpleName, keyPair.Key);
-                        if (weapons.TryGetValue(data[keyPair.Key].weapon, out string? value))
+                        simpleName.Add(new SpawnData(keyPair.Key) { isPal = false }.simpleName, keyPair.Key);
+                        if (weapons.TryGetValue(palData[keyPair.Key].weapon, out string? value))
                         {
                             palIcon.Add(keyPair.Key, value);
                         }
@@ -153,11 +149,6 @@ namespace PalworldRandomizer
                     }
                 }
             }
-            GenerateBaseEntries();
-            generatedAreaList = AreaDataCopy();
-        }
-        private static void GenerateBaseEntries()
-        {
             string[] files = Directory.GetFiles(UAssetData.AppDataPath("Assets"), "*.uasset").Select(Path.GetFileName).ToArray()!;
             Array.Sort(files);
             foreach (string filename in files)
@@ -220,6 +211,53 @@ namespace PalworldRandomizer
             areaData["BP_PalSpawner_Sheets_1_1_plain_begginer.uasset"].minLevel = 1;
             areaData["BP_PalSpawner_Sheets_1_1_plain_begginer.uasset"].maxLevel = 3;
         }
+        public static List<AreaData> AreaDataCopy()
+        {
+            return [..areaData.Values.Select(area =>
+            new AreaData(new(), new(), area.filename)
+            {
+                minLevel = area.minLevel,
+                maxLevel = area.maxLevel,
+                minLevelNight = area.minLevelNight,
+                maxLevelNight = area.maxLevelNight,
+                uAsset = UAssetData.LoadAsset($"Assets\\{area.filename}"),
+                spawnExportData =
+                new SpawnExportData
+                {
+                    header = area.spawnExportData.header,
+                    footer = area.spawnExportData.footer,
+                    spawnEntries = area.spawnExportData.spawnEntries.ConvertAll(entry =>
+                    new SpawnEntry
+                    {
+                        weight = entry.weight,
+                        nightOnly = entry.nightOnly,
+                        spawnList = entry.spawnList.ConvertAll(spawnData =>
+                        new SpawnData
+                        {
+                            name = spawnData.name,
+                            isPal = spawnData.isPal,
+                            minLevel = spawnData.minLevel,
+                            maxLevel = spawnData.maxLevel,
+                            minGroupSize = spawnData.minGroupSize,
+                            maxGroupSize = spawnData.maxGroupSize
+                        })
+                    })
+                }
+            })];
+        }
+    }
+
+    public static class Randomize
+    {
+        public static List<AreaData> generatedAreaList { get; private set; } = [];
+        private static Dictionary<string, SpawnEntry> basicSpawns = [];
+        private static Dictionary<string, SpawnEntry> bossSpawns = [];
+        private static List<SpawnEntry> humanSpawns = [];
+
+        public static void Initialize()
+        {
+            generatedAreaList = Data.AreaDataCopy();
+        }
         private static void GenerateSpawnLists()
         {
             MainWindow window = MainWindow.Instance;
@@ -228,13 +266,13 @@ namespace PalworldRandomizer
             humanSpawns = [];
             if (window.groupVanilla.IsChecked == true)
             {
-                foreach (string key in palList)
+                foreach (string key in Data.palList)
                 {
                     if (window.spawnPals.IsChecked == true)
                     {
                         SpawnEntry basicEntry = new();
                         basicSpawns.Add(key, basicEntry);
-                        if (soloEntries.TryGetValue(key, out List<SpawnEntry>? soloValue))
+                        if (Data.soloEntries.TryGetValue(key, out List<SpawnEntry>? soloValue))
                         {
                             SpawnData spawnData = new() { name = key };
                             basicEntry.spawnList.Add(spawnData);
@@ -248,9 +286,9 @@ namespace PalworldRandomizer
                             spawnData.minGroupSize = (uint) minCount;
                             spawnData.maxGroupSize = (uint) maxCount;
                         }
-                        else if (groupEntries.Exists(entry => entry.spawnList.Exists(spawnData => spawnData.name == key)))
+                        else if (Data.groupEntries.Exists(entry => entry.spawnList.Exists(spawnData => spawnData.name == key)))
                         {
-                            foreach (SpawnEntry spawnEntry in groupEntries)
+                            foreach (SpawnEntry spawnEntry in Data.groupEntries)
                             {
                                 int palCount = 0;
                                 if (spawnEntry.spawnList[0].name == key)
@@ -275,7 +313,7 @@ namespace PalworldRandomizer
                             if (key.Contains('_'))
                             {
                                 string baseName = key[..key.IndexOf('_')];
-                                if (soloEntries.TryGetValue(baseName, out List<SpawnEntry>? soloValue2))
+                                if (Data.soloEntries.TryGetValue(baseName, out List<SpawnEntry>? soloValue2))
                                 {
                                     spawnData.minGroupSize = soloValue2[0].spawnList[0].minGroupSize;
                                     spawnData.maxGroupSize = soloValue2[0].spawnList[0].maxGroupSize;
@@ -287,10 +325,10 @@ namespace PalworldRandomizer
                     {
                         continue;
                     }
-                    string bossKey = bossName[key];
+                    string bossKey = Data.bossName[key];
                     SpawnEntry bossEntry = new();
                     bossSpawns.Add(bossKey, bossEntry);
-                    if (bossEntries.TryGetValue(bossKey, out List<SpawnEntry>? value))
+                    if (Data.bossEntries.TryGetValue(bossKey, out List<SpawnEntry>? value))
                     {
                         if (value.Count == 1)
                         {
@@ -350,11 +388,11 @@ namespace PalworldRandomizer
                         }
                     }
                 }
-                foreach (KeyValuePair<string, List<SpawnEntry>> keyPair in soloEntries)
+                foreach (KeyValuePair<string, List<SpawnEntry>> keyPair in Data.soloEntries)
                 {
-                    if (!data[keyPair.Key].IsPal &&
-                        ((window.spawnHumans.IsChecked == true && humanNames.Contains(keyPair.Key))
-                        || (window.spawnPolice.IsChecked == true && policeNames.Contains(keyPair.Key)))
+                    if (!Data.palData[keyPair.Key].IsPal &&
+                        ((window.spawnHumans.IsChecked == true && Data.humanNames.Contains(keyPair.Key))
+                        || (window.spawnPolice.IsChecked == true && Data.policeNames.Contains(keyPair.Key)))
                         )
                     {
                         SpawnData spawnData = new() { name = keyPair.Key, isPal = false };
@@ -368,13 +406,13 @@ namespace PalworldRandomizer
                         }
                     }
                 }
-                List<SpawnEntry> groupEntriesCopy = [.. groupEntries];
+                List<SpawnEntry> groupEntriesCopy = [.. Data.groupEntries];
                 for (int i = 0; i < groupEntriesCopy.Count; ++i)
                 {
                     SpawnEntry spawnEntry = groupEntriesCopy[i];
                     if (!spawnEntry.spawnList[0].isPal &&
-                        ((window.spawnHumans.IsChecked == true && humanNames.Contains(spawnEntry.spawnList[0].name))
-                        || (window.spawnPolice.IsChecked == true && policeNames.Contains(spawnEntry.spawnList[0].name)))
+                        ((window.spawnHumans.IsChecked == true && Data.humanNames.Contains(spawnEntry.spawnList[0].name))
+                        || (window.spawnPolice.IsChecked == true && Data.policeNames.Contains(spawnEntry.spawnList[0].name)))
                         )
                     {
                         humanSpawns.Add(spawnEntry); // shallow copy
@@ -434,32 +472,32 @@ namespace PalworldRandomizer
                 }
                 if (window.spawnTraders.IsChecked == true)
                 {
-                    humanSpawns.AddRange(traderNames.ToList().ConvertAll(name => new SpawnEntry { spawnList = [new(name)] }));
+                    humanSpawns.AddRange(Data.traderNames.ToList().ConvertAll(name => new SpawnEntry { spawnList = [new(name)] }));
                 }
                 if (window.spawnPalTraders.IsChecked == true)
                 {
-                    humanSpawns.AddRange(palTraderNames.ToList().ConvertAll(name => new SpawnEntry { spawnList = [new(name)] }));
+                    humanSpawns.AddRange(Data.palTraderNames.ToList().ConvertAll(name => new SpawnEntry { spawnList = [new(name)] }));
                 }
             }
             else if (window.groupRandom.IsChecked == true)
             {
                 if (window.spawnPals.IsChecked == true)
                 {
-                    palList.ForEach(name => basicSpawns.Add(name, new() { spawnList = [new(name)] }));
+                    Data.palList.ForEach(name => basicSpawns.Add(name, new() { spawnList = [new(name)] }));
                 }
-                bossName.Values.ToList().ForEach(name => bossSpawns.Add(name, new() { spawnList = [new(name)] }));
+                Data.bossName.Values.ToList().ForEach(name => bossSpawns.Add(name, new() { spawnList = [new(name)] }));
                 humanSpawns.AddRange(new List<string>
                 ([
-                    .. (window.spawnHumans.IsChecked == true ? humanNames : []),
-                    .. (window.spawnPolice.IsChecked == true ? policeNames : []),
-                    .. (window.spawnGuards.IsChecked == true ? guardNames : []),
-                    .. (window.spawnTraders.IsChecked == true ? traderNames : []),
-                    .. (window.spawnPalTraders.IsChecked == true ? palTraderNames : [])
+                    .. (window.spawnHumans.IsChecked == true ? Data.humanNames : []),
+                    .. (window.spawnPolice.IsChecked == true ? Data.policeNames : []),
+                    .. (window.spawnGuards.IsChecked == true ? Data.guardNames : []),
+                    .. (window.spawnTraders.IsChecked == true ? Data.traderNames : []),
+                    .. (window.spawnPalTraders.IsChecked == true ? Data.palTraderNames : [])
                 ]).ConvertAll(name => new SpawnEntry { spawnList = [new(name)] }));
             }
             if (window.spawnTowerBosses.IsChecked == true)
             {
-                towerBossNames.ForEach(name => bossSpawns.Add(name, new() { spawnList = [new(name)] }));
+                Data.towerBossNames.ForEach(name => bossSpawns.Add(name, new() { spawnList = [new(name)] }));
             }
         }
         private static ICollection<string> GetAllowedNames()
@@ -467,49 +505,15 @@ namespace PalworldRandomizer
             MainWindow window = MainWindow.Instance;
             return
             [
-                .. (window.spawnPals.IsChecked == true ? palList : []),
-                .. bossName.Values,
-                .. (window.spawnTowerBosses.IsChecked == true ? towerBossNames : []),
-                .. (window.spawnHumans.IsChecked == true ? humanNames : []),
-                .. (window.spawnPolice.IsChecked == true ? policeNames : []),
-                .. (window.spawnGuards.IsChecked == true ? guardNames : []),
-                .. (window.spawnTraders.IsChecked == true ? traderNames : []),
-                .. (window.spawnPalTraders.IsChecked == true ? palTraderNames : [])
+                .. (window.spawnPals.IsChecked == true ? Data.palList : []),
+                .. Data.bossName.Values,
+                .. (window.spawnTowerBosses.IsChecked == true ? Data.towerBossNames : []),
+                .. (window.spawnHumans.IsChecked == true ? Data.humanNames : []),
+                .. (window.spawnPolice.IsChecked == true ? Data.policeNames : []),
+                .. (window.spawnGuards.IsChecked == true ? Data.guardNames : []),
+                .. (window.spawnTraders.IsChecked == true ? Data.traderNames : []),
+                .. (window.spawnPalTraders.IsChecked == true ? Data.palTraderNames : [])
             ];
-        }
-        public static List<AreaData> AreaDataCopy()
-        {
-            return [..areaData.Values.Select(area =>
-            new AreaData(new(), new(), area.filename)
-            {
-                minLevel = area.minLevel,
-                maxLevel = area.maxLevel,
-                minLevelNight = area.minLevelNight,
-                maxLevelNight = area.maxLevelNight,
-                uAsset = UAssetData.LoadAsset($"Assets\\{area.filename}"),
-                spawnExportData =
-                new SpawnExportData
-                {
-                    header = area.spawnExportData.header,
-                    footer = area.spawnExportData.footer,
-                    spawnEntries = area.spawnExportData.spawnEntries.ConvertAll(entry =>
-                    new SpawnEntry
-                    {
-                        weight = entry.weight,
-                        nightOnly = entry.nightOnly,
-                        spawnList = entry.spawnList.ConvertAll(spawnData =>
-                        new SpawnData
-                        {
-                            name = spawnData.name,
-                            isPal = spawnData.isPal,
-                            minLevel = spawnData.minLevel,
-                            maxLevel = spawnData.maxLevel,
-                            minGroupSize = spawnData.minGroupSize,
-                            maxGroupSize = spawnData.maxGroupSize
-                        })
-                    })
-                }
-            })];
         }
         private static void RandomizeAndSaveAssets()
         {
@@ -564,7 +568,7 @@ namespace PalworldRandomizer
             List<SpawnEntry> bossSpawnsCurrent = [.. bossSpawnsOriginal];
             HashSet<string> allowedNames = [.. GetAllowedNames()];
             Random random = new();
-            List<AreaData> areaList = AreaDataCopy();
+            List<AreaData> areaList = Data.AreaDataCopy();
             areaList.Sort((x, y) =>
             {
                 if (x.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase) && !y.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase))
@@ -620,12 +624,12 @@ namespace PalworldRandomizer
                         {
                             weight = 10,
                             spawnList = value.spawnList.ConvertAll(spawnData =>
-                                new SpawnData(spawnData.name, spawnData.minGroupSize, spawnData.maxGroupSize) { isPal = data[spawnData.name].IsPal })
+                                new SpawnData(spawnData.name, spawnData.minGroupSize, spawnData.maxGroupSize) { isPal = Data.palData[spawnData.name].IsPal })
                         };
                         spawnEntries.Add(spawnEntry);
                         int minLevel = area.minLevel;
                         int maxLevel = area.maxLevel;
-                        if (data[spawnEntry.spawnList[0].name].Nocturnal && nightOnly)
+                        if (Data.palData[spawnEntry.spawnList[0].name].Nocturnal && nightOnly)
                         {
                             spawnEntry.nightOnly = true;
                             spawnEntry.weight = 1000;
@@ -640,7 +644,7 @@ namespace PalworldRandomizer
                         float levelMultiplier = LevelMultiplier(spawnEntry.spawnList[0]);
                         spawnEntry.spawnList[0].minLevel = (uint) Math.Clamp((int) Math.Round(levelMultiplier * average - range / 2.0f), 1, levelCap);
                         spawnEntry.spawnList[0].maxLevel = (uint) Math.Clamp((int) Math.Round(levelMultiplier * average + range / 2.0f), 1, levelCap);
-                        if (!data[spawnEntry.spawnList[0].name].IsPal && data[spawnEntry.spawnList[0].name].AIResponse == "Kill_All" && window.groupVanilla.IsChecked == true)
+                        if (!Data.palData[spawnEntry.spawnList[0].name].IsPal && Data.palData[spawnEntry.spawnList[0].name].AIResponse == "Kill_All" && window.groupVanilla.IsChecked == true)
                         {
                             spawnEntry.weight = 5;
                         }
@@ -674,7 +678,7 @@ namespace PalworldRandomizer
                             int i = random.Next(0, spawns.Count);
                             string name = spawns[i].spawnList[0].name;
                             spawns.RemoveAt(i);
-                            return new(name) { isPal = data[name].IsPal };
+                            return new(name) { isPal = Data.palData[name].IsPal };
                         }
                         int groupSize = random.Next(minGroup, maxGroup + 1);
                         SpawnEntry spawnEntry = new();
@@ -697,12 +701,12 @@ namespace PalworldRandomizer
                         {
                             if (nightOnly)
                             {
-                                List<SpawnEntry> diurnal = [.. spawns.Where(entry => !data[entry.spawnList[0].name].Nocturnal)];
-                                List<SpawnEntry> nocturnal = [.. spawns.Where(entry => data[entry.spawnList[0].name].Nocturnal)];
-                                List<SpawnEntry> diurnalOriginal = [.. original.Where(entry => !data[entry.spawnList[0].name].Nocturnal)];
-                                List<SpawnEntry> nocturnalOriginal = [.. original.Where(entry => data[entry.spawnList[0].name].Nocturnal)];
-                                List<SpawnEntry> spawnsUsed = data[spawnEntry.spawnList[0].name].Nocturnal ? nocturnal : diurnal;
-                                List<SpawnEntry> originalsUsed = data[spawnEntry.spawnList[0].name].Nocturnal ? nocturnalOriginal : diurnalOriginal;
+                                List<SpawnEntry> diurnal = [.. spawns.Where(entry => !Data.palData[entry.spawnList[0].name].Nocturnal)];
+                                List<SpawnEntry> nocturnal = [.. spawns.Where(entry => Data.palData[entry.spawnList[0].name].Nocturnal)];
+                                List<SpawnEntry> diurnalOriginal = [.. original.Where(entry => !Data.palData[entry.spawnList[0].name].Nocturnal)];
+                                List<SpawnEntry> nocturnalOriginal = [.. original.Where(entry => Data.palData[entry.spawnList[0].name].Nocturnal)];
+                                List<SpawnEntry> spawnsUsed = Data.palData[spawnEntry.spawnList[0].name].Nocturnal ? nocturnal : diurnal;
+                                List<SpawnEntry> originalsUsed = Data.palData[spawnEntry.spawnList[0].name].Nocturnal ? nocturnalOriginal : diurnalOriginal;
                                 while (spawnEntry.spawnList.Count < groupSize)
                                 {
                                     spawnEntry.spawnList.Add(NextSpecies(spawnsUsed, originalsUsed, spawnEntry.spawnList));
@@ -882,7 +886,7 @@ namespace PalworldRandomizer
             {
                 try
                 {
-                    File.WriteAllText($"{Process.GetCurrentProcess().ProcessName}.txt", outputLog);
+                    File.WriteAllText($"{Assembly.GetExecutingAssembly().GetName().Name!.Replace(' ', '-')}-Log.txt", outputLog);
                 }
                 catch (Exception)
                 {
@@ -893,7 +897,7 @@ namespace PalworldRandomizer
         {
             foreach (AreaData area in areaList)
             {
-                List<SpawnEntry> baseEntries = areaData[area.filename].spawnExportData.spawnEntries;
+                List<SpawnEntry> baseEntries = Data.areaData[area.filename].spawnExportData.spawnEntries;
                 List<SpawnEntry> newEntries = area.spawnExportData.spawnEntries;
                 if (baseEntries.Count != newEntries.Count
                     || ((Func<bool>) (() =>
@@ -996,13 +1000,13 @@ namespace PalworldRandomizer
                 string[] files = Directory.GetFiles(outputPath, "BP_PalSpawner_Sheets_*.uasset").Select(Path.GetFileName).ToArray()!;
                 if (files.Length == 0)
                     return false;
-                List<AreaData> areaList = AreaDataCopy();
+                List<AreaData> areaList = Data.AreaDataCopy();
                 foreach (AreaData area in areaList)
                 {
                     if (files.Contains(area.filename))
                     {
                         area.uAsset = UAssetData.LoadAsset($"Extract\\{area.filename}");
-                        area.spawnExportData = PalSpawn.ReadAsset(area.uAsset, areaData[area.filename].spawnExportData.header.Length);
+                        area.spawnExportData = PalSpawn.ReadAsset(area.uAsset, Data.areaData[area.filename].spawnExportData.header.Length);
                         area.modified = true;
                     }
                 }
@@ -1055,7 +1059,7 @@ namespace PalworldRandomizer
                 try
                 {
                     List<string[]> csvData = [.. fileLines.Select(x => x.Split(',').Select(x => x.Trim()).ToArray())];
-                    Dictionary<string, AreaData> areaDict = AreaDataCopy().ToDictionary(x => x.simpleName, x => x);
+                    Dictionary<string, AreaData> areaDict = Data.AreaDataCopy().ToDictionary(x => x.simpleName, x => x);
                     HashSet<string> addedNames = [];
                     foreach (string[] list in csvData)
                     {
@@ -1078,8 +1082,8 @@ namespace PalworldRandomizer
                             spawnEntry.nightOnly = bool.Parse(list[3]);
                         spawnEntry.spawnList.Add(new()
                         {
-                            name = simpleName[list[4]],
-                            isPal = data[simpleName[list[4]]].IsPal,
+                            name = Data.simpleName[list[4]],
+                            isPal = Data.palData[Data.simpleName[list[4]]].IsPal,
                             isBoss = bool.Parse(list[5]),
                             minLevel = uint.Parse(list[6]),
                             maxLevel = uint.Parse(list[7]),
@@ -1107,7 +1111,7 @@ namespace PalworldRandomizer
         }
         public static string GetRandomPal()
         {
-            return palList[new Random().Next(0, palList.Count)];
+            return Data.palList[new Random().Next(0, Data.palList.Count)];
         }
     }
 }

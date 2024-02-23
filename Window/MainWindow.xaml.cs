@@ -21,10 +21,11 @@ namespace PalworldRandomizer
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             UAssetData.Initialize();
+            Data.Initialize();
             Randomize.Initialize();
             SharedWindow.EnableDarkMode(this);
             new PalSpawnWindow();
-            testImage.Source = new BitmapImage(new Uri(Randomize.palIcon[Randomize.GetRandomPal()], UriKind.Relative));
+            testImage.Source = new BitmapImage(new Uri(Data.palIcon[Randomize.GetRandomPal()], UriKind.Relative));
         }
 
         private void SavePak_Click(object sender, RoutedEventArgs e)

@@ -29,8 +29,8 @@
     <Reference Include="UAssetAPI">
       <HintPath>UAssetAPI.dll</HintPath>
     </Reference>
-    <PackageReference Include="Emoji.Wpf" Version="0.3.4" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Emoji.Wpf" Version="0.3.4" />
     <EmbeddedResource Update="Resources\Resource.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resource.Designer.cs</LastGenOutput>

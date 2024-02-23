@@ -53,76 +53,76 @@
         </Menu>
         <ListBox Name="areaList" Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Source={x:Static local:Randomize.generatedAreaList}}"/>
         <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="1" Grid.Column="1">
-                <ItemsControl Name="spawnEntries" ItemsSource="{Binding ElementName=areaList, Path=SelectedItem.spawnEntries}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border BorderBrush="#FF606060" BorderThickness="1" Margin="5" CornerRadius="5">
-                                <StackPanel>
-                                    <StackPanel Orientation="Horizontal">
-                                        <emoji:TextBlock Text="🎲: " Margin="0" ToolTip="Weight"/>
-                                        <TextBlock Text="{Binding weight}" Margin="0"/>
-                                        <TextBlock Text="  " Margin="0"/>
-                                        <emoji:TextBlock Text="{Binding timeOfDay}" Margin="0" ToolTip="Night-Only"/>
-                                    </StackPanel>
-                                    <ItemsControl ItemsSource="{Binding spawnList}">
-                                        <ItemsControl.ItemsPanel>
-                                            <ItemsPanelTemplate>
-                                                <WrapPanel Orientation="Vertical"/>
-                                            </ItemsPanelTemplate>
-                                        </ItemsControl.ItemsPanel>
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <Border BorderBrush="#FF404040" Background="#FF202020" BorderThickness="1" Margin="2" CornerRadius="5">
-                                                    <Grid>
+            <ItemsControl Name="spawnEntries" ItemsSource="{Binding ElementName=areaList, Path=SelectedItem.spawnEntries}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderBrush="#FF606060" BorderThickness="1" Margin="5" CornerRadius="5">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <emoji:TextBlock Text="🎲: " Margin="0" ToolTip="Weight"/>
+                                    <TextBlock Text="{Binding weight}" Margin="0"/>
+                                    <TextBlock Text="  " Margin="0"/>
+                                    <emoji:TextBlock Text="{Binding timeOfDay}" Margin="0" ToolTip="Night-Only"/>
+                                </StackPanel>
+                                <ItemsControl ItemsSource="{Binding spawnList}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel Orientation="Vertical"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border BorderBrush="#FF404040" Background="#FF202020" BorderThickness="1" Margin="2" CornerRadius="5">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid Grid.Column="0">
                                                         <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="*"/>
-                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="32"/>
                                                             <ColumnDefinition Width="Auto"/>
                                                         </Grid.ColumnDefinitions>
-                                                        <Grid Grid.Column="0">
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="32"/>
-                                                                <ColumnDefinition Width="Auto"/>
-                                                            </Grid.ColumnDefinitions>
-                                                            <Image Grid.Column="0" Stretch="Uniform" Source="{Binding iconPath}"/>
-                                                            <emoji:TextBlock Grid.Column="1" Text="{Binding resolvedName}" Margin="5,0,5,0"
-                                                                             MaxWidth="100" TextWrapping="Wrap"/>
-                                                        </Grid>
-                                                        <GroupBox Grid.Column="1">
-                                                            <GroupBox.Header>
-                                                                <TextBlock Margin="0">Level</TextBlock>
-                                                            </GroupBox.Header>
-                                                            <StackPanel Orientation="Horizontal">
-                                                                <TextBlock Text="{Binding minLevel}" Margin="0"/>
-                                                                <TextBlock Margin="0">-</TextBlock>
-                                                                <TextBlock Text="{Binding maxLevel}" Margin="0"/>
-                                                            </StackPanel>
-                                                        </GroupBox>
-                                                        <GroupBox Grid.Column="2">
-                                                            <GroupBox.Header>
-                                                                <TextBlock Margin="0">Count</TextBlock>
-                                                            </GroupBox.Header>
-                                                            <StackPanel Orientation="Horizontal">
-                                                                <TextBlock Text="{Binding minGroupSize}" Margin="0"/>
-                                                                <TextBlock Margin="0">-</TextBlock>
-                                                                <TextBlock Text="{Binding maxGroupSize}" Margin="0"/>
-                                                            </StackPanel>
-                                                        </GroupBox>
+                                                        <Image Grid.Column="0" Stretch="Uniform" Source="{Binding iconPath}"/>
+                                                        <emoji:TextBlock Grid.Column="1" Text="{Binding resolvedName}" Margin="5,0,5,0"
+                                                                            MaxWidth="100" TextWrapping="Wrap"/>
                                                     </Grid>
-                                                </Border>
+                                                    <GroupBox Grid.Column="1">
+                                                        <GroupBox.Header>
+                                                            <TextBlock Margin="0">Level</TextBlock>
+                                                        </GroupBox.Header>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock Text="{Binding minLevel}" Margin="0"/>
+                                                            <TextBlock Margin="0">-</TextBlock>
+                                                            <TextBlock Text="{Binding maxLevel}" Margin="0"/>
+                                                        </StackPanel>
+                                                    </GroupBox>
+                                                    <GroupBox Grid.Column="2">
+                                                        <GroupBox.Header>
+                                                            <TextBlock Margin="0">Count</TextBlock>
+                                                        </GroupBox.Header>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock Text="{Binding minGroupSize}" Margin="0"/>
+                                                            <TextBlock Margin="0">-</TextBlock>
+                                                            <TextBlock Text="{Binding maxGroupSize}" Margin="0"/>
+                                                        </StackPanel>
+                                                    </GroupBox>
+                                                </Grid>
+                                            </Border>
                                         </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
-                                </StackPanel>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
     </Grid>
 </Window>
