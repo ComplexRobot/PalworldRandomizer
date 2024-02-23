@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>True</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+    <Platforms>x64</Platforms>
+    <PlatformTarget>x64</PlatformTarget>
+    <StartupObject>PalworldRandomizer.App</StartupObject>
+    <RootNamespace>$(MSBuildProjectName.Replace(" ", ""))</RootNamespace>
+    <OutputPath>Build\$(Configuration)</OutputPath>
+    <IntermediateOutputPath>Build\$(Configuration)\obj</IntermediateOutputPath>
+    <AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>
+    <PathMap>$(MSBuildProjectDirectory)=.</PathMap>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputType>WinExe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="UAssetAPI">
+      <HintPath>UAssetAPI.dll</HintPath>
+    </Reference>
+    <PackageReference Include="Emoji.Wpf" Version="0.3.4" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <EmbeddedResource Update="Resources\Resource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Resources\Resource.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resource.resx</DependentUpon>
+    </Compile>
+    <Resource Include="Resources\Images\**" />
+  </ItemGroup>
+
+</Project>

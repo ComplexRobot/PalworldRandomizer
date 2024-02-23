@@ -1,0 +1,658 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="BP_PalSpawner_Sheets_1_10_plain_F_Boss_BlueDragon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_1_10_plain_F_Boss_BlueDragon.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_1_10_plain_F_Boss_BlueDragon1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_1_10_plain_F_Boss_BlueDragon.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_1_10_plain_F_Boss_FairyDragon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_1_10_plain_F_Boss_FairyDragon.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_1_10_plain_F_Boss_FairyDragon1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_1_10_plain_F_Boss_FairyDragon.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_1_11_plain_Kelpee" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_1_11_plain_Kelpee.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_1_11_plain_Kelpee1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_1_11_plain_Kelpee.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_1_14_plain_Serpent" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_1_14_plain_Serpent.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_1_14_plain_Serpent1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_1_14_plain_Serpent.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_1_15_plain_mopking" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_1_15_plain_mopking.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_1_15_plain_mopking1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_1_15_plain_mopking.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_1_1_plain_begginer" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_1_1_plain_begginer.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_1_1_plain_begginer1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_1_1_plain_begginer.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_1_2_plain_grass" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_1_2_plain_grass.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_1_2_plain_grass1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_1_2_plain_grass.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_1_3_plain_kitsunbi" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_1_3_plain_kitsunbi.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_1_3_plain_kitsunbi1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_1_3_plain_kitsunbi.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_1_3_water" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_1_3_water.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_1_3_water1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_1_3_water.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_1_4_plain_fox" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_1_4_plain_fox.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_1_4_plain_fox1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_1_4_plain_fox.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_1_5_plain_pachiguri" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_1_5_plain_pachiguri.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_1_5_plain_pachiguri1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_1_5_plain_pachiguri.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_1_6_plain_Kirin" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_1_6_plain_Kirin.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_1_6_plain_Kirin1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_1_6_plain_Kirin.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_1_7_plain_Pekodon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_1_7_plain_Pekodon.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_1_7_plain_Pekodon1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_1_7_plain_Pekodon.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_1_8_plain_dessert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_1_8_plain_dessert.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_1_8_plain_dessert1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_1_8_plain_dessert.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_1_9_plain_SweetsSheep" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_1_9_plain_SweetsSheep.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_1_9_plain_SweetsSheep1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_1_9_plain_SweetsSheep.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_2_1_forest_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_2_1_forest_1.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_2_1_forest_11" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_2_1_forest_1.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_2_1_forest_3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_2_1_forest_3.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_2_1_forest_31" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_2_1_forest_3.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_2_1_forest_4" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_2_1_forest_4.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_2_1_forest_41" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_2_1_forest_4.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_2_2_forestsnow_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_2_2_forestsnow_1.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_2_2_forestsnow_11" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_2_2_forestsnow_1.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_3_1_volcano_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_3_1_volcano_1.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_3_1_volcano_11" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_3_1_volcano_1.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_3_2_volcano_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_3_2_volcano_1.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_3_2_volcano_11" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_3_2_volcano_1.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_3_3_volcano_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_3_3_volcano_1.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_3_3_volcano_11" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_3_3_volcano_1.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_3_4_volcano_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_3_4_volcano_1.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_3_4_volcano_11" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_3_4_volcano_1.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_4_1_dessert_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_4_1_dessert_1.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_4_1_dessert_11" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_4_1_dessert_1.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_4_2_dessert_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_4_2_dessert_1.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_4_2_dessert_11" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_4_2_dessert_1.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_50_10_dungeon_dessert_boss" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_50_10_dungeon_dessert_boss.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_50_10_dungeon_dessert_boss1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_50_10_dungeon_dessert_boss.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_50_11_dungeon_snow" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_50_11_dungeon_snow.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_50_11_dungeon_snow1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_50_11_dungeon_snow.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_50_12_dungeon_snow_boss" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_50_12_dungeon_snow_boss.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_50_12_dungeon_snow_boss1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_50_12_dungeon_snow_boss.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_50_1_dungeon_grass" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_50_1_dungeon_grass.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_50_1_dungeon_grass1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_50_1_dungeon_grass.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_50_2_dungeon_grass_boss" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_50_2_dungeon_grass_boss.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_50_2_dungeon_grass_boss1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_50_2_dungeon_grass_boss.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_50_3_dungeon_grass2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_50_3_dungeon_grass2.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_50_3_dungeon_grass21" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_50_3_dungeon_grass2.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_50_4_dungeon_grass2_boss" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_50_4_dungeon_grass2_boss.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_50_4_dungeon_grass2_boss1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_50_4_dungeon_grass2_boss.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_50_5_dungeon_forest" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_50_5_dungeon_forest.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_50_5_dungeon_forest1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_50_5_dungeon_forest.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_50_6_dungeon_forest_boss" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_50_6_dungeon_forest_boss.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_50_6_dungeon_forest_boss1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_50_6_dungeon_forest_boss.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_50_7_dungeon_volcano" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_50_7_dungeon_volcano.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_50_7_dungeon_volcano1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_50_7_dungeon_volcano.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_50_8_dungeon_volcano_boss" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_50_8_dungeon_volcano_boss.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_50_8_dungeon_volcano_boss1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_50_8_dungeon_volcano_boss.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_50_9_dungeon_dessert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_50_9_dungeon_dessert.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_50_9_dungeon_dessert1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_50_9_dungeon_dessert.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_forest_FBOSS_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_forest_FBOSS_1.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_forest_FBOSS_11" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_forest_FBOSS_1.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_forest_FBOSS_2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_forest_FBOSS_2.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_forest_FBOSS_21" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_forest_FBOSS_2.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_forest_FBOSS_3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_forest_FBOSS_3.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_forest_FBOSS_31" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_forest_FBOSS_3.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_forest_FBOSS_4" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_forest_FBOSS_4.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_forest_FBOSS_41" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_forest_FBOSS_4.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_forest_FBOSS_5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_forest_FBOSS_5.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_forest_FBOSS_51" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_forest_FBOSS_5.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_forest_FBOSS_6" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_forest_FBOSS_6.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_forest_FBOSS_61" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_forest_FBOSS_6.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_forest_FBOSS_7" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_forest_FBOSS_7.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_forest_FBOSS_71" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_forest_FBOSS_7.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_1.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_10" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_10.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_101" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_10.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_11" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_1.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_111" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_11.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_112" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_11.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_13" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_13.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_131" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_13.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_14" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_14.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_141" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_14.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_15" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_15.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_151" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_15.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_16.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_161" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_16.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_18" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_18.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_181" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_18.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_2.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_20" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_20.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_201" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_20.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_21" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_2.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_211" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_21.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_212" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_21.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_22" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_22.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_221" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_22.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_23" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_23.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_231" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_23.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_24.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_241" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_24.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_25" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_25.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_251" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_25.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_26" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_26.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_261" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_26.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_27" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_27.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_271" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_27.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_28" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_28.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_281" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_28.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_29" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_29.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_291" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_29.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_4" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_4.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_41" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_4.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_5.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_51" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_5.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_6" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_6.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_61" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_6.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_9" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_9.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_1_grass_FBOSS_91" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_1_grass_FBOSS_9.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_2_dessert_FBOSS_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_2_dessert_FBOSS_1.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_2_dessert_FBOSS_11" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_2_dessert_FBOSS_1.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_2_dessert_FBOSS_2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_2_dessert_FBOSS_2.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_2_dessert_FBOSS_21" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_2_dessert_FBOSS_2.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_2_dessert_FBOSS_3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_2_dessert_FBOSS_3.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_2_dessert_FBOSS_31" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_2_dessert_FBOSS_3.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_2_dessert_FBOSS_4" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_2_dessert_FBOSS_4.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_2_dessert_FBOSS_41" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_2_dessert_FBOSS_4.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_3_snow_FBOSS_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_3_snow_FBOSS_1.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_3_snow_FBOSS_11" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_3_snow_FBOSS_1.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_3_snow_FBOSS_2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_3_snow_FBOSS_2.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_3_snow_FBOSS_21" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_3_snow_FBOSS_2.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_3_snow_FBOSS_3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_3_snow_FBOSS_3.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_3_snow_FBOSS_31" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_3_snow_FBOSS_3.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_3_volcano_FBOSS_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_3_volcano_FBOSS_1.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_3_volcano_FBOSS_11" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_3_volcano_FBOSS_1.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_3_volcano_FBOSS_2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_3_volcano_FBOSS_2.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_3_volcano_FBOSS_21" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_3_volcano_FBOSS_2.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_3_volcano_FBOSS_3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_3_volcano_FBOSS_3.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_3_volcano_FBOSS_31" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_3_volcano_FBOSS_3.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_PvP_21_1_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_PvP_21_1_1.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_PvP_21_1_11" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_PvP_21_1_1.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_PvP_21_2_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_PvP_21_2_1.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_PvP_21_2_11" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_PvP_21_2_1.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_sanctuary_11_1_1_grass" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_sanctuary_11_1_1_grass.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_sanctuary_11_1_1_grass1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_sanctuary_11_1_1_grass.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_sanctuary_11_2_1_volcano" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_sanctuary_11_2_1_volcano.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_sanctuary_11_2_1_volcano1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_sanctuary_11_2_1_volcano.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_sanctuary_11_3_1_dessert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_sanctuary_11_3_1_dessert.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_sanctuary_11_3_1_dessert1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_sanctuary_11_3_1_dessert.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_snow_5_1_snow_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_snow_5_1_snow_1.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_snow_5_1_snow_11" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_snow_5_1_snow_1.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_snow_5_2_SnowGrass" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_snow_5_2_SnowGrass.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_snow_5_2_SnowGrass1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_snow_5_2_SnowGrass.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="DT_HumanNameText" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Data\DT_HumanNameText.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="DT_HumanNameText1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Data\DT_HumanNameText.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="DT_PalHumanParameter" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Data\DT_PalHumanParameter.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="DT_PalHumanParameter1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Data\DT_PalHumanParameter.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="DT_PalMonsterParameter" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Data\DT_PalMonsterParameter.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="DT_PalMonsterParameter1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Data\DT_PalMonsterParameter.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="DT_PalNameText" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Data\DT_PalNameText.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="DT_PalNameText1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Data\DT_PalNameText.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Mappings" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Mappings.usmap;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Resource.resx" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resource.resx;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="UnrealPak" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>UnrealPak.exe;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+</root>

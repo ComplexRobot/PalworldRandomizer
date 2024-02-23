@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Palworld Randomizer": {
+      "commandName": "Project",
+      "commandLineArgs": "> out.txt",
+      "workingDirectory": "$(ProjectDir)",
+      "hotReloadEnabled": false
+    }
+  }
+}
