@@ -1,12 +1,13 @@
 ﻿using Microsoft.Win32;
 using System.Collections;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Resources;
 using System.Text;
-using System.Windows.Controls;
+using System.Windows;
 using UAssetAPI;
 using UAssetAPI.ExportTypes;
 using UAssetAPI.PropertyTypes.Objects;
@@ -258,17 +259,16 @@ namespace PalworldRandomizer
         {
             generatedAreaList = Data.AreaDataCopy();
         }
-        private static void GenerateSpawnLists()
+        private static void GenerateSpawnLists(FormData formData)
         {
-            MainWindow window = MainWindow.Instance;
             basicSpawns = [];
             bossSpawns = [];
             humanSpawns = [];
-            if (window.groupVanilla.IsChecked == true)
+            if (formData.groupVanilla)
             {
                 foreach (string key in Data.palList)
                 {
-                    if (window.spawnPals.IsChecked == true)
+                    if (formData.spawnPals)
                     {
                         SpawnEntry basicEntry = new();
                         basicSpawns.Add(key, basicEntry);
@@ -391,8 +391,8 @@ namespace PalworldRandomizer
                 foreach (KeyValuePair<string, List<SpawnEntry>> keyPair in Data.soloEntries)
                 {
                     if (!Data.palData[keyPair.Key].IsPal &&
-                        ((window.spawnHumans.IsChecked == true && Data.humanNames.Contains(keyPair.Key))
-                        || (window.spawnPolice.IsChecked == true && Data.policeNames.Contains(keyPair.Key)))
+                        ((formData.spawnHumans && Data.humanNames.Contains(keyPair.Key))
+                        || (formData.spawnPolice && Data.policeNames.Contains(keyPair.Key)))
                         )
                     {
                         SpawnData spawnData = new() { name = keyPair.Key, isPal = false };
@@ -411,8 +411,8 @@ namespace PalworldRandomizer
                 {
                     SpawnEntry spawnEntry = groupEntriesCopy[i];
                     if (!spawnEntry.spawnList[0].isPal &&
-                        ((window.spawnHumans.IsChecked == true && Data.humanNames.Contains(spawnEntry.spawnList[0].name))
-                        || (window.spawnPolice.IsChecked == true && Data.policeNames.Contains(spawnEntry.spawnList[0].name)))
+                        ((formData.spawnHumans && Data.humanNames.Contains(spawnEntry.spawnList[0].name))
+                        || (formData.spawnPolice && Data.policeNames.Contains(spawnEntry.spawnList[0].name)))
                         )
                     {
                         humanSpawns.Add(spawnEntry); // shallow copy
@@ -457,103 +457,74 @@ namespace PalworldRandomizer
                         }
                     }
                 }
-                if (window.spawnPolice.IsChecked == true)
+                if (formData.spawnPolice)
                 {
                     humanSpawns.Add(new() { spawnList = [new("Police_Handgun", 1, 2)] });
                 }
-                if (window.spawnGuards.IsChecked == true)
+                if (formData.spawnGuards)
                 {
                     humanSpawns.Add(new() { spawnList = [new("Guard_Rifle", 1, 2), new("Guard_Shotgun", 1, 2)] });
                 }
-                if (window.spawnHumans.IsChecked == true)
+                if (formData.spawnHumans)
                 {
                     humanSpawns.Add(new() { spawnList = [new("Hunter_FlameThrower", 1, 2)] });
                     humanSpawns.Add(new() { spawnList = [new("Scientist_FlameThrower", 1, 2)] });
                 }
-                if (window.spawnTraders.IsChecked == true)
+                if (formData.spawnTraders)
                 {
-                    humanSpawns.AddRange(Data.traderNames.ToList().ConvertAll(name => new SpawnEntry { spawnList = [new(name)] }));
+                    humanSpawns.AddRange(Data.traderNames.Select(name => new SpawnEntry { spawnList = [new(name)] }));
                 }
-                if (window.spawnPalTraders.IsChecked == true)
+                if (formData.spawnPalTraders)
                 {
-                    humanSpawns.AddRange(Data.palTraderNames.ToList().ConvertAll(name => new SpawnEntry { spawnList = [new(name)] }));
+                    humanSpawns.AddRange(Data.palTraderNames.Select(name => new SpawnEntry { spawnList = [new(name)] }));
                 }
             }
-            else if (window.groupRandom.IsChecked == true)
+            else if (formData.groupRandom)
             {
-                if (window.spawnPals.IsChecked == true)
+                if (formData.spawnPals)
                 {
                     Data.palList.ForEach(name => basicSpawns.Add(name, new() { spawnList = [new(name)] }));
                 }
                 Data.bossName.Values.ToList().ForEach(name => bossSpawns.Add(name, new() { spawnList = [new(name)] }));
-                humanSpawns.AddRange(new List<string>
+                humanSpawns.AddRange(new Collection<string>
                 ([
-                    .. (window.spawnHumans.IsChecked == true ? Data.humanNames : []),
-                    .. (window.spawnPolice.IsChecked == true ? Data.policeNames : []),
-                    .. (window.spawnGuards.IsChecked == true ? Data.guardNames : []),
-                    .. (window.spawnTraders.IsChecked == true ? Data.traderNames : []),
-                    .. (window.spawnPalTraders.IsChecked == true ? Data.palTraderNames : [])
-                ]).ConvertAll(name => new SpawnEntry { spawnList = [new(name)] }));
+                    .. (formData.spawnHumans ? Data.humanNames : []),
+                    .. (formData.spawnPolice ? Data.policeNames : []),
+                    .. (formData.spawnGuards ? Data.guardNames : []),
+                    .. (formData.spawnTraders ? Data.traderNames : []),
+                    .. (formData.spawnPalTraders ? Data.palTraderNames : [])
+                ]).Select(name => new SpawnEntry { spawnList = [new(name)] }));
             }
-            if (window.spawnTowerBosses.IsChecked == true)
+            if (formData.spawnTowerBosses)
             {
                 Data.towerBossNames.ForEach(name => bossSpawns.Add(name, new() { spawnList = [new(name)] }));
             }
         }
-        private static ICollection<string> GetAllowedNames()
+        private static ICollection<string> GetAllowedNames(FormData formData)
         {
-            MainWindow window = MainWindow.Instance;
             return
             [
-                .. (window.spawnPals.IsChecked == true ? Data.palList : []),
+                .. (formData.spawnPals ? Data.palList : []),
                 .. Data.bossName.Values,
-                .. (window.spawnTowerBosses.IsChecked == true ? Data.towerBossNames : []),
-                .. (window.spawnHumans.IsChecked == true ? Data.humanNames : []),
-                .. (window.spawnPolice.IsChecked == true ? Data.policeNames : []),
-                .. (window.spawnGuards.IsChecked == true ? Data.guardNames : []),
-                .. (window.spawnTraders.IsChecked == true ? Data.traderNames : []),
-                .. (window.spawnPalTraders.IsChecked == true ? Data.palTraderNames : [])
+                .. (formData.spawnTowerBosses ? Data.towerBossNames : []),
+                .. (formData.spawnHumans ? Data.humanNames : []),
+                .. (formData.spawnPolice ? Data.policeNames : []),
+                .. (formData.spawnGuards ? Data.guardNames : []),
+                .. (formData.spawnTraders ? Data.traderNames : []),
+                .. (formData.spawnPalTraders ? Data.palTraderNames : [])
             ];
         }
-        private static void RandomizeAndSaveAssets()
+        private static void RandomizeAndSaveAssets(FormData formData)
         {
-            MainWindow window = MainWindow.Instance;
             string outputLog = "";
-            static void ValidateNumericText(TextBox textBox, int minValue, int? defaultValue = null)
-            {
-                defaultValue ??= minValue;
-                try
-                {
-                    if (textBox.Text.Length == 0)
-                    {
-                        textBox.Text = $"{defaultValue}";
-                    }
-                    else if (int.Parse(textBox.Text) < minValue)
-                    {
-                        textBox.Text = $"{minValue}";
-                    }
-                }
-                catch (Exception)
-                {
-                    textBox.Text = $"{defaultValue}";
-                }
-            }
-            ValidateNumericText(window.groupMin, 1);
-            ValidateNumericText(window.groupMax, int.Parse(window.groupMin.Text));
-            ValidateNumericText(window.spawnListSize, 1);
-            ValidateNumericText(window.fieldLevel, 0, 100);
-            ValidateNumericText(window.dungeonLevel, 0, 100);
-            ValidateNumericText(window.fieldBossLevel, 0, 100);
-            ValidateNumericText(window.dungeonBossLevel, 0, 100);
-            ValidateNumericText(window.levelCap, 1, 50);
-            int minGroup = Math.Max(1, int.Parse(window.groupMin.Text));
-            int maxGroup = Math.Max(minGroup, int.Parse(window.groupMax.Text));
-            int spawnListSize = Math.Max(1, int.Parse(window.spawnListSize.Text));
-            float fieldLevel = Math.Max(0, int.Parse(window.fieldLevel.Text)) / 100.0f;
-            float dungeonLevel = Math.Max(0, int.Parse(window.dungeonLevel.Text)) / 100.0f;
-            float fieldBossLevel = Math.Max(0, int.Parse(window.fieldBossLevel.Text)) / 100.0f;
-            float dungeonBossLevel = Math.Max(0, int.Parse(window.dungeonBossLevel.Text)) / 100.0f;
-            int levelCap = Math.Max(1, int.Parse(window.levelCap.Text));
+            int minGroup = Math.Max(1, formData.groupMin);
+            int maxGroup = Math.Max(minGroup, formData.groupMax);
+            int spawnListSize = Math.Max(1, formData.spawnListSize);
+            float fieldLevel = Math.Max(0, formData.fieldLevel) / 100.0f;
+            float dungeonLevel = Math.Max(0, formData.dungeonLevel) / 100.0f;
+            float fieldBossLevel = Math.Max(0, formData.fieldBossLevel) / 100.0f;
+            float dungeonBossLevel = Math.Max(0, formData.dungeonBossLevel) / 100.0f;
+            int levelCap = Math.Max(1, formData.levelCap);
             int totalSpeciesCount = 0;
             string outputPath = UAssetData.AppDataPath("SpawnRandomizer_P\\Pal\\Content\\Pal\\Blueprint\\Spawner\\SheetsVariant");
             Directory.CreateDirectory(outputPath);
@@ -566,10 +537,26 @@ namespace PalworldRandomizer
             List<SpawnEntry> bossSpawnsOriginal = [.. bossSpawns.Values];
             List<SpawnEntry> basicSpawnsCurrent = [.. basicSpawnsOriginal];
             List<SpawnEntry> bossSpawnsCurrent = [.. bossSpawnsOriginal];
-            HashSet<string> allowedNames = [.. GetAllowedNames()];
+            HashSet<string> allowedNames = [.. GetAllowedNames(formData)];
             Random random = new();
             List<AreaData> areaList = Data.AreaDataCopy();
-            areaList.Sort((x, y) =>
+            List<AreaData> subList = areaList.FindAll(area =>
+            {
+                bool isFieldBoss = area.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase)
+                    && !area.filename.Contains("dungeon", StringComparison.InvariantCultureIgnoreCase);
+                bool isDungeonBoss = area.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase)
+                    && area.filename.Contains("dungeon", StringComparison.InvariantCultureIgnoreCase);
+                bool isDungeon = !area.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase)
+                    && area.filename.Contains("dungeon", StringComparison.InvariantCultureIgnoreCase);
+                bool isField = !area.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase)
+                    && !area.filename.Contains("dungeon", StringComparison.InvariantCultureIgnoreCase);
+                bool isBoss = area.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase);
+                return (formData.randomizeField || !isField)
+                    && (formData.randomizeDungeons || !isDungeon)
+                    && (formData.randomizeDungeonBosses || !isDungeonBoss)
+                    && (formData.randomizeFieldBosses || !isFieldBoss);
+            });
+            subList.Sort((x, y) =>
             {
                 if (x.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase) && !y.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase))
                     return 1;
@@ -581,8 +568,12 @@ namespace PalworldRandomizer
                     return -1;
                 return string.Compare(x.filename, y.filename);
             });
-            foreach (AreaData area in areaList)
+            int progress = 0;
+            int progressTotal = subList.Count;
+            foreach (AreaData area in subList)
             {
+                ++progress;
+                MainWindow.Instance.Dispatcher.BeginInvoke(() => MainWindow.Instance.progressBar.Value = Math.Ceiling(100.0 * progress / progressTotal));
                 bool isFieldBoss = area.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase)
                     && !area.filename.Contains("dungeon", StringComparison.InvariantCultureIgnoreCase);
                 bool isDungeonBoss = area.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase)
@@ -592,17 +583,10 @@ namespace PalworldRandomizer
                 bool isField = !area.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase)
                     && !area.filename.Contains("dungeon", StringComparison.InvariantCultureIgnoreCase);
                 bool isBoss = area.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase);
-                if ((window.randomizeField.IsChecked != true && isField)
-                    || (window.randomizeDungeons.IsChecked != true && isDungeon)
-                    || (window.randomizeDungeonBosses.IsChecked != true && isDungeonBoss)
-                    || (window.randomizeFieldBosses.IsChecked != true && isFieldBoss))
-                {
-                    continue;
-                }
-                bool nightOnly = (window.nightOnly.IsChecked == true && isField)
-                    || (window.nightOnlyDungeons.IsChecked == true && isDungeon)
-                    || (window.nightOnlyDungeonBosses.IsChecked == true && isDungeonBoss)
-                    || (window.nightOnlyBosses.IsChecked == true && isFieldBoss);
+                bool nightOnly = (formData.nightOnly && isField)
+                    || (formData.nightOnlyDungeons && isDungeon)
+                    || (formData.nightOnlyDungeonBosses && isDungeonBoss)
+                    || (formData.nightOnlyBosses && isFieldBoss);
                 int changes = 1;
                 float LevelMultiplier(SpawnData spawnData)
                 {
@@ -612,7 +596,7 @@ namespace PalworldRandomizer
                     }
                     return spawnData.isBoss ? fieldBossLevel : fieldLevel;
                 }
-                if (window.methodNone.IsChecked != true)
+                if (!formData.methodNone)
                 {
                     int speciesCount = 0;
                     List<SpawnEntry> spawnEntries = [];
@@ -644,7 +628,7 @@ namespace PalworldRandomizer
                         float levelMultiplier = LevelMultiplier(spawnEntry.spawnList[0]);
                         spawnEntry.spawnList[0].minLevel = (uint) Math.Clamp((int) Math.Round(levelMultiplier * average - range / 2.0f), 1, levelCap);
                         spawnEntry.spawnList[0].maxLevel = (uint) Math.Clamp((int) Math.Round(levelMultiplier * average + range / 2.0f), 1, levelCap);
-                        if (!Data.palData[spawnEntry.spawnList[0].name].IsPal && Data.palData[spawnEntry.spawnList[0].name].AIResponse == "Kill_All" && window.groupVanilla.IsChecked == true)
+                        if (!Data.palData[spawnEntry.spawnList[0].name].IsPal && Data.palData[spawnEntry.spawnList[0].name].AIResponse == "Kill_All" && formData.groupVanilla)
                         {
                             spawnEntry.weight = 5;
                         }
@@ -687,7 +671,7 @@ namespace PalworldRandomizer
                         if (isBoss)
                         {
                             spawnEntry.spawnList.Add(NextSpecies(bossSpawnsCurrent, bossSpawnsOriginal));
-                            if (window.multiBoss.IsChecked == true)
+                            if (formData.multiBoss)
                             {
                                 spawns = bossSpawnsCurrent;
                                 original = bossSpawnsOriginal;
@@ -723,7 +707,7 @@ namespace PalworldRandomizer
                                 }
                             }
                         }
-                        if (isBoss && spawnEntry.spawnList.Count > 1 && window.multiBoss.IsChecked != true)
+                        if (isBoss && spawnEntry.spawnList.Count > 1 && !formData.multiBoss)
                         {
                             spawnEntry.spawnList[0].minLevel = 4;
                             spawnEntry.spawnList[0].maxLevel = 8;
@@ -731,14 +715,14 @@ namespace PalworldRandomizer
                         }
                         return spawnEntry;
                     }
-                    if (window.methodFull.IsChecked == true)
+                    if (formData.methodFull)
                     {
                         basicSpawnsCurrent = [.. basicSpawnsOriginal];
                         bossSpawnsCurrent = [.. bossSpawnsOriginal];
-                        int maxSpecies = isFieldBoss && window.fieldBossExtended.IsChecked != true
+                        int maxSpecies = isFieldBoss && !formData.fieldBossExtended
                             ? 1
                             : Enumerable.Sum((isBoss ? bossSpawnsOriginal : basicSpawnsOriginal).ConvertAll(entry => entry.spawnList.Count));
-                        if (window.groupVanilla.IsChecked == true)
+                        if (formData.groupVanilla)
                         {
                             List<SpawnEntry> spawns = isBoss ? bossSpawnsCurrent : basicSpawnsCurrent;
                             List<SpawnEntry> original = isBoss ? bossSpawnsOriginal : basicSpawnsOriginal;
@@ -754,9 +738,9 @@ namespace PalworldRandomizer
                                 spawns.RemoveAt(i);
                             }
                         }
-                        else if (window.groupRandom.IsChecked == true)
+                        else if (formData.groupRandom)
                         {
-                            if (isBoss && window.multiBoss.IsChecked != true)
+                            if (isBoss && !formData.multiBoss)
                             {
                                 while (speciesCount < maxSpecies)
                                 {
@@ -778,17 +762,17 @@ namespace PalworldRandomizer
                     }
                     else
                     {
-                        int entryCount = isFieldBoss && window.fieldBossExtended.IsChecked != true
+                        int entryCount = isFieldBoss && !formData.fieldBossExtended
                             ? 1
-                            : (window.methodCustomSize.IsChecked == true ? spawnListSize : spawnEntriesOriginal.Count);
+                            : (formData.methodCustomSize ? spawnListSize : spawnEntriesOriginal.Count);
                         for (int i = 0; i < entryCount; ++i)
                         {
-                            if (window.methodGlobalSwap.IsChecked == true)
+                            if (formData.methodGlobalSwap)
                             {
                                 SpawnEntry spawnEntry = spawnEntriesOriginal[i];
                                 if (!swapMap.ContainsKey(spawnEntry.spawnList[0].name))
                                 {
-                                    if (window.groupVanilla.IsChecked == true)
+                                    if (formData.groupVanilla)
                                     {
                                         List<SpawnEntry> spawns = isBoss ? bossSpawnsCurrent : basicSpawnsCurrent;
                                         List<SpawnEntry> original = isBoss ? bossSpawnsOriginal : basicSpawnsOriginal;
@@ -801,7 +785,7 @@ namespace PalworldRandomizer
                                         spawns.RemoveAt(j);
                                         swapMap.Add(spawnEntry.spawnList[0].name, newValue);
                                     }
-                                    else if (window.groupRandom.IsChecked == true)
+                                    else if (formData.groupRandom)
                                     {
                                         swapMap.Add(spawnEntry.spawnList[0].name, GetRandomGroup());
                                     }
@@ -810,7 +794,7 @@ namespace PalworldRandomizer
                             }
                             else
                             {
-                                if (window.groupVanilla.IsChecked == true)
+                                if (formData.groupVanilla)
                                 {
                                     List<SpawnEntry> spawns = isBoss ? bossSpawnsCurrent : basicSpawnsCurrent;
                                     List<SpawnEntry> original = isBoss ? bossSpawnsOriginal : basicSpawnsOriginal;
@@ -822,7 +806,7 @@ namespace PalworldRandomizer
                                     AddEntry(spawns[j]);
                                     spawns.RemoveAt(j);
                                 }
-                                else if (window.groupRandom.IsChecked == true)
+                                else if (formData.groupRandom)
                                 {
                                     AddEntry(GetRandomGroup());
                                 }
@@ -840,10 +824,10 @@ namespace PalworldRandomizer
                     changes += area.spawnExportData.spawnEntries.RemoveAll(entry => entry.spawnList.Count == 0);
                     foreach (SpawnEntry spawnEntry in area.spawnExportData.spawnEntries)
                     {
-                        if ((window.nightOnly.IsChecked != true && isField)
-                            || (window.nightOnlyDungeons.IsChecked != true && isDungeon)
-                            || (window.nightOnlyDungeonBosses.IsChecked != true && isDungeonBoss)
-                            || (window.nightOnlyBosses.IsChecked != true && isFieldBoss))
+                        if ((!formData.nightOnly && isField)
+                            || (!formData.nightOnlyDungeons && isDungeon)
+                            || (!formData.nightOnlyDungeonBosses && isDungeonBoss)
+                            || (!formData.nightOnlyBosses && isFieldBoss))
                         {
                             changes += spawnEntry.nightOnly == true ? 1 : 0;
                             spawnEntry.nightOnly = false;
@@ -861,7 +845,7 @@ namespace PalworldRandomizer
                         });
                     }
                 }
-                if (window.methodNone.IsChecked != true)
+                if (!formData.methodNone)
                 {
                     area.spawnExportData.spawnEntries.Sort((x, y) => (x.nightOnly ? 1 : 0) - (y.nightOnly ? 1 : 0));
                 }
@@ -877,16 +861,22 @@ namespace PalworldRandomizer
                 PalSpawn.MutateAsset(area.uAsset, area.spawnExportData);
                 area.uAsset.Write($"{outputPath}\\{area.filename}");
             }
+            MainWindow.Instance.Dispatcher.Invoke(() => MainWindow.Instance.progressBar.Visibility = Visibility.Collapsed);
             Console.WriteLine($"{totalSpeciesCount} Total Entries\n");
             outputLog += $"{totalSpeciesCount} Total Entries\n\n";
-            areaList.Sort((x, y) => string.Compare(x.filename, y.filename));
+            areaList.Sort((x, y) =>
+            {
+                if (x.modified == y.modified)
+                    return string.Compare(x.filename, y.filename);
+                return (y.modified ? 1 : 0) - (x.modified ? 1 : 0);
+            });
             generatedAreaList = areaList;
-            PalSpawnWindow.Instance.areaList.ItemsSource = generatedAreaList;
-            if (window.outputLog.IsChecked == true)
+            PalSpawnWindow.Instance.Dispatcher.Invoke(() => PalSpawnWindow.Instance.areaList.ItemsSource = generatedAreaList);
+            if (formData.outputLog)
             {
                 try
                 {
-                    File.WriteAllText($"{Assembly.GetExecutingAssembly().GetName().Name!.Replace(' ', '-')}-Log.txt", outputLog);
+                    File.WriteAllText($"Palworld-Randomizer-Log.txt", outputLog);
                 }
                 catch (Exception)
                 {
@@ -937,6 +927,22 @@ namespace PalworldRandomizer
                 }
             }
         }
+        
+        public static bool GeneratePalSpawns(FormData formData)
+        {
+            GenerateSpawnLists(formData);
+            RandomizeAndSaveAssets(formData);
+            MainWindow.Instance.Dispatcher.Invoke(() => MainWindow.Instance.statusBar.Text = "✔️ Generation complete.");
+            return FileModify.GenerateAndSavePak();
+        }
+        public static string GetRandomPal()
+        {
+            return Data.palList[new Random().Next(0, Data.palList.Count)];
+        }
+    }
+
+    public static class FileModify
+    {
         public static bool SaveAreaList(List<AreaData> areaList)
         {
             string outputPath = UAssetData.AppDataPath("SpawnRandomizer_P\\Pal\\Content\\Pal\\Blueprint\\Spawner\\SheetsVariant");
@@ -946,8 +952,8 @@ namespace PalworldRandomizer
                 File.Delete(filename);
             }
             bool changesDetected = false;
-            AreaForEachIfDiff(areaList, area =>
-            { 
+            Randomize.AreaForEachIfDiff(areaList, area =>
+            {
                 changesDetected = true;
                 PalSpawn.MutateAsset(area.uAsset, area.spawnExportData);
                 area.uAsset.Write($"{outputPath}\\{area.filename}");
@@ -1010,6 +1016,12 @@ namespace PalworldRandomizer
                         area.modified = true;
                     }
                 }
+                areaList.Sort((x, y) =>
+                {
+                    if (x.modified == y.modified)
+                        return string.Compare(x.filename, y.filename);
+                    return (y.modified ? 1 : 0) - (x.modified ? 1 : 0);
+                });
                 PalSpawnWindow.Instance.areaList.ItemsSource = areaList;
             }
             else
@@ -1063,6 +1075,7 @@ namespace PalworldRandomizer
                 try
                 {
                     List<string[]> csvData = [.. fileLines.Select(x => x.Split(',').Select(x => x.Trim()).ToArray())];
+                    csvData.RemoveAll(list => list.Length < 2);
                     Dictionary<string, AreaData> areaDict = Data.AreaDataCopy().ToDictionary(x => x.simpleName, x => x);
                     HashSet<string> addedNames = [];
                     foreach (string[] list in csvData)
@@ -1096,9 +1109,14 @@ namespace PalworldRandomizer
                         });
                     }
                     List<AreaData> areaList = [.. areaDict.Values];
-                    areaList.ForEach(area => area.spawnExportData.spawnEntries.RemoveAll(entry => entry.spawnList.Count == 0));
-                    areaList.Sort((x, y) => string.Compare(x.filename, y.filename));
-                    AreaForEachIfDiff(areaList, area => area.modified = true);
+                    areaList.ForEach(area => area.spawnEntries.RemoveAll(entry => entry.spawnList.Count == 0));
+                    areaList.Sort((x, y) =>
+                    {
+                        if (x.modified == y.modified)
+                            return string.Compare(x.filename, y.filename);
+                        return (y.modified ? 1 : 0) - (x.modified ? 1 : 0);
+                    });
+                    Randomize.AreaForEachIfDiff(areaList, area => area.modified = true);
                     PalSpawnWindow.Instance.areaList.ItemsSource = areaList;
                 }
                 catch (Exception e)
@@ -1109,16 +1127,6 @@ namespace PalworldRandomizer
             else
                 return "Cancel";
             return null;
-        }
-        public static bool GeneratePalSpawns()
-        {
-            GenerateSpawnLists();
-            RandomizeAndSaveAssets();
-            return GenerateAndSavePak();
-        }
-        public static string GetRandomPal()
-        {
-            return Data.palList[new Random().Next(0, Data.palList.Count)];
         }
     }
 }

@@ -32,7 +32,7 @@ namespace PalworldRandomizer
 
         private void savePak_Click(object sender, RoutedEventArgs e)
         {
-            if (!Randomize.SaveAreaList((List<AreaData>) areaList.ItemsSource) || !Randomize.GenerateAndSavePak())
+            if (!FileModify.SaveAreaList((List<AreaData>) areaList.ItemsSource) || !FileModify.GenerateAndSavePak())
             {
                 MessageBox.Show(this, "Error: No spawn group changes detected.", "Failed To Save Pak", MessageBoxButton.OK, MessageBoxImage.Error);
             }
@@ -49,7 +49,7 @@ namespace PalworldRandomizer
 
         private void loadPak_Click(object sender, RoutedEventArgs e)
         {
-            string? status = Randomize.LoadPak();
+            string? status = FileModify.LoadPak();
             if (status != null)
             {
                 if (status != "Cancel")
@@ -65,12 +65,12 @@ namespace PalworldRandomizer
 
         private void saveCsv_Click(object sender, RoutedEventArgs e)
         {
-            Randomize.SaveCSV((List<AreaData>) areaList.ItemsSource);
+            FileModify.SaveCSV((List<AreaData>) areaList.ItemsSource);
         }
 
         private void loadCsv_Click(object sender, RoutedEventArgs e)
         {
-            string? status = Randomize.LoadCSV();
+            string? status = FileModify.LoadCSV();
             if (status != null)
             {
                 if (status != "Cancel")

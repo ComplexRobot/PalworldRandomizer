@@ -174,13 +174,13 @@
                                     <VisualState x:Name="Disabled">
                                         <Storyboard>
                                             <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)" Storyboard.TargetName="Border">
-                                                <EasingColorKeyFrame KeyTime="0" Value="#FFE8EDF9" />
+                                                <EasingColorKeyFrame KeyTime="0" Value="#FF181818" />
                                             </ColorAnimationUsingKeyFrames>
                                             <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)" Storyboard.TargetName="Border">
-                                                <EasingColorKeyFrame KeyTime="0" Value="#FF888888" />
+                                                <EasingColorKeyFrame KeyTime="0" Value="#FF181818" />
                                             </ColorAnimationUsingKeyFrames>
                                             <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.BorderBrush).(GradientBrush.GradientStops)[1].(GradientStop.Color)" Storyboard.TargetName="Border">
-                                                <EasingColorKeyFrame KeyTime="0" Value="#FF888888" />
+                                                <EasingColorKeyFrame KeyTime="0" Value="#FF181818" />
                                             </ColorAnimationUsingKeyFrames>
                                         </Storyboard>
                                     </VisualState>
@@ -732,6 +732,10 @@
                     <Setter Property="Template" Value="{DynamicResource {ComponentResourceKey ResourceId=SubmenuHeaderTemplateKey, TypeInTargetAssembly={x:Type MenuItem}}}"/>
                 </Trigger>
             </Style.Triggers>
+        </Style>
+
+        <Style TargetType="StatusBar">
+            <Setter Property="Background" Value="#FF202020"/>
         </Style>
 
     </Application.Resources>

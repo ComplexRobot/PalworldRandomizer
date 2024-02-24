@@ -27,32 +27,47 @@
                     <MenuItem.Header>
                         <TextBlock Text="Save PAK..." Margin="0"/>
                     </MenuItem.Header>
+                    <MenuItem.Icon>
+                        <emoji:TextBlock Text="💾" Margin="0" HorizontalAlignment="Center"/>
+                    </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Name="loadPak" Click="loadPak_Click">
                     <MenuItem.Header>
                         <TextBlock Text="Load PAK..." Margin="0"/>
                     </MenuItem.Header>
+                    <MenuItem.Icon>
+                        <emoji:TextBlock Text="📂" Margin="0" HorizontalAlignment="Center"/>
+                    </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Name="saveCsv" Click="saveCsv_Click">
                     <MenuItem.Header>
                         <TextBlock Text="Save CSV..." Margin="0"/>
                     </MenuItem.Header>
+                    <MenuItem.Icon>
+                        <emoji:TextBlock Text="💾" Margin="0" HorizontalAlignment="Center"/>
+                    </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Name="loadCsv" Click="loadCsv_Click">
                     <MenuItem.Header>
                         <TextBlock Text="Load CSV..." Margin="0"/>
                     </MenuItem.Header>
+                    <MenuItem.Icon>
+                        <emoji:TextBlock Text="📂" Margin="0" HorizontalAlignment="Center"/>
+                    </MenuItem.Icon>
                 </MenuItem>
                 <Separator Height="20" Background="Transparent"/>
                 <MenuItem Name="reset" Click="reset_Click">
                     <MenuItem.Header>
                         <TextBlock Text="Revert All Spawns" Margin="0"/>
                     </MenuItem.Header>
+                    <MenuItem.Icon>
+                        <emoji:TextBlock Text="♻️" Margin="0" HorizontalAlignment="Center"/>
+                    </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
         </Menu>
         <ListBox Name="areaList" Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Source={x:Static local:Randomize.generatedAreaList}}" SelectionChanged="areaList_SelectionChanged"/>
-        <ScrollViewer Name="spawnScrollViewer" VerticalScrollBarVisibility="Auto" Grid.Row="1" Grid.Column="1">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="1" Grid.Column="1">
             <ItemsControl Name="spawnEntries" ItemsSource="{Binding ElementName=areaList, Path=SelectedItem.spawnEntriesView, Mode=OneWay}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
