@@ -1,4 +1,6 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace PalworldRandomizer
 {
@@ -14,6 +16,7 @@ namespace PalworldRandomizer
         {
             Instance = this;
             InitializeComponent();
+            CompositionTarget.Rendering += Window_Rendering;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -46,9 +49,13 @@ namespace PalworldRandomizer
 
         private void loadPak_Click(object sender, RoutedEventArgs e)
         {
-            if (!Randomize.LoadPak())
+            string? status = Randomize.LoadPak();
+            if (status != null)
             {
-                MessageBox.Show(this, "Error: Invalid or incorrect PAK file.", "Failed To Load Pak", MessageBoxButton.OK, MessageBoxImage.Error);
+                if (status != "Cancel")
+                {
+                    MessageBox.Show(this, "Error: Invalid or incorrect PAK file.\n" + status, "Failed To Load Pak", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
             else
             {
@@ -63,14 +70,53 @@ namespace PalworldRandomizer
 
         private void loadCsv_Click(object sender, RoutedEventArgs e)
         {
-            Exception? exception = Randomize.LoadCSV();
-            if (exception != null)
+            string? status = Randomize.LoadCSV();
+            if (status != null)
             {
-                MessageBox.Show(this, "Error: Invalid or corrupt CSV file.\n" + exception, "Failed To Load CSV", MessageBoxButton.OK, MessageBoxImage.Error);
+                if (status != "Cancel")
+                {
+                    MessageBox.Show(this, "Error: Invalid or corrupt CSV file.\n" + status, "Failed To Load CSV", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
             else
             {
                 MessageBox.Show(this, "Successfully loaded CSV file.", "CSV Loaded", MessageBoxButton.OK, MessageBoxImage.None);
+            }
+        }
+
+        private bool loadingEntries = false;
+        private int addedSpawns = 0;
+        private int spawnAddLoops = 1;
+        public static float spawnLoadSpeed = 1.5f;
+        private void areaList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (e.AddedItems.Count > 0)
+            {
+                AreaData area = (AreaData) e.AddedItems[0]!;
+                area.entriesToShow = 0;
+                loadingEntries = true;
+                addedSpawns = 0;
+                spawnAddLoops = 1;
+            }
+        }
+
+        private void Window_Rendering(object? sender, EventArgs e)
+        {
+            if (loadingEntries)
+            {
+                AreaData area = (AreaData) areaList.SelectedItem;
+                if (area != null && area.entriesToShow < area.spawnEntries.Count)
+                {
+                    while (addedSpawns < spawnLoadSpeed * spawnAddLoops && area.entriesToShow < area.spawnEntries.Count)
+                    {
+                        addedSpawns += area.spawnEntries[area.entriesToShow++].spawnList.Count;
+                    }
+                    ++spawnAddLoops;
+                }
+                else
+                {
+                    loadingEntries = false;
+                }
             }
         }
     }

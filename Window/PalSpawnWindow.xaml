@@ -51,9 +51,9 @@
                 </MenuItem>
             </MenuItem>
         </Menu>
-        <ListBox Name="areaList" Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Source={x:Static local:Randomize.generatedAreaList}}"/>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="1" Grid.Column="1">
-            <ItemsControl Name="spawnEntries" ItemsSource="{Binding ElementName=areaList, Path=SelectedItem.spawnEntries}">
+        <ListBox Name="areaList" Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Source={x:Static local:Randomize.generatedAreaList}}" SelectionChanged="areaList_SelectionChanged"/>
+        <ScrollViewer Name="spawnScrollViewer" VerticalScrollBarVisibility="Auto" Grid.Row="1" Grid.Column="1">
+            <ItemsControl Name="spawnEntries" ItemsSource="{Binding ElementName=areaList, Path=SelectedItem.spawnEntriesView, Mode=OneWay}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel/>

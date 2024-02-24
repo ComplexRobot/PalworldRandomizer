@@ -3,6 +3,12 @@ using System.IO;
 using UAssetAPI;
 using UAssetAPI.UnrealTypes;
 using UAssetAPI.ExportTypes;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Windows;
+using System.Collections.Specialized;
+using System.Collections.ObjectModel;
 
 namespace PalworldRandomizer
 {
@@ -354,6 +360,36 @@ namespace PalworldRandomizer
         public int minLevelNight = 0;
         public int maxLevelNight = 0;
         public bool modified = false;
+        private ObservableCollection<SpawnEntry> virtualEntries = [];
+        public int entriesToShow
+        {
+            get
+            {
+                return virtualEntries.Count;
+            }
+            set
+            {
+                if (value == 0)
+                {
+                    virtualEntries.Clear();
+                }
+                else if (value > virtualEntries.Count)
+                {
+                    spawnEntries[virtualEntries.Count..Math.Min(value, spawnEntries.Count)].ForEach(x => virtualEntries.Add(x));
+                }
+                else if (value < virtualEntries.Count)
+                {
+                    while (virtualEntries.Count > value)
+                    {
+                        virtualEntries.RemoveAt(virtualEntries.Count - 1);
+                    }
+                }
+            }
+        }
+        public ObservableCollection<SpawnEntry> spawnEntriesView
+        {
+            get { return virtualEntries; }
+        }
         public List<SpawnEntry> spawnEntries
         {
             get { return spawnExportData.spawnEntries; }

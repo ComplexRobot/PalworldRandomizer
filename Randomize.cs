@@ -977,7 +977,7 @@ namespace PalworldRandomizer
             }
             return true;
         }
-        public static bool LoadPak()
+        public static string? LoadPak()
         {
             OpenFileDialog openDialog = new()
             {
@@ -996,10 +996,10 @@ namespace PalworldRandomizer
                     $"\"{openDialog.FileName}\" -extract \"{outputPath}\"");
                 unrealPak.WaitForExit();
                 if (unrealPak.ExitCode != 0)
-                    return false;
+                    return "UnrealPak failed to extract the file.";
                 string[] files = Directory.GetFiles(outputPath, "BP_PalSpawner_Sheets_*.uasset").Select(Path.GetFileName).ToArray()!;
                 if (files.Length == 0)
-                    return false;
+                    return "No valid uasset files were found.";
                 List<AreaData> areaList = Data.AreaDataCopy();
                 foreach (AreaData area in areaList)
                 {
@@ -1012,7 +1012,11 @@ namespace PalworldRandomizer
                 }
                 PalSpawnWindow.Instance.areaList.ItemsSource = areaList;
             }
-            return true;
+            else
+            {
+                return "Cancel";
+            }
+            return null;
         }
         public static void SaveCSV(List<AreaData> areaList)
         {
@@ -1046,7 +1050,7 @@ namespace PalworldRandomizer
                 File.WriteAllText(saveDialog.FileName, outputText/*[..^1]*/, Encoding.UTF8);
             }
         }
-        public static Exception? LoadCSV()
+        public static string? LoadCSV()
         {
             OpenFileDialog openDialog = new()
             {
@@ -1099,9 +1103,11 @@ namespace PalworldRandomizer
                 }
                 catch (Exception e)
                 {
-                    return e;
+                    return e.ToString();
                 }
             }
+            else
+                return "Cancel";
             return null;
         }
         public static bool GeneratePalSpawns()
