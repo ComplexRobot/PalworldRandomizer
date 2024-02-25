@@ -26,6 +26,11 @@ namespace PalworldRandomizer
         public static void TextBox_PreviewTextInput(Regex regex, object sender, TextCompositionEventArgs e)
         {
             TextBox textBox = (TextBox) sender;
+            if (e.Text == "\r")
+            {
+                Keyboard.ClearFocus();
+                textBox.GetBindingExpression(TextBox.TextProperty)?.UpdateSource();
+            }
             e.Handled = !regex.IsMatch(textBox.Text[..textBox.SelectionStart] + e.Text + textBox.Text[(textBox.SelectionStart + textBox.SelectionLength)..]);
         }
 
@@ -78,6 +83,28 @@ namespace PalworldRandomizer
             TextBox_Pasting(nonNegIntSize3Regex(), sender, e);
         }
 
+        [GeneratedRegex("^(?:0|(?!0)[0-9]{0,9})$")]
+        private static partial Regex nonNegIntSize9Regex();
+        public static void NonNegIntSize9_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            TextBox_PreviewTextInput(nonNegIntSize9Regex(), sender, e);
+        }
 
+        public static void NonNegIntSize9_Pasting(object sender, DataObjectPastingEventArgs e)
+        {
+            TextBox_Pasting(nonNegIntSize9Regex(), sender, e);
+        }
+
+        [GeneratedRegex("^(?!0)[0-9]{0,9}$")]
+        private static partial Regex positiveIntSize9Regex();
+        public static void PositiveIntSize9_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            TextBox_PreviewTextInput(positiveIntSize9Regex(), sender, e);
+        }
+
+        public static void PositiveIntSize9_Pasting(object sender, DataObjectPastingEventArgs e)
+        {
+            TextBox_Pasting(positiveIntSize3Regex(), sender, e);
+        }
     }
 }

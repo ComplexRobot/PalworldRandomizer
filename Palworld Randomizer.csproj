@@ -23,6 +23,7 @@
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputType>WinExe</OutputType>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <ItemGroup>

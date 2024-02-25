@@ -225,7 +225,7 @@
                     <ControlTemplate TargetType="ListBox">
                         <Border Name="Border" BorderThickness="1" CornerRadius="5" Background="Black" BorderBrush="Transparent">
                             <ScrollViewer Margin="0" Focusable="false">
-                                <StackPanel Margin="2" IsItemsHost="True" />
+                                <VirtualizingStackPanel Margin="2" IsItemsHost="True" />
                             </ScrollViewer>
                         </Border>
                         <ControlTemplate.Triggers>
@@ -439,15 +439,20 @@
             <Setter Property="Background" Value="#FF202020"/>
         </Style>
 
+        <Style TargetType="MenuItem">
+            <Setter Property="Background" Value="#FF202020"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
         <SolidColorBrush x:Key="Menu.Static.Background" Color="#FF202020"/>
         <SolidColorBrush x:Key="Menu.Static.Border" Color="Transparent"/>
         <SolidColorBrush x:Key="Menu.Static.Foreground" Color="White"/>
         <SolidColorBrush x:Key="Menu.Static.Separator" Color="Transparent"/>
         <SolidColorBrush x:Key="Menu.Disabled.Foreground" Color="#FF707070"/>
-        <SolidColorBrush x:Key="MenuItem.Selected.Background" Color="#3D26A0DA"/>
-        <SolidColorBrush x:Key="MenuItem.Selected.Border" Color="#FF26A0DA"/>
+        <SolidColorBrush x:Key="MenuItem.Selected.Background" Color="Transparent"/>
+        <SolidColorBrush x:Key="MenuItem.Selected.Border" Color="Transparent"/>
         <SolidColorBrush x:Key="MenuItem.Highlight.Background" Color="#3D26A0DA"/>
-        <SolidColorBrush x:Key="MenuItem.Highlight.Border" Color="#FF26A0DA"/>
+        <SolidColorBrush x:Key="MenuItem.Highlight.Border" Color="Transparent"/>
         <SolidColorBrush x:Key="MenuItem.Highlight.Disabled.Background" Color="#0A000000"/>
         <SolidColorBrush x:Key="MenuItem.Highlight.Disabled.Border" Color="#21000000"/>
         <MenuScrollingVisibilityConverter x:Key="MenuScrollingVisibilityConverter"/>
@@ -736,6 +741,95 @@
 
         <Style TargetType="StatusBar">
             <Setter Property="Background" Value="#FF202020"/>
+        </Style>
+
+        <Style TargetType="{x:Type ContextMenu}">
+            <Setter Property="Background" Value="#FF202020"/>
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+            <Setter Property="OverridesDefaultStyle" Value="True" />
+            <Setter Property="Grid.IsSharedSizeScope" Value="true" />
+            <Setter Property="HasDropShadow" Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ContextMenu}">
+                        <Border x:Name="Border" Background="#FF202020" BorderThickness="1">
+                            <Border.BorderBrush>
+                                <SolidColorBrush Color="#FF404040" />
+                            </Border.BorderBrush>
+                            <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="HasDropShadow" Value="true">
+                                <Setter TargetName="Border" Property="Padding" Value="0,3,0,3" />
+                                <Setter TargetName="Border" Property="CornerRadius" Value="4" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <ControlTemplate x:Key="ComboBoxToggleButton" TargetType="{x:Type ToggleButton}">
+            <Grid>
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal" />
+                        <VisualState x:Name="MouseOver">
+                            <Storyboard>
+                                <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)" Storyboard.TargetName="Border">
+                                    <EasingColorKeyFrame KeyTime="0" Value="#FF101010" />
+                                </ColorAnimationUsingKeyFrames>
+                            </Storyboard>
+                        </VisualState>
+                        <VisualState x:Name="Pressed" />
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+                <Border x:Name="Border" BorderThickness="0" BorderBrush="Transparent" Background="Black"/>
+                <Path x:Name="Arrow" Fill="Gray" HorizontalAlignment="Center" VerticalAlignment="Center" Data="M 0 0 L 4 4 L 8 0 Z"/>
+            </Grid>
+        </ControlTemplate>
+        <Style x:Key="{x:Type ComboBox}" TargetType="{x:Type ComboBox}">
+            <Setter Property="SnapsToDevicePixels" Value="true" />
+            <Setter Property="OverridesDefaultStyle" Value="true" />
+            <Setter Property="StaysOpenOnEdit" Value="True"/>
+            <Setter Property="IsEditable" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ComboBox}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="10"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <ToggleButton Grid.Column="1"
+                                          x:Name="ToggleButton" Template="{StaticResource ComboBoxToggleButton}" Focusable="false" ClickMode="Press"
+                                          IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"/>
+                            <TextBox x:Name="PART_EditableTextBox" BorderThickness="0" Text="{TemplateBinding SelectionBoxItem}"
+                                     Margin="0" Focusable="True" IsReadOnly="{TemplateBinding IsReadOnly}"/>
+                            <Popup x:Name="Popup" Placement="Bottom" IsOpen="{TemplateBinding IsDropDownOpen}" AllowsTransparency="True" Focusable="False">
+                                <Grid x:Name="DropDown" SnapsToDevicePixels="True" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                    <Border x:Name="DropDownBorder" BorderThickness="1" CornerRadius="5" Background="Black" BorderBrush="Transparent">
+                                        <ScrollViewer x:Name="DropDownScroll" Margin="0" Focusable="false" VerticalScrollBarVisibility="Disabled">
+                                            <VirtualizingStackPanel Margin="2" IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                        </ScrollViewer>
+                                    </Border>
+                                </Grid>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger SourceName="PART_EditableTextBox" Property="IsFocused" Value="True">
+                                <Setter Property="IsDropDownOpen" Value="True"/>
+                            </Trigger>
+                            <Trigger Property="IsDropDownOpen" Value="True">
+                                <Setter TargetName="DropDownScroll" Property="VerticalScrollBarVisibility" Value="Visible"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
     </Application.Resources>

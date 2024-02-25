@@ -76,15 +76,37 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border BorderBrush="#FF606060" BorderThickness="1" Margin="5" CornerRadius="5">
+                        <Border BorderBrush="#FF606060" BorderThickness="1" Margin="5" CornerRadius="5" Background="#FF181818">
+                            <Border.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem IsCheckable="True" IsChecked="{Binding nightOnly}">
+                                        <MenuItem.Header>
+                                            <emoji:TextBlock Text="🌙 Night-Only" Margin="0"/>
+                                        </MenuItem.Header>
+                                    </MenuItem>
+                                </ContextMenu>
+                            </Border.ContextMenu>
                             <StackPanel>
                                 <StackPanel Orientation="Horizontal">
                                     <emoji:TextBlock Text="🎲: " Margin="0" ToolTip="Weight"/>
-                                    <TextBlock Text="{Binding weight}" Margin="0"/>
-                                    <TextBlock Text="  " Margin="0"/>
-                                    <emoji:TextBlock Text="{Binding timeOfDay}" Margin="0" ToolTip="Night-Only"/>
+                                    <TextBox Text="{Binding weight}" Margin="0" BorderThickness="0" MinWidth="10"
+                                             PreviewTextInput="NonNegIntSize9_PreviewTextInput"
+                                             DataObject.Pasting="NonNegIntSize9_Pasting"/>
+                                    <TextBlock Text=" " Margin="0"/>
+                                    <emoji:TextBlock Text="🌙" Margin="0" ToolTip="Night-Only">
+                                        <emoji:TextBlock.Style>
+                                            <Style TargetType="emoji:TextBlock">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding nightOnly}" Value="False">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </emoji:TextBlock.Style>
+                                    </emoji:TextBlock>
                                 </StackPanel>
-                                <ItemsControl ItemsSource="{Binding spawnList}">
+                                <ItemsControl ItemsSource="{Binding spawnList}" Focusable="False">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <WrapPanel Orientation="Vertical"/>
@@ -99,33 +121,46 @@
                                                         <ColumnDefinition Width="Auto"/>
                                                         <ColumnDefinition Width="Auto"/>
                                                     </Grid.ColumnDefinitions>
+                                                    <!--<Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto"/>
+                                                    </Grid.RowDefinitions>-->
                                                     <Grid Grid.Column="0">
                                                         <Grid.ColumnDefinitions>
                                                             <ColumnDefinition Width="32"/>
                                                             <ColumnDefinition Width="Auto"/>
                                                         </Grid.ColumnDefinitions>
                                                         <Image Grid.Column="0" Stretch="Uniform" Source="{Binding iconPath}"/>
-                                                        <emoji:TextBlock Grid.Column="1" Text="{Binding resolvedName}" Margin="5,0,5,0"
-                                                                            MaxWidth="100" TextWrapping="Wrap"/>
+                                                        <TextBox Grid.Column="1" Text="{Binding resolvedName, Mode=OneWay}" Margin="0" VerticalAlignment="Top"
+                                                                 BorderThickness="0" GotFocus="NameTextBox_GotFocus" TextWrapping="Wrap" MaxWidth="100"/>
+                                                        <ComboBox Grid.Column="1" ItemsSource="{Binding Source={x:Static local:Data.simpleNameValues}, Mode=OneWay}"
+                                                                  SelectedItem="{Binding simpleName}" Visibility="Collapsed" SelectionChanged="ComboBox_SelectionChanged"/>
                                                     </Grid>
-                                                    <GroupBox Grid.Column="1">
+                                                    <GroupBox Grid.Column="1" VerticalAlignment="Top">
                                                         <GroupBox.Header>
                                                             <TextBlock Margin="0">Level</TextBlock>
                                                         </GroupBox.Header>
                                                         <StackPanel Orientation="Horizontal">
-                                                            <TextBlock Text="{Binding minLevel}" Margin="0"/>
+                                                            <TextBox Text="{Binding minLevel}" Margin="0" BorderThickness="0" MinWidth="10"
+                                                                     PreviewTextInput="PositiveIntSize9_PreviewTextInput"
+                                                                     DataObject.Pasting="PositiveIntSize9_Pasting"/>
                                                             <TextBlock Margin="0">-</TextBlock>
-                                                            <TextBlock Text="{Binding maxLevel}" Margin="0"/>
+                                                            <TextBox Text="{Binding maxLevel}" Margin="0" BorderThickness="0" MinWidth="10"
+                                                                     PreviewTextInput="PositiveIntSize9_PreviewTextInput"
+                                                                     DataObject.Pasting="PositiveIntSize9_Pasting"/>
                                                         </StackPanel>
                                                     </GroupBox>
-                                                    <GroupBox Grid.Column="2">
+                                                    <GroupBox Grid.Column="2" VerticalAlignment="Top">
                                                         <GroupBox.Header>
                                                             <TextBlock Margin="0">Count</TextBlock>
                                                         </GroupBox.Header>
                                                         <StackPanel Orientation="Horizontal">
-                                                            <TextBlock Text="{Binding minGroupSize}" Margin="0"/>
+                                                            <TextBox Text="{Binding minGroupSize}" Margin="0" BorderThickness="0" MinWidth="10"
+                                                                     PreviewTextInput="PositiveIntSize9_PreviewTextInput"
+                                                                     DataObject.Pasting="PositiveIntSize9_Pasting"/>
                                                             <TextBlock Margin="0">-</TextBlock>
-                                                            <TextBlock Text="{Binding maxGroupSize}" Margin="0"/>
+                                                            <TextBox Text="{Binding maxGroupSize}" Margin="0" BorderThickness="0" MinWidth="10"
+                                                                     PreviewTextInput="PositiveIntSize9_PreviewTextInput"
+                                                                     DataObject.Pasting="PositiveIntSize9_Pasting"/>
                                                         </StackPanel>
                                                     </GroupBox>
                                                 </Grid>

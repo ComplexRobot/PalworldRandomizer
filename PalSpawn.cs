@@ -258,10 +258,6 @@ namespace PalworldRandomizer
             }
             return text;
         }
-        public string timeOfDay
-        {
-            get { return nightOnly ? "🌙" : ""; }
-        }
     }
 
     public class SpawnData
@@ -310,6 +306,16 @@ namespace PalworldRandomizer
                 if (!isPal)
                     return name;
                 return $"{Data.palName[name]}{(name.EndsWith("_Flower") ? "🌺" : "")}";
+            }
+
+            set
+            {
+                if (value == null)
+                    return;
+                bool wasBoss = isBoss;
+                name = Data.simpleName[value];
+                isPal = Data.palData[name].IsPal;
+                isBoss = (isBoss || wasBoss) && isPal;
             }
         }
         public bool isBoss

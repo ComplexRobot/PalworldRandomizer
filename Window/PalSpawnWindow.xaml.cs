@@ -1,12 +1,10 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace PalworldRandomizer
 {
-    /// <summary>
-    /// Interaction logic for PalSpawnWindow.xaml
-    /// </summary>
     public partial class PalSpawnWindow : Window
     {
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -30,8 +28,18 @@ namespace PalworldRandomizer
             e.Cancel = true;
         }
 
+        private void UpdateSourceFocusedElement()
+        {
+            IInputElement focusedElement = FocusManager.GetFocusedElement(this);
+            if (focusedElement is TextBox textBox)
+            {
+                textBox.GetBindingExpression(TextBox.TextProperty)?.UpdateSource();
+            }
+        }
+
         private void savePak_Click(object sender, RoutedEventArgs e)
         {
+            UpdateSourceFocusedElement();
             if (!FileModify.SaveAreaList((List<AreaData>) areaList.ItemsSource) || !FileModify.GenerateAndSavePak())
             {
                 MessageBox.Show(this, "Error: No spawn group changes detected.", "Failed To Save Pak", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -65,6 +73,7 @@ namespace PalworldRandomizer
 
         private void saveCsv_Click(object sender, RoutedEventArgs e)
         {
+            UpdateSourceFocusedElement();
             FileModify.SaveCSV((List<AreaData>) areaList.ItemsSource);
         }
 
@@ -118,6 +127,50 @@ namespace PalworldRandomizer
                     loadingEntries = false;
                 }
             }
+        }
+
+        private void PositiveIntSize9_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            SharedWindow.PositiveIntSize9_PreviewTextInput(sender, e);
+        }
+
+        private void PositiveIntSize9_Pasting(object sender, DataObjectPastingEventArgs e)
+        {
+            SharedWindow.PositiveIntSize9_Pasting(sender, e);
+        }
+
+        private void NonNegIntSize9_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            SharedWindow.NonNegIntSize9_PreviewTextInput(sender, e);
+        }
+
+        private void NonNegIntSize9_Pasting(object sender, DataObjectPastingEventArgs e)
+        {
+            SharedWindow.NonNegIntSize9_Pasting(sender, e);
+        }
+
+        private void NameTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            TextBox textBox = (TextBox) sender;
+            textBox.Visibility = Visibility.Collapsed;
+            ComboBox comboBox = (ComboBox) ((Grid) textBox.Parent).Children[2];
+            comboBox.Visibility = Visibility.Visible;
+            comboBox.ApplyTemplate();
+            TextBox newTextBox = (TextBox) comboBox.Template.FindName("PART_EditableTextBox", comboBox);
+            newTextBox.Focus();
+            newTextBox.LostFocus += (object sender, RoutedEventArgs e) =>
+            {
+                comboBox.Visibility = Visibility.Collapsed;
+                textBox.Visibility = Visibility.Visible;
+                textBox.GetBindingExpression(TextBox.TextProperty)?.UpdateTarget();
+            };
+        }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ComboBox comboBox = (ComboBox) sender;
+            Image image = (Image) ((Grid) comboBox.Parent).Children[0];
+            image.GetBindingExpression(Image.SourceProperty)?.UpdateTarget();
         }
     }
 }

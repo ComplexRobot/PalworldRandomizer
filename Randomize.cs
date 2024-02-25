@@ -20,6 +20,7 @@ namespace PalworldRandomizer
         public static Dictionary<string, CharacterData> palData { get; private set; } = [];
         public static Dictionary<string, string> palName { get; private set; } = [];
         public static Dictionary<string, string> simpleName { get; private set; } = [];
+        public static List<string> simpleNameValues { get; private set; } = [];
         public static Dictionary<string, string> palIcon { get; private set; } = [];
         public static List<string> palList { get; private set; } = [];
         public static Dictionary<string, string> bossName { get; private set; } = [];
@@ -134,22 +135,27 @@ namespace PalworldRandomizer
                 {
                     StructPropertyData? property = ((DataTableExport) humanNames.Exports[0]).Table.Data.Find(property =>
                         ((TextPropertyData) property.Value[0]).Value.Value == $"{palData[keyPair.Key].OverrideNameTextID}_TextData");
+                    simpleName.Add(keyPair.Key, keyPair.Key);
                     if (property != null)
                     {
-                        palName.Add(keyPair.Key,
-                        ((TextPropertyData) property.Value[0]).CultureInvariantString.Value.Trim());
-                        simpleName.Add(new SpawnData(keyPair.Key) { isPal = false }.simpleName, keyPair.Key);
-                        if (weapons.TryGetValue(palData[keyPair.Key].weapon, out string? value))
-                        {
-                            palIcon.Add(keyPair.Key, value);
-                        }
-                        else
-                        {
-                            palIcon.Add(keyPair.Key, $"/Resources/Images/PalIcon/T_CommonHuman_icon_normal.png");
-                        }
+                        palName.Add(keyPair.Key, ((TextPropertyData) property.Value[0]).CultureInvariantString.Value.Trim());
+                    }
+                    else
+                    {
+                        palName.Add(keyPair.Key, "-");
+                    }
+                    if (weapons.TryGetValue(palData[keyPair.Key].weapon, out string? value))
+                    {
+                        palIcon.Add(keyPair.Key, value);
+                    }
+                    else
+                    {
+                        palIcon.Add(keyPair.Key, $"/Resources/Images/PalIcon/T_CommonHuman_icon_normal.png");
                     }
                 }
             }
+            simpleNameValues = [.. simpleName.Keys];
+            simpleNameValues.Sort();
             string[] files = Directory.GetFiles(UAssetData.AppDataPath("Assets"), "*.uasset").Select(Path.GetFileName).ToArray()!;
             Array.Sort(files);
             foreach (string filename in files)
@@ -245,6 +251,50 @@ namespace PalworldRandomizer
                     })
                 }
             })];
+        }
+        public static void AreaForEachIfDiff(List<AreaData> areaList, Action<AreaData> func)
+        {
+            foreach (AreaData area in areaList)
+            {
+                List<SpawnEntry> baseEntries = areaData[area.filename].spawnEntries;
+                List<SpawnEntry> newEntries = area.spawnEntries;
+                if (baseEntries.Count != newEntries.Count
+                    || ((Func<bool>) (() =>
+                    {
+                        for (int i = 0; i < baseEntries.Count; ++i)
+                        {
+                            List<SpawnData> baseList = baseEntries[i].spawnList;
+                            List<SpawnData> newList = newEntries[i].spawnList;
+                            if (baseList.Count != newList.Count || baseEntries[i].weight != newEntries[i].weight || baseEntries[i].nightOnly != newEntries[i].nightOnly)
+                            {
+                                return true;
+                            }
+                            if (((Func<bool>) (() =>
+                            {
+                                for (int j = 0; j < baseList.Count; ++j)
+                                {
+                                    if (baseList[j].name != newList[j].name
+                                        || baseList[j].isPal != newList[j].isPal
+                                        || baseList[j].minLevel != newList[j].minLevel
+                                        || baseList[j].maxLevel != newList[j].maxLevel
+                                        || baseList[j].minGroupSize != newList[j].minGroupSize
+                                        || baseList[j].maxGroupSize != newList[j].maxGroupSize)
+                                    {
+                                        return true;
+                                    }
+                                }
+                                return false;
+                            }))())
+                            {
+                                return true;
+                            }
+                        }
+                        return false;
+                    }))())
+                {
+                    func(area);
+                }
+            }
         }
     }
 
@@ -883,50 +933,6 @@ namespace PalworldRandomizer
                 }
             }
         }
-        public static void AreaForEachIfDiff(List<AreaData> areaList, Action<AreaData> func)
-        {
-            foreach (AreaData area in areaList)
-            {
-                List<SpawnEntry> baseEntries = Data.areaData[area.filename].spawnExportData.spawnEntries;
-                List<SpawnEntry> newEntries = area.spawnExportData.spawnEntries;
-                if (baseEntries.Count != newEntries.Count
-                    || ((Func<bool>) (() =>
-                    {
-                        for (int i = 0; i < baseEntries.Count; ++i)
-                        {
-                            List<SpawnData> baseList = baseEntries[i].spawnList;
-                            List<SpawnData> newList = newEntries[i].spawnList;
-                            if (baseList.Count != newList.Count || baseEntries[i].weight != newEntries[i].weight || baseEntries[i].nightOnly != newEntries[i].nightOnly)
-                            {
-                                return true;
-                            }
-                            if (((Func<bool>) (() =>
-                            {
-                                for (int j = 0; j < baseList.Count; ++j)
-                                {
-                                    if (baseList[j].name != newList[j].name
-                                        || baseList[j].isPal != newList[j].isPal
-                                        || baseList[j].minLevel != newList[j].minLevel
-                                        || baseList[j].maxLevel != newList[j].maxLevel
-                                        || baseList[j].minGroupSize != newList[j].minGroupSize
-                                        || baseList[j].maxGroupSize != newList[j].maxGroupSize)
-                                    {
-                                        return true;
-                                    }
-                                }
-                                return false;
-                            }))())
-                            {
-                                return true;
-                            }
-                        }
-                        return false;
-                    }))())
-                {
-                    func(area);
-                }
-            }
-        }
         
         public static bool GeneratePalSpawns(FormData formData)
         {
@@ -952,7 +958,7 @@ namespace PalworldRandomizer
                 File.Delete(filename);
             }
             bool changesDetected = false;
-            Randomize.AreaForEachIfDiff(areaList, area =>
+            Data.AreaForEachIfDiff(areaList, area =>
             {
                 changesDetected = true;
                 PalSpawn.MutateAsset(area.uAsset, area.spawnExportData);
@@ -968,8 +974,8 @@ namespace PalworldRandomizer
                 return false;
             }
             File.WriteAllText(UAssetData.AppDataPath("filelist.txt"), $"\"{UAssetData.AppDataPath("SpawnRandomizer_P\\*.*")}\" \"..\\..\\..\\*.*\" \n");
-            Process unrealPak = Process.Start(UAssetData.AppDataPath("UnrealPak.exe"),
-                $"\"{UAssetData.AppDataPath("SpawnRandomizer_P.pak")}\" \"-create={UAssetData.AppDataPath("filelist.txt")}\" -compress");
+            Process unrealPak = Process.Start(new ProcessStartInfo(UAssetData.AppDataPath("UnrealPak.exe"),
+                [UAssetData.AppDataPath("SpawnRandomizer_P.pak"), $"-create={UAssetData.AppDataPath("filelist.txt")}", "-compress"]) { CreateNoWindow = true })!;
             unrealPak.WaitForExit();
             SaveFileDialog saveDialog = new()
             {
@@ -998,8 +1004,8 @@ namespace PalworldRandomizer
                 {
                     File.Delete(filename);
                 }
-                Process unrealPak = Process.Start(UAssetData.AppDataPath("UnrealPak.exe"),
-                    $"\"{openDialog.FileName}\" -extract \"{outputPath}\"");
+                Process unrealPak = Process.Start(new ProcessStartInfo(UAssetData.AppDataPath("UnrealPak.exe"),
+                    [openDialog.FileName, "-extract", outputPath]) { CreateNoWindow = true })!;
                 unrealPak.WaitForExit();
                 if (unrealPak.ExitCode != 0)
                     return "UnrealPak failed to extract the file.";
@@ -1110,13 +1116,13 @@ namespace PalworldRandomizer
                     }
                     List<AreaData> areaList = [.. areaDict.Values];
                     areaList.ForEach(area => area.spawnEntries.RemoveAll(entry => entry.spawnList.Count == 0));
+                    Data.AreaForEachIfDiff(areaList, area => area.modified = true);
                     areaList.Sort((x, y) =>
                     {
                         if (x.modified == y.modified)
                             return string.Compare(x.filename, y.filename);
                         return (y.modified ? 1 : 0) - (x.modified ? 1 : 0);
                     });
-                    Randomize.AreaForEachIfDiff(areaList, area => area.modified = true);
                     PalSpawnWindow.Instance.areaList.ItemsSource = areaList;
                 }
                 catch (Exception e)
