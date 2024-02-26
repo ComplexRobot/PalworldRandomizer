@@ -71,16 +71,16 @@ namespace PalworldRandomizer
             TextBox_Pasting(positiveIntSize3Regex(), sender, e);
         }
 
-        [GeneratedRegex("^(?:0|(?!0)[0-9]{0,3})$")]
-        private static partial Regex nonNegIntSize3Regex();
-        public static void NonNegIntSize3_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        [GeneratedRegex("^(?:0|(?!0)[0-9]{0,4})$")]
+        private static partial Regex nonNegIntSize4Regex();
+        public static void NonNegIntSize4_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            TextBox_PreviewTextInput(nonNegIntSize3Regex(), sender, e);
+            TextBox_PreviewTextInput(nonNegIntSize4Regex(), sender, e);
         }
 
-        public static void NonNegIntSize3_Pasting(object sender, DataObjectPastingEventArgs e)
+        public static void NonNegIntSize4_Pasting(object sender, DataObjectPastingEventArgs e)
         {
-            TextBox_Pasting(nonNegIntSize3Regex(), sender, e);
+            TextBox_Pasting(nonNegIntSize4Regex(), sender, e);
         }
 
         [GeneratedRegex("^(?:0|(?!0)[0-9]{0,9})$")]

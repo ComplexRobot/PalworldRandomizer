@@ -57,6 +57,7 @@ namespace PalworldRandomizer
             return new UAsset(filepath, EngineVersion.VER_UE5_1, usmap);
         }
 
+#if DEBUG
         public static void PrintClassDefinition(string name, string filepath)
         {
             Console.WriteLine($"public class {name}(UAsset asset, StructPropertyData dataTable)\n{{");
@@ -113,6 +114,7 @@ namespace PalworldRandomizer
             }
             Console.Write("}");
         }
+#endif
 
         public static Dictionary<string, CharacterData> CreatePalData()
         {

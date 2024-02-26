@@ -4,6 +4,7 @@ using UAssetAPI;
 using UAssetAPI.UnrealTypes;
 using UAssetAPI.ExportTypes;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 
 namespace PalworldRandomizer
 {
@@ -47,30 +48,31 @@ namespace PalworldRandomizer
                         spawnEntries.Add(spawnEntry);
                         if (rawExport.Data[position + 2] == 0x04)
                         {
-                            spawnEntry.weight = BitConverter.ToInt32(rawExport.Data, position + 3);
-                            spawnEntry.nightOnly = true;
+                            spawnEntry.Weight = BitConverter.ToInt32(rawExport.Data, position + 3);
+                            spawnEntry.NightOnly = true;
                             position += 14;
                         }
                         else if (rawExport.Data[position + 2] == 0x05)
                         {
-                            spawnEntry.weight = 0;
-                            spawnEntry.nightOnly = true;
+                            spawnEntry.Weight = 0;
+                            spawnEntry.NightOnly = true;
                             position += 10;
                         }
                         else if (rawExport.Data[position + 2] == 0x06)
                         {
-                            spawnEntry.weight = BitConverter.ToInt32(rawExport.Data, position + 3);
+                            spawnEntry.Weight = BitConverter.ToInt32(rawExport.Data, position + 3);
                             position += 13;
                         }
                         else if (rawExport.Data[position + 2] == 0x07)
                         {
-                            spawnEntry.weight = 0;
+                            spawnEntry.Weight = 0;
                             position += 9;
                         }
                         else
                         {
-                            Console.WriteLine("***ERROR: unknown value 1");
-                            break;
+                            throw new Exception($"{Path.GetFileNameWithoutExtension(uAsset.FilePath)}: "
+                                + $"Unknown value 0x{Convert.ToHexString(rawExport.Data[(position + 2)..(position + 3)])} "
+                                + $"at offset 0x{Convert.ToHexString(BitConverter.GetBytes(position + 2))}.");
                         }
                     }
                     else if (rawExport.Data[position + 1] == 0x0D)
@@ -85,15 +87,17 @@ namespace PalworldRandomizer
                         }
                         else
                         {
-                            Console.WriteLine("***ERROR: unknown value 2");
-                            break;
+                            throw new Exception($"{Path.GetFileNameWithoutExtension(uAsset.FilePath)}: "
+                                + $"Unknown value 0x{Convert.ToHexString(rawExport.Data[(position + 2)..(position + 3)])} "
+                                + $"at offset 0x{Convert.ToHexString(BitConverter.GetBytes(position + 2))}.");
                         }
                         position += 3;
                     }
                     else
                     {
-                        Console.WriteLine("***ERROR: unknown value 3");
-                        break;
+                        throw new Exception($"{Path.GetFileNameWithoutExtension(uAsset.FilePath)}: "
+                                + $"Unknown value 0x{Convert.ToHexString(rawExport.Data[(position + 1)..(position + 2)])} "
+                                + $"at offset 0x{Convert.ToHexString(BitConverter.GetBytes(position + 1))}.");
                     }
                 }
                 else
@@ -105,7 +109,7 @@ namespace PalworldRandomizer
                     break;
                 }
                 SpawnData spawnData = new();
-                spawnEntries.Last().spawnList.Add(spawnData);
+                spawnEntries[^1].SpawnList.Add(spawnData);
                 int nameIndex = 0;
                 if (rawExport.Data[position] == 0x00)
                 {
@@ -113,31 +117,31 @@ namespace PalworldRandomizer
                 }
                 else
                 {
-                    spawnData.isPal = false;
+                    spawnData.IsPal = false;
                     nameIndex = BitConverter.ToUInt16(rawExport.Data, position + 5);
                 }
-                spawnData.name = uAsset.GetNameReference(nameIndex).Value;
+                spawnData.Name = uAsset.GetNameReference(nameIndex).Value;
                 position += 13;
-                spawnData.minLevel = BitConverter.ToUInt32(rawExport.Data, position);
+                spawnData.MinLevel = BitConverter.ToUInt32(rawExport.Data, position);
                 position += 4;
-                spawnData.maxLevel = BitConverter.ToUInt32(rawExport.Data, position);
+                spawnData.MaxLevel = BitConverter.ToUInt32(rawExport.Data, position);
                 position += 4;
                 if (skipMinGroupSize)
                 {
-                    spawnData.minGroupSize = 0;
+                    spawnData.MinGroupSize = 0;
                 }
                 else
                 {
-                    spawnData.minGroupSize = BitConverter.ToUInt32(rawExport.Data, position);
+                    spawnData.MinGroupSize = BitConverter.ToUInt32(rawExport.Data, position);
                     position += 4;
                 }
                 if (skipMaxGroupSize)
                 {
-                    spawnData.maxGroupSize = 0;
+                    spawnData.MaxGroupSize = 0;
                 }
                 else
                 {
-                    spawnData.maxGroupSize = BitConverter.ToUInt32(rawExport.Data, position);
+                    spawnData.MaxGroupSize = BitConverter.ToUInt32(rawExport.Data, position);
                     position += 4;
                 }
                 if (position + 1 >= rawExport.Data.Length || (rawExport.Data[position] == 0x80 && rawExport.Data[position + 1] == 0x09))
@@ -159,30 +163,30 @@ namespace PalworldRandomizer
             foreach (SpawnEntry spawnEntry in spawnExportData.spawnEntries)
             {
                 bytes.AddRange([0x80, 0x09]);
-                if (spawnEntry.nightOnly && spawnEntry.weight != 0)
+                if (spawnEntry.NightOnly && spawnEntry.Weight != 0)
                 {
                     bytes.Add(0x04);
-                    bytes.AddRange(BitConverter.GetBytes(spawnEntry.weight));
+                    bytes.AddRange(BitConverter.GetBytes(spawnEntry.Weight));
                     bytes.Add(0x02);
                 }
-                else if (spawnEntry.nightOnly && spawnEntry.weight == 0)
+                else if (spawnEntry.NightOnly && spawnEntry.Weight == 0)
                 {
                     bytes.Add(0x05);
                     bytes.Add(0x02);
                 }
-                else if (spawnEntry.weight != 0)
+                else if (spawnEntry.Weight != 0)
                 {
                     bytes.Add(0x06);
-                    bytes.AddRange(BitConverter.GetBytes(spawnEntry.weight));
+                    bytes.AddRange(BitConverter.GetBytes(spawnEntry.Weight));
                 }
-                else if (spawnEntry.weight == 0)
+                else if (spawnEntry.Weight == 0)
                 {
                     bytes.Add(0x07);
                 }
-                bytes.AddRange(BitConverter.GetBytes(spawnEntry.spawnList.Count));
-                foreach (SpawnData spawnData in spawnEntry.spawnList)
+                bytes.AddRange(BitConverter.GetBytes(spawnEntry.SpawnList.Count));
+                foreach (SpawnData spawnData in spawnEntry.SpawnList)
                 {
-                    FString name = new(spawnData.name, Encoding.ASCII);
+                    FString name = new(spawnData.Name, Encoding.ASCII);
                     int nameIndex = 0;
                     if (uAsset.ContainsNameReference(name))
                     {
@@ -193,11 +197,11 @@ namespace PalworldRandomizer
                         nameIndex = uAsset.GetNameMapIndexList().Count;
                         uAsset.AddNameReference(name);
                     }
-                    if (spawnData.minGroupSize == 0)
+                    if (spawnData.MinGroupSize == 0)
                     {
                         bytes.AddRange([0x80, 0x0D, 0x10]);
                     }
-                    else if (spawnData.maxGroupSize == 0)
+                    else if (spawnData.MaxGroupSize == 0)
                     {
                         bytes.AddRange([0x80, 0x0D, 0x20]);
                     }
@@ -205,7 +209,7 @@ namespace PalworldRandomizer
                     {
                         bytes.AddRange([0x00, 0x0D]);
                     }
-                    if (spawnData.isPal)
+                    if (spawnData.IsPal)
                     {
                         bytes.AddRange([0x00, 0x03]);
                         bytes.AddRange(BitConverter.GetBytes((ushort) nameIndex));
@@ -217,15 +221,15 @@ namespace PalworldRandomizer
                         bytes.AddRange(BitConverter.GetBytes((ushort) nameIndex));
                         bytes.AddRange([0x00, 0x00, 0x00, 0x00, 0x00, 0x00]);
                     }
-                    bytes.AddRange(BitConverter.GetBytes(spawnData.minLevel));
-                    bytes.AddRange(BitConverter.GetBytes(spawnData.maxLevel));
-                    if (spawnData.minGroupSize != 0)
+                    bytes.AddRange(BitConverter.GetBytes(spawnData.MinLevel));
+                    bytes.AddRange(BitConverter.GetBytes(spawnData.MaxLevel));
+                    if (spawnData.MinGroupSize != 0)
                     {
-                        bytes.AddRange(BitConverter.GetBytes(spawnData.minGroupSize));
+                        bytes.AddRange(BitConverter.GetBytes(spawnData.MinGroupSize));
                     }
-                    if (spawnData.maxGroupSize != 0)
+                    if (spawnData.MaxGroupSize != 0)
                     {
-                        bytes.AddRange(BitConverter.GetBytes(spawnData.maxGroupSize));
+                        bytes.AddRange(BitConverter.GetBytes(spawnData.MaxGroupSize));
                     }
                 }
             }
@@ -236,110 +240,113 @@ namespace PalworldRandomizer
 
     public class SpawnEntry
     {
-        public int weight { get; set; } = 10;
-        public bool nightOnly { get; set; } = false;
-        public List<SpawnData> spawnList { get; set; } = [];
-        public string Print()
+        public int Weight { get; set; } = 10;
+        public bool NightOnly { get; set; }
+        public List<SpawnData> SpawnList { get; set; } = [];
+        public void Print(StringBuilder stringBuilder)
         {
-            return PrintInfo() + PrintEntries();
+            PrintInfo(stringBuilder);
+            PrintEntries(stringBuilder);
         }
-        public string PrintInfo()
+        public void PrintInfo(StringBuilder stringBuilder)
         {
-            string text = $"Weight: {weight}{(nightOnly ? " (Night)" : "")}";
-            Console.WriteLine(text);
-            return text + '\n';
+            stringBuilder.AppendJoin(null, ["Weight: ", Weight, (NightOnly ? " (Night)" : "")]);
+            stringBuilder.AppendLine();
         }
-        public string PrintEntries()
+        public void PrintEntries(StringBuilder stringBuilder)
         {
-            string text = "";
-            foreach (SpawnData spawnData in spawnList)
-            {
-                text += spawnData.Print();
-            }
-            return text;
+            SpawnList.ForEach(spawnData => spawnData.Print(stringBuilder));
         }
     }
 
-    public class SpawnData
+    public class SpawnData : INotifyPropertyChanged
     {
-        public bool isPal { get; set; } = true;
-        public string name { get; set; } = string.Empty;
-        public uint minLevel { get; set; } = 1;
-        public uint maxLevel { get; set; } = 1;
-        public uint minGroupSize { get; set; } = 1;
-        public uint maxGroupSize { get; set; } = 1;
-        public string Print()
+        public bool IsPal { get; set; } = true;
+        public string Name { get; set; } = string.Empty;
+        public uint MinLevel { get; set; } = 1;
+        public uint MaxLevel { get; set; } = 1;
+        public uint MinGroupSize { get; set; } = 1;
+        public uint MaxGroupSize { get; set; } = 1;
+        public event PropertyChangedEventHandler? PropertyChanged;
+        public void OnPropertyChanged(string name)
         {
-            string text = $"  {Data.palName[name]}{(name.EndsWith("_Flower") ? "-Flower" : "")}"
-                + $"{(isPal ? (isBoss ? " {BOSS}" : "") : $" ({name})")} <> Lv. "
-                + (minLevel == maxLevel ? minLevel : $"{minLevel}-{maxLevel}")
-                + ", Count: "
-                + (minGroupSize == maxGroupSize ? minGroupSize : $"{minGroupSize}-{maxGroupSize}");
-            Console.WriteLine(text);
-            return text + '\n';
+            PropertyChanged?.Invoke(this, new(name));
+        }
+        public void Print(StringBuilder stringBuilder)
+        {
+            object[] nameAppend = IsPal ? [(IsBoss ? " {BOSS}" : "")] : [" (", Name, ")"];
+            object[] levelStrings = MinLevel == MaxLevel ? [MinLevel] : [MinLevel, "-", MaxLevel];
+            object[] groupStrings = MinGroupSize == MaxGroupSize ? [MinGroupSize] : [MinGroupSize, "-", MaxGroupSize];
+            stringBuilder.AppendJoin(null,
+                ["  ", Data.PalName[Name], (Name.EndsWith("_Flower") ? "🌺" : ""), .. nameAppend, " <> Lv. ", .. levelStrings, ", Count: ", .. groupStrings]);
+            stringBuilder.AppendLine();
         }
         public SpawnData() {}
         public SpawnData(string characterName, uint minSize, uint maxSize)
         {
-            name = characterName;
-            minGroupSize = minSize;
-            maxGroupSize = maxSize;
-            maxLevel = 4;
+            Name = characterName;
+            MinGroupSize = minSize;
+            MaxGroupSize = maxSize;
+            MaxLevel = 4;
         }
 
         public SpawnData(string characterName)
         {
-            name = characterName;
-            maxLevel = 4;
+            Name = characterName;
+            MaxLevel = 4;
         }
-        public string resolvedName
+        public string ResolvedName
         {
             get
             {
-                return $"{Data.palName[name]}{(name.EndsWith("_Flower") ? "🌺" : "")}{(isBoss ? "😈" : "")}";
+                return $"{Data.PalName[Name]}{(Name.EndsWith("_Flower") ? "🌺" : "")}";
             }
         }
-        public string simpleName
+        public string SimpleName
         {
             get
             {
-                if (!isPal)
-                    return name;
-                return $"{Data.palName[name]}{(name.EndsWith("_Flower") ? "🌺" : "")}";
+                if (!IsPal)
+                    return Name;
+                return ResolvedName;
             }
 
             set
             {
                 if (value == null)
                     return;
-                bool wasBoss = isBoss;
-                name = Data.simpleName[value];
-                isPal = Data.palData[name].IsPal;
-                isBoss = (isBoss || wasBoss) && isPal;
+                bool wasBoss = IsBoss;
+                Name = Data.SimpleName[value];
+                IsPal = Data.PalData[Name].IsPal;
+                IsBoss = (IsBoss || wasBoss) && IsPal;
+                if (IsBoss != wasBoss)
+                    OnPropertyChanged(nameof(IsBoss));
             }
         }
-        public bool isBoss
+        public bool IsBoss
         {
             get
             {
-                return Data.palData[name].IsBoss;
+                return Data.PalData[Name].IsBoss;
             }
             set
             {
-                if (value != isBoss)
+                if (!Data.PalData[Name].IsPal)
+                    return;
+                if (value != IsBoss)
                 {
                     if (value)
-                        name = Data.bossName[name];
+                        Name = Data.BossName[Name];
                     else
-                        name = name[(name.IndexOf('_') + 1)..];
+                        Name = Name[(Name.IndexOf('_') + 1)..];
                 }
             }
         }
-        public string iconPath
+        public string IconPath
         {
             get
             {
-                return Data.palIcon[name];
+                return Data.PalIcon[Name];
             }
         }
     }
@@ -361,8 +368,8 @@ namespace PalworldRandomizer
         public int minLevelNight = 0;
         public int maxLevelNight = 0;
         public bool modified = false;
-        private ObservableCollection<SpawnEntry> virtualEntries = [];
-        public int entriesToShow
+        private readonly ObservableCollection<SpawnEntry> virtualEntries = [];
+        public int EntriesToShow
         {
             get
             {
@@ -376,7 +383,7 @@ namespace PalworldRandomizer
                 }
                 else if (value > virtualEntries.Count)
                 {
-                    spawnEntries[virtualEntries.Count..Math.Min(value, spawnEntries.Count)].ForEach(x => virtualEntries.Add(x));
+                    SpawnEntries[virtualEntries.Count..Math.Min(value, SpawnEntries.Count)].ForEach(x => virtualEntries.Add(x));
                 }
                 else if (value < virtualEntries.Count)
                 {
@@ -387,23 +394,23 @@ namespace PalworldRandomizer
                 }
             }
         }
-        public ObservableCollection<SpawnEntry> spawnEntriesView
+        public ObservableCollection<SpawnEntry> SpawnEntriesView
         {
             get { return virtualEntries; }
         }
-        public List<SpawnEntry> spawnEntries
+        public List<SpawnEntry> SpawnEntries
         {
             get { return spawnExportData.spawnEntries; }
             set { spawnExportData.spawnEntries = value; }
         }
-        public string name
+        public string Name
         {
             get { return Path.GetFileNameWithoutExtension(filename)["BP_PalSpawner_Sheets_".Length..] + (modified ? "*" : ""); }
         }
-        public string simpleName
+        public string SimpleName
         {
             get { return Path.GetFileNameWithoutExtension(filename)["BP_PalSpawner_Sheets_".Length..]; }
         }
-        public override string ToString() { return name; }
+        public override string ToString() { return Name; }
     }
 }

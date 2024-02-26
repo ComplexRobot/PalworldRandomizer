@@ -7,9 +7,7 @@ namespace PalworldRandomizer
 {
     public partial class PalSpawnWindow : Window
     {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        public static PalSpawnWindow Instance { get; private set; }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+        public static PalSpawnWindow Instance { get; private set; } = null!;
         public PalSpawnWindow()
         {
             Instance = this;
@@ -37,7 +35,7 @@ namespace PalworldRandomizer
             }
         }
 
-        private void savePak_Click(object sender, RoutedEventArgs e)
+        private void SavePak_Click(object sender, RoutedEventArgs e)
         {
             UpdateSourceFocusedElement();
             if (!FileModify.SaveAreaList((List<AreaData>) areaList.ItemsSource) || !FileModify.GenerateAndSavePak())
@@ -46,7 +44,7 @@ namespace PalworldRandomizer
             }
         }
 
-        private void reset_Click(object sender, RoutedEventArgs e)
+        private void Reset_Click(object sender, RoutedEventArgs e)
         {
             if (MessageBox.Show(this, "Are you sure you want to revert back to vanilla spawns?", "Revert All Spawns", MessageBoxButton.OKCancel, MessageBoxImage.Warning)
                 == MessageBoxResult.OK)
@@ -55,7 +53,7 @@ namespace PalworldRandomizer
             }
         }
 
-        private void loadPak_Click(object sender, RoutedEventArgs e)
+        private void LoadPak_Click(object sender, RoutedEventArgs e)
         {
             string? status = FileModify.LoadPak();
             if (status != null)
@@ -71,13 +69,13 @@ namespace PalworldRandomizer
             }
         }
 
-        private void saveCsv_Click(object sender, RoutedEventArgs e)
+        private void SaveCsv_Click(object sender, RoutedEventArgs e)
         {
             UpdateSourceFocusedElement();
             FileModify.SaveCSV((List<AreaData>) areaList.ItemsSource);
         }
 
-        private void loadCsv_Click(object sender, RoutedEventArgs e)
+        private void LoadCsv_Click(object sender, RoutedEventArgs e)
         {
             string? status = FileModify.LoadCSV();
             if (status != null)
@@ -96,13 +94,13 @@ namespace PalworldRandomizer
         private bool loadingEntries = false;
         private int addedSpawns = 0;
         private int spawnAddLoops = 1;
-        public static float spawnLoadSpeed = 1.5f;
-        private void areaList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        public static float SpawnLoadSpeed { get; set; } = 1.5f;
+        private void AreaList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (e.AddedItems.Count > 0)
             {
                 AreaData area = (AreaData) e.AddedItems[0]!;
-                area.entriesToShow = 0;
+                area.EntriesToShow = 0;
                 loadingEntries = true;
                 addedSpawns = 0;
                 spawnAddLoops = 1;
@@ -114,11 +112,11 @@ namespace PalworldRandomizer
             if (loadingEntries)
             {
                 AreaData area = (AreaData) areaList.SelectedItem;
-                if (area != null && area.entriesToShow < area.spawnEntries.Count)
+                if (area != null && area.EntriesToShow < area.SpawnEntries.Count)
                 {
-                    while (addedSpawns < spawnLoadSpeed * spawnAddLoops && area.entriesToShow < area.spawnEntries.Count)
+                    while (addedSpawns < SpawnLoadSpeed * spawnAddLoops && area.EntriesToShow < area.SpawnEntries.Count)
                     {
-                        addedSpawns += area.spawnEntries[area.entriesToShow++].spawnList.Count;
+                        addedSpawns += area.SpawnEntries[area.EntriesToShow++].SpawnList.Count;
                     }
                     ++spawnAddLoops;
                 }
@@ -158,11 +156,11 @@ namespace PalworldRandomizer
             comboBox.ApplyTemplate();
             TextBox newTextBox = (TextBox) comboBox.Template.FindName("PART_EditableTextBox", comboBox);
             newTextBox.Focus();
+            comboBox.IsDropDownOpen = true;
             newTextBox.LostFocus += (object sender, RoutedEventArgs e) =>
             {
                 comboBox.Visibility = Visibility.Collapsed;
                 textBox.Visibility = Visibility.Visible;
-                textBox.GetBindingExpression(TextBox.TextProperty)?.UpdateTarget();
             };
         }
 
@@ -170,7 +168,25 @@ namespace PalworldRandomizer
         {
             ComboBox comboBox = (ComboBox) sender;
             Image image = (Image) ((Grid) comboBox.Parent).Children[0];
+            TextBox textBox = (TextBox) ((Grid) comboBox.Parent).Children[1];
+            textBox.GetBindingExpression(TextBox.TextProperty)?.UpdateTarget();
             image.GetBindingExpression(Image.SourceProperty)?.UpdateTarget();
+        }
+
+        private void ComboBox_DropDownClosed(object sender, EventArgs e)
+        {
+            ComboBox comboBox = (ComboBox) sender;
+            TextBox newTextBox = (TextBox) comboBox.Template.FindName("PART_EditableTextBox", comboBox);
+            if (newTextBox?.IsFocused == true)
+            {
+                FocusManager.SetFocusedElement(this, null);
+                Keyboard.ClearFocus();
+            }
+        }
+
+        private void Boss_CheckChanged(object sender, RoutedEventArgs e) // Why is this needed?
+        {
+            ((SpawnData?) ((MenuItem) sender).GetBindingExpression(MenuItem.IsCheckedProperty)?.DataItem)?.OnPropertyChanged(nameof(SpawnData.IsBoss));
         }
     }
 }

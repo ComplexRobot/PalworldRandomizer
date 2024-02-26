@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace PalworldRandomizer
@@ -44,15 +45,24 @@ namespace PalworldRandomizer
 
     public partial class MainWindow : Window
     {
-#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
-        public static MainWindow Instance { get; private set; }
-#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+        public static MainWindow Instance { get; private set; } = null!;
         public MainWindow()
         {
             Instance = this;
             InitializeComponent();
+            CompositionTarget.Rendering += Window_Rendering;
         }
 
+        private enum LoadStep
+        {
+            NoSize,
+            SizeSet,
+            Loaded,
+            AfterLoaded
+        }
+        private double initialX = 0;
+        private double initialY = 0;
+        private LoadStep loadStep = LoadStep.NoSize;
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             UAssetData.Initialize();
@@ -60,7 +70,35 @@ namespace PalworldRandomizer
             Randomize.Initialize();
             SharedWindow.EnableDarkMode(this);
             new PalSpawnWindow();
-            testImage.Source = new BitmapImage(new Uri(Data.palIcon[Randomize.GetRandomPal()], UriKind.Relative));
+            testImage.Source = new BitmapImage(new Uri(Data.PalIcon[Randomize.GetRandomPal()], UriKind.Relative));
+            loadStep = LoadStep.Loaded;
+        }
+
+        private void WindowComplete(object? sender, EventArgs e)
+        {
+            loadStep = LoadStep.Loaded;
+        }
+
+        private void Window_Rendering(object? sender, EventArgs e)
+        {
+            if (loadStep == LoadStep.NoSize)
+            {
+                initialX = Left;
+                initialY = Top;
+                Left = -10000;
+                Top = -10000;
+                loadStep = LoadStep.SizeSet;
+            }
+            else if (loadStep == LoadStep.Loaded) // It's not guaranteed to be done after Loaded, a better solution is needed
+            {
+                loadStep = LoadStep.AfterLoaded;
+            }
+            else if (loadStep == LoadStep.AfterLoaded)
+            {
+                Left = initialX;
+                Top = initialY;
+                CompositionTarget.Rendering -= Window_Rendering;
+            }
         }
 
         private bool generating = false;
@@ -133,14 +171,14 @@ namespace PalworldRandomizer
             SharedWindow.PositiveIntSize3_Pasting(sender, e);
         }
 
-        private void NonNegIntSize3_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        private void NonNegIntSize4_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            SharedWindow.NonNegIntSize3_PreviewTextInput(sender, e);
+            SharedWindow.NonNegIntSize4_PreviewTextInput(sender, e);
         }
 
-        private void NonNegIntSize3_Pasting(object sender, DataObjectPastingEventArgs e)
+        private void NonNegIntSize4_Pasting(object sender, DataObjectPastingEventArgs e)
         {
-            SharedWindow.NonNegIntSize3_Pasting(sender, e);
+            SharedWindow.NonNegIntSize4_Pasting(sender, e);
         }
 
         private void groupType_Click(object sender, RoutedEventArgs e)
