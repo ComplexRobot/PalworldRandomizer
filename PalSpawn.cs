@@ -5,6 +5,7 @@ using UAssetAPI.UnrealTypes;
 using UAssetAPI.ExportTypes;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using UAssetAPI.PropertyTypes.Structs;
 
 namespace PalworldRandomizer
 {
@@ -72,7 +73,7 @@ namespace PalworldRandomizer
                         {
                             throw new Exception($"{Path.GetFileNameWithoutExtension(uAsset.FilePath)}: "
                                 + $"Unknown value 0x{Convert.ToHexString(rawExport.Data[(position + 2)..(position + 3)])} "
-                                + $"at offset 0x{Convert.ToHexString(BitConverter.GetBytes(position + 2))}.");
+                                + $"at offset 0x{Convert.ToHexString([.. BitConverter.GetBytes(position + 2).Reverse()])}.");
                         }
                     }
                     else if (rawExport.Data[position + 1] == 0x0D)
@@ -89,7 +90,7 @@ namespace PalworldRandomizer
                         {
                             throw new Exception($"{Path.GetFileNameWithoutExtension(uAsset.FilePath)}: "
                                 + $"Unknown value 0x{Convert.ToHexString(rawExport.Data[(position + 2)..(position + 3)])} "
-                                + $"at offset 0x{Convert.ToHexString(BitConverter.GetBytes(position + 2))}.");
+                                + $"at offset 0x{Convert.ToHexString([.. BitConverter.GetBytes(position + 2).Reverse()])}.");
                         }
                         position += 3;
                     }
@@ -97,7 +98,7 @@ namespace PalworldRandomizer
                     {
                         throw new Exception($"{Path.GetFileNameWithoutExtension(uAsset.FilePath)}: "
                                 + $"Unknown value 0x{Convert.ToHexString(rawExport.Data[(position + 1)..(position + 2)])} "
-                                + $"at offset 0x{Convert.ToHexString(BitConverter.GetBytes(position + 1))}.");
+                                + $"at offset 0x{Convert.ToHexString([.. BitConverter.GetBytes(position + 1).Reverse()])}.");
                     }
                 }
                 else
@@ -241,8 +242,17 @@ namespace PalworldRandomizer
     public class SpawnEntry
     {
         public int Weight { get; set; } = 10;
-        public bool NightOnly { get; set; }
+        public bool NightOnly { get; set; } = false;
         public List<SpawnData> SpawnList { get; set; } = [];
+        public SpawnEntry Clone()
+        {
+            return new()
+            {
+                Weight = Weight,
+                NightOnly = NightOnly,
+                SpawnList = SpawnList.ConvertAll(spawnData => spawnData.Clone())
+            };
+        }
         public void Print(StringBuilder stringBuilder)
         {
             PrintInfo(stringBuilder);
@@ -268,7 +278,7 @@ namespace PalworldRandomizer
         public uint MinGroupSize { get; set; } = 1;
         public uint MaxGroupSize { get; set; } = 1;
         public event PropertyChangedEventHandler? PropertyChanged;
-        public void OnPropertyChanged(string name)
+        public void NotifyPropertyChanged(string name)
         {
             PropertyChanged?.Invoke(this, new(name));
         }
@@ -282,6 +292,18 @@ namespace PalworldRandomizer
             stringBuilder.AppendLine();
         }
         public SpawnData() {}
+        public SpawnData Clone()
+        {
+            return new()
+            {
+                Name = Name,
+                IsPal = IsPal,
+                MinLevel = MinLevel,
+                MaxLevel = MaxLevel,
+                MinGroupSize = MinGroupSize,
+                MaxGroupSize = MaxGroupSize
+            };
+        }
         public SpawnData(string characterName, uint minSize, uint maxSize)
         {
             Name = characterName;
@@ -320,7 +342,8 @@ namespace PalworldRandomizer
                 IsPal = Data.PalData[Name].IsPal;
                 IsBoss = (IsBoss || wasBoss) && IsPal;
                 if (IsBoss != wasBoss)
-                    OnPropertyChanged(nameof(IsBoss));
+                    NotifyPropertyChanged(nameof(IsBoss));
+                NotifyPropertyChanged(nameof(BossChangeable));
             }
         }
         public bool IsBoss
@@ -347,6 +370,16 @@ namespace PalworldRandomizer
             get
             {
                 return Data.PalIcon[Name];
+            }
+        }
+
+        public bool BossChangeable
+        {
+            get
+            {
+                if (!Data.PalData[Name].IsPal)
+                    return false;
+                return !Name.StartsWith("GYM_", StringComparison.InvariantCultureIgnoreCase);
             }
         }
     }

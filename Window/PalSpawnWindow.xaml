@@ -68,7 +68,8 @@
         </Menu>
         <ListBox Name="areaList" Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Source={x:Static local:Randomize.GeneratedAreaList}}" SelectionChanged="AreaList_SelectionChanged"/>
         <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="1" Grid.Column="1">
-            <ItemsControl Name="spawnEntries" ItemsSource="{Binding ElementName=areaList, Path=SelectedItem.SpawnEntriesView, Mode=OneWay}" IsTabStop="False">
+            <ItemsControl Name="spawnEntries" ItemsSource="{Binding ElementName=areaList, Path=SelectedItem.SpawnEntriesView, Mode=OneWay}" IsTabStop="False"
+                          AlternationCount="{Binding RelativeSource={RelativeSource Self}, Path=Items.Count}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel/>
@@ -76,10 +77,11 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border BorderBrush="#FF606060" BorderThickness="1" Margin="5" CornerRadius="5" Background="#FF181818">
+                        <Border BorderBrush="#FF606060" BorderThickness="1" Margin="5" CornerRadius="5" Background="#FF181818"
+                                Tag="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(ItemsControl.AlternationIndex)}">
                             <Border.ContextMenu>
-                                <ContextMenu>
-                                    <MenuItem IsCheckable="True" IsChecked="{Binding NightOnly}">
+                                <ContextMenu Tag="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(ItemsControl.AlternationIndex)}">
+                                    <MenuItem IsCheckable="True" IsChecked="{Binding NightOnly, NotifyOnSourceUpdated=True}" Binding.SourceUpdated="AreaProperty_SourceUpdated">
                                         <MenuItem.Header>
                                             <emoji:TextBlock Text="🌙 Night-Only" Margin="0"/>
                                         </MenuItem.Header>
@@ -89,9 +91,10 @@
                             <StackPanel>
                                 <StackPanel Orientation="Horizontal">
                                     <emoji:TextBlock Text="🎲: " Margin="0" ToolTip="Weight"/>
-                                    <TextBox Text="{Binding Weight}" Margin="0" BorderThickness="0" MinWidth="10"
+                                    <TextBox Text="{Binding Weight, NotifyOnSourceUpdated=True}" Margin="0" BorderThickness="0" MinWidth="10"
                                              PreviewTextInput="NonNegIntSize9_PreviewTextInput"
-                                             DataObject.Pasting="NonNegIntSize9_Pasting"/>
+                                             DataObject.Pasting="NonNegIntSize9_Pasting"
+                                             Binding.SourceUpdated="AreaProperty_SourceUpdated"/>
                                     <TextBlock Text=" " Margin="0"/>
                                     <emoji:TextBlock Text="🌙" Margin="0" ToolTip="Night-Only" KeyboardNavigation.TabNavigation="Once">
                                         <emoji:TextBlock.Style>
@@ -106,7 +109,8 @@
                                         </emoji:TextBlock.Style>
                                     </emoji:TextBlock>
                                 </StackPanel>
-                                <ItemsControl ItemsSource="{Binding SpawnList}" IsTabStop="False">
+                                <ItemsControl ItemsSource="{Binding SpawnList}" IsTabStop="False"
+                                              AlternationCount="{Binding RelativeSource={RelativeSource Self}, Path=Items.Count}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <WrapPanel Orientation="Vertical"/>
@@ -114,13 +118,45 @@
                                     </ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <Border BorderBrush="#FF404040" Background="#FF202020" BorderThickness="1" Margin="2" CornerRadius="5">
+                                            <Border BorderBrush="#FF404040" Background="#FF202020" BorderThickness="1" Margin="2" CornerRadius="5"
+                                                    Tag="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl}}">
                                                 <Border.ContextMenu>
-                                                    <ContextMenu>
-                                                        <MenuItem IsCheckable="True" IsChecked="{Binding IsBoss}" Checked="Boss_CheckChanged" Unchecked="Boss_CheckChanged">
+                                                    <ContextMenu Tag="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(ItemsControl.AlternationIndex)}">
+                                                        <MenuItem IsCheckable="True" IsChecked="{Binding IsBoss, NotifyOnSourceUpdated=True}" Checked="Boss_CheckChanged"
+                                                                  Unchecked="Boss_CheckChanged" Binding.SourceUpdated="AreaProperty_SourceUpdated"
+                                                                  IsEnabled="{Binding BossChangeable}">
                                                             <MenuItem.Header>
-                                                                <emoji:TextBlock Text="😈 Boss" Margin="0"/>
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <Image Source="/Resources/Images/UI/T_icon_enemy_strong.png" Stretch="Uniform" Height="16"/>
+                                                                    <TextBlock Text=" Boss" Margin="0"/>
+                                                                </StackPanel>
                                                             </MenuItem.Header>
+                                                        </MenuItem>
+                                                        <MenuItem Click="PalDuplicate_Click">
+                                                            <MenuItem.Header>
+                                                                <emoji:TextBlock Text="Duplicate Pal" Margin="0"/>
+                                                            </MenuItem.Header>
+                                                        </MenuItem>
+                                                        <Separator Height="20" Background="Transparent"/>
+                                                        <MenuItem Click="PalDelete_Click">
+                                                            <MenuItem.Header>
+                                                                <emoji:TextBlock Text="Delete Pal" Margin="0"/>
+                                                            </MenuItem.Header>
+                                                            <MenuItem.Icon>
+                                                                <emoji:TextBlock Text="❌" Margin="0" HorizontalAlignment="Center"/>
+                                                            </MenuItem.Icon>
+                                                            <MenuItem.Style>
+                                                                <Style TargetType="MenuItem">
+                                                                    <Setter Property="IsEnabled" Value="True"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger
+                                                                            Binding="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu},
+                                                                                Path=PlacementTarget.Tag.Items.Count}" Value="1">
+                                                                            <Setter Property="IsEnabled" Value="False"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </MenuItem.Style>
                                                         </MenuItem>
                                                     </ContextMenu>
                                                 </Border.ContextMenu>
@@ -141,10 +177,11 @@
                                                                  BorderThickness="0" GotFocus="NameTextBox_GotFocus" TextWrapping="Wrap" MaxWidth="100"/>
                                                         <ComboBox Grid.Column="1" ItemsSource="{Binding Source={x:Static local:Data.SimpleNameValues}, Mode=OneWay}"
                                                                   SelectedItem="{Binding SimpleName}" Visibility="Collapsed" SelectionChanged="ComboBox_SelectionChanged"
-                                                                  DropDownClosed="ComboBox_DropDownClosed"/>
-                                                        <emoji:TextBlock Grid.Column="2" Text="😈" Margin="0" ToolTip="Boss" KeyboardNavigation.TabNavigation="Once">
-                                                            <emoji:TextBlock.Style>
-                                                                <Style TargetType="emoji:TextBlock">
+                                                                  DropDownClosed="ComboBox_DropDownClosed" Binding.SourceUpdated="AreaProperty_SourceUpdated"/>
+                                                        <Image Grid.Column="2" Source="/Resources/Images/UI/T_icon_enemy_strong.png" Stretch="Uniform" Height="16"
+                                                               VerticalAlignment="Top" ToolTip="Boss">
+                                                            <Image.Style>
+                                                                <Style TargetType="Image">
                                                                     <Setter Property="Visibility" Value="Visible"/>
                                                                     <Style.Triggers>
                                                                         <DataTrigger Binding="{Binding IsBoss}" Value="False">
@@ -152,21 +189,23 @@
                                                                         </DataTrigger>
                                                                     </Style.Triggers>
                                                                 </Style>
-                                                            </emoji:TextBlock.Style>
-                                                        </emoji:TextBlock>
+                                                            </Image.Style>
+                                                        </Image>
                                                     </Grid>
                                                     <GroupBox Grid.Column="1" VerticalAlignment="Top">
                                                         <GroupBox.Header>
                                                             <TextBlock Margin="0">Level</TextBlock>
                                                         </GroupBox.Header>
                                                         <StackPanel Orientation="Horizontal">
-                                                            <TextBox Text="{Binding MinLevel}" Margin="0" BorderThickness="0" MinWidth="10"
+                                                            <TextBox Text="{Binding MinLevel, NotifyOnSourceUpdated=True}" Margin="0" BorderThickness="0" MinWidth="10"
                                                                      PreviewTextInput="PositiveIntSize9_PreviewTextInput"
-                                                                     DataObject.Pasting="PositiveIntSize9_Pasting"/>
+                                                                     DataObject.Pasting="PositiveIntSize9_Pasting"
+                                                                     Binding.SourceUpdated="AreaProperty_SourceUpdated"/>
                                                             <TextBlock Margin="0">-</TextBlock>
-                                                            <TextBox Text="{Binding MaxLevel}" Margin="0" BorderThickness="0" MinWidth="10"
+                                                            <TextBox Text="{Binding MaxLevel, NotifyOnSourceUpdated=True}" Margin="0" BorderThickness="0" MinWidth="10"
                                                                      PreviewTextInput="PositiveIntSize9_PreviewTextInput"
-                                                                     DataObject.Pasting="PositiveIntSize9_Pasting"/>
+                                                                     DataObject.Pasting="PositiveIntSize9_Pasting"
+                                                                     Binding.SourceUpdated="AreaProperty_SourceUpdated"/>
                                                         </StackPanel>
                                                     </GroupBox>
                                                     <GroupBox Grid.Column="2" VerticalAlignment="Top">
@@ -174,13 +213,15 @@
                                                             <TextBlock Margin="0">Count</TextBlock>
                                                         </GroupBox.Header>
                                                         <StackPanel Orientation="Horizontal">
-                                                            <TextBox Text="{Binding MinGroupSize}" Margin="0" BorderThickness="0" MinWidth="10"
+                                                            <TextBox Text="{Binding MinGroupSize, NotifyOnSourceUpdated=True}" Margin="0" BorderThickness="0" MinWidth="10"
                                                                      PreviewTextInput="PositiveIntSize9_PreviewTextInput"
-                                                                     DataObject.Pasting="PositiveIntSize9_Pasting"/>
+                                                                     DataObject.Pasting="PositiveIntSize9_Pasting"
+                                                                     Binding.SourceUpdated="AreaProperty_SourceUpdated"/>
                                                             <TextBlock Margin="0">-</TextBlock>
-                                                            <TextBox Text="{Binding MaxGroupSize}" Margin="0" BorderThickness="0" MinWidth="10"
+                                                            <TextBox Text="{Binding MaxGroupSize, NotifyOnSourceUpdated=True}" Margin="0" BorderThickness="0" MinWidth="10"
                                                                      PreviewTextInput="PositiveIntSize9_PreviewTextInput"
-                                                                     DataObject.Pasting="PositiveIntSize9_Pasting"/>
+                                                                     DataObject.Pasting="PositiveIntSize9_Pasting"
+                                                                     Binding.SourceUpdated="AreaProperty_SourceUpdated"/>
                                                         </StackPanel>
                                                     </GroupBox>
                                                 </Grid>

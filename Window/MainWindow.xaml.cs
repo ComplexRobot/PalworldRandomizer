@@ -181,7 +181,7 @@ namespace PalworldRandomizer
             SharedWindow.NonNegIntSize4_Pasting(sender, e);
         }
 
-        private void groupType_Click(object sender, RoutedEventArgs e)
+        private void GroupType_Click(object sender, RoutedEventArgs e)
         {
             if (groupRandom.IsChecked == true)
             {
@@ -193,7 +193,7 @@ namespace PalworldRandomizer
             }
         }
 
-        private void spawnListSize_GotFocus(object sender, RoutedEventArgs e)
+        private void SpawnListSize_GotFocus(object sender, RoutedEventArgs e)
         {
             methodCustomSize.IsChecked = true;
         }
@@ -209,12 +209,12 @@ namespace PalworldRandomizer
             PalSpawnWindow.Instance.Focus();
         }
 
-        private void methodNone_Checked(object sender, RoutedEventArgs e)
+        private void MethodNone_Checked(object sender, RoutedEventArgs e)
         {
             spawnGroupSettings.Visibility = Visibility.Collapsed;
         }
 
-        private void methodNone_Unchecked(object sender, RoutedEventArgs e)
+        private void MethodNone_Unchecked(object sender, RoutedEventArgs e)
         {
             spawnGroupSettings.Visibility = Visibility.Visible;
         }

@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -105,6 +106,10 @@ namespace PalworldRandomizer
                 addedSpawns = 0;
                 spawnAddLoops = 1;
             }
+            if (e.RemovedItems.Count > 0 && ((AreaData) e.RemovedItems[0]!).modified == true)
+            {
+                Data.AreaForEachIfDiff([(AreaData) e.RemovedItems[0]!], null, area => { area.modified = false; areaList.Items.Refresh(); });
+            }
         }
 
         private void Window_Rendering(object? sender, EventArgs e)
@@ -171,6 +176,7 @@ namespace PalworldRandomizer
             TextBox textBox = (TextBox) ((Grid) comboBox.Parent).Children[1];
             textBox.GetBindingExpression(TextBox.TextProperty)?.UpdateTarget();
             image.GetBindingExpression(Image.SourceProperty)?.UpdateTarget();
+            AreaProperty_SourceUpdated(this, e);
         }
 
         private void ComboBox_DropDownClosed(object sender, EventArgs e)
@@ -184,9 +190,44 @@ namespace PalworldRandomizer
             }
         }
 
-        private void Boss_CheckChanged(object sender, RoutedEventArgs e) // Why is this needed?
+        private void Boss_CheckChanged(object sender, RoutedEventArgs e)
         {
-            ((SpawnData?) ((MenuItem) sender).GetBindingExpression(MenuItem.IsCheckedProperty)?.DataItem)?.OnPropertyChanged(nameof(SpawnData.IsBoss));
+            ((SpawnData?) ((MenuItem) sender).GetBindingExpression(MenuItem.IsCheckedProperty)?.DataItem)?.NotifyPropertyChanged(nameof(SpawnData.IsBoss));
+        }
+
+        private void AreaProperty_SourceUpdated(object sender, EventArgs e)
+        {
+            if (areaList.SelectedItem != null && ((AreaData) areaList.SelectedItem).modified == false)
+            {
+                ((AreaData) areaList.SelectedItem).modified = true;
+                areaList.Items.Refresh();
+            }
+        }
+
+        private void PalDuplicate_Click(object sender, RoutedEventArgs e)
+        {
+            ItemsControl itemsControl = (ItemsControl) ((Border) ((ContextMenu) ((MenuItem) sender).Parent).PlacementTarget).Tag;
+            int index = (int) ((ContextMenu) ((MenuItem) sender).Parent).Tag;
+            SpawnData spawnData = (SpawnData) itemsControl.Items[index];
+            ((List<SpawnData>) itemsControl.ItemsSource).Insert(index, spawnData.Clone());
+            itemsControl.Items.Refresh();
+            AreaProperty_SourceUpdated(this, e);
+        }
+
+        private void PalDelete_Click(object sender, RoutedEventArgs e)
+        {
+            ItemsControl itemsControl = (ItemsControl) ((Border) ((ContextMenu) ((MenuItem) sender).Parent).PlacementTarget).Tag;
+            if (((List<SpawnData>) itemsControl.ItemsSource).Count > 1)
+            {
+                int index = (int) ((ContextMenu) ((MenuItem) sender).Parent).Tag;
+                ((List<SpawnData>) itemsControl.ItemsSource).RemoveAt(index);
+                itemsControl.Items.Refresh();
+                AreaProperty_SourceUpdated(this, e);
+            }
+            else
+            {
+                MessageBox.Show("Can't delete the last Pal!", "Delete Pal", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

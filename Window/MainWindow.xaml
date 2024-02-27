@@ -38,11 +38,11 @@
                 <WrapPanel Margin="0,5,0,10">
                     <RadioButton Name="methodFull" GroupName="randomizationMethod" IsChecked="True">All Species Everywhere</RadioButton>
                     <RadioButton Name="methodCustomSize" GroupName="randomizationMethod">Custom Groups Count (Per Area):</RadioButton>
-                    <TextBox Name="spawnListSize" Width="30" VerticalAlignment="Bottom" Margin="0,0,5,0" GotFocus="spawnListSize_GotFocus"
+                    <TextBox Name="spawnListSize" Width="30" VerticalAlignment="Bottom" Margin="0,0,5,0" GotFocus="SpawnListSize_GotFocus"
                          PreviewTextInput="PositiveIntSize3_PreviewTextInput" DataObject.Pasting="PositiveIntSize3_Pasting">100</TextBox>
                     <RadioButton Name="methodLocalSwap" GroupName="randomizationMethod">Match Vanilla Groups Count (Per Area)</RadioButton>
                     <RadioButton Name="methodGlobalSwap" GroupName="randomizationMethod">Global Species Swap</RadioButton>
-                    <RadioButton Name="methodNone" GroupName="randomizationMethod" Checked="methodNone_Checked" Unchecked="methodNone_Unchecked">No Randomization</RadioButton>
+                    <RadioButton Name="methodNone" GroupName="randomizationMethod" Checked="MethodNone_Checked" Unchecked="MethodNone_Unchecked">No Randomization</RadioButton>
                 </WrapPanel>
             </GroupBox>
             <GroupBox Name="spawnGroupSettings" Margin="5">
@@ -52,8 +52,8 @@
                 <WrapPanel>
                     <StackPanel Margin="0">
                         <WrapPanel Margin="0,5,10,5">
-                            <RadioButton Name="groupVanilla" GroupName="groupType" IsChecked="False" Click="groupType_Click">Vanilla-Based</RadioButton>
-                            <RadioButton Name="groupRandom" GroupName="groupType" IsChecked="True" Click="groupType_Click">Randomized</RadioButton>
+                            <RadioButton Name="groupVanilla" GroupName="groupType" IsChecked="False" Click="GroupType_Click">Vanilla-Based</RadioButton>
+                            <RadioButton Name="groupRandom" GroupName="groupType" IsChecked="True" Click="GroupType_Click">Randomized</RadioButton>
                         </WrapPanel>
                         <CheckBox Name="fieldBossExtended" IsChecked="False" Margin="5,0,5,10">Multiple Spawn Groups For Overworld Bosses</CheckBox>
                     </StackPanel>
@@ -137,10 +137,10 @@
             <TextBlock Margin="0"></TextBlock>
             <WrapPanel Margin="5,10,0,0">
                 <Button Name="savePak" Click="SavePak_Click">
-                    <TextBlock Margin="0" Text="Randomize And Save PAK..."/>
+                    <TextBlock Margin="5,0,5,0" Text="Randomize And Save PAK..."/>
                 </Button>
                 <Button Click="ViewSpawns_Click" Margin="10,0,10,0">
-                    <TextBlock Margin="0">Open Spawn Viewer</TextBlock>
+                    <TextBlock Margin="5,0,5,0">Open Spawn Viewer/Editor</TextBlock>
                 </Button>
             </WrapPanel>
         </StackPanel>

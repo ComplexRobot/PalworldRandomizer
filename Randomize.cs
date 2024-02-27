@@ -221,7 +221,7 @@ namespace PalworldRandomizer
         }
         public static List<AreaData> AreaDataCopy()
         {
-            return [..AreaData.Values.Select(area =>
+            return [.. AreaData.Values.Select(area =>
             new AreaData(new(), new(), area.filename)
             {
                 minLevel = area.minLevel,
@@ -234,26 +234,11 @@ namespace PalworldRandomizer
                 {
                     header = area.spawnExportData.header,
                     footer = area.spawnExportData.footer,
-                    spawnEntries = area.SpawnEntries.ConvertAll(entry =>
-                    new SpawnEntry
-                    {
-                        Weight = entry.Weight,
-                        NightOnly = entry.NightOnly,
-                        SpawnList = entry.SpawnList.ConvertAll(spawnData =>
-                        new SpawnData
-                        {
-                            Name = spawnData.Name,
-                            IsPal = spawnData.IsPal,
-                            MinLevel = spawnData.MinLevel,
-                            MaxLevel = spawnData.MaxLevel,
-                            MinGroupSize = spawnData.MinGroupSize,
-                            MaxGroupSize = spawnData.MaxGroupSize
-                        })
-                    })
+                    spawnEntries = area.SpawnEntries.ConvertAll(entry => entry.Clone())
                 }
             })];
         }
-        public static void AreaForEachIfDiff(List<AreaData> areaList, Action<AreaData> func)
+        public static void AreaForEachIfDiff(List<AreaData> areaList, Action<AreaData>? func, Action<AreaData>? elseFunc = null)
         {
             foreach (AreaData area in areaList)
             {
@@ -293,7 +278,11 @@ namespace PalworldRandomizer
                         return false;
                     }))())
                 {
-                    func(area);
+                    func?.Invoke(area);
+                }
+                else
+                {
+                    elseFunc?.Invoke(area);
                 }
             }
         }
@@ -930,7 +919,7 @@ namespace PalworldRandomizer
                 catch (Exception e)
                 {
                     MainWindow.Instance.Dispatcher.Invoke(() =>
-                    MessageBox.Show(MainWindow.Instance, "Error: Failed to write output log.\n" + e.ToString(), "Output Log Failed", MessageBoxButton.OK, MessageBoxImage.Error));
+                        MessageBox.Show(MainWindow.Instance, "Error: Failed to write output log.\n" + e.ToString(), "Output Log Failed", MessageBoxButton.OK, MessageBoxImage.Error));
                 }
             }
         }
