@@ -5,7 +5,6 @@ using UAssetAPI.UnrealTypes;
 using UAssetAPI.ExportTypes;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using UAssetAPI.PropertyTypes.Structs;
 
 namespace PalworldRandomizer
 {
@@ -427,6 +426,29 @@ namespace PalworldRandomizer
                 }
             }
         }
+
+        public void Insert(int index, SpawnEntry spawnEntry)
+        {
+            SpawnEntries.Insert(index, spawnEntry);
+            if (EntriesToShow >= index)
+            {
+                virtualEntries.Insert(index, spawnEntry);
+            }
+        }
+        public void RemoveAt(int index)
+        {
+            SpawnEntries.RemoveAt(index);
+            if (EntriesToShow > index)
+            {
+                virtualEntries.RemoveAt(index);
+            }
+        }
+        public void Clear()
+        {
+            SpawnEntries.Clear();
+            virtualEntries.Clear();
+        }
+        public int Count { get { return SpawnEntries.Count; } }
         public ObservableCollection<SpawnEntry> SpawnEntriesView
         {
             get { return virtualEntries; }

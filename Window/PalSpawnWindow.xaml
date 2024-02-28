@@ -8,7 +8,7 @@
         xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf"
         Loaded="Window_Loaded"
         Closing="Window_Closing"
-        Title="Pal Spawn Viewer" Height="600" Width="1000" Background="#FF181818">
+        Title="Pal Spawn Editor" Height="600" Width="1000" Background="#FF181818">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -61,179 +61,621 @@
                         <TextBlock Text="Revert All Spawns" Margin="0"/>
                     </MenuItem.Header>
                     <MenuItem.Icon>
-                        <emoji:TextBlock Text="♻️" Margin="0" HorizontalAlignment="Center"/>
+                        <emoji:TextBlock Text="♻" Margin="0" HorizontalAlignment="Center"/>
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
         </Menu>
         <ListBox Name="areaList" Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Source={x:Static local:Randomize.GeneratedAreaList}}" SelectionChanged="AreaList_SelectionChanged"/>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="1" Grid.Column="1">
-            <ItemsControl Name="spawnEntries" ItemsSource="{Binding ElementName=areaList, Path=SelectedItem.SpawnEntriesView, Mode=OneWay}" IsTabStop="False"
-                          AlternationCount="{Binding RelativeSource={RelativeSource Self}, Path=Items.Count}">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border BorderBrush="#FF606060" BorderThickness="1" Margin="5" CornerRadius="5" Background="#FF181818"
-                                Tag="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(ItemsControl.AlternationIndex)}">
-                            <Border.ContextMenu>
-                                <ContextMenu Tag="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(ItemsControl.AlternationIndex)}">
-                                    <MenuItem IsCheckable="True" IsChecked="{Binding NightOnly, NotifyOnSourceUpdated=True}" Binding.SourceUpdated="AreaProperty_SourceUpdated">
-                                        <MenuItem.Header>
-                                            <emoji:TextBlock Text="🌙 Night-Only" Margin="0"/>
-                                        </MenuItem.Header>
-                                    </MenuItem>
-                                </ContextMenu>
-                            </Border.ContextMenu>
-                            <StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <emoji:TextBlock Text="🎲: " Margin="0" ToolTip="Weight"/>
-                                    <TextBox Text="{Binding Weight, NotifyOnSourceUpdated=True}" Margin="0" BorderThickness="0" MinWidth="10"
-                                             PreviewTextInput="NonNegIntSize9_PreviewTextInput"
-                                             DataObject.Pasting="NonNegIntSize9_Pasting"
-                                             Binding.SourceUpdated="AreaProperty_SourceUpdated"/>
-                                    <TextBlock Text=" " Margin="0"/>
-                                    <emoji:TextBlock Text="🌙" Margin="0" ToolTip="Night-Only" KeyboardNavigation.TabNavigation="Once">
-                                        <emoji:TextBlock.Style>
-                                            <Style TargetType="emoji:TextBlock">
-                                                <Setter Property="Visibility" Value="Visible"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding NightOnly}" Value="False">
-                                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </emoji:TextBlock.Style>
-                                    </emoji:TextBlock>
-                                </StackPanel>
-                                <ItemsControl ItemsSource="{Binding SpawnList}" IsTabStop="False"
-                                              AlternationCount="{Binding RelativeSource={RelativeSource Self}, Path=Items.Count}">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <WrapPanel Orientation="Vertical"/>
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <Border BorderBrush="#FF404040" Background="#FF202020" BorderThickness="1" Margin="2" CornerRadius="5"
-                                                    Tag="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl}}">
-                                                <Border.ContextMenu>
-                                                    <ContextMenu Tag="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(ItemsControl.AlternationIndex)}">
-                                                        <MenuItem IsCheckable="True" IsChecked="{Binding IsBoss, NotifyOnSourceUpdated=True}" Checked="Boss_CheckChanged"
-                                                                  Unchecked="Boss_CheckChanged" Binding.SourceUpdated="AreaProperty_SourceUpdated"
-                                                                  IsEnabled="{Binding BossChangeable}">
-                                                            <MenuItem.Header>
-                                                                <StackPanel Orientation="Horizontal">
-                                                                    <Image Source="/Resources/Images/UI/T_icon_enemy_strong.png" Stretch="Uniform" Height="16"/>
-                                                                    <TextBlock Text=" Boss" Margin="0"/>
-                                                                </StackPanel>
-                                                            </MenuItem.Header>
-                                                        </MenuItem>
-                                                        <MenuItem Click="PalDuplicate_Click">
-                                                            <MenuItem.Header>
-                                                                <emoji:TextBlock Text="Duplicate Pal" Margin="0"/>
-                                                            </MenuItem.Header>
-                                                        </MenuItem>
-                                                        <Separator Height="20" Background="Transparent"/>
-                                                        <MenuItem Click="PalDelete_Click">
-                                                            <MenuItem.Header>
-                                                                <emoji:TextBlock Text="Delete Pal" Margin="0"/>
-                                                            </MenuItem.Header>
-                                                            <MenuItem.Icon>
-                                                                <emoji:TextBlock Text="❌" Margin="0" HorizontalAlignment="Center"/>
-                                                            </MenuItem.Icon>
-                                                            <MenuItem.Style>
-                                                                <Style TargetType="MenuItem">
-                                                                    <Setter Property="IsEnabled" Value="True"/>
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Border Grid.Row="0" BorderThickness="0,1,0,1" CornerRadius="5" BorderBrush="#FF404040" Background="#FF202020" Height="20">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="5"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="5"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0" BorderThickness="0" Click="GroupToolBarNew_Click">
+                        <emoji:TextBlock Text="➕New Group" Margin="0"/>
+                    </Button>
+                    <Button Grid.Column="2" BorderThickness="0" Click="GroupToolBarDelete_Click">
+                        <emoji:TextBlock Text="➖Delete Group" Margin="0"/>
+                    </Button>
+                    <Button Grid.Column="3" BorderThickness="0" Click="GroupToolBarDeleteAll_Click" HorizontalAlignment="Right">
+                        <emoji:TextBlock Text="💣Delete All" Margin="0"/>
+                    </Button>
+                </Grid>
+            </Border>
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Foreground="White" Margin="5">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Setter Property="Text" Value="No spawns."/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ElementName=areaList, Path=SelectedItems.Count}" Value="0">
+                                        <Setter Property="Text" Value="No area selected."/>
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding ElementName=spawnEntries, Path=Items.Count}" Value="0"/>
+                                            <Condition Binding="{Binding ElementName=areaList, Path=SelectedItems.Count}" Value="1"/>
+                                        </MultiDataTrigger.Conditions>
+                                        <MultiDataTrigger.Setters>
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </MultiDataTrigger.Setters>
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <ItemsControl Name="spawnEntries" ItemsSource="{Binding ElementName=areaList, Path=SelectedItem.SpawnEntriesView, Mode=OneWay}" IsTabStop="False"
+                                  AlternationCount="{Binding RelativeSource={RelativeSource Self}, Path=Items.Count}"
+                                  Tag="{Binding RelativeSource={RelativeSource AncestorType=Window}}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="#FF606060" BorderThickness="1" Margin="5" CornerRadius="5" Background="#FF181818"
+                                        Tag="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl}}">
+                                    <Border.ContextMenu>
+                                        <ContextMenu Tag="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(ItemsControl.AlternationIndex)}">
+                                            <MenuItem IsCheckable="True" IsChecked="{Binding NightOnly, NotifyOnSourceUpdated=True}" Binding.SourceUpdated="AreaProperty_SourceUpdated">
+                                                <MenuItem.Header>
+                                                    <emoji:TextBlock Text="🌙 Night-Only" Margin="0"/>
+                                                </MenuItem.Header>
+                                            </MenuItem>
+                                            <MenuItem Click="GroupCut_Click">
+                                                <MenuItem.Header>
+                                                    <TextBlock Text="Cut" Margin="0"/>
+                                                </MenuItem.Header>
+                                                <MenuItem.Icon>
+                                                    <emoji:TextBlock Text="✂️" Margin="0" HorizontalAlignment="Center"/>
+                                                </MenuItem.Icon>
+                                                <MenuItem.Style>
+                                                    <Style TargetType="MenuItem">
+                                                        <Setter Property="IsEnabled" Value="True"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu},
+                                                                                   Path=PlacementTarget.Tag.Items.Count}" Value="1">
+                                                                <Setter Property="IsEnabled" Value="False"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </MenuItem.Style>
+                                            </MenuItem>
+                                            <MenuItem Click="GroupCopy_Click">
+                                                <MenuItem.Header>
+                                                    <TextBlock Text="Copy" Margin="0"/>
+                                                </MenuItem.Header>
+                                                <MenuItem.Icon>
+                                                    <emoji:TextBlock Text="📄" Margin="0" HorizontalAlignment="Center"/>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Click="GroupPaste_Click">
+                                                <MenuItem.Header>
+                                                    <TextBlock Text="Paste (Replace)" Margin="0"/>
+                                                </MenuItem.Header>
+                                                <MenuItem.Icon>
+                                                    <emoji:TextBlock Text="📋" Margin="0" HorizontalAlignment="Center"/>
+                                                </MenuItem.Icon>
+                                                <MenuItem.Style>
+                                                    <Style TargetType="MenuItem">
+                                                        <Setter Property="IsEnabled" Value="True"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Value="{x:Null}"
+                                                                         Binding="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu},
+                                                                                   Path=PlacementTarget.Tag.Tag.ListClipboard}">
+                                                                <Setter Property="IsEnabled" Value="False"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </MenuItem.Style>
+                                            </MenuItem>
+                                            <MenuItem Click="GroupPasteBefore_Click">
+                                                <MenuItem.Header>
+                                                    <TextBlock Text="Paste (Before)" Margin="0"/>
+                                                </MenuItem.Header>
+                                                <MenuItem.Icon>
+                                                    <emoji:TextBlock Text="📋" Margin="0" HorizontalAlignment="Center"/>
+                                                </MenuItem.Icon>
+                                                <MenuItem.Style>
+                                                    <Style TargetType="MenuItem">
+                                                        <Setter Property="IsEnabled" Value="True"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Value="{x:Null}"
+                                                                         Binding="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu},
+                                                                                   Path=PlacementTarget.Tag.Tag.ListClipboard}">
+                                                                <Setter Property="IsEnabled" Value="False"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </MenuItem.Style>
+                                            </MenuItem>
+                                            <MenuItem Click="GroupPasteAfter_Click">
+                                                <MenuItem.Header>
+                                                    <TextBlock Text="Paste (After)" Margin="0"/>
+                                                </MenuItem.Header>
+                                                <MenuItem.Icon>
+                                                    <emoji:TextBlock Text="📋" Margin="0" HorizontalAlignment="Center"/>
+                                                </MenuItem.Icon>
+                                                <MenuItem.Style>
+                                                    <Style TargetType="MenuItem">
+                                                        <Setter Property="IsEnabled" Value="True"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Value="{x:Null}"
+                                                                         Binding="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu},
+                                                                                   Path=PlacementTarget.Tag.Tag.ListClipboard}">
+                                                                <Setter Property="IsEnabled" Value="False"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </MenuItem.Style>
+                                            </MenuItem>
+                                            <MenuItem Click="GroupMoveToStart_Click">
+                                                <MenuItem.Header>
+                                                    <TextBlock Text="Move To Start" Margin="0"/>
+                                                </MenuItem.Header>
+                                                <MenuItem.Icon>
+                                                    <TextBlock Text="⟵" Margin="0" HorizontalAlignment="Center"/>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Click="GroupMoveToEnd_Click">
+                                                <MenuItem.Header>
+                                                    <TextBlock Text="Move To End" Margin="0"/>
+                                                </MenuItem.Header>
+                                                <MenuItem.Icon>
+                                                    <TextBlock Text="⟶" Margin="0" HorizontalAlignment="Center"/>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <Separator Height="20" Background="Transparent"/>
+                                            <MenuItem Click="GroupDeleteThis_Click">
+                                                <MenuItem.Header>
+                                                    <TextBlock Text="Delete Group" Margin="0"/>
+                                                </MenuItem.Header>
+                                                <MenuItem.Icon>
+                                                    <emoji:TextBlock Text="❌" Margin="0" HorizontalAlignment="Center"/>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                        </ContextMenu>
+                                    </Border.ContextMenu>
+                                    <StackPanel>
+                                        <Grid Tag="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl}}">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <emoji:TextBlock Grid.Column="0" Text="🎲: " Margin="0" ToolTip="Weight"/>
+                                            <TextBox Grid.Column="1" Text="{Binding Weight, NotifyOnSourceUpdated=True}" Margin="0" BorderThickness="0" MinWidth="10"
+                                                     PreviewTextInput="NonNegIntSize9_PreviewTextInput"
+                                                     DataObject.Pasting="NonNegIntSize9_Pasting"
+                                                     Binding.SourceUpdated="AreaProperty_SourceUpdated"/>
+                                            <emoji:TextBlock Grid.Column="2" Text="🌙" Margin="0" ToolTip="Night-Only" KeyboardNavigation.TabNavigation="Once">
+                                                <emoji:TextBlock.Style>
+                                                    <Style TargetType="emoji:TextBlock">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding NightOnly}" Value="False">
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </emoji:TextBlock.Style>
+                                            </emoji:TextBlock>
+                                            <Grid Grid.Column="3" Tag="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(ItemsControl.AlternationIndex)}">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Button Grid.Column="0" BorderThickness="0" Click="GroupPalDelete_Click" ToolTip="Delete Pal">
+                                                    <emoji:TextBlock Text="➖" Margin="0"/>
+                                                </Button>
+                                                <Button Grid.Column="1" BorderThickness="0" Click="GroupPalNew_Click" ToolTip="New Pal">
+                                                    <emoji:TextBlock Text="➕" Margin="0"/>
+                                                </Button>
+                                                <Button Grid.Column="2" BorderThickness="0" Click="GroupMoveLeft_Click" ToolTip="Move Group Left" HorizontalAlignment="Right"
+                                                        MinWidth="16">
+                                                    <TextBlock Text="➔" Margin="0" RenderTransformOrigin="0.5,0.5">
+                                                        <TextBlock.RenderTransform>
+                                                            <ScaleTransform ScaleX="-1"/>
+                                                        </TextBlock.RenderTransform>
+                                                    </TextBlock>
+                                                </Button>
+                                                <Button Grid.Column="3" BorderThickness="0" Click="GroupMoveRight_Click" ToolTip="Move Group Right" MinWidth="16">
+                                                    <TextBlock Text="➔" Margin="0"/>
+                                                </Button>
+                                                <Button Grid.Column="4" BorderThickness="0" Click="GroupPalDeleteAll_Click" ToolTip="Delete All Pals">
+                                                    <emoji:TextBlock Text="💣" Margin="0"/>
+                                                </Button>
+                                                <Button Grid.Column="5" BorderThickness="0" Click="GroupDeleteThis_Click" ToolTip="Delete Group">
+                                                    <emoji:TextBlock Text="❌" Margin="0"/>
+                                                </Button>
+                                                <Grid.Style>
+                                                    <Style TargetType="Grid">
+                                                        <Setter Property="Visibility" Value="Hidden"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Border}, Path=IsMouseOver}" Value="True">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Grid.Style>
+                                            </Grid>
+                                        </Grid>
+                                        <ItemsControl ItemsSource="{Binding SpawnList}" IsTabStop="False"
+                                                      AlternationCount="{Binding RelativeSource={RelativeSource Self}, Path=Items.Count}"
+                                                      Tag="{Binding RelativeSource={RelativeSource AncestorType=Window}}">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <WrapPanel Orientation="Vertical"/>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid Tag="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl}}">
+                                                        <Grid Panel.ZIndex="1"
+                                                               Tag="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(ItemsControl.AlternationIndex)}">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="*"/>
+                                                                <ColumnDefinition Width="Auto"/>
+                                                                <ColumnDefinition Width="Auto"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition Height="Auto"/>
+                                                                <RowDefinition Height="*"/>
+                                                            </Grid.RowDefinitions>
+                                                            <Button Grid.Column="0" BorderThickness="0" Click="PalMoveUp_Click" ToolTip="Move Up" HorizontalAlignment="Right"
+                                                                    MinWidth="16">
+                                                                <TextBlock Text="➔" Margin="0" RenderTransformOrigin="0.5,0.5">
+                                                                    <TextBlock.RenderTransform>
+                                                                        <RotateTransform Angle="-90"/>
+                                                                    </TextBlock.RenderTransform>
+                                                                </TextBlock>
+                                                                <Button.Style>
+                                                                    <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent},
+                                                                                                   Path=(ItemsControl.AlternationIndex)}" Value="0">
+                                                                                <Setter Property="Visibility" Value="Hidden"/>
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </Button.Style>
+                                                            </Button>
+                                                            <Button Grid.Column="1" BorderThickness="0" Click="PalMoveDown_Click" ToolTip="Move Down"
+                                                                    MinWidth="16">
+                                                                <TextBlock Text="➔" Margin="0" RenderTransformOrigin="0.5,0.5">
+                                                                    <TextBlock.RenderTransform>
+                                                                        <TransformGroup>
+                                                                            <RotateTransform Angle="-90"/>
+                                                                            <ScaleTransform ScaleY="-1"/>
+                                                                        </TransformGroup>
+                                                                    </TextBlock.RenderTransform>
+                                                                </TextBlock>
+                                                                <Button.Style>
+                                                                    <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Value="0">
+                                                                                <DataTrigger.Binding>
+                                                                                    <MultiBinding ConverterParameter="[0]-([1]-1)">
+                                                                                        <MultiBinding.Converter>
+                                                                                            <local:MathConverter/>
+                                                                                        </MultiBinding.Converter>
+                                                                                        <Binding RelativeSource="{RelativeSource TemplatedParent}"
+                                                                                                 Path="(ItemsControl.AlternationIndex)"/>
+                                                                                        <Binding RelativeSource="{RelativeSource AncestorType=ItemsControl}"
+                                                                                                 Path="Items.Count"/>
+                                                                                    </MultiBinding>
+                                                                                </DataTrigger.Binding>
+                                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </Button.Style>
+                                                            </Button>
+                                                            <Button Grid.Column="2" BorderThickness="0" Click="PalDeleteThis_Click" ToolTip="Delete Pal">
+                                                                <emoji:TextBlock Text="❌" Margin="0"/>
+                                                            </Button>
+                                                            <Grid.Style>
+                                                                <Style TargetType="Grid">
+                                                                    <Setter Property="Visibility" Value="Hidden"/>
                                                                     <Style.Triggers>
-                                                                        <DataTrigger
-                                                                            Binding="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu},
-                                                                                Path=PlacementTarget.Tag.Items.Count}" Value="1">
-                                                                            <Setter Property="IsEnabled" Value="False"/>
+                                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Grid}, Path=IsMouseOver}"
+                                                                                     Value="True">
+                                                                            <Setter Property="Visibility" Value="Visible"/>
                                                                         </DataTrigger>
-                                                                    </Style.Triggers>
-                                                                </Style>
-                                                            </MenuItem.Style>
-                                                        </MenuItem>
-                                                    </ContextMenu>
-                                                </Border.ContextMenu>
-                                                <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="*"/>
-                                                        <ColumnDefinition Width="Auto"/>
-                                                        <ColumnDefinition Width="Auto"/>
-                                                    </Grid.ColumnDefinitions>
-                                                    <Grid Grid.Column="0">
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="32"/>
-                                                            <ColumnDefinition Width="Auto"/>
-                                                            <ColumnDefinition Width="Auto"/>
-                                                        </Grid.ColumnDefinitions>
-                                                        <Image Grid.Column="0" Stretch="Uniform" Source="{Binding IconPath}"/>
-                                                        <TextBox Grid.Column="1" Text="{Binding ResolvedName, Mode=OneWay}" Margin="0" VerticalAlignment="Top"
-                                                                 BorderThickness="0" GotFocus="NameTextBox_GotFocus" TextWrapping="Wrap" MaxWidth="100"/>
-                                                        <ComboBox Grid.Column="1" ItemsSource="{Binding Source={x:Static local:Data.SimpleNameValues}, Mode=OneWay}"
-                                                                  SelectedItem="{Binding SimpleName}" Visibility="Collapsed" SelectionChanged="ComboBox_SelectionChanged"
-                                                                  DropDownClosed="ComboBox_DropDownClosed" Binding.SourceUpdated="AreaProperty_SourceUpdated"/>
-                                                        <Image Grid.Column="2" Source="/Resources/Images/UI/T_icon_enemy_strong.png" Stretch="Uniform" Height="16"
-                                                               VerticalAlignment="Top" ToolTip="Boss">
-                                                            <Image.Style>
-                                                                <Style TargetType="Image">
-                                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                                    <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding IsBoss}" Value="False">
+                                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl}, Path=Items.Count}"
+                                                                                     Value="1">
                                                                             <Setter Property="Visibility" Value="Collapsed"/>
                                                                         </DataTrigger>
                                                                     </Style.Triggers>
                                                                 </Style>
-                                                            </Image.Style>
-                                                        </Image>
+                                                            </Grid.Style>
+                                                        </Grid>
+                                                        <Border BorderBrush="#FF404040" Background="#FF202020" BorderThickness="1" Margin="2" CornerRadius="5"
+                                                                Tag="{Binding RelativeSource={RelativeSource AncestorType=ItemsControl}}">
+                                                            <Border.ContextMenu>
+                                                                <ContextMenu Tag="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(ItemsControl.AlternationIndex)}">
+                                                                    <MenuItem IsCheckable="True" IsChecked="{Binding IsBoss, NotifyOnSourceUpdated=True}" Checked="Boss_CheckChanged"
+                                                                              Unchecked="Boss_CheckChanged" Binding.SourceUpdated="AreaProperty_SourceUpdated"
+                                                                              IsEnabled="{Binding BossChangeable}">
+                                                                        <MenuItem.Header>
+                                                                            <StackPanel Orientation="Horizontal">
+                                                                                <Image Source="/Resources/Images/UI/T_icon_enemy_strong.png" Stretch="Uniform" Height="16"/>
+                                                                                <TextBlock Text=" Boss" Margin="0"/>
+                                                                            </StackPanel>
+                                                                        </MenuItem.Header>
+                                                                    </MenuItem>
+                                                                    <MenuItem Click="PalCut_Click">
+                                                                        <MenuItem.Header>
+                                                                            <TextBlock Text="Cut" Margin="0"/>
+                                                                        </MenuItem.Header>
+                                                                        <MenuItem.Icon>
+                                                                            <emoji:TextBlock Text="✂️" Margin="0" HorizontalAlignment="Center"/>
+                                                                        </MenuItem.Icon>
+                                                                        <MenuItem.Style>
+                                                                            <Style TargetType="MenuItem">
+                                                                                <Setter Property="IsEnabled" Value="True"/>
+                                                                                <Style.Triggers>
+                                                                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu},
+                                                                                                           Path=PlacementTarget.Tag.Items.Count}" Value="1">
+                                                                                        <Setter Property="IsEnabled" Value="False"/>
+                                                                                    </DataTrigger>
+                                                                                </Style.Triggers>
+                                                                            </Style>
+                                                                        </MenuItem.Style>
+                                                                    </MenuItem>
+                                                                    <MenuItem Click="PalCopy_Click">
+                                                                        <MenuItem.Header>
+                                                                            <TextBlock Text="Copy" Margin="0"/>
+                                                                        </MenuItem.Header>
+                                                                        <MenuItem.Icon>
+                                                                            <emoji:TextBlock Text="📄" Margin="0" HorizontalAlignment="Center"/>
+                                                                        </MenuItem.Icon>
+                                                                    </MenuItem>
+                                                                    <MenuItem Click="PalPaste_Click">
+                                                                        <MenuItem.Header>
+                                                                            <TextBlock Text="Paste (Replace)" Margin="0"/>
+                                                                        </MenuItem.Header>
+                                                                        <MenuItem.Icon>
+                                                                            <emoji:TextBlock Text="📋" Margin="0" HorizontalAlignment="Center"/>
+                                                                        </MenuItem.Icon>
+                                                                        <MenuItem.Style>
+                                                                            <Style TargetType="MenuItem">
+                                                                                <Setter Property="IsEnabled" Value="True"/>
+                                                                                <Style.Triggers>
+                                                                                    <DataTrigger Value="{x:Null}"
+                                                                                                 Binding="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu},
+                                                                                                           Path=PlacementTarget.Tag.Tag.PalClipboard}">
+                                                                                        <Setter Property="IsEnabled" Value="False"/>
+                                                                                    </DataTrigger>
+                                                                                </Style.Triggers>
+                                                                            </Style>
+                                                                        </MenuItem.Style>
+                                                                    </MenuItem>
+                                                                    <MenuItem Click="PalPasteBefore_Click">
+                                                                        <MenuItem.Header>
+                                                                            <TextBlock Text="Paste (Before)" Margin="0"/>
+                                                                        </MenuItem.Header>
+                                                                        <MenuItem.Icon>
+                                                                            <emoji:TextBlock Text="📋" Margin="0" HorizontalAlignment="Center"/>
+                                                                        </MenuItem.Icon>
+                                                                        <MenuItem.Style>
+                                                                            <Style TargetType="MenuItem">
+                                                                                <Setter Property="IsEnabled" Value="True"/>
+                                                                                <Style.Triggers>
+                                                                                    <DataTrigger Value="{x:Null}"
+                                                                                                 Binding="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu},
+                                                                                                           Path=PlacementTarget.Tag.Tag.PalClipboard}">
+                                                                                        <Setter Property="IsEnabled" Value="False"/>
+                                                                                    </DataTrigger>
+                                                                                </Style.Triggers>
+                                                                            </Style>
+                                                                        </MenuItem.Style>
+                                                                    </MenuItem>
+                                                                    <MenuItem Click="PalPasteAfter_Click">
+                                                                        <MenuItem.Header>
+                                                                            <TextBlock Text="Paste (After)" Margin="0"/>
+                                                                        </MenuItem.Header>
+                                                                        <MenuItem.Icon>
+                                                                            <emoji:TextBlock Text="📋" Margin="0" HorizontalAlignment="Center"/>
+                                                                        </MenuItem.Icon>
+                                                                        <MenuItem.Style>
+                                                                            <Style TargetType="MenuItem">
+                                                                                <Setter Property="IsEnabled" Value="True"/>
+                                                                                <Style.Triggers>
+                                                                                    <DataTrigger Value="{x:Null}"
+                                                                                                 Binding="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu},
+                                                                                                           Path=PlacementTarget.Tag.Tag.PalClipboard}">
+                                                                                        <Setter Property="IsEnabled" Value="False"/>
+                                                                                    </DataTrigger>
+                                                                                </Style.Triggers>
+                                                                            </Style>
+                                                                        </MenuItem.Style>
+                                                                    </MenuItem>
+                                                                    <MenuItem Click="PalMoveUp_Click">
+                                                                        <MenuItem.Header>
+                                                                            <TextBlock Text="Move Up" Margin="0"/>
+                                                                        </MenuItem.Header>
+                                                                        <MenuItem.Icon>
+                                                                            <TextBlock Text="➔" Margin="0" RenderTransformOrigin="0.5,0.5">
+                                                                                <TextBlock.RenderTransform>
+                                                                                    <RotateTransform Angle="-90"/>
+                                                                                </TextBlock.RenderTransform>
+                                                                            </TextBlock>
+                                                                        </MenuItem.Icon>
+                                                                        <MenuItem.Style>
+                                                                            <Style TargetType="MenuItem">
+                                                                                <Setter Property="IsEnabled" Value="True"/>
+                                                                                <Style.Triggers>
+                                                                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent},
+                                                                                                           Path=(ItemsControl.AlternationIndex)}" Value="0">
+                                                                                        <Setter Property="IsEnabled" Value="False"/>
+                                                                                    </DataTrigger>
+                                                                                </Style.Triggers>
+                                                                            </Style>
+                                                                        </MenuItem.Style>
+                                                                    </MenuItem>
+                                                                    <MenuItem Click="PalMoveDown_Click">
+                                                                        <MenuItem.Header>
+                                                                            <TextBlock Text="Move Down" Margin="0"/>
+                                                                        </MenuItem.Header>
+                                                                        <MenuItem.Icon>
+                                                                            <TextBlock Text="➔" Margin="0" RenderTransformOrigin="0.5,0.5">
+                                                                                <TextBlock.RenderTransform>
+                                                                                    <TransformGroup>
+                                                                                        <RotateTransform Angle="-90"/>
+                                                                                        <ScaleTransform ScaleY="-1"/>
+                                                                                    </TransformGroup>
+                                                                                </TextBlock.RenderTransform>
+                                                                            </TextBlock>
+                                                                        </MenuItem.Icon>
+                                                                        <MenuItem.Style>
+                                                                            <Style TargetType="MenuItem">
+                                                                                <Setter Property="IsEnabled" Value="True"/>
+                                                                                <Style.Triggers>
+                                                                                    <DataTrigger Value="0">
+                                                                                        <DataTrigger.Binding>
+                                                                                            <MultiBinding ConverterParameter="[0]-([1]-1)">
+                                                                                                <MultiBinding.Converter>
+                                                                                                    <local:MathConverter/>
+                                                                                                </MultiBinding.Converter>
+                                                                                                <Binding RelativeSource="{RelativeSource TemplatedParent}"
+                                                                                                         Path="(ItemsControl.AlternationIndex)"/>
+                                                                                                <Binding RelativeSource="{RelativeSource AncestorType=ContextMenu}"
+                                                                                                         Path="PlacementTarget.Tag.Items.Count"/>
+                                                                                            </MultiBinding>
+                                                                                        </DataTrigger.Binding>
+                                                                                        <Setter Property="IsEnabled" Value="False"/>
+                                                                                    </DataTrigger>
+                                                                                </Style.Triggers>
+                                                                            </Style>
+                                                                        </MenuItem.Style>
+                                                                    </MenuItem>
+                                                                    <Separator Height="20" Background="Transparent"/>
+                                                                    <MenuItem Click="PalDeleteThis_Click">
+                                                                        <MenuItem.Header>
+                                                                            <TextBlock Text="Delete Pal" Margin="0"/>
+                                                                        </MenuItem.Header>
+                                                                        <MenuItem.Icon>
+                                                                            <emoji:TextBlock Text="❌" Margin="0" HorizontalAlignment="Center"/>
+                                                                        </MenuItem.Icon>
+                                                                        <MenuItem.Style>
+                                                                            <Style TargetType="MenuItem">
+                                                                                <Setter Property="IsEnabled" Value="True"/>
+                                                                                <Style.Triggers>
+                                                                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ContextMenu},
+                                                                                                           Path=PlacementTarget.Tag.Items.Count}" Value="1">
+                                                                                        <Setter Property="IsEnabled" Value="False"/>
+                                                                                    </DataTrigger>
+                                                                                </Style.Triggers>
+                                                                            </Style>
+                                                                        </MenuItem.Style>
+                                                                    </MenuItem>
+                                                                </ContextMenu>
+                                                            </Border.ContextMenu>
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="*"/>
+                                                                    <ColumnDefinition Width="Auto"/>
+                                                                    <ColumnDefinition Width="Auto"/>
+                                                                </Grid.ColumnDefinitions>
+                                                                <Grid Grid.Column="0">
+                                                                    <Grid.ColumnDefinitions>
+                                                                        <ColumnDefinition Width="32"/>
+                                                                        <ColumnDefinition Width="Auto"/>
+                                                                        <ColumnDefinition Width="Auto"/>
+                                                                    </Grid.ColumnDefinitions>
+                                                                    <Image Grid.Column="0" Stretch="Uniform" Source="{Binding IconPath}"/>
+                                                                    <TextBox Grid.Column="1" Text="{Binding ResolvedName, Mode=OneWay}" Margin="0" VerticalAlignment="Top"
+                                                                             BorderThickness="0" GotFocus="NameTextBox_GotFocus" TextWrapping="Wrap" MaxWidth="100"/>
+                                                                    <ComboBox Grid.Column="1" ItemsSource="{Binding Source={x:Static local:Data.SimpleNameValues}, Mode=OneWay}"
+                                                                              SelectedItem="{Binding SimpleName}" Visibility="Collapsed" SelectionChanged="ComboBox_SelectionChanged"
+                                                                              DropDownClosed="ComboBox_DropDownClosed" Binding.SourceUpdated="AreaProperty_SourceUpdated"/>
+                                                                    <Image Grid.Column="2" Source="/Resources/Images/UI/T_icon_enemy_strong.png" Stretch="Uniform" Height="16"
+                                                                           VerticalAlignment="Top" ToolTip="Boss">
+                                                                        <Image.Style>
+                                                                            <Style TargetType="Image">
+                                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                                                <Style.Triggers>
+                                                                                    <DataTrigger Binding="{Binding IsBoss}" Value="False">
+                                                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                                                    </DataTrigger>
+                                                                                </Style.Triggers>
+                                                                            </Style>
+                                                                        </Image.Style>
+                                                                    </Image>
+                                                                </Grid>
+                                                                <GroupBox Grid.Column="1" VerticalAlignment="Top">
+                                                                    <GroupBox.Header>
+                                                                        <TextBlock Margin="0">Level</TextBlock>
+                                                                    </GroupBox.Header>
+                                                                    <StackPanel Orientation="Horizontal">
+                                                                        <TextBox Text="{Binding MinLevel, NotifyOnSourceUpdated=True}" Margin="0" BorderThickness="0" MinWidth="10"
+                                                                                 PreviewTextInput="PositiveIntSize9_PreviewTextInput"
+                                                                                 DataObject.Pasting="PositiveIntSize9_Pasting"
+                                                                                 Binding.SourceUpdated="AreaProperty_SourceUpdated"/>
+                                                                        <TextBlock Margin="0">-</TextBlock>
+                                                                        <TextBox Text="{Binding MaxLevel, NotifyOnSourceUpdated=True}" Margin="0" BorderThickness="0" MinWidth="10"
+                                                                                 PreviewTextInput="PositiveIntSize9_PreviewTextInput"
+                                                                                 DataObject.Pasting="PositiveIntSize9_Pasting"
+                                                                                 Binding.SourceUpdated="AreaProperty_SourceUpdated"/>
+                                                                    </StackPanel>
+                                                                </GroupBox>
+                                                                <GroupBox Grid.Column="2" VerticalAlignment="Top">
+                                                                    <GroupBox.Header>
+                                                                        <TextBlock Margin="0">Count</TextBlock>
+                                                                    </GroupBox.Header>
+                                                                    <StackPanel Orientation="Horizontal">
+                                                                        <TextBox Text="{Binding MinGroupSize, NotifyOnSourceUpdated=True}" Margin="0" BorderThickness="0" MinWidth="10"
+                                                                                 PreviewTextInput="PositiveIntSize9_PreviewTextInput"
+                                                                                 DataObject.Pasting="PositiveIntSize9_Pasting"
+                                                                                 Binding.SourceUpdated="AreaProperty_SourceUpdated"/>
+                                                                        <TextBlock Margin="0">-</TextBlock>
+                                                                        <TextBox Text="{Binding MaxGroupSize, NotifyOnSourceUpdated=True}" Margin="0" BorderThickness="0" MinWidth="10"
+                                                                                 PreviewTextInput="PositiveIntSize9_PreviewTextInput"
+                                                                                 DataObject.Pasting="PositiveIntSize9_Pasting"
+                                                                                 Binding.SourceUpdated="AreaProperty_SourceUpdated"/>
+                                                                    </StackPanel>
+                                                                </GroupBox>
+                                                            </Grid>
+                                                        </Border>
                                                     </Grid>
-                                                    <GroupBox Grid.Column="1" VerticalAlignment="Top">
-                                                        <GroupBox.Header>
-                                                            <TextBlock Margin="0">Level</TextBlock>
-                                                        </GroupBox.Header>
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <TextBox Text="{Binding MinLevel, NotifyOnSourceUpdated=True}" Margin="0" BorderThickness="0" MinWidth="10"
-                                                                     PreviewTextInput="PositiveIntSize9_PreviewTextInput"
-                                                                     DataObject.Pasting="PositiveIntSize9_Pasting"
-                                                                     Binding.SourceUpdated="AreaProperty_SourceUpdated"/>
-                                                            <TextBlock Margin="0">-</TextBlock>
-                                                            <TextBox Text="{Binding MaxLevel, NotifyOnSourceUpdated=True}" Margin="0" BorderThickness="0" MinWidth="10"
-                                                                     PreviewTextInput="PositiveIntSize9_PreviewTextInput"
-                                                                     DataObject.Pasting="PositiveIntSize9_Pasting"
-                                                                     Binding.SourceUpdated="AreaProperty_SourceUpdated"/>
-                                                        </StackPanel>
-                                                    </GroupBox>
-                                                    <GroupBox Grid.Column="2" VerticalAlignment="Top">
-                                                        <GroupBox.Header>
-                                                            <TextBlock Margin="0">Count</TextBlock>
-                                                        </GroupBox.Header>
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <TextBox Text="{Binding MinGroupSize, NotifyOnSourceUpdated=True}" Margin="0" BorderThickness="0" MinWidth="10"
-                                                                     PreviewTextInput="PositiveIntSize9_PreviewTextInput"
-                                                                     DataObject.Pasting="PositiveIntSize9_Pasting"
-                                                                     Binding.SourceUpdated="AreaProperty_SourceUpdated"/>
-                                                            <TextBlock Margin="0">-</TextBlock>
-                                                            <TextBox Text="{Binding MaxGroupSize, NotifyOnSourceUpdated=True}" Margin="0" BorderThickness="0" MinWidth="10"
-                                                                     PreviewTextInput="PositiveIntSize9_PreviewTextInput"
-                                                                     DataObject.Pasting="PositiveIntSize9_Pasting"
-                                                                     Binding.SourceUpdated="AreaProperty_SourceUpdated"/>
-                                                        </StackPanel>
-                                                    </GroupBox>
-                                                </Grid>
-                                            </Border>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </StackPanel>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+            </ScrollViewer>
+        </Grid>
     </Grid>
 </Window>

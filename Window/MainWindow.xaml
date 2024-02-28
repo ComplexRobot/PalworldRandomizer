@@ -18,7 +18,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <StackPanel Margin="5" Grid.Row="0" Grid.Column="0">
-            <TextBlock FontWeight="Bold">Pal Spawn Randomizer v1.0 Beta 5.4</TextBlock>
+            <TextBlock FontWeight="Bold">Pal Spawn Randomizer v1.0 Beta 6.0</TextBlock>
             <Border BorderBrush="Gray" BorderThickness="0,0,0,1"/>
             <GroupBox Margin="5">
                 <GroupBox.Header>
@@ -137,10 +137,10 @@
             <TextBlock Margin="0"></TextBlock>
             <WrapPanel Margin="5,10,0,0">
                 <Button Name="savePak" Click="SavePak_Click">
-                    <TextBlock Margin="5,0,5,0" Text="Randomize And Save PAK..."/>
+                    <TextBlock Margin="5,2,5,2" Text="Randomize And Save PAK..."/>
                 </Button>
                 <Button Click="ViewSpawns_Click" Margin="10,0,10,0">
-                    <TextBlock Margin="5,0,5,0">Open Spawn Viewer/Editor</TextBlock>
+                    <TextBlock Margin="5,2,5,2">Open Spawn Editor</TextBlock>
                 </Button>
             </WrapPanel>
         </StackPanel>
@@ -148,7 +148,7 @@
             <Image Name="testImage" MaxHeight="64" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="5"
                    Source="/Resources/Images/PalIcon/T_SheepBall_icon_normal.png"/>
         </Grid>
-        <StatusBar  Grid.Row="1" Grid.Column="0">
+        <StatusBar Grid.Row="1" Grid.Column="0">
             <StatusBarItem>
                 <emoji:TextBlock Name="statusBar" Text="" Margin="0"/>
             </StatusBarItem>
