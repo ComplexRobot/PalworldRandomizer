@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System.Reflection;
+using System.Resources;
+using System.Windows;
 using System.Windows.Threading;
 
 namespace PalworldRandomizer
@@ -10,6 +12,32 @@ namespace PalworldRandomizer
             Console.WriteLine(eventArgs.Exception.ToString());
             MessageBox.Show(eventArgs.Exception.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             eventArgs.Handled = true;
+        }
+
+        private void Application_Startup(object sender, StartupEventArgs e)
+        {
+            DispatcherOperation dataOperation = Dispatcher.BeginInvoke(() =>
+            {
+                ResourceManager resourceManager = new(Assembly.GetExecutingAssembly().GetName().Name + ".g", Assembly.GetExecutingAssembly());
+                UAssetData.Initialize();
+                Data.Initialize(resourceManager);
+                Randomize.Initialize();
+                Dispatcher.BeginInvoke(() => resourceManager.ReleaseAllResources());
+                PalSpawnPage palSpawnpage = new();
+                AppWindow palSpawnWindow = new AppWindow(() => palSpawnpage) { Title = "Pal Spawn Editor" };
+                palSpawnpage.ParentWindow = palSpawnWindow;
+                palSpawnWindow.Closing += (sender, e) =>
+                {
+                    palSpawnWindow.HideClean();
+                    e.Cancel = true;
+                };
+            });
+            Dispatcher.BeginInvoke(() =>
+            {
+                MainWindow = new AppWindow(() => new MainPage(dataOperation)) { Title = "Palworld Randomizer" };
+                MainWindow.Closed += (sender, e) => Shutdown();
+                ((AppWindow) MainWindow).ShowClean();
+            });
         }
     }
 

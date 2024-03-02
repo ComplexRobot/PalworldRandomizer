@@ -1,12 +1,12 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
 namespace PalworldRandomizer
 {
-    public class FormData(MainWindow window)
+    public class FormData(MainPage window)
     {
         public bool randomizeField = window.randomizeField.IsChecked == true;
         public bool randomizeDungeons = window.randomizeDungeons.IsChecked == true;
@@ -43,62 +43,27 @@ namespace PalworldRandomizer
         public bool outputLog = window.outputLog.IsChecked == true;
     }
 
-    public partial class MainWindow : Window
+    public partial class MainPage : Grid
     {
-        public static MainWindow Instance { get; private set; } = null!;
-        public MainWindow()
+        public static MainPage Instance { get; private set; } = null!;
+        public MainPage(DispatcherOperation dataOperation)
         {
             Instance = this;
             InitializeComponent();
-            CompositionTarget.Rendering += Window_Rendering;
-        }
-
-        private enum LoadStep
-        {
-            NoSize,
-            SizeSet,
-            Loaded,
-            AfterLoaded
-        }
-        private double initialX = 0;
-        private double initialY = 0;
-        private LoadStep loadStep = LoadStep.NoSize;
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            UAssetData.Initialize();
-            Data.Initialize();
-            Randomize.Initialize();
-            SharedWindow.EnableDarkMode(this);
-            new PalSpawnWindow();
+            form.Visibility = Visibility.Collapsed;
+            statusBar.Text = "⌛ Initializing...";
             testImage.Source = new BitmapImage(new Uri(Data.PalIcon[Randomize.GetRandomPal()], UriKind.Relative));
-            loadStep = LoadStep.Loaded;
+            Dispatcher.BeginInvoke(() =>
+            {
+                dataOperation.Wait();
+                form.Visibility = Visibility.Visible;
+                statusBar.Text = "";
+            });
         }
 
-        private void WindowComplete(object? sender, EventArgs e)
+        public AppWindow GetWindow()
         {
-            loadStep = LoadStep.Loaded;
-        }
-
-        private void Window_Rendering(object? sender, EventArgs e)
-        {
-            if (loadStep == LoadStep.NoSize)
-            {
-                initialX = Left;
-                initialY = Top;
-                Left = -10000;
-                Top = -10000;
-                loadStep = LoadStep.SizeSet;
-            }
-            else if (loadStep == LoadStep.Loaded) // It's not guaranteed to be done after Loaded, a better solution is needed
-            {
-                loadStep = LoadStep.AfterLoaded;
-            }
-            else if (loadStep == LoadStep.AfterLoaded)
-            {
-                Left = initialX;
-                Top = initialY;
-                CompositionTarget.Rendering -= Window_Rendering;
-            }
+            return (AppWindow) Parent;
         }
 
         private bool generating = false;
@@ -140,12 +105,13 @@ namespace PalworldRandomizer
             ValidateNumericText(levelCap, 1, 50);
             progressBar.Visibility = Visibility.Visible;
             progressBar.Value = 0;
-            new Thread((object? formData) =>
+            new Thread(formData =>
             {
                 if (!Randomize.GeneratePalSpawns((FormData) formData!))
                 {
-                    Dispatcher.Invoke(() => MessageBox.Show(this, "Error: No area changes to save.", "Failed To Save Pak", MessageBoxButton.OK, MessageBoxImage.Error));
+                    Dispatcher.Invoke(() => MessageBox.Show((Window) Parent, "Error: No area changes to save.", "Failed To Save Pak", MessageBoxButton.OK, MessageBoxImage.Error));
                 }
+                Dispatcher.Invoke(() => statusBar.Text = "✔️ Generation complete.");
                 generating = false;
                 Dispatcher.Invoke(() => savePak.IsEnabled = true);
             }).Start(new FormData(this));
@@ -198,15 +164,10 @@ namespace PalworldRandomizer
             methodCustomSize.IsChecked = true;
         }
 
-        private void Window_Closed(object sender, EventArgs e)
-        {
-            Application.Current.Shutdown();
-        }
-
         private void ViewSpawns_Click(object sender, RoutedEventArgs e)
         {
-            PalSpawnWindow.Instance.Show();
-            PalSpawnWindow.Instance.Focus();
+            PalSpawnPage.Instance.GetWindow().ShowClean();
+            PalSpawnPage.Instance.GetWindow().Focus();
         }
 
         private void MethodNone_Checked(object sender, RoutedEventArgs e)

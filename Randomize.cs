@@ -5,7 +5,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Reflection;
 using System.Resources;
 using System.Text;
 using System.Windows;
@@ -76,15 +75,13 @@ namespace PalworldRandomizer
             "Male_DarkTrader01"
         ];
 
-        public static void Initialize()
+        public static void Initialize(ResourceManager resourceManager)
         {
             PalData = UAssetData.CreatePalData();
             UAsset palNames = UAssetData.LoadAsset("Data\\DT_PalNameText.uasset");
             UAsset humanNames = UAssetData.LoadAsset("Data\\DT_HumanNameText.uasset");
-            ResourceManager resourceManager = new(Assembly.GetExecutingAssembly().GetName().Name + ".g", Assembly.GetExecutingAssembly());
             HashSet<string> resourceNames = new(resourceManager.GetResourceSet(CultureInfo.InvariantCulture, true, true)!.Cast<DictionaryEntry>()
                 .Select(x => (string) x.Key), StringComparer.InvariantCultureIgnoreCase);
-            resourceManager.ReleaseAllResources();
             Dictionary<string, string> weapons = new()
             {
                 { "AssaultRifle", "/Resources/Images/InventoryItemIcon/T_itemicon_Weapon_AssaultRifle_Default1.png" },
@@ -102,34 +99,38 @@ namespace PalworldRandomizer
             {
                 if (keyPair.Value.IsPal)
                 {
-                    PalName.Add(keyPair.Key,
-                        ((TextPropertyData) ((DataTableExport) palNames.Exports[0]).Table.Data.Find(property =>
+                    string nameString = ((TextPropertyData) ((DataTableExport) palNames.Exports[0]).Table.Data.Find(property =>
                         (PalData[keyPair.Key].OverrideNameTextID != "" &&
                         string.Compare(((TextPropertyData) property.Value[0]).Value.Value, $"{PalData[keyPair.Key].OverrideNameTextID}_TextData", true) == 0)
                         || string.Compare(((TextPropertyData) property.Value[0]).Value.Value, $"PAL_NAME_{keyPair.Key}_TextData", true) == 0)!.Value[0])
-                        .CultureInvariantString.Value.Trim());
+                        .CultureInvariantString.Value.Trim();
                     bool isTowerBoss = keyPair.Key.StartsWith("GYM_", StringComparison.InvariantCultureIgnoreCase);
                     bool isBoss = keyPair.Key.StartsWith("BOSS_", StringComparison.InvariantCultureIgnoreCase) || isTowerBoss;
+                    PalName.Add(keyPair.Key, nameString == "en_text" ? (isBoss ? keyPair.Key[(keyPair.Key.IndexOf('_') + 1)..] : keyPair.Key) : nameString);
                     if (keyPair.Value.ZukanIndex > 0)
                     {
                         PalList.Add(keyPair.Key);
+                    }
+                    if (!isBoss)
+                    {
                         BossName.Add(keyPair.Key, PalData.Keys.ToList().Find(key => string.Compare(key, $"BOSS_{keyPair.Key}", true) == 0)!);
                         SimpleName.Add(new SpawnData(keyPair.Key).SimpleName, keyPair.Key);
                     }
-                    if (isTowerBoss)
+                    else if (isTowerBoss)
                     {
                         TowerBossNames.Add(keyPair.Key);
                         SimpleName.Add(new SpawnData(keyPair.Key).SimpleName, keyPair.Key);
                     }
-                    if (keyPair.Value.ZukanIndex > 0 || isBoss)
+                    string resourceKey = keyPair.Key.EndsWith("_Flower") ? keyPair.Key[..keyPair.Key.LastIndexOf('_')] : keyPair.Key;
+                    resourceKey = isBoss ? resourceKey[(resourceKey.IndexOf('_') + 1)..] : resourceKey;
+                    string resourceName = $"Resources/Images/PalIcon/T_{resourceKey}_icon_normal.png";
+                    if (resourceNames.Contains(resourceName))
                     {
-                        string resourceKey = keyPair.Key.EndsWith("_Flower") ? keyPair.Key[..keyPair.Key.LastIndexOf('_')] : keyPair.Key;
-                        resourceKey = isBoss ? resourceKey[(resourceKey.IndexOf('_') + 1)..] : resourceKey;
-                        string resourceName = $"Resources/Images/PalIcon/T_{resourceKey}_icon_normal.png";
-                        if (PalData[resourceKey].ZukanIndex > 0 && resourceNames.Contains(resourceName))
-                        {
-                            PalIcon.Add(keyPair.Key, $"/{resourceName}");
-                        }
+                        PalIcon.Add(keyPair.Key, $"/{resourceName}");
+                    }
+                    else
+                    {
+                        PalIcon.Add(keyPair.Key, $"/Resources/Images/PalIcon/T_icon_unknown.png");
                     }
                 }
                 else
@@ -610,7 +611,7 @@ namespace PalworldRandomizer
             foreach (AreaData area in subList)
             {
                 ++progress;
-                MainWindow.Instance.Dispatcher.BeginInvoke(() => MainWindow.Instance.progressBar.Value = Math.Ceiling(100.0 * progress / progressTotal));
+                MainPage.Instance.Dispatcher.BeginInvoke(() => MainPage.Instance.progressBar.Value = Math.Ceiling(100.0 * progress / progressTotal));
                 bool isFieldBoss = area.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase)
                     && !area.filename.Contains("dungeon", StringComparison.InvariantCultureIgnoreCase);
                 bool isDungeonBoss = area.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase)
@@ -886,10 +887,9 @@ namespace PalworldRandomizer
                 {
                     area.SpawnEntries.Sort((x, y) => (x.NightOnly ? 1 : 0) - (y.NightOnly ? 1 : 0));
                 }
-                string areaName = Path.GetFileNameWithoutExtension(area.filename)["BP_PalSpawner_Sheets_".Length..];
                 if (formData.outputLog)
                 {
-                    outputLog.AppendLine(areaName);
+                    outputLog.AppendLine(Path.GetFileNameWithoutExtension(area.filename)["BP_PalSpawner_Sheets_".Length..]);
                     area.SpawnEntries.ForEach(entry => { entry.Print(outputLog); totalSpeciesCount += entry.SpawnList.Count; });
                     outputLog.AppendLine();
                 }
@@ -899,7 +899,7 @@ namespace PalworldRandomizer
                 PalSpawn.MutateAsset(area.uAsset, area.spawnExportData);
                 area.uAsset.Write($"{outputPath}\\{area.filename}");
             }
-            MainWindow.Instance.Dispatcher.Invoke(() => MainWindow.Instance.progressBar.Visibility = Visibility.Collapsed);
+            MainPage.Instance.Dispatcher.Invoke(() => MainPage.Instance.progressBar.Visibility = Visibility.Collapsed);
             areaList.Sort((x, y) =>
             {
                 if (x.modified == y.modified)
@@ -907,7 +907,7 @@ namespace PalworldRandomizer
                 return (y.modified ? 1 : 0) - (x.modified ? 1 : 0);
             });
             GeneratedAreaList = areaList;
-            PalSpawnWindow.Instance.Dispatcher.Invoke(() => PalSpawnWindow.Instance.areaList.ItemsSource = GeneratedAreaList);
+            PalSpawnPage.Instance.Dispatcher.Invoke(() => PalSpawnPage.Instance.areaList.ItemsSource = GeneratedAreaList);
             if (formData.outputLog)
             {
                 outputLog.AppendJoin(' ', [totalSpeciesCount, "Total Entries"]);
@@ -918,8 +918,9 @@ namespace PalworldRandomizer
                 }
                 catch (Exception e)
                 {
-                    MainWindow.Instance.Dispatcher.Invoke(() =>
-                        MessageBox.Show(MainWindow.Instance, "Error: Failed to write output log.\n" + e.ToString(), "Output Log Failed", MessageBoxButton.OK, MessageBoxImage.Error));
+                    MainPage.Instance.Dispatcher.Invoke(() =>
+                        MessageBox.Show(MainPage.Instance.GetWindow(), "Error: Failed to write output log.\n" + e.ToString(), "Output Log Failed",
+                            MessageBoxButton.OK, MessageBoxImage.Error));
                 }
             }
         }
@@ -928,7 +929,7 @@ namespace PalworldRandomizer
         {
             GenerateSpawnLists(formData);
             RandomizeAndSaveAssets(formData);
-            MainWindow.Instance.Dispatcher.Invoke(() => MainWindow.Instance.statusBar.Text = "✔️ Generation complete.");
+            MainPage.Instance.Dispatcher.Invoke(() => MainPage.Instance.statusBar.Text = "💾 Creating PAK...");
             return FileModify.GenerateAndSavePak();
         }
         public static string GetRandomPal()
@@ -1012,7 +1013,7 @@ namespace PalworldRandomizer
                         return string.Compare(x.filename, y.filename);
                     return (y.modified ? 1 : 0) - (x.modified ? 1 : 0);
                 });
-                PalSpawnWindow.Instance.areaList.ItemsSource = areaList;
+                PalSpawnPage.Instance.areaList.ItemsSource = areaList;
             }
             else
             {
@@ -1110,7 +1111,7 @@ namespace PalworldRandomizer
                             return string.Compare(x.filename, y.filename);
                         return (y.modified ? 1 : 0) - (x.modified ? 1 : 0);
                     });
-                    PalSpawnWindow.Instance.areaList.ItemsSource = areaList;
+                    PalSpawnPage.Instance.areaList.ItemsSource = areaList;
                 }
                 catch (Exception e)
                 {

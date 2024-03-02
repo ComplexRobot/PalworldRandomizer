@@ -9,30 +9,26 @@ using System.Windows.Media;
 
 namespace PalworldRandomizer
 {
-    public partial class PalSpawnWindow : Window
+    public partial class PalSpawnPage : Grid
     {
-        public static PalSpawnWindow Instance { get; private set; } = null!;
-        public PalSpawnWindow()
+        public static PalSpawnPage Instance { get; private set; } = null!;
+        public AppWindow ParentWindow { get; set; } = null!;
+        public PalSpawnPage()
         {
             Instance = this;
             InitializeComponent();
             CompositionTarget.Rendering += Window_Rendering;
+            spawnEntries.Tag = this;
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        public AppWindow GetWindow()
         {
-            SharedWindow.EnableDarkMode(this);
-        }
-
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            Hide();
-            e.Cancel = true;
+            return ((AppWindow) Parent) ?? ParentWindow;
         }
 
         private void UpdateSourceFocusedElement()
         {
-            IInputElement focusedElement = FocusManager.GetFocusedElement(this);
+            IInputElement focusedElement = FocusManager.GetFocusedElement(GetWindow());
             if (focusedElement is TextBox textBox)
             {
                 textBox.GetBindingExpression(TextBox.TextProperty)?.UpdateSource();
@@ -44,13 +40,13 @@ namespace PalworldRandomizer
             UpdateSourceFocusedElement();
             if (!FileModify.SaveAreaList((List<AreaData>) areaList.ItemsSource) || !FileModify.GenerateAndSavePak())
             {
-                MessageBox.Show(this, "Error: No spawn group changes detected.", "Failed To Save Pak", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(GetWindow(), "Error: No spawn group changes detected.", "Failed To Save Pak", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         private void Reset_Click(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show(this, "Are you sure you want to revert back to vanilla spawns?", "Revert All Spawns", MessageBoxButton.OKCancel, MessageBoxImage.Warning)
+            if (MessageBox.Show(GetWindow(), "Are you sure you want to revert back to vanilla spawns?", "Revert All Spawns", MessageBoxButton.OKCancel, MessageBoxImage.Warning)
                 == MessageBoxResult.OK)
             {
                 areaList.ItemsSource = Data.AreaDataCopy();
@@ -64,12 +60,12 @@ namespace PalworldRandomizer
             {
                 if (status != "Cancel")
                 {
-                    MessageBox.Show(this, "Error: Invalid or incorrect PAK file.\n" + status, "Failed To Load Pak", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(GetWindow(), "Error: Invalid or incorrect PAK file.\n" + status, "Failed To Load Pak", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             else
             {
-                MessageBox.Show(this, "Successfully loaded PAK file.", "Pak Loaded", MessageBoxButton.OK, MessageBoxImage.None);
+                MessageBox.Show(GetWindow(), "Successfully loaded PAK file.", "Pak Loaded", MessageBoxButton.OK, MessageBoxImage.None);
             }
         }
 
@@ -86,12 +82,12 @@ namespace PalworldRandomizer
             {
                 if (status != "Cancel")
                 {
-                    MessageBox.Show(this, "Error: Invalid or corrupt CSV file.\n" + status, "Failed To Load CSV", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(GetWindow(), "Error: Invalid or corrupt CSV file.\n" + status, "Failed To Load CSV", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             else
             {
-                MessageBox.Show(this, "Successfully loaded CSV file.", "CSV Loaded", MessageBoxButton.OK, MessageBoxImage.None);
+                MessageBox.Show(GetWindow(), "Successfully loaded CSV file.", "CSV Loaded", MessageBoxButton.OK, MessageBoxImage.None);
             }
         }
 
@@ -120,9 +116,9 @@ namespace PalworldRandomizer
             if (loadingEntries)
             {
                 AreaData area = (AreaData) areaList.SelectedItem;
-                if (area != null && area.EntriesToShow < area.SpawnEntries.Count)
+                if (area != null && area.EntriesToShow < area.Count)
                 {
-                    while (addedSpawns < SpawnLoadSpeed * spawnAddLoops && area.EntriesToShow < area.SpawnEntries.Count)
+                    while (addedSpawns < SpawnLoadSpeed * spawnAddLoops && area.EntriesToShow < area.Count)
                     {
                         addedSpawns += area.SpawnEntries[area.EntriesToShow++].SpawnList.Count;
                     }
@@ -327,7 +323,7 @@ namespace PalworldRandomizer
         {
             GroupToolBarAction(sender, e,
             (areaData) => areaData != null &&
-                MessageBox.Show(this, "Delete all groups of this area?", "Delete All", MessageBoxButton.OKCancel, MessageBoxImage.Warning) == MessageBoxResult.OK,
+                MessageBox.Show(GetWindow(), "Delete all groups of this area?", "Delete All", MessageBoxButton.OKCancel, MessageBoxImage.Warning) == MessageBoxResult.OK,
             (areaData) => areaData?.Clear());
         }
 
@@ -338,12 +334,11 @@ namespace PalworldRandomizer
 
         private void PalDeleteThis_Click(object sender, RoutedEventArgs e)
         {
-            ItemsControl itemsControl = GetPalItemsControl(sender);
             if (!PalAction(sender, e,
                 (index, spawnData, spawnList) => spawnList.Count > 1,
                 (index, spawnData, spawnList) => spawnList.RemoveAt(index)))
             {
-                MessageBox.Show("Can't delete the last Pal!", "Delete Pal", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(GetWindow(), "Can't delete the last Pal!", "Delete Pal", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -544,7 +539,7 @@ namespace PalworldRandomizer
             string stringToParse = (string) parameter;
             for (int i = 0; i < values.Length; ++i)
             {
-                string stringValue = null!;
+                string stringValue;
                 if (IsNumber(values[i]))
                 {
                     stringValue = $"{values[i]}";

@@ -4,7 +4,7 @@
              xmlns:local="clr-namespace:PalworldRandomizer"
              xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf"
              DispatcherUnhandledException="Application_DispatcherUnhandledException"
-             StartupUri="Window\MainWindow.xaml">
+             Startup="Application_Startup">
     <Application.Resources>
         <Style TargetType="CheckBox">
             <Setter Property="Background" Value="Black"/>
