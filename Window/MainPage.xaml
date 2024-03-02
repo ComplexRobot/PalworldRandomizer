@@ -14,7 +14,7 @@
         <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
     <StackPanel Margin="5" Name="form">
-        <TextBlock FontWeight="Bold">Pal Spawn Randomizer v1.0 β 6.1</TextBlock>
+        <TextBlock FontWeight="Bold">Pal Spawn Randomizer v1.0 β 6.2</TextBlock>
         <Border BorderBrush="Gray" BorderThickness="0,0,0,1"/>
         <GroupBox Margin="5">
             <GroupBox.Header>

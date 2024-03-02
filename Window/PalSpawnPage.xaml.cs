@@ -184,7 +184,7 @@ namespace PalworldRandomizer
             TextBox newTextBox = (TextBox) comboBox.Template.FindName("PART_EditableTextBox", comboBox);
             if (newTextBox?.IsFocused == true)
             {
-                FocusManager.SetFocusedElement(this, null);
+                FocusManager.SetFocusedElement(GetWindow(), null);
                 Keyboard.ClearFocus();
             }
         }
