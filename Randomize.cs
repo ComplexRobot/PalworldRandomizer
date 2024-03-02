@@ -526,7 +526,8 @@ namespace PalworldRandomizer
                 {
                     Data.PalList.ForEach(name => basicSpawns.Add(name, new() { SpawnList = [new(name)] }));
                 }
-                Data.BossName.Values.ToList().ForEach(name => bossSpawns.Add(name, new() { SpawnList = [new(name)] }));
+                Data.BossName.Where(keyPair => Data.PalData[keyPair.Key].ZukanIndex > 0).Select(keyPair => keyPair.Value)
+                    .ForAll(name => bossSpawns.Add(name, new() { SpawnList = [new(name)] }));
                 humanSpawns.AddRange(new Collection<string>
                 ([
                     .. (formData.spawnHumans ? Data.humanNames : []),
@@ -546,7 +547,7 @@ namespace PalworldRandomizer
             return
             [
                 .. (formData.spawnPals ? Data.PalList : []),
-                .. Data.BossName.Values,
+                .. Data.BossName.Where(keyPair => Data.PalData[keyPair.Key].ZukanIndex > 0).Select(keyPair => keyPair.Value),
                 .. (formData.spawnTowerBosses ? Data.TowerBossNames : []),
                 .. (formData.spawnHumans ? Data.humanNames : []),
                 .. (formData.spawnPolice ? Data.policeNames : []),

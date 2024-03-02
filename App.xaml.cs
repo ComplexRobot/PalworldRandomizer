@@ -24,7 +24,7 @@ namespace PalworldRandomizer
                 Randomize.Initialize();
                 Dispatcher.BeginInvoke(() => resourceManager.ReleaseAllResources());
                 PalSpawnPage palSpawnpage = new();
-                AppWindow palSpawnWindow = new AppWindow(() => palSpawnpage) { Title = "Pal Spawn Editor" };
+                AppWindow palSpawnWindow = new(() => palSpawnpage) { Title = "Pal Spawn Editor" };
                 palSpawnpage.ParentWindow = palSpawnWindow;
                 palSpawnWindow.Closing += (sender, e) =>
                 {

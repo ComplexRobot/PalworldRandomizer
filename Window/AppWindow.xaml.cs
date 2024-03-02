@@ -16,7 +16,6 @@ namespace PalworldRandomizer
                 Dispatcher.BeginInvoke(() => Content = contentSetter());
             };
             InitializeComponent();
-            WindowChrome chrome = WindowChrome.GetWindowChrome(this);
         }
 
         private double initialX = 0;
