@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using System.Windows.Interop;
-using System.Windows.Shell;
 
 namespace PalworldRandomizer
 {

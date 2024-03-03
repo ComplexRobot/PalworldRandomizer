@@ -277,10 +277,7 @@ namespace PalworldRandomizer
         public uint MinGroupSize { get; set; } = 1;
         public uint MaxGroupSize { get; set; } = 1;
         public event PropertyChangedEventHandler? PropertyChanged;
-        public void NotifyPropertyChanged(string name)
-        {
-            PropertyChanged?.Invoke(this, new(name));
-        }
+        public void NotifyPropertyChanged(string name) => PropertyChanged?.Invoke(this, new(name));
         public void Print(StringBuilder stringBuilder)
         {
             object[] nameAppend = IsPal ? [(IsBoss ? " {BOSS}" : "")] : [" (", Name, ")"];
@@ -316,22 +313,10 @@ namespace PalworldRandomizer
             Name = characterName;
             MaxLevel = 4;
         }
-        public string ResolvedName
-        {
-            get
-            {
-                return $"{Data.PalName[Name]}{(Name.EndsWith("_Flower") ? "🌺" : "")}";
-            }
-        }
+        public string ResolvedName { get => Name.EndsWith("_Flower") ? $"{Data.PalName[Name]}🌺" : Data.PalName[Name]; }
         public string SimpleName
         {
-            get
-            {
-                if (!IsPal)
-                    return Name;
-                return ResolvedName;
-            }
-
+            get => IsPal ? ResolvedName : Name;
             set
             {
                 if (value == null)
@@ -347,10 +332,7 @@ namespace PalworldRandomizer
         }
         public bool IsBoss
         {
-            get
-            {
-                return Data.PalData[Name].IsBoss;
-            }
+            get => Data.PalData[Name].IsBoss;
             set
             {
                 if (!Data.PalData[Name].IsPal)
@@ -364,23 +346,8 @@ namespace PalworldRandomizer
                 }
             }
         }
-        public string IconPath
-        {
-            get
-            {
-                return Data.PalIcon[Name];
-            }
-        }
-
-        public bool BossChangeable
-        {
-            get
-            {
-                if (!Data.PalData[Name].IsPal)
-                    return false;
-                return !Name.StartsWith("GYM_", StringComparison.InvariantCultureIgnoreCase);
-            }
-        }
+        public string IconPath { get => Data.PalIcon[Name]; }
+        public bool BossChangeable { get => Data.PalData[Name].IsPal && !Name.StartsWith("GYM_", StringComparison.InvariantCultureIgnoreCase); }
     }
 
     public class SpawnExportData
@@ -403,10 +370,7 @@ namespace PalworldRandomizer
         private readonly ObservableCollection<SpawnEntry> virtualEntries = [];
         public int EntriesToShow
         {
-            get
-            {
-                return virtualEntries.Count;
-            }
+            get => virtualEntries.Count;
             set
             {
                 if (value == 0)
@@ -448,24 +412,15 @@ namespace PalworldRandomizer
             SpawnEntries.Clear();
             virtualEntries.Clear();
         }
-        public int Count { get { return SpawnEntries.Count; } }
-        public ObservableCollection<SpawnEntry> SpawnEntriesView
-        {
-            get { return virtualEntries; }
-        }
+        public int Count { get => SpawnEntries.Count; }
+        public ObservableCollection<SpawnEntry> SpawnEntriesView { get => virtualEntries; }
         public List<SpawnEntry> SpawnEntries
         {
-            get { return spawnExportData.spawnEntries; }
-            set { spawnExportData.spawnEntries = value; }
+            get => spawnExportData.spawnEntries;
+            set => spawnExportData.spawnEntries = value;
         }
-        public string Name
-        {
-            get { return Path.GetFileNameWithoutExtension(filename)["BP_PalSpawner_Sheets_".Length..] + (modified ? "*" : ""); }
-        }
-        public string SimpleName
-        {
-            get { return Path.GetFileNameWithoutExtension(filename)["BP_PalSpawner_Sheets_".Length..]; }
-        }
-        public override string ToString() { return Name; }
+        public string Name { get => Path.GetFileNameWithoutExtension(filename)["BP_PalSpawner_Sheets_".Length..] + (modified ? "*" : ""); }
+        public string SimpleName { get => Path.GetFileNameWithoutExtension(filename)["BP_PalSpawner_Sheets_".Length..]; }
+        public override string ToString() => Name;
     }
 }

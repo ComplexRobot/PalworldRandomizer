@@ -61,10 +61,7 @@ namespace PalworldRandomizer
             });
         }
 
-        public AppWindow GetWindow()
-        {
-            return (AppWindow) Parent;
-        }
+        public AppWindow GetWindow() => (AppWindow) Parent;
 
         private bool generating = false;
         private void SavePak_Click(object sender, RoutedEventArgs e)
@@ -109,7 +106,7 @@ namespace PalworldRandomizer
             {
                 if (!Randomize.GeneratePalSpawns((FormData) formData!))
                 {
-                    Dispatcher.Invoke(() => MessageBox.Show((Window) Parent, "Error: No area changes to save.", "Failed To Save Pak", MessageBoxButton.OK, MessageBoxImage.Error));
+                    Dispatcher.Invoke(() => MessageBox.Show(GetWindow(), "Error: No area changes to save.", "Failed To Save Pak", MessageBoxButton.OK, MessageBoxImage.Error));
                 }
                 Dispatcher.Invoke(() => statusBar.Text = "✔️ Generation complete.");
                 generating = false;
@@ -117,46 +114,16 @@ namespace PalworldRandomizer
             }).Start(new FormData(this));
         }
 
-        private void PositiveIntSize2_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            SharedWindow.PositiveIntSize2_PreviewTextInput(sender, e);
-        }
-
-        private void PositiveIntSize2_Pasting(object sender, DataObjectPastingEventArgs e)
-        {
-            SharedWindow.PositiveIntSize2_Pasting(sender, e);
-        }
-
-        private void PositiveIntSize3_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            SharedWindow.PositiveIntSize3_PreviewTextInput(sender, e);
-        }
-
-        private void PositiveIntSize3_Pasting(object sender, DataObjectPastingEventArgs e)
-        {
-            SharedWindow.PositiveIntSize3_Pasting(sender, e);
-        }
-
-        private void NonNegIntSize4_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            SharedWindow.NonNegIntSize4_PreviewTextInput(sender, e);
-        }
-
-        private void NonNegIntSize4_Pasting(object sender, DataObjectPastingEventArgs e)
-        {
-            SharedWindow.NonNegIntSize4_Pasting(sender, e);
-        }
+        private void PositiveIntSize2_PreviewTextInput(object sender, TextCompositionEventArgs e) => SharedWindow.PositiveIntSize2_PreviewTextInput(sender, e);
+        private void PositiveIntSize2_Pasting(object sender, DataObjectPastingEventArgs e) => SharedWindow.PositiveIntSize2_Pasting(sender, e);
+        private void PositiveIntSize3_PreviewTextInput(object sender, TextCompositionEventArgs e) => SharedWindow.PositiveIntSize3_PreviewTextInput(sender, e);
+        private void PositiveIntSize3_Pasting(object sender, DataObjectPastingEventArgs e) => SharedWindow.PositiveIntSize3_Pasting(sender, e);
+        private void NonNegIntSize4_PreviewTextInput(object sender, TextCompositionEventArgs e) => SharedWindow.NonNegIntSize4_PreviewTextInput(sender, e);
+        private void NonNegIntSize4_Pasting(object sender, DataObjectPastingEventArgs e) => SharedWindow.NonNegIntSize4_Pasting(sender, e);
 
         private void GroupType_Click(object sender, RoutedEventArgs e)
         {
-            if (groupRandom.IsChecked == true)
-            {
-                groupMinMaxPanel.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                groupMinMaxPanel.Visibility = Visibility.Collapsed;
-            }
+            groupMinMaxPanel.Visibility = groupRandom.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void SpawnListSize_GotFocus(object sender, RoutedEventArgs e)

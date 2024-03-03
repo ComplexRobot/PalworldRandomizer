@@ -637,8 +637,8 @@
                                                                 </GroupBox.Header>
                                                                 <StackPanel Orientation="Horizontal">
                                                                     <TextBox Text="{Binding MinGroupSize, NotifyOnSourceUpdated=True}" Margin="0" BorderThickness="0" MinWidth="10"
-                                                                                 PreviewTextInput="PositiveIntSize9_PreviewTextInput"
-                                                                                 DataObject.Pasting="PositiveIntSize9_Pasting"
+                                                                                 PreviewTextInput="NonNegIntSize9_PreviewTextInput"
+                                                                                 DataObject.Pasting="NonNegIntSize9_Pasting"
                                                                                  Binding.SourceUpdated="AreaProperty_SourceUpdated"/>
                                                                     <TextBlock Margin="0">-</TextBlock>
                                                                     <TextBox Text="{Binding MaxGroupSize, NotifyOnSourceUpdated=True}" Margin="0" BorderThickness="0" MinWidth="10"

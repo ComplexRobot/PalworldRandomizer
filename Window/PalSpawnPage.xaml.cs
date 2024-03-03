@@ -13,17 +13,13 @@ namespace PalworldRandomizer
     {
         public static PalSpawnPage Instance { get; private set; } = null!;
         public AppWindow ParentWindow { get; set; } = null!;
+        public AppWindow GetWindow() => ((AppWindow) Parent) ?? ParentWindow;
         public PalSpawnPage()
         {
             Instance = this;
             InitializeComponent();
             CompositionTarget.Rendering += Window_Rendering;
             spawnEntries.Tag = this;
-        }
-
-        public AppWindow GetWindow()
-        {
-            return ((AppWindow) Parent) ?? ParentWindow;
         }
 
         private void UpdateSourceFocusedElement()
@@ -131,25 +127,10 @@ namespace PalworldRandomizer
             }
         }
 
-        private void PositiveIntSize9_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            SharedWindow.PositiveIntSize9_PreviewTextInput(sender, e);
-        }
-
-        private void PositiveIntSize9_Pasting(object sender, DataObjectPastingEventArgs e)
-        {
-            SharedWindow.PositiveIntSize9_Pasting(sender, e);
-        }
-
-        private void NonNegIntSize9_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            SharedWindow.NonNegIntSize9_PreviewTextInput(sender, e);
-        }
-
-        private void NonNegIntSize9_Pasting(object sender, DataObjectPastingEventArgs e)
-        {
-            SharedWindow.NonNegIntSize9_Pasting(sender, e);
-        }
+        private void PositiveIntSize9_PreviewTextInput(object sender, TextCompositionEventArgs e) => SharedWindow.PositiveIntSize9_PreviewTextInput(sender, e);
+        private void PositiveIntSize9_Pasting(object sender, DataObjectPastingEventArgs e) => SharedWindow.PositiveIntSize9_Pasting(sender, e);
+        private void NonNegIntSize9_PreviewTextInput(object sender, TextCompositionEventArgs e) => SharedWindow.NonNegIntSize9_PreviewTextInput(sender, e);
+        private void NonNegIntSize9_Pasting(object sender, DataObjectPastingEventArgs e) => SharedWindow.NonNegIntSize9_Pasting(sender, e);
 
         private void NameTextBox_GotFocus(object sender, RoutedEventArgs e)
         {
@@ -157,15 +138,18 @@ namespace PalworldRandomizer
             textBox.Visibility = Visibility.Collapsed;
             ComboBox comboBox = (ComboBox) ((Grid) textBox.Parent).Children[2];
             comboBox.Visibility = Visibility.Visible;
-            comboBox.ApplyTemplate();
+            bool templateApplied = comboBox.ApplyTemplate();
             TextBox newTextBox = (TextBox) comboBox.Template.FindName("PART_EditableTextBox", comboBox);
+            if (templateApplied)
+            {
+                newTextBox.LostFocus += (sender, e) =>
+                {
+                    comboBox.Visibility = Visibility.Collapsed;
+                    textBox.Visibility = Visibility.Visible;
+                };
+            }
             newTextBox.Focus();
             comboBox.IsDropDownOpen = true;
-            newTextBox.LostFocus += (object sender, RoutedEventArgs e) =>
-            {
-                comboBox.Visibility = Visibility.Collapsed;
-                textBox.Visibility = Visibility.Visible;
-            };
         }
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -247,14 +231,14 @@ namespace PalworldRandomizer
             PalAction(sender, e, null, action, refresh);
         }
 
-        private ItemsControl GetPalItemsControl(object sender)
+        private static ItemsControl GetPalItemsControl(object sender)
         {
             return (((FrameworkElement) sender).Parent is ContextMenu) ?
                 (ItemsControl) ((FrameworkElement) ((ContextMenu) ((FrameworkElement) sender).Parent).PlacementTarget).Tag
                 : (ItemsControl) ((FrameworkElement) ((FrameworkElement) ((FrameworkElement) sender).Parent).Parent).Tag;
         }
 
-        private ItemsControl GetGroupPalItemsControl(object sender)
+        private static ItemsControl GetGroupPalItemsControl(object sender)
         {
             return (((FrameworkElement) sender).Parent is ContextMenu) ?
                 (ItemsControl) ((Panel) ((Decorator) ((ContextMenu) ((FrameworkElement) sender).Parent).PlacementTarget).Child).Children[1]
@@ -531,11 +515,8 @@ namespace PalworldRandomizer
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            static bool IsNumber(object value)
-            {
-                return value is sbyte || value is byte || value is short || value is ushort || value is int || value is uint || value is long || value is ulong || value is float
-                    || value is double || value is decimal;
-            }
+            static bool IsNumber(object value) => value is sbyte || value is byte || value is short || value is ushort || value is int || value is uint || value is long || value is ulong
+                || value is float || value is double || value is decimal;
             string stringToParse = (string) parameter;
             for (int i = 0; i < values.Length; ++i)
             {
@@ -556,20 +537,8 @@ namespace PalworldRandomizer
             }
             return System.Convert.ToDouble(new DataTable().Compute(stringToParse, null));
         }
-
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return Convert([value], targetType, parameter, culture);
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) => Convert([value], targetType, parameter, culture);
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => throw new NotImplementedException();
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
     }
 }

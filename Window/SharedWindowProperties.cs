@@ -49,62 +49,27 @@ namespace PalworldRandomizer
 
         [GeneratedRegex("^(?!0)[0-9]{0,2}$")]
         private static partial Regex positiveIntSize2Regex();
-        public static void PositiveIntSize2_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            TextBox_PreviewTextInput(positiveIntSize2Regex(), sender, e);
-        }
-
-        public static void PositiveIntSize2_Pasting(object sender, DataObjectPastingEventArgs e)
-        {
-            TextBox_Pasting(positiveIntSize2Regex(), sender, e);
-        }
+        public static void PositiveIntSize2_PreviewTextInput(object sender, TextCompositionEventArgs e) => TextBox_PreviewTextInput(positiveIntSize2Regex(), sender, e);
+        public static void PositiveIntSize2_Pasting(object sender, DataObjectPastingEventArgs e) => TextBox_Pasting(positiveIntSize2Regex(), sender, e);
 
         [GeneratedRegex("^(?!0)[0-9]{0,3}$")]
         private static partial Regex positiveIntSize3Regex();
-        public static void PositiveIntSize3_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            TextBox_PreviewTextInput(positiveIntSize3Regex(), sender, e);
-        }
-
-        public static void PositiveIntSize3_Pasting(object sender, DataObjectPastingEventArgs e)
-        {
-            TextBox_Pasting(positiveIntSize3Regex(), sender, e);
-        }
+        public static void PositiveIntSize3_PreviewTextInput(object sender, TextCompositionEventArgs e) => TextBox_PreviewTextInput(positiveIntSize3Regex(), sender, e);
+        public static void PositiveIntSize3_Pasting(object sender, DataObjectPastingEventArgs e) => TextBox_Pasting(positiveIntSize3Regex(), sender, e);
 
         [GeneratedRegex("^(?:0|(?!0)[0-9]{0,4})$")]
         private static partial Regex nonNegIntSize4Regex();
-        public static void NonNegIntSize4_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            TextBox_PreviewTextInput(nonNegIntSize4Regex(), sender, e);
-        }
-
-        public static void NonNegIntSize4_Pasting(object sender, DataObjectPastingEventArgs e)
-        {
-            TextBox_Pasting(nonNegIntSize4Regex(), sender, e);
-        }
+        public static void NonNegIntSize4_PreviewTextInput(object sender, TextCompositionEventArgs e) => TextBox_PreviewTextInput(nonNegIntSize4Regex(), sender, e);
+        public static void NonNegIntSize4_Pasting(object sender, DataObjectPastingEventArgs e) => TextBox_Pasting(nonNegIntSize4Regex(), sender, e);
 
         [GeneratedRegex("^(?:0|(?!0)[0-9]{0,9})$")]
         private static partial Regex nonNegIntSize9Regex();
-        public static void NonNegIntSize9_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            TextBox_PreviewTextInput(nonNegIntSize9Regex(), sender, e);
-        }
-
-        public static void NonNegIntSize9_Pasting(object sender, DataObjectPastingEventArgs e)
-        {
-            TextBox_Pasting(nonNegIntSize9Regex(), sender, e);
-        }
+        public static void NonNegIntSize9_PreviewTextInput(object sender, TextCompositionEventArgs e) => TextBox_PreviewTextInput(nonNegIntSize9Regex(), sender, e);
+        public static void NonNegIntSize9_Pasting(object sender, DataObjectPastingEventArgs e) => TextBox_Pasting(nonNegIntSize9Regex(), sender, e);
 
         [GeneratedRegex("^(?!0)[0-9]{0,9}$")]
         private static partial Regex positiveIntSize9Regex();
-        public static void PositiveIntSize9_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            TextBox_PreviewTextInput(positiveIntSize9Regex(), sender, e);
-        }
-
-        public static void PositiveIntSize9_Pasting(object sender, DataObjectPastingEventArgs e)
-        {
-            TextBox_Pasting(positiveIntSize3Regex(), sender, e);
-        }
+        public static void PositiveIntSize9_PreviewTextInput(object sender, TextCompositionEventArgs e) => TextBox_PreviewTextInput(positiveIntSize9Regex(), sender, e);
+        public static void PositiveIntSize9_Pasting(object sender, DataObjectPastingEventArgs e) => TextBox_Pasting(positiveIntSize3Regex(), sender, e);
     }
 }
