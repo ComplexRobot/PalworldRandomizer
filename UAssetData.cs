@@ -8,6 +8,7 @@ using System.Text;
 using System.IO;
 using System.Xml;
 using PalworldRandomizer.Resources;
+using System.Collections.ObjectModel;
 
 namespace PalworldRandomizer
 {
@@ -42,9 +43,23 @@ namespace PalworldRandomizer
             usmap = new Usmap(AppDataPath("Mappings.usmap"));
         }
 
-        public static string AppDataPath(string path) => appDataPath + path;
+        public static string AppDataPath(string path = null!) => appDataPath + path;
         public static UAsset LoadAsset(string filepath) => new(AppDataPath(filepath), EngineVersion.VER_UE5_1, usmap);
         public static UAsset LoadAssetLocal(string filepath) => new(filepath, EngineVersion.VER_UE5_1, usmap);
+
+        public static UAsset PalDataAsset { get; private set; } = null!;
+        public static UAsset HumanDataAsset { get; private set; } = null!;
+        public static Dictionary<string, CharacterData> CreatePalData()
+        {
+            PalDataAsset = LoadAsset(@"Data\DT_PalMonsterParameter.uasset");
+            HumanDataAsset = LoadAsset(@"Data\DT_PalHumanParameter.uasset");
+            return new Collection<KeyValuePair<string, CharacterData>>
+                ([.. CreateReferencePairs(PalDataAsset, (asset, dataTable) => new(asset, dataTable)),
+                .. CreateReferencePairs(HumanDataAsset, (asset, dataTable) => new(asset, dataTable))]).ToDictionary();
+            static List<KeyValuePair<string, CharacterData>> CreateReferencePairs(UAsset uAsset, Func<UAsset, StructPropertyData, CharacterData> createFunc) =>
+                ((DataTableExport) uAsset.Exports[0]).Table.Data
+                .ConvertAll(structPropertyData => new KeyValuePair<string, CharacterData>(structPropertyData.Name.Value.Value, createFunc(uAsset, structPropertyData)));
+        }
 
 #if DEBUG
         public static void PrintClassDefinition(string name, string filepath)
@@ -116,30 +131,6 @@ namespace PalworldRandomizer
             Console.Write("#pragma warning restore IDE1006");
         }
 #endif
-
-        public static Dictionary<string, CharacterData> CreatePalData()
-        {
-            UAsset palData = LoadAsset(@"Data\DT_PalMonsterParameter.uasset");
-            UAsset humanData = LoadAsset(@"Data\DT_PalHumanParameter.uasset");
-            Dictionary<string, CharacterData> data = CreateReferenceDictionary(palData,
-                (UAsset asset, StructPropertyData dataTable) => new CharacterData(asset, dataTable));
-            foreach (KeyValuePair<string, CharacterData> keyPair in CreateReferenceDictionary(humanData,
-                (UAsset asset, StructPropertyData dataTable) => new CharacterData(asset, dataTable)))
-            {
-                data.Add(keyPair.Key, keyPair.Value);
-            }
-            return data;
-        }
-        private static Dictionary<string, T> CreateReferenceDictionary<T>(UAsset uAsset, Func<UAsset, StructPropertyData, T> createFunc)
-        {
-            Dictionary<string, T> dictionary = [];
-            DataTableExport dataTableExport = (DataTableExport) uAsset.Exports[0];
-            foreach (StructPropertyData structPropertyData in dataTableExport.Table.Data)
-            {
-                dictionary.Add(structPropertyData.Name.Value.Value, createFunc(uAsset, structPropertyData));
-            }
-            return dictionary;
-        }
     }
 
 #pragma warning disable IDE1006

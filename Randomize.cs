@@ -130,7 +130,7 @@ namespace PalworldRandomizer
                     }
                     else
                     {
-                        PalIcon.Add(keyPair.Key, $"/Resources/Images/PalIcon/T_icon_unknown.png");
+                        PalIcon.Add(keyPair.Key, "/Resources/Images/PalIcon/T_icon_unknown.png");
                     }
                 }
                 else
@@ -152,7 +152,7 @@ namespace PalworldRandomizer
                     }
                     else
                     {
-                        PalIcon.Add(keyPair.Key, $"/Resources/Images/PalIcon/T_CommonHuman_icon_normal.png");
+                        PalIcon.Add(keyPair.Key, "/Resources/Images/PalIcon/T_CommonHuman_icon_normal.png");
                     }
                 }
             }

@@ -100,6 +100,7 @@ namespace PalworldRandomizer
                 loadingEntries = true;
                 addedSpawns = 0;
                 spawnAddLoops = 1;
+                area.VirtualCapacity = area.Count;
             }
             if (e.RemovedItems.Count > 0 && ((AreaData) e.RemovedItems[0]!).modified == true)
             {
@@ -114,10 +115,12 @@ namespace PalworldRandomizer
                 AreaData area = (AreaData) areaList.SelectedItem;
                 if (area != null && area.EntriesToShow < area.Count)
                 {
-                    while (addedSpawns < SpawnLoadSpeed * spawnAddLoops && area.EntriesToShow < area.Count)
+                    int countToAdd = 0;
+                    while (addedSpawns < SpawnLoadSpeed * spawnAddLoops && area.EntriesToShow + countToAdd < area.Count)
                     {
-                        addedSpawns += area.SpawnEntries[area.EntriesToShow++].SpawnList.Count;
+                        addedSpawns += area.SpawnEntries[area.EntriesToShow + countToAdd++].SpawnList.Count;
                     }
+                    area.EntriesToShow += countToAdd;
                     ++spawnAddLoops;
                 }
                 else

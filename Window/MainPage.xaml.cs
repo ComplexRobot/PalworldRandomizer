@@ -121,6 +121,13 @@ namespace PalworldRandomizer
         private void NonNegIntSize4_PreviewTextInput(object sender, TextCompositionEventArgs e) => SharedWindow.NonNegIntSize4_PreviewTextInput(sender, e);
         private void NonNegIntSize4_Pasting(object sender, DataObjectPastingEventArgs e) => SharedWindow.NonNegIntSize4_Pasting(sender, e);
 
+        private void ViewSpawns_Click(object sender, RoutedEventArgs e)
+        {
+            PalSpawnPage.Instance.GetWindow().ShowClean();
+            PalSpawnPage.Instance.GetWindow().Focus();
+        }
+
+        // TODO: move logic to xaml
         private void GroupType_Click(object sender, RoutedEventArgs e)
         {
             groupMinMaxPanel.Visibility = groupRandom.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
@@ -129,12 +136,6 @@ namespace PalworldRandomizer
         private void SpawnListSize_GotFocus(object sender, RoutedEventArgs e)
         {
             methodCustomSize.IsChecked = true;
-        }
-
-        private void ViewSpawns_Click(object sender, RoutedEventArgs e)
-        {
-            PalSpawnPage.Instance.GetWindow().ShowClean();
-            PalSpawnPage.Instance.GetWindow().Focus();
         }
 
         private void MethodNone_Checked(object sender, RoutedEventArgs e)
