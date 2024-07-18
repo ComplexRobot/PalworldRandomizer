@@ -28,9 +28,13 @@ namespace PalworldRandomizer
         public bool spawnHumans = window.spawnHumans.IsChecked == true;
         public bool spawnPolice = window.spawnPolice.IsChecked == true;
         public bool spawnGuards = window.spawnGuards.IsChecked == true;
+        public bool spawnNinja = window.spawnNinja.IsChecked == true;
         public bool spawnTraders = window.spawnTraders.IsChecked == true;
         public bool spawnPalTraders = window.spawnPalTraders.IsChecked == true;
         public bool spawnTowerBosses = window.spawnTowerBosses.IsChecked == true;
+        public bool spawnTowerBosses2 = window.spawnTowerBosses2.IsChecked == true;
+        public bool spawnRaidBosses = window.spawnRaidBosses.IsChecked == true;
+        public bool spawnRaidBosses2 = window.spawnRaidBosses2.IsChecked == true;
         public int fieldLevel = int.Parse(window.fieldLevel.Text);
         public int dungeonLevel = int.Parse(window.dungeonLevel.Text);
         public int fieldBossLevel = int.Parse(window.fieldBossLevel.Text);
@@ -99,7 +103,7 @@ namespace PalworldRandomizer
             ValidateNumericText(dungeonLevel, 0, 100);
             ValidateNumericText(fieldBossLevel, 0, 100);
             ValidateNumericText(dungeonBossLevel, 0, 100);
-            ValidateNumericText(levelCap, 1, 50);
+            ValidateNumericText(levelCap, 1, 55);
             progressBar.Visibility = Visibility.Visible;
             progressBar.Value = 0;
             new Thread(formData =>

@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Resources;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
 using UAssetAPI;
 using UAssetAPI.ExportTypes;
@@ -15,7 +16,7 @@ using UAssetAPI.PropertyTypes.Structs;
 
 namespace PalworldRandomizer
 {
-    public static class Data
+    public static partial class Data
     {
         public static Dictionary<string, CharacterData> PalData { get; private set; } = [];
         public static Dictionary<string, string> PalName { get; private set; } = [];
@@ -25,6 +26,9 @@ namespace PalworldRandomizer
         public static List<string> PalList { get; private set; } = [];
         public static Dictionary<string, string> BossName { get; private set; } = [];
         public static List<string> TowerBossNames { get; private set; } = [];
+        public static List<string> TowerBossNames2 { get; private set; } = [];
+        public static List<string> RaidBossNames { get; private set; } = [];
+        public static List<string> RaidBossNames2 { get; private set; } = [];
         public static Dictionary<string, List<SpawnEntry>> SoloEntries { get; private set; } = new(StringComparer.InvariantCultureIgnoreCase);
         public static Dictionary<string, List<SpawnEntry>> BossEntries { get; private set; } = new(StringComparer.InvariantCultureIgnoreCase);
         public static List<SpawnEntry> GroupEntries { get; private set; } = [];
@@ -44,7 +48,9 @@ namespace PalworldRandomizer
             "Hunter_RocketLauncher",
             "Hunter_Shotgun",
             "Male_Scientist01_LaserRifle",
-            "Scientist_FlameThrower"
+            "Scientist_FlameThrower",
+            "Hunter_MissileLauncher",
+            "Hunter_GrenadeLauncher"
         ];
         public static readonly string[] policeNames =
         [
@@ -64,7 +70,8 @@ namespace PalworldRandomizer
             "SalesPerson_Desert2",
             "SalesPerson_Volcano",
             "SalesPerson_Volcano2",
-            "SalesPerson_Wander"
+            "SalesPerson_Wander",
+            "Male_DarkTrader02"
         ];
         public static readonly string[] palTraderNames =
         [
@@ -74,6 +81,14 @@ namespace PalworldRandomizer
             "RandomEventShop",
             "Male_DarkTrader01"
         ];
+        public static readonly string[] ninjaNames =
+        [
+            "Male_Ninja01",
+            "Male_NinjaElite01"
+        ];
+
+        [GeneratedRegex("^(.+?)(_[0-9]+(_.+)?|_Flower)?$", RegexOptions.IgnoreCase)]
+        private static partial Regex resourceKeyRegex();
 
         public static void Initialize(ResourceManager resourceManager)
         {
@@ -90,38 +105,62 @@ namespace PalworldRandomizer
                 { "RocketLauncher", "/Resources/Images/InventoryItemIcon/T_itemicon_Weapon_Launcher_Default.png" },
                 { "MeleeWeapon", "/Resources/Images/InventoryItemIcon/T_itemicon_Weapon_Bat.png" },
                 { "ThrowObject", "/Resources/Images/InventoryItemIcon/T_itemicon_Weapon_FragGrenade.png" },
-                { "FlameThrower", "/Resources/Images/InventoryItemIcon/T_itemicon_Weapon_BowGun_Fire.png" },
-                { "GatlingGun", "/Resources/Images/InventoryItemIcon/T_itemicon_Essential_SkillUnlock_Minigun.png" },
+                { "FlameThrower", "/Resources/Images/InventoryItemIcon/T_itemicon_Weapon_FlameThrower_Default.png" },
+                { "GatlingGun", "/Resources/Images/InventoryItemIcon/T_itemicon_Weapon_GatlingGun.png" },
                 { "BowGun", "/Resources/Images/InventoryItemIcon/T_itemicon_Weapon_BowGun.png" },
-                { "LaserRifle", "/Resources/Images/InventoryItemIcon/T_itemicon_Essential_SkillUnlock_AssaultRifle.png" }
+                { "LaserRifle", "/Resources/Images/InventoryItemIcon/T_itemicon_Weapon_LaserRifle.png" },
+                { "MissileLauncher", "/Resources/Images/InventoryItemIcon/T_itemicon_Weapon_GuidedMissileLauncher.png" },
+                { "GrenadeLauncher", "/Resources/Images/InventoryItemIcon/T_itemicon_Weapon_GrenadeLauncher.png" }
+                // Katana - No sprite available
             };
             foreach (KeyValuePair<string, CharacterData> keyPair in PalData)
             {
                 if (keyPair.Value.IsPal)
                 {
-                    string nameString = ((TextPropertyData) ((DataTableExport) palNames.Exports[0]).Table.Data.Find(property =>
+                    StructPropertyData? nameData = ((DataTableExport) palNames.Exports[0]).Table.Data.Find(property =>
                         (PalData[keyPair.Key].OverrideNameTextID != null &&
                         string.Compare(((TextPropertyData) property.Value[0]).Value.Value, $"{PalData[keyPair.Key].OverrideNameTextID}_TextData", true) == 0)
-                        || string.Compare(((TextPropertyData) property.Value[0]).Value.Value, $"PAL_NAME_{keyPair.Key}_TextData", true) == 0)!.Value[0])
-                        .CultureInvariantString.Value.Trim();
+                        || string.Compare(((TextPropertyData) property.Value[0]).Value.Value, $"PAL_NAME_{keyPair.Key}_TextData", true) == 0);
+                    string nameString = nameData != null ? ((TextPropertyData) nameData.Value[0]).CultureInvariantString.Value.Trim() : "en_text";
                     bool isTowerBoss = keyPair.Key.StartsWith("GYM_", StringComparison.InvariantCultureIgnoreCase);
-                    bool isBoss = keyPair.Key.StartsWith("BOSS_", StringComparison.InvariantCultureIgnoreCase) || isTowerBoss;
+                    bool isRaidBoss = keyPair.Key.StartsWith("RAID_", StringComparison.InvariantCultureIgnoreCase);
+                    bool isBoss = keyPair.Key.StartsWith("BOSS_", StringComparison.InvariantCultureIgnoreCase) || isTowerBoss || isRaidBoss;
                     PalName.Add(keyPair.Key, nameString == "en_text" ? (isBoss ? keyPair.Key[(keyPair.Key.IndexOf('_') + 1)..] : keyPair.Key) : nameString);
                     if (keyPair.Value.ZukanIndex > 0)
                     {
                         PalList.Add(keyPair.Key);
                     }
-                    if (!isBoss)
+                    if (!isBoss || isTowerBoss || isRaidBoss)
                     {
-                        BossName.Add(keyPair.Key, PalData.Keys.First(key => string.Compare(key, $"BOSS_{keyPair.Key}", true) == 0));
+                        if (!isBoss)
+                        {
+                            BossName.Add(keyPair.Key, PalData.Keys.First(key => string.Compare(key, $"BOSS_{keyPair.Key}", true) == 0));
+                        }
+                        else if (isTowerBoss)
+                        {
+                            if (keyPair.Key.EndsWith("_2"))
+                            {
+                                TowerBossNames2.Add(keyPair.Key);
+                            }
+                            else if (!keyPair.Key.EndsWith("_2_Avatar") && !keyPair.Key.EndsWith("_2_Servant"))
+                            {
+                                TowerBossNames.Add(keyPair.Key);
+                            }
+                        }
+                        else
+                        {
+                            if (keyPair.Key.EndsWith("_2"))
+                            {
+                                RaidBossNames2.Add(keyPair.Key);
+                            }
+                            else
+                            {
+                                RaidBossNames.Add(keyPair.Key);
+                            }
+                        }
                         SimpleName.Add(new SpawnData(keyPair.Key).SimpleName, keyPair.Key);
                     }
-                    else if (isTowerBoss)
-                    {
-                        TowerBossNames.Add(keyPair.Key);
-                        SimpleName.Add(new SpawnData(keyPair.Key).SimpleName, keyPair.Key);
-                    }
-                    string resourceKey = keyPair.Key.EndsWith("_Flower") ? keyPair.Key[..keyPair.Key.LastIndexOf('_')] : keyPair.Key;
+                    string resourceKey = resourceKeyRegex().Match(keyPair.Key).Groups[1].Value;
                     resourceKey = isBoss ? resourceKey[(resourceKey.IndexOf('_') + 1)..] : resourceKey;
                     string resourceName = $"Resources/Images/PalIcon/T_{resourceKey}_icon_normal.png";
                     if (resourceNames.Contains(resourceName))
@@ -414,7 +453,7 @@ namespace PalworldRandomizer
                                 bossData.MaxLevel = baseEntry.SpawnList[0].MaxLevel;
                             }
                         }
-                        if (bossEntry.SpawnList.Count == 1 && basicSpawns[key].SpawnList[0].MaxGroupSize > 1)
+                        if (bossEntry.SpawnList.Count == 1 && formData.spawnPals && basicSpawns[key].SpawnList[0].MaxGroupSize > 1)
                         {
                             bossEntry.SpawnList.Add(new()
                             {
@@ -433,7 +472,8 @@ namespace PalworldRandomizer
                 {
                     if (!Data.PalData[keyPair.Key].IsPal &&
                         ((formData.spawnHumans && Data.humanNames.Contains(keyPair.Key))
-                        || (formData.spawnPolice && Data.policeNames.Contains(keyPair.Key)))
+                        || (formData.spawnPolice && Data.policeNames.Contains(keyPair.Key))
+                        || (formData.spawnNinja && Data.ninjaNames.Contains(keyPair.Key)))
                         )
                     {
                         SpawnData spawnData = new() { Name = keyPair.Key, IsPal = false };
@@ -453,7 +493,8 @@ namespace PalworldRandomizer
                     SpawnEntry spawnEntry = groupEntriesCopy[i];
                     if (!spawnEntry.SpawnList[0].IsPal &&
                         ((formData.spawnHumans && Data.humanNames.Contains(spawnEntry.SpawnList[0].Name))
-                        || (formData.spawnPolice && Data.policeNames.Contains(spawnEntry.SpawnList[0].Name)))
+                        || (formData.spawnPolice && Data.policeNames.Contains(spawnEntry.SpawnList[0].Name))
+                        || (formData.spawnNinja && Data.ninjaNames.Contains(spawnEntry.SpawnList[0].Name)))
                         )
                     {
                         humanSpawns.Add(spawnEntry); // shallow copy
@@ -510,6 +551,8 @@ namespace PalworldRandomizer
                 {
                     humanSpawns.Add(new() { SpawnList = [new("Hunter_FlameThrower", 1, 2)] });
                     humanSpawns.Add(new() { SpawnList = [new("Scientist_FlameThrower", 1, 2)] });
+                    humanSpawns.Add(new() { SpawnList = [new("Hunter_MissileLauncher", 1, 2)] });
+                    humanSpawns.Add(new() { SpawnList = [new("Hunter_GrenadeLauncher", 1, 2)] });
                 }
                 if (formData.spawnTraders)
                 {
@@ -532,6 +575,7 @@ namespace PalworldRandomizer
                     .. (formData.spawnHumans ? Data.humanNames : []),
                     .. (formData.spawnPolice ? Data.policeNames : []),
                     .. (formData.spawnGuards ? Data.guardNames : []),
+                    .. (formData.spawnNinja ? Data.ninjaNames : []),
                     .. (formData.spawnTraders ? Data.traderNames : []),
                     .. (formData.spawnPalTraders ? Data.palTraderNames : [])
                 ]).Select(name => new SpawnEntry { SpawnList = [new(name)] }));
@@ -539,6 +583,18 @@ namespace PalworldRandomizer
             if (formData.spawnTowerBosses)
             {
                 Data.TowerBossNames.ForEach(name => bossSpawns.Add(name, new() { SpawnList = [new(name)] }));
+            }
+            if (formData.spawnTowerBosses2)
+            {
+                Data.TowerBossNames2.ForEach(name => bossSpawns.Add(name, new() { SpawnList = [new(name)] }));
+            }
+            if (formData.spawnRaidBosses)
+            {
+                Data.RaidBossNames.ForEach(name => bossSpawns.Add(name, new() { SpawnList = [new(name)] }));
+            }
+            if (formData.spawnRaidBosses2)
+            {
+                Data.RaidBossNames2.ForEach(name => bossSpawns.Add(name, new() { SpawnList = [new(name)] }));
             }
         }
         private static ICollection<string> GetAllowedNames(FormData formData)
@@ -548,9 +604,13 @@ namespace PalworldRandomizer
                 .. (formData.spawnPals ? Data.PalList : []),
                 .. Data.PalList.ConvertAll(name => Data.BossName[name]),
                 .. (formData.spawnTowerBosses ? Data.TowerBossNames : []),
+                .. (formData.spawnTowerBosses2 ? Data.TowerBossNames2 : []),
+                .. (formData.spawnRaidBosses ? Data.RaidBossNames : []),
+                .. (formData.spawnRaidBosses2 ? Data.RaidBossNames2 : []),
                 .. (formData.spawnHumans ? Data.humanNames : []),
                 .. (formData.spawnPolice ? Data.policeNames : []),
                 .. (formData.spawnGuards ? Data.guardNames : []),
+                .. (formData.spawnNinja ? Data.ninjaNames : []),
                 .. (formData.spawnTraders ? Data.traderNames : []),
                 .. (formData.spawnPalTraders ? Data.palTraderNames : [])
             ];

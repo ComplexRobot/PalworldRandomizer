@@ -5,6 +5,7 @@ using UAssetAPI.ExportTypes;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 
 namespace PalworldRandomizer
 {
@@ -256,7 +257,7 @@ namespace PalworldRandomizer
         }
     }
 
-    public class SpawnData : INotifyPropertyChanged
+    public partial class SpawnData : INotifyPropertyChanged
     {
         public bool IsPal { get; set; } = true;
         public string Name { get; set; } = string.Empty;
@@ -275,7 +276,7 @@ namespace PalworldRandomizer
                 ["  ", Data.PalName[Name], (Name.EndsWith("_Flower") ? "🌺" : ""), .. nameAppend, " <> Lv. ", .. levelStrings, ", Count: ", .. groupStrings]);
             stringBuilder.AppendLine();
         }
-        public SpawnData() {}
+        public SpawnData() { }
         public SpawnData Clone()
         {
             return new()
@@ -301,7 +302,24 @@ namespace PalworldRandomizer
             Name = characterName;
             MaxLevel = 4;
         }
-        public string ResolvedName => Name.EndsWith("_Flower") ? $"{Data.PalName[Name]}🌺" : Data.PalName[Name];
+
+        [GeneratedRegex("^(RAID_)?.+?(_([0-9]+(_.+)?))?$", RegexOptions.IgnoreCase)]
+        private static partial Regex nameSuffixRegex();
+        
+        public string ResolvedName
+        {
+            get
+            {
+                if (Name.EndsWith("_Flower"))
+                    return $"{Data.PalName[Name]}🌺";
+                Match match = nameSuffixRegex().Match(Name);
+                if (match.Groups[1].Value.Length != 0 || match.Groups[3].Value.Length != 0)
+                {
+                    return $"{Data.PalName[Name]} ({((match.Groups[1].Value.Length != 0 ? "Raid_" : "") + match.Groups[3].Value).Trim('_').Replace('_', '-')})";
+                }
+                return Data.PalName[Name];
+            }
+        }
         public string SimpleName
         {
             get => IsPal ? ResolvedName : Name;
@@ -335,7 +353,8 @@ namespace PalworldRandomizer
             }
         }
         public string IconPath => Data.PalIcon[Name];
-        public bool BossChangeable => Data.PalData[Name].IsPal && !Name.StartsWith("GYM_", StringComparison.InvariantCultureIgnoreCase);
+        public bool BossChangeable => Data.PalData[Name].IsPal && !Name.StartsWith("GYM_", StringComparison.InvariantCultureIgnoreCase)
+             && !Name.StartsWith("RAID_", StringComparison.InvariantCultureIgnoreCase);
     }
 
     public class SpawnExportData

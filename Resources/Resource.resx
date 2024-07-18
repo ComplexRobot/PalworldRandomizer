@@ -280,11 +280,23 @@
   <data name="BP_PalSpawner_Sheets_50_11_dungeon_snow1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Assets\BP_PalSpawner_Sheets_50_11_dungeon_snow.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="BP_PalSpawner_Sheets_50_12_dungeon_Sakurajima" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_50_12_dungeon_Sakurajima.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_50_12_dungeon_Sakurajima1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_50_12_dungeon_Sakurajima.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="BP_PalSpawner_Sheets_50_12_dungeon_snow_boss" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Assets\BP_PalSpawner_Sheets_50_12_dungeon_snow_boss.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="BP_PalSpawner_Sheets_50_12_dungeon_snow_boss1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Assets\BP_PalSpawner_Sheets_50_12_dungeon_snow_boss.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_50_13_dungeon_Sakurajima_boss" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_50_13_dungeon_Sakurajima_boss.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_50_13_dungeon_Sakurajima_boss1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_50_13_dungeon_Sakurajima_boss.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="BP_PalSpawner_Sheets_50_1_dungeon_grass" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Assets\BP_PalSpawner_Sheets_50_1_dungeon_grass.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -580,6 +592,18 @@
   <data name="BP_PalSpawner_Sheets_81_3_volcano_FBOSS_31" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Assets\BP_PalSpawner_Sheets_81_3_volcano_FBOSS_3.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="BP_PalSpawner_Sheets_81_4_Sakurajima_FBOSS_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_4_Sakurajima_FBOSS_1.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_4_Sakurajima_FBOSS_11" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_4_Sakurajima_FBOSS_1.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_4_Sakurajima_FBOSS_2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_4_Sakurajima_FBOSS_2.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_81_4_Sakurajima_FBOSS_21" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_81_4_Sakurajima_FBOSS_2.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="BP_PalSpawner_Sheets_PvP_21_1_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Assets\BP_PalSpawner_Sheets_PvP_21_1_1.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -591,6 +615,42 @@
   </data>
   <data name="BP_PalSpawner_Sheets_PvP_21_2_11" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Assets\BP_PalSpawner_Sheets_PvP_21_2_1.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_sakurajima_6_1_NorthDesert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_sakurajima_6_1_NorthDesert.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_sakurajima_6_1_NorthDesert1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_sakurajima_6_1_NorthDesert.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_sakurajima_6_2_SakuraArea" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_sakurajima_6_2_SakuraArea.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_sakurajima_6_2_SakuraArea1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_sakurajima_6_2_SakuraArea.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_sakurajima_6_3_Grassland" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_sakurajima_6_3_Grassland.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_sakurajima_6_3_Grassland1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_sakurajima_6_3_Grassland.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_sakurajima_6_4_Grave" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_sakurajima_6_4_Grave.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_sakurajima_6_4_Grave1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_sakurajima_6_4_Grave.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_sakurajima_6_5_SouthDesert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_sakurajima_6_5_SouthDesert.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_sakurajima_6_5_SouthDesert1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_sakurajima_6_5_SouthDesert.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_sakurajima_6_6_MushroomForest" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_sakurajima_6_6_MushroomForest.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="BP_PalSpawner_Sheets_sakurajima_6_6_MushroomForest1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\BP_PalSpawner_Sheets_sakurajima_6_6_MushroomForest.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="BP_PalSpawner_Sheets_sanctuary_11_1_1_grass" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Assets\BP_PalSpawner_Sheets_sanctuary_11_1_1_grass.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>

@@ -14,7 +14,7 @@
         <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
     <StackPanel Margin="5" Name="form">
-        <TextBlock FontWeight="Bold">Pal Spawn Randomizer v1.0 β 6.4</TextBlock>
+        <TextBlock FontWeight="Bold">Pal Spawn Randomizer v1.0 Release</TextBlock>
         <Border BorderBrush="Gray" BorderThickness="0,0,0,1"/>
         <GroupBox Margin="5">
             <GroupBox.Header>
@@ -79,9 +79,13 @@
                 <CheckBox Name="spawnHumans" IsChecked="True">Humans (Aggressive)</CheckBox>
                 <CheckBox Name="spawnPolice" IsChecked="True">Police</CheckBox>
                 <CheckBox Name="spawnGuards" IsChecked="False">City Guards</CheckBox>
+                <CheckBox Name="spawnNinja" IsChecked="False">Ninja</CheckBox>
                 <CheckBox Name="spawnTraders" IsChecked="False">Item Merchants</CheckBox>
                 <CheckBox Name="spawnPalTraders" IsChecked="False">Pal Merchants</CheckBox>
                 <CheckBox Name="spawnTowerBosses" IsChecked="True">Tower Bosses</CheckBox>
+                <CheckBox Name="spawnRaidBosses" IsChecked="False">Raid Bosses</CheckBox>
+                <CheckBox Name="spawnTowerBosses2" IsChecked="False">Tower Bosses 2</CheckBox>
+                <CheckBox Name="spawnRaidBosses2" IsChecked="False">Raid Bosses 2</CheckBox>
             </WrapPanel>
         </GroupBox>
         <GroupBox Margin="5">
@@ -116,7 +120,7 @@
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Level Cap:"/>
                     <TextBox Name="levelCap" Width="30" VerticalAlignment="Center" Margin="0"
-                                 PreviewTextInput="PositiveIntSize3_PreviewTextInput" DataObject.Pasting="PositiveIntSize3_Pasting">50</TextBox>
+                                 PreviewTextInput="PositiveIntSize3_PreviewTextInput" DataObject.Pasting="PositiveIntSize3_Pasting">55</TextBox>
                     <TextBlock Text="(Only affects spawn data.)"/>
                 </StackPanel>
             </WrapPanel>
