@@ -108,9 +108,16 @@ namespace PalworldRandomizer
             progressBar.Value = 0;
             new Thread(formData =>
             {
-                if (!Randomize.GeneratePalSpawns((FormData) formData!))
+                try
                 {
-                    Dispatcher.Invoke(() => MessageBox.Show(GetWindow(), "Error: No area changes to save.", "Failed To Save Pak", MessageBoxButton.OK, MessageBoxImage.Error));
+                    if (!Randomize.GeneratePalSpawns((FormData) formData!))
+                    {
+                        Dispatcher.Invoke(() => MessageBox.Show(GetWindow(), "Error: No area changes to save.", "Failed To Save Pak", MessageBoxButton.OK, MessageBoxImage.Error));
+                    }
+                }
+                catch (Exception e)
+                {
+                    Dispatcher.BeginInvoke(() => throw e);
                 }
                 Dispatcher.Invoke(() => statusBar.Text = "✔️ Generation complete.");
                 generating = false;

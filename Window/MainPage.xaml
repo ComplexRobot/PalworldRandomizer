@@ -79,7 +79,7 @@
                 <CheckBox Name="spawnHumans" IsChecked="True">Humans (Aggressive)</CheckBox>
                 <CheckBox Name="spawnPolice" IsChecked="True">Police</CheckBox>
                 <CheckBox Name="spawnGuards" IsChecked="False">City Guards</CheckBox>
-                <CheckBox Name="spawnNinja" IsChecked="False">Ninja</CheckBox>
+                <CheckBox Name="spawnNinja" IsChecked="True">Ninja</CheckBox>
                 <CheckBox Name="spawnTraders" IsChecked="False">Item Merchants</CheckBox>
                 <CheckBox Name="spawnPalTraders" IsChecked="False">Pal Merchants</CheckBox>
                 <CheckBox Name="spawnTowerBosses" IsChecked="True">Tower Bosses</CheckBox>

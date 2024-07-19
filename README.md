@@ -1,5 +1,7 @@
 ## Palworld Randomizer
-Palworld  spawn randomizer and fully-featured spawn editor for Windows.
+Palworld spawn randomizer and fully-featured spawn editor for Windows.
+
+Additional information and details on how to use the app is on Nexus Mods: [Nexus Mods Page](https://www.nexusmods.com/palworld/mods/1706)
 
 There are exhaustive randomization settings with a streamlined GUI.
 

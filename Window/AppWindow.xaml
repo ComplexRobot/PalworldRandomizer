@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PalworldRandomizer"
         mc:Ignorable="d"
+        Icon="/Resources/icon.ico"
         Title=""
         Width="1000"
         Height="600"

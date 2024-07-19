@@ -15,6 +15,7 @@
     <IntermediateOutputPath>Build\$(Configuration)\obj</IntermediateOutputPath>
     <AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>
     <PathMap>$(MSBuildProjectDirectory)=.</PathMap>
+    <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -42,6 +43,7 @@
       <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
     <Resource Include="Resources\Images\**" />
+    <Resource Include="Resources\icon.ico" />
   </ItemGroup>
 
 </Project>
