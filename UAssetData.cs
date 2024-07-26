@@ -9,20 +9,12 @@ using System.IO;
 using System.Xml;
 using PalworldRandomizer.Resources;
 using System.Collections.ObjectModel;
-using Newtonsoft.Json;
 
 namespace PalworldRandomizer
 {
-    public class ConfigData
-    {
-        public float AssetVersion = 0;
-        public bool AutoReplaceOldFiles = true;
-    }
-
     public static class UAssetData
     {
         public const float ASSET_VERSION = 1;
-        public const string GLOBAL_GONFIG_FILENAME = @"Config\GlobalConfig.json";
         private static string? appDataPath;
         private static Usmap? usmap;
 
@@ -35,23 +27,10 @@ namespace PalworldRandomizer
             }
             appDataPath += @"Palworld-Randomizer\";
             Directory.CreateDirectory(appDataPath);
-            Directory.CreateDirectory(AppDataPath("Config"));
-            string configFilePath = AppDataPath(GLOBAL_GONFIG_FILENAME);
-            ConfigData config = ((Func<ConfigData>) (() =>
-            {
-                if (File.Exists(configFilePath))
-                {
-                    ConfigData? config = JsonConvert.DeserializeObject<ConfigData>(File.ReadAllText(configFilePath));
-                    if (config != null)
-                    {
-                        return config;
-                    }
-                }
-                return new();
-            }))();
+            ConfigData config = SharedWindow.GetConfig();
             bool replaceAssets = config.AssetVersion < ASSET_VERSION && config.AutoReplaceOldFiles;
             config.AssetVersion = ASSET_VERSION;
-            File.WriteAllText(configFilePath, JsonConvert.SerializeObject(config, Newtonsoft.Json.Formatting.Indented));
+            SharedWindow.SaveConfig(config);
             XmlDocument xmlDoc = new();
             xmlDoc.LoadXml(Resource.Resource_resx);
             foreach (XmlNode resource in xmlDoc.DocumentElement!.SelectNodes("data")!)

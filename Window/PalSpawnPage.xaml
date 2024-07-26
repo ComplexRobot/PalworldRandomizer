@@ -364,9 +364,9 @@
                                                                 <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
                                                                     <Setter Property="Visibility" Value="Visible"/>
                                                                     <Style.Triggers>
-                                                                        <DataTrigger Value="0">
+                                                                        <DataTrigger Value="False">
                                                                             <DataTrigger.Binding>
-                                                                                <MultiBinding ConverterParameter="[0]-([1]-1)">
+                                                                                <MultiBinding ConverterParameter="[0]&lt;([1]-1)">
                                                                                     <MultiBinding.Converter>
                                                                                         <local:MathConverter/>
                                                                                     </MultiBinding.Converter>

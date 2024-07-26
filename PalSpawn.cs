@@ -12,6 +12,7 @@ namespace PalworldRandomizer
     public static class PalSpawn
     {
         private static readonly byte[] dataSignature = [ 0, 0, 0, 0x80 ];
+        // Read in a SheetsVariant/PalSpawner uasset file to parse the binary and store spawn data.
         public static SpawnExportData ReadAsset(UAsset uAsset, int? dataStart = null)
         {
             SpawnExportData spawnExportData = new();
@@ -156,6 +157,7 @@ namespace PalworldRandomizer
             return spawnExportData;
         }
 
+        // Convert spawn data into binary data for saving as a uasset using the original uasset file header and footer.
         public static void MutateAsset(UAsset uAsset, SpawnExportData spawnExportData)
         {
             List<byte> bytes = [.. spawnExportData.header, .. BitConverter.GetBytes(spawnExportData.spawnEntries.Count)];
@@ -227,6 +229,7 @@ namespace PalworldRandomizer
         }
     }
 
+    // A spawn group containing meta data and a list of character 
     public class SpawnEntry
     {
         public int Weight { get; set; } = 10;

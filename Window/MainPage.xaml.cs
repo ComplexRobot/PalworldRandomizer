@@ -1,55 +1,185 @@
-﻿using System.Windows;
+﻿using System.IO;
+using System.Reflection;
+using System.Diagnostics;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using System.Runtime.ExceptionServices;
+using Newtonsoft.Json;
+using Microsoft.Win32;
 
 namespace PalworldRandomizer
 {
-    public class FormData(MainPage window)
+    public static class GroupWeightMode
     {
-        public bool randomizeField = window.randomizeField.IsChecked == true;
-        public bool randomizeDungeons = window.randomizeDungeons.IsChecked == true;
-        public bool randomizeDungeonBosses = window.randomizeDungeonBosses.IsChecked == true;
-        public bool randomizeFieldBosses = window.randomizeFieldBosses.IsChecked == true;
-        public bool methodFull = window.methodFull.IsChecked == true;
-        public bool methodCustomSize = window.methodCustomSize.IsChecked == true;
-        public int spawnListSize = int.Parse(window.spawnListSize.Text);
-        public bool methodLocalSwap = window.methodLocalSwap.IsChecked == true;
-        public bool methodGlobalSwap = window.methodGlobalSwap.IsChecked == true;
-        public bool methodNone = window.methodNone.IsChecked == true;
-        public bool groupVanilla = window.groupVanilla.IsChecked == true;
-        public bool groupRandom = window.groupRandom.IsChecked == true;
-        public bool fieldBossExtended = window.fieldBossExtended.IsChecked == true;
-        public int groupMin = int.Parse(window.groupMin.Text);
-        public int groupMax = int.Parse(window.groupMax.Text);
-        public bool multiBoss = window.multiBoss.IsChecked == true;
-        public bool spawnPals = window.spawnPals.IsChecked == true;
-        public bool spawnHumans = window.spawnHumans.IsChecked == true;
-        public bool spawnPolice = window.spawnPolice.IsChecked == true;
-        public bool spawnGuards = window.spawnGuards.IsChecked == true;
-        public bool spawnNinja = window.spawnNinja.IsChecked == true;
-        public bool spawnTraders = window.spawnTraders.IsChecked == true;
-        public bool spawnPalTraders = window.spawnPalTraders.IsChecked == true;
-        public bool spawnTowerBosses = window.spawnTowerBosses.IsChecked == true;
-        public bool spawnTowerBosses2 = window.spawnTowerBosses2.IsChecked == true;
-        public bool spawnRaidBosses = window.spawnRaidBosses.IsChecked == true;
-        public bool spawnRaidBosses2 = window.spawnRaidBosses2.IsChecked == true;
-        public int fieldLevel = int.Parse(window.fieldLevel.Text);
-        public int dungeonLevel = int.Parse(window.dungeonLevel.Text);
-        public int fieldBossLevel = int.Parse(window.fieldBossLevel.Text);
-        public int dungeonBossLevel = int.Parse(window.dungeonBossLevel.Text);
-        public int levelCap = int.Parse(window.levelCap.Text);
-        public bool nightOnly = window.nightOnly.IsChecked == true;
-        public bool nightOnlyDungeons = window.nightOnlyDungeons.IsChecked == true;
-        public bool nightOnlyDungeonBosses = window.nightOnlyDungeonBosses.IsChecked == true;
-        public bool nightOnlyBosses = window.nightOnlyBosses.IsChecked == true;
-        public bool outputLog = window.outputLog.IsChecked == true;
+        public static readonly string WeightSum = "Weight Sum";
+        public static readonly string WeightAverage = "Weight Average";
+        public static readonly string RarityAverageRounded = "Rarity Average (Rounded)";
+        public static readonly string RarityAverageBlend = "Rarity Average (Blend Fractions)";
+        public static readonly string RarityAverageBlend10To20 = "Rarity Average (Blend 10 to 20)";
+        public static readonly string WeightMinimum = "Weight Minimum";
+        public static readonly string WeightMaximum = "Weight Maximum";
+    }
+
+    public static class OverflowFixMode
+    {
+        public static readonly string ScaleAll = "Scale All";
+        public static readonly string ScaleNightOnly = "Scale Night-Only";
+        public static readonly string Dynamic = "Dynamic (Multi-Pass)";
+    }
+
+    public class FormData(MainPage? window)
+    {
+        public int RandomSeed = int.Parse(window?.randomSeed.Text ?? "0");
+        public bool RandomSeedLocked = window?.randomSeedLocked.IsChecked == true;
+        public bool RandomizeField = window?.randomizeField.IsChecked == true;
+        public bool RandomizeDungeons = window?.randomizeDungeons.IsChecked == true;
+        public bool RandomizeDungeonBosses = window?.randomizeDungeonBosses.IsChecked == true;
+        public bool RandomizeFieldBosses = window?.randomizeFieldBosses.IsChecked == true;
+        public bool EqualizeAreaRarity = window?.equalizeAreaRarity.IsChecked == true;
+        public bool MethodFull = window?.methodFull.IsChecked == true;
+        public bool MethodCustomSize = window?.methodCustomSize.IsChecked == true;
+        public int SpawnListSize = int.Parse(window?.spawnListSize.Text ?? "0");
+        public bool MethodLocalSwap = window?.methodLocalSwap.IsChecked == true;
+        public bool MethodGlobalSwap = window?.methodGlobalSwap.IsChecked == true;
+        public bool MethodNone = window?.methodNone.IsChecked == true;
+        public bool GroupVanilla = window?.groupVanilla.IsChecked == true;
+        public bool GroupRandom = window?.groupRandom.IsChecked == true;
+        public bool FieldBossExtended = window?.fieldBossExtended.IsChecked == true;
+        public int GroupMin = int.Parse(window?.groupMin.Text ?? "0");
+        public int GroupMax = int.Parse(window?.groupMax.Text ?? "0");
+        public int GroupMinBoss = int.Parse(window?.groupMinBoss.Text ?? "0");
+        public int GroupMaxBoss = int.Parse(window?.groupMaxBoss.Text ?? "0");
+        public bool MultiBoss = window?.multiBoss.IsChecked == true;
+        public bool RarityLevelBoost = window?.rarityLevelBoost.IsChecked == true;
+        public int Rarity67MinLevel = int.Parse(window?.rarity67MinLevel.Text ?? "0");
+        public int Rarity8UpMinLevel = int.Parse(window?.rarity8UpMinLevel.Text ?? "0");
+        public bool Rarity9UpBossOnly = window?.rarity9UpBossOnly.IsChecked == true;
+        public bool MixHumanAndPal = window?.mixHumanAndPal.IsChecked == true;
+        public bool Rarity8UpSolo = window?.rarity8UpSolo.IsChecked == true;
+        public bool WeightTypeUniform = window?.weightTypeUniform.IsChecked == true;
+        public bool WeightTypeCustom = window?.weightTypeCustom.IsChecked == true;
+        public int WeightUniformMin = int.Parse(window?.weightUniformMin.Text ?? "0");
+        public int WeightUniformMax = int.Parse(window?.weightUniformMax.Text ?? "0");
+        public int[] WeightCustom = ((Func<int[]>) (() =>
+        {
+            int[] weightCustom = new int[21];
+            weightCustom[1] = int.Parse(window?.weightCustom1.Text ?? "0");
+            weightCustom[2] = int.Parse(window?.weightCustom2.Text ?? "0");
+            weightCustom[3] = int.Parse(window?.weightCustom3.Text ?? "0");
+            weightCustom[4] = int.Parse(window?.weightCustom4.Text ?? "0");
+            weightCustom[5] = int.Parse(window?.weightCustom5.Text ?? "0");
+            weightCustom[6] = int.Parse(window?.weightCustom6.Text ?? "0");
+            weightCustom[7] = int.Parse(window?.weightCustom7.Text ?? "0");
+            weightCustom[8] = int.Parse(window?.weightCustom8.Text ?? "0");
+            weightCustom[9] = int.Parse(window?.weightCustom9.Text ?? "0");
+            weightCustom[10] = int.Parse(window?.weightCustom10.Text ?? "0");
+            weightCustom[20] = int.Parse(window?.weightCustom20.Text ?? "0");
+            return weightCustom;
+        }))();
+        public string WeightCustomMode = window?.weightCustomMode.Text ?? "";
+        public int HumanRarity = int.Parse(window?.humanRarity.Text ?? "0");
+        public bool WeightAdjustProbability = window?.weightAdjustProbability.IsChecked == true;
+        public int HumanWeight = int.Parse(window?.humanWeight.Text ?? "0");
+        public int HumanWeightAggro = int.Parse(window?.humanWeightAggro.Text ?? "0");
+        public int WeightNightOnly = int.Parse(window?.weightNightOnly.Text ?? "0");
+        public string OverflowFixMode = window?.overflowFixMode.Text ?? "";
+        public bool SpawnPals = window?.spawnPals.IsChecked == true;
+        public bool SpawnHumans = window?.spawnHumans.IsChecked == true;
+        public bool SpawnPolice = window?.spawnPolice.IsChecked == true;
+        public bool SpawnGuards = window?.spawnGuards.IsChecked == true;
+        public bool SpawnNinja = window?.spawnNinja.IsChecked == true;
+        public bool SpawnTraders = window?.spawnTraders.IsChecked == true;
+        public bool SpawnPalTraders = window?.spawnPalTraders.IsChecked == true;
+        public bool SpawnTowerBosses = window?.spawnTowerBosses.IsChecked == true;
+        public bool SpawnTowerBosses2 = window?.spawnTowerBosses2.IsChecked == true;
+        public bool SpawnRaidBosses = window?.spawnRaidBosses.IsChecked == true;
+        public bool SpawnRaidBosses2 = window?.spawnRaidBosses2.IsChecked == true;
+        public int FieldLevel = int.Parse(window?.fieldLevel.Text ?? "0");
+        public int DungeonLevel = int.Parse(window?.dungeonLevel.Text ?? "0");
+        public int FieldBossLevel = int.Parse(window?.fieldBossLevel.Text ?? "0");
+        public int DungeonBossLevel = int.Parse(window?.dungeonBossLevel.Text ?? "0");
+        public int LevelCap = int.Parse(window?.levelCap.Text ?? "0");
+        public int BaseCountMin = int.Parse(window?.baseCountMin.Text ?? "0");
+        public int BaseCountMax = int.Parse(window?.baseCountMax.Text ?? "0");
+        public int FieldCount = int.Parse(window?.fieldCount.Text ?? "0");
+        public int DungeonCount = int.Parse(window?.dungeonCount.Text ?? "0");
+        public int FieldBossCount = int.Parse(window?.fieldBossCount.Text ?? "0");
+        public int DungeonBossCount = int.Parse(window?.dungeonBossCount.Text ?? "0");
+        public int CountClampMin = int.Parse(window?.countClampMin.Text ?? "0");
+        public int CountClampMax = int.Parse(window?.countClampMax.Text ?? "0");
+        public int CountClampFirstMin = int.Parse(window?.countClampFirstMin.Text ?? "0");
+        public int CountClampFirstMax = int.Parse(window?.countClampFirstMax.Text ?? "0");
+        public bool NightOnly = window?.nightOnly.IsChecked == true;
+        public bool NightOnlyDungeons = window?.nightOnlyDungeons.IsChecked == true;
+        public bool NightOnlyDungeonBosses = window?.nightOnlyDungeonBosses.IsChecked == true;
+        public bool NightOnlyBosses = window?.nightOnlyBosses.IsChecked == true;
+        public bool OutputLog = window?.outputLog.IsChecked == true;
+
+        public void RestoreToWindow(MainPage window)
+        {
+            foreach (FieldInfo fieldInfo in GetType().GetFields(BindingFlags.Public | BindingFlags.Instance))
+            {
+                if (fieldInfo.FieldType == typeof(bool))
+                {
+                    AssignIsChecked(window.GetType().GetField(fieldInfo.Name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase)
+                        ?.GetValue(window), (bool) fieldInfo.GetValue(this)!);
+                }
+                else if (fieldInfo.FieldType.IsArray)
+                {
+                    Array array = (Array) fieldInfo.GetValue(this)!;
+                    for (int i = 0; i < array.Length; ++i)
+                    {
+                        AssignText(window.GetType().GetField($"{fieldInfo.Name}{i}", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase)
+                            ?.GetValue(window), array.GetValue(i));
+                    }
+                }
+                else
+                {
+                    AssignText(window.GetType().GetField(fieldInfo.Name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase)
+                        ?.GetValue(window), fieldInfo.GetValue(this));
+                }
+                void AssignIsChecked(object? control, bool value)
+                {
+                    if (control != null)
+                    {
+                        ((ToggleButton) control).IsChecked = value;
+                    }
+                }
+                void AssignText(object? control, object? value)
+                {
+                    if (control != null)
+                    {
+                        if (control is TextBox textBox)
+                        {
+                            textBox.Text = $"{value}";
+                        }
+                        else if (control is ComboBox comboBox)
+                        {
+                            comboBox.Text = $"{value}";
+                        }
+                        else
+                        {
+                            throw new Exception("Unknown control type being restored from template.");
+                        }
+                    }
+                }
+            }
+            window.ValidateFormData();
+        }
     }
 
     public partial class MainPage : Grid
     {
+        public static readonly string AUTO_TEMPLATE_FILENAME = @"Config\AutoSavedTemplate.json";
         public static MainPage Instance { get; private set; } = null!;
+        public static readonly string[] GroupWeightModes = typeof(GroupWeightMode).GetFields(BindingFlags.Public | BindingFlags.Static)
+            .Select(x => (string) x.GetValue(null)!).ToArray();
+        public static readonly string[] OverflowFixModes = typeof(OverflowFixMode).GetFields(BindingFlags.Public | BindingFlags.Static)
+            .Select(x => (string) x.GetValue(null)!).ToArray();
         public MainPage(DispatcherOperation dataOperation)
         {
             Instance = this;
@@ -60,6 +190,14 @@ namespace PalworldRandomizer
             Dispatcher.BeginInvoke(() =>
             {
                 dataOperation.Wait();
+                weightCustomMode.SelectedItem = GroupWeightMode.RarityAverageBlend10To20;
+                overflowFixMode.SelectedItem = OverflowFixMode.Dynamic;
+                ConfigData config = SharedWindow.GetConfig();
+                autoSaveTemplate.IsChecked = config.AutoRestoreTemplate;
+                if (config.AutoRestoreTemplate)
+                {
+                    LoadTemplate(UAssetData.AppDataPath(AUTO_TEMPLATE_FILENAME))?.RestoreToWindow(this);
+                }
                 form.Visibility = Visibility.Visible;
                 statusBar.Text = "";
             });
@@ -67,17 +205,79 @@ namespace PalworldRandomizer
 
         public AppWindow GetWindow() => (AppWindow) Parent;
 
-        private bool generating = false;
-        private void SavePak_Click(object sender, RoutedEventArgs e)
+        public static FormData? LoadTemplate(string templatePath)
         {
-            if (generating)
+            if (File.Exists(templatePath))
             {
-                return;
+                return JsonConvert.DeserializeObject<FormData>(File.ReadAllText(templatePath));
             }
-            statusBar.Text = "⏱️ Generating...";
-            generating = true;
-            savePak.IsEnabled = false;
-            static void ValidateNumericText(TextBox textBox, int minValue, int? defaultValue = null)
+            return null;
+        }
+
+        public static string? SaveTemplate(FormData formData, string templatePath)
+        {
+            try
+            {
+                File.WriteAllText(templatePath, JsonConvert.SerializeObject(formData, Formatting.Indented));
+            }
+            catch (Exception e)
+            {
+                return e.ToString();
+            }
+            return null;
+        }
+
+        public void ValidateFormData(int seed = 0)
+        {
+            ValidateNumericText(randomSeed, 0, seed);
+            ValidateNumericText(groupMin, 1);
+            ValidateNumericText(groupMax, int.Parse(groupMin.Text));
+            ValidateNumericText(groupMinBoss, 1);
+            ValidateNumericText(groupMaxBoss, int.Parse(groupMinBoss.Text));
+            ValidateNumericText(spawnListSize, 1, 50);
+            ValidateNumericText(fieldLevel, 0, 100);
+            ValidateNumericText(dungeonLevel, 0, 100);
+            ValidateNumericText(fieldBossLevel, 0, 100);
+            ValidateNumericText(dungeonBossLevel, 0, 100);
+            ValidateNumericText(levelCap, 1, 55);
+            ValidateNumericText(rarity67MinLevel, 1, Math.Min(18, int.Parse(levelCap.Text)), int.Parse(levelCap.Text));
+            ValidateNumericText(rarity8UpMinLevel, 1, Math.Min(30, int.Parse(levelCap.Text)), int.Parse(levelCap.Text));
+            ValidateNumericText(weightUniformMin, 1, 10);
+            ValidateNumericText(weightUniformMax, int.Parse(weightUniformMin.Text));
+            ValidateNumericText(weightCustom1, 0, 60);
+            ValidateNumericText(weightCustom2, 0, 60);
+            ValidateNumericText(weightCustom3, 0, 60);
+            ValidateNumericText(weightCustom4, 0, 25);
+            ValidateNumericText(weightCustom5, 0, 25);
+            ValidateNumericText(weightCustom6, 0, 10);
+            ValidateNumericText(weightCustom7, 0, 10);
+            ValidateNumericText(weightCustom8, 0, 5);
+            ValidateNumericText(weightCustom9, 0, 1);
+            ValidateNumericText(weightCustom10, 0, 1);
+            ValidateNumericText(weightCustom20, 0, 1);
+            ValidateNumericText(humanRarity, 1, 4, 20);
+            ValidateNumericText(humanWeight, 0, 100);
+            ValidateNumericText(humanWeightAggro, 0, 50);
+            ValidateNumericText(weightNightOnly, 1, 10000);
+            ValidateNumericText(baseCountMin, 0, 1);
+            ValidateNumericText(baseCountMax, Math.Max(1, int.Parse(baseCountMin.Text)));
+            ValidateNumericText(fieldCount, 0, 100);
+            ValidateNumericText(dungeonCount, 0, 100);
+            ValidateNumericText(fieldBossCount, 0, 100);
+            ValidateNumericText(dungeonBossCount, 0, 100);
+            ValidateNumericText(countClampMin, 0, 0);
+            ValidateNumericText(countClampMax, Math.Max(1, int.Parse(countClampMin.Text)));
+            ValidateNumericText(countClampFirstMin, 0, 0);
+            ValidateNumericText(countClampFirstMax, Math.Max(1, int.Parse(countClampFirstMin.Text)));
+            if (!GroupWeightModes.Contains(weightCustomMode.Text))
+            {
+                weightCustomMode.SelectedItem = GroupWeightMode.RarityAverageBlend10To20;
+            }
+            if (!OverflowFixModes.Contains(overflowFixMode.Text))
+            {
+                overflowFixMode.SelectedItem = OverflowFixMode.Dynamic;
+            }
+            static void ValidateNumericText(TextBox textBox, int minValue, int? defaultValue = null, int? maxValue = null)
             {
                 defaultValue ??= minValue;
                 try
@@ -90,20 +290,43 @@ namespace PalworldRandomizer
                     {
                         textBox.Text = $"{minValue}";
                     }
+                    else if (maxValue != null && int.Parse(textBox.Text) > maxValue)
+                    {
+                        textBox.Text = $"{maxValue}";
+                    }
                 }
-                catch (Exception)
+                catch
                 {
                     textBox.Text = $"{defaultValue}";
                 }
             }
-            ValidateNumericText(groupMin, 1);
-            ValidateNumericText(groupMax, int.Parse(groupMin.Text));
-            ValidateNumericText(spawnListSize, 1);
-            ValidateNumericText(fieldLevel, 0, 100);
-            ValidateNumericText(dungeonLevel, 0, 100);
-            ValidateNumericText(fieldBossLevel, 0, 100);
-            ValidateNumericText(dungeonBossLevel, 0, 100);
-            ValidateNumericText(levelCap, 1, 55);
+        }
+
+        private void InfoButton_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo("explorer.exe", ["https://www.nexusmods.com/palworld/mods/1706"]) { CreateNoWindow = true });
+        }
+
+        private bool generating = false;
+        private void SavePak_Click(object sender, RoutedEventArgs e)
+        {
+            if (generating)
+            {
+                return;
+            }
+            statusBar.Text = "⏱️ Generating...";
+            generating = true;
+            savePak.IsEnabled = false;
+            int seed = 0;
+            if (methodNone.IsChecked != true)
+            {
+                seed = new Random().Next(1000000000);
+                if (randomSeedLocked.IsChecked != true)
+                {
+                    randomSeed.Text = $"{seed}";
+                }
+            }
+            ValidateFormData(seed);
             progressBar.Visibility = Visibility.Visible;
             progressBar.Value = 0;
             new Thread(formData =>
@@ -117,7 +340,7 @@ namespace PalworldRandomizer
                 }
                 catch (Exception e)
                 {
-                    Dispatcher.BeginInvoke(() => throw e);
+                    Dispatcher.BeginInvoke(() => ExceptionDispatchInfo.Capture(e).Throw());
                 }
                 Dispatcher.Invoke(() => statusBar.Text = "✔️ Generation complete.");
                 generating = false;
@@ -125,23 +348,52 @@ namespace PalworldRandomizer
             }).Start(new FormData(this));
         }
 
-        private void PositiveIntSize2_PreviewTextInput(object sender, TextCompositionEventArgs e) => SharedWindow.PositiveIntSize2_PreviewTextInput(sender, e);
-        private void PositiveIntSize2_Pasting(object sender, DataObjectPastingEventArgs e) => SharedWindow.PositiveIntSize2_Pasting(sender, e);
-        private void PositiveIntSize3_PreviewTextInput(object sender, TextCompositionEventArgs e) => SharedWindow.PositiveIntSize3_PreviewTextInput(sender, e);
-        private void PositiveIntSize3_Pasting(object sender, DataObjectPastingEventArgs e) => SharedWindow.PositiveIntSize3_Pasting(sender, e);
-        private void NonNegIntSize4_PreviewTextInput(object sender, TextCompositionEventArgs e) => SharedWindow.NonNegIntSize4_PreviewTextInput(sender, e);
-        private void NonNegIntSize4_Pasting(object sender, DataObjectPastingEventArgs e) => SharedWindow.NonNegIntSize4_Pasting(sender, e);
-
         private void ViewSpawns_Click(object sender, RoutedEventArgs e)
         {
             PalSpawnPage.Instance.GetWindow().ShowClean();
             PalSpawnPage.Instance.GetWindow().Focus();
         }
 
-        // TODO: move logic to xaml
-        private void GroupType_Click(object sender, RoutedEventArgs e)
+        private void SaveTemplate_Click(object sender, RoutedEventArgs e)
         {
-            groupMinMaxPanel.Visibility = groupRandom.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
+            SaveFileDialog saveDialog = new()
+            {
+                FileName = $"Pal-Spawn-Randomizer-Template-{DateTime.Now:MM-dd-yy-HH-mm-ss}",
+                DefaultExt = ".json",
+                Filter = "JavaScript Object Notation|*.json|All files|*.*"
+            };
+            if (saveDialog.ShowDialog() == true)
+            {
+                ValidateFormData();
+                string? message = SaveTemplate(new FormData(this), saveDialog.FileName);
+                if (message != null)
+                {
+                    MessageBox.Show(message, "Failed to Save File", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+        private void LoadTemplate_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openDialog = new()
+            {
+                DefaultExt = ".json",
+                Filter = "JavaScript Object Notation|*.json|All files|*.*"
+            };
+            if (openDialog.ShowDialog() == true && openDialog.FileName != string.Empty)
+            {
+                FormData? formData = LoadTemplate(openDialog.FileName);
+                if (formData != null)
+                {
+                    formData.RestoreToWindow(this);
+                    ValidateFormData();
+                    MessageBox.Show("Successfully applied template.", "Template Applied", MessageBoxButton.OK, MessageBoxImage.None);
+                }
+                else
+                {
+                    MessageBox.Show("Failed to apply template!", "Apply Template Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         }
 
         private void SpawnListSize_GotFocus(object sender, RoutedEventArgs e)
@@ -149,14 +401,41 @@ namespace PalworldRandomizer
             methodCustomSize.IsChecked = true;
         }
 
-        private void MethodNone_Checked(object sender, RoutedEventArgs e)
+        private void WeightTypeUniform_GotFocus(object sender, RoutedEventArgs e)
         {
-            spawnGroupSettings.Visibility = Visibility.Collapsed;
+            weightTypeUniform.IsChecked = true;
         }
 
-        private void MethodNone_Unchecked(object sender, RoutedEventArgs e)
+        private void RarityMinLevel_GotFocus(object sender, RoutedEventArgs e)
         {
-            spawnGroupSettings.Visibility = Visibility.Visible;
+            rarityLevelBoost.IsChecked = true;
         }
+
+        private void WeightTypeCustom_Unchecked(object sender, RoutedEventArgs e)
+        {
+            weightCustomAdvanced.IsChecked = false;
+        }
+
+        private void WeightCustomAdvanced_Checked(object sender, RoutedEventArgs e)
+        {
+            weightTypeCustom.IsChecked = true;
+        }
+
+        private void PositiveIntSize2_PreviewTextInput(object sender, TextCompositionEventArgs e) => SharedWindow.PositiveIntSize2_PreviewTextInput(sender, e);
+        private void PositiveIntSize2_Pasting(object sender, DataObjectPastingEventArgs e) => SharedWindow.PositiveIntSize2_Pasting(sender, e);
+        private void PositiveIntSize3_PreviewTextInput(object sender, TextCompositionEventArgs e) => SharedWindow.PositiveIntSize3_PreviewTextInput(sender, e);
+        private void PositiveIntSize3_Pasting(object sender, DataObjectPastingEventArgs e) => SharedWindow.PositiveIntSize3_Pasting(sender, e);
+        private void PositiveIntSize4_PreviewTextInput(object sender, TextCompositionEventArgs e) => SharedWindow.PositiveIntSize4_PreviewTextInput(sender, e);
+        private void PositiveIntSize4_Pasting(object sender, DataObjectPastingEventArgs e) => SharedWindow.PositiveIntSize4_Pasting(sender, e);
+        private void NonNegIntSize2_PreviewTextInput(object sender, TextCompositionEventArgs e) => SharedWindow.NonNegIntSize2_PreviewTextInput(sender, e);
+        private void NonNegIntSize2_Pasting(object sender, DataObjectPastingEventArgs e) => SharedWindow.NonNegIntSize2_Pasting(sender, e);
+        private void NonNegIntSize3_PreviewTextInput(object sender, TextCompositionEventArgs e) => SharedWindow.NonNegIntSize3_PreviewTextInput(sender, e);
+        private void NonNegIntSize3_Pasting(object sender, DataObjectPastingEventArgs e) => SharedWindow.NonNegIntSize3_Pasting(sender, e);
+        private void NonNegIntSize4_PreviewTextInput(object sender, TextCompositionEventArgs e) => SharedWindow.NonNegIntSize4_PreviewTextInput(sender, e);
+        private void NonNegIntSize4_Pasting(object sender, DataObjectPastingEventArgs e) => SharedWindow.NonNegIntSize4_Pasting(sender, e);
+        private void NonNegIntSize5_PreviewTextInput(object sender, TextCompositionEventArgs e) => SharedWindow.NonNegIntSize5_PreviewTextInput(sender, e);
+        private void NonNegIntSize5_Pasting(object sender, DataObjectPastingEventArgs e) => SharedWindow.NonNegIntSize5_Pasting(sender, e);
+        private void NonNegIntSize9_PreviewTextInput(object sender, TextCompositionEventArgs e) => SharedWindow.NonNegIntSize9_PreviewTextInput(sender, e);
+        private void NonNegIntSize9_Pasting(object sender, DataObjectPastingEventArgs e) => SharedWindow.NonNegIntSize9_Pasting(sender, e);
     }
 }

@@ -1,6 +1,8 @@
-﻿using System.Reflection;
+﻿using System.IO;
+using System.Reflection;
 using System.Resources;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Threading;
 
 namespace PalworldRandomizer
@@ -9,8 +11,18 @@ namespace PalworldRandomizer
     {
         private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs eventArgs)
         {
-            Console.WriteLine(eventArgs.Exception.ToString());
-            MessageBox.Show(eventArgs.Exception.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            try
+            {
+                File.AppendAllText(UAssetData.AppDataPath("error-log.txt"), $"{DateTime.Now}\n{eventArgs.Exception}\n\n\n");
+            }
+            catch
+            {
+            }
+            string message = eventArgs.Exception.ToString();
+            int newLine = message.IndexOf('\n');
+            message = message[..(newLine == -1 ? message.Length : newLine)];
+            Console.WriteLine(message);
+            MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             eventArgs.Handled = true;
         }
 
@@ -32,12 +44,40 @@ namespace PalworldRandomizer
                     e.Cancel = true;
                 };
             });
-            Dispatcher.BeginInvoke(() =>
+            DispatcherOperation mainWindowOperation = Dispatcher.BeginInvoke(() =>
             {
-                MainWindow = new AppWindow(() => new MainPage(dataOperation)) { Title = "Palworld Randomizer" };
+                MainWindow = new AppWindow(() => new MainPage(dataOperation)) { Title = "Palworld Randomizer", Width = 1280, Height = 720 };
                 MainWindow.Closed += (sender, e) => Shutdown();
                 ((AppWindow) MainWindow).ShowClean();
             });
+            InputManager.Current.PreNotifyInput += SharedWindow.PreNotifyInput;
+            InputManager.Current.PostNotifyInput += SharedWindow.PostNotifyInput;
+        }
+
+        private void Application_Exit(object sender, ExitEventArgs e)
+        {
+            if (MainPage.Instance == null)
+            {
+                return;
+            }
+            ConfigData config = SharedWindow.GetConfig();
+            config.AutoRestoreTemplate = MainPage.Instance.autoSaveTemplate.IsChecked == true;
+            SharedWindow.SaveConfig(config);
+            if (config.AutoRestoreTemplate)
+            {
+                MainPage.Instance.ValidateFormData();
+                MainPage.SaveTemplate(new FormData(MainPage.Instance), UAssetData.AppDataPath(MainPage.AUTO_TEMPLATE_FILENAME));
+            }
+            else
+            {
+                try
+                {
+                    File.Delete(UAssetData.AppDataPath(MainPage.AUTO_TEMPLATE_FILENAME));
+                }
+                catch
+                {
+                }
+            }
         }
     }
 

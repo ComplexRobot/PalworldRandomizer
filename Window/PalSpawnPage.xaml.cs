@@ -1,9 +1,5 @@
-﻿using System.Data;
-using System.Globalization;
-using System.Text.RegularExpressions;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -190,6 +186,7 @@ namespace PalworldRandomizer
             }
         }
 
+        // TODO: Change to object-oriented design? Very unreadable with this functional design
         private bool CollectionAction<T>(object sender, EventArgs e,
             Func<object, List<SpawnData>> spawnListFunc,
             Func<List<SpawnData>, AreaData, int, T> valueFunc,
@@ -275,7 +272,7 @@ namespace PalworldRandomizer
             Action<AreaData> action)
         {
             return CollectionAction(sender, e, (sender) => null!,
-                (spawnList, areaData, index) => areaData.SpawnEntries[index],
+                (Func<List<SpawnData>, AreaData, int, SpawnEntry>) ((spawnList, areaData, index) => null!),
                 (index, spawnEntry, spawnList, areaData) =>
                 {
                     AreaProperty_SourceUpdated(sender, e);
@@ -512,36 +509,5 @@ namespace PalworldRandomizer
                 areaData.Insert(areaData.Count, spawnEntry);
             });
         }
-    }
-
-    public class MathConverter : IMultiValueConverter, IValueConverter
-    {
-        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
-        {
-            static bool IsNumber(object value) => value is sbyte || value is byte || value is short || value is ushort || value is int || value is uint || value is long || value is ulong
-                || value is float || value is double || value is decimal;
-            string stringToParse = (string) parameter;
-            for (int i = 0; i < values.Length; ++i)
-            {
-                string stringValue;
-                if (IsNumber(values[i]))
-                {
-                    stringValue = $"{values[i]}";
-                }
-                else if (values[i] == null || values[i] == DependencyProperty.UnsetValue)
-                {
-                    stringValue = "0";
-                }
-                else
-                {
-                    stringValue = "1";
-                }
-                stringToParse = new Regex($"(?:\\[{i}\\]|\\{{{i}\\}})").Replace(stringToParse, stringValue);
-            }
-            return System.Convert.ToDouble(new DataTable().Compute(stringToParse, null));
-        }
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) => Convert([value], targetType, parameter, culture);
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => throw new NotImplementedException();
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
     }
 }

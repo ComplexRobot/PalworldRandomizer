@@ -13,137 +13,443 @@
         <RowDefinition Height="*"/>
         <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
-    <StackPanel Margin="5" Name="form">
-        <TextBlock FontWeight="Bold">Pal Spawn Randomizer v1.0 Release</TextBlock>
-        <Border BorderBrush="Gray" BorderThickness="0,0,0,1"/>
-        <GroupBox Margin="5">
-            <GroupBox.Header>
-                <TextBlock Margin="0">Randomize</TextBlock>
-            </GroupBox.Header>
-            <WrapPanel Margin="0,5,0,10">
-                <CheckBox Name="randomizeField" IsChecked="True">Overworld Pals</CheckBox>
-                <CheckBox Name="randomizeDungeons" IsChecked="True">Dungeon Pals</CheckBox>
-                <CheckBox Name="randomizeDungeonBosses" IsChecked="True">Dungeon Bosses</CheckBox>
-                <CheckBox Name="randomizeFieldBosses" IsChecked="True">Overworld Bosses</CheckBox>
-            </WrapPanel>
-        </GroupBox>
-        <GroupBox Margin="5">
-            <GroupBox.Header>
-                <TextBlock Margin="0">Area Group Type</TextBlock>
-            </GroupBox.Header>
-            <WrapPanel Margin="0,5,0,10">
-                <RadioButton Name="methodFull" GroupName="randomizationMethod" IsChecked="True">All Species Everywhere</RadioButton>
-                <RadioButton Name="methodCustomSize" GroupName="randomizationMethod">Custom Groups Count (Per Area):</RadioButton>
-                <TextBox Name="spawnListSize" Width="30" VerticalAlignment="Bottom" Margin="0,0,5,0" GotFocus="SpawnListSize_GotFocus"
-                         PreviewTextInput="PositiveIntSize3_PreviewTextInput" DataObject.Pasting="PositiveIntSize3_Pasting">100</TextBox>
-                <RadioButton Name="methodLocalSwap" GroupName="randomizationMethod">Match Vanilla Groups Count (Per Area)</RadioButton>
-                <RadioButton Name="methodGlobalSwap" GroupName="randomizationMethod">Global Species Swap</RadioButton>
-                <RadioButton Name="methodNone" GroupName="randomizationMethod" Checked="MethodNone_Checked" Unchecked="MethodNone_Unchecked">No Randomization</RadioButton>
-            </WrapPanel>
-        </GroupBox>
-        <GroupBox Name="spawnGroupSettings" Margin="5">
-            <GroupBox.Header>
-                <TextBlock Margin="0">Spawn Group Settings</TextBlock>
-            </GroupBox.Header>
-            <WrapPanel>
-                <StackPanel Margin="0">
-                    <WrapPanel Margin="0,5,10,5">
-                        <RadioButton Name="groupVanilla" GroupName="groupType" IsChecked="False" Click="GroupType_Click">Vanilla-Based</RadioButton>
-                        <RadioButton Name="groupRandom" GroupName="groupType" IsChecked="True" Click="GroupType_Click">Randomized</RadioButton>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="5" Name="form">
+            <StackPanel Margin="0" Orientation="Horizontal">
+                <TextBlock FontWeight="Bold">Pal Spawn Randomizer v2.0</TextBlock>
+                <Button BorderThickness="0" Click="InfoButton_Click" ToolTip="Open Website">
+                    <emoji:TextBlock Text="ℹ️" Margin="0"/>
+                </Button>
+            </StackPanel>
+            <Border BorderBrush="Gray" BorderThickness="0,0,0,1"/>
+            <GroupBox Margin="5">
+                <GroupBox.Header>
+                    <TextBlock Margin="0">Randomize</TextBlock>
+                </GroupBox.Header>
+                <WrapPanel Margin="0,5,0,10">
+                    <CheckBox Name="randomizeField" IsChecked="True">Overworld Pals</CheckBox>
+                    <CheckBox Name="randomizeDungeons" IsChecked="True">Dungeon Pals</CheckBox>
+                    <CheckBox Name="randomizeDungeonBosses" IsChecked="True">Dungeon Bosses</CheckBox>
+                    <CheckBox Name="randomizeFieldBosses" IsChecked="True">Overworld Bosses</CheckBox>
+                    <WrapPanel Margin="10,0,0,0">
+                        <WrapPanel.Style>
+                            <Style TargetType="WrapPanel">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ElementName=methodNone, Path=IsChecked}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </WrapPanel.Style>
+                        <TextBlock Margin="0,0,5,0" VerticalAlignment="Top">Random Seed:</TextBlock>
+                        <TextBox Name="randomSeed" Height="20" VerticalAlignment="Top"
+                                 PreviewTextInput="NonNegIntSize9_PreviewTextInput" DataObject.Pasting="NonNegIntSize9_Pasting">0</TextBox>
+                        <CheckBox Name="randomSeedLocked" IsChecked="False">Lock Seed</CheckBox>
                     </WrapPanel>
-                    <CheckBox Name="fieldBossExtended" IsChecked="False" Margin="5,0,5,10">Multiple Spawn Groups For Overworld Bosses</CheckBox>
-                </StackPanel>
-                <StackPanel Name="groupMinMaxPanel" Margin="0,0,0,5">
-                    <Border BorderBrush="#FF404040" Background="#FF202020" BorderThickness="1" CornerRadius="5">
-                        <WrapPanel Margin="5,0,5,0">
-                            <TextBlock Margin="0,0,5,5">Randomized Group Size:</TextBlock>
-                            <TextBlock Margin="5,0,5,0">Min:</TextBlock>
-                            <TextBox Name="groupMin" Width="20" VerticalAlignment="Center"
-                                         PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">1</TextBox>
-                            <TextBlock Margin="5,0,5,0">Max:</TextBlock>
-                            <TextBox Name="groupMax" Width="20" VerticalAlignment="Center"
-                                         PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">3</TextBox>
-                            <TextBlock Margin="10,0,0,0">(Warning: High group numbers may cause lag.)</TextBlock>
+                </WrapPanel>
+            </GroupBox>
+            <GroupBox Margin="5">
+                <GroupBox.Header>
+                    <TextBlock Margin="0">Area Group Type</TextBlock>
+                </GroupBox.Header>
+                <WrapPanel Margin="0,5,0,10">
+                    <RadioButton Name="methodFull" GroupName="randomizationMethod" IsChecked="True">All Species Everywhere</RadioButton>
+                    <RadioButton Name="methodCustomSize" GroupName="randomizationMethod">Custom Groups Count (Per Area):</RadioButton>
+                    <TextBox Name="spawnListSize" Width="30" VerticalAlignment="Bottom" Margin="0,0,5,0" GotFocus="SpawnListSize_GotFocus"
+                             PreviewTextInput="PositiveIntSize3_PreviewTextInput" DataObject.Pasting="PositiveIntSize3_Pasting">50</TextBox>
+                    <RadioButton Name="methodLocalSwap" GroupName="randomizationMethod">Match Vanilla Groups Count (Per Area)</RadioButton>
+                    <RadioButton Name="methodGlobalSwap" GroupName="randomizationMethod">Global Species Swap</RadioButton>
+                    <RadioButton Name="methodNone" GroupName="randomizationMethod">No Randomization</RadioButton>
+                </WrapPanel>
+            </GroupBox>
+            <StackPanel Margin="0">
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Setter Property="Visibility" Value="Visible"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=methodNone, Path=IsChecked}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
+                    <GroupBox Name="spawnGroupSettings" Margin="5" Grid.Row="1">
+                    <GroupBox.Header>
+                        <TextBlock Margin="0">Spawn Group Settings</TextBlock>
+                    </GroupBox.Header>
+                    <WrapPanel>
+                        <StackPanel Margin="0">
+                            <WrapPanel Margin="0,5,10,5">
+                                <RadioButton Name="groupVanilla" GroupName="groupType" IsChecked="False">Vanilla-Based</RadioButton>
+                                <RadioButton Name="groupRandom" GroupName="groupType" IsChecked="True">Randomized</RadioButton>
+                            </WrapPanel>
+                            <CheckBox Name="fieldBossExtended" IsChecked="False" Margin="5,0,5,10">Multiple Spawn Groups For Overworld Bosses</CheckBox>
+                        </StackPanel>
+                        <StackPanel Margin="0,0,0,5">
+                            <StackPanel.Style>
+                                <Style TargetType="StackPanel">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ElementName=groupRandom, Path=IsChecked}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
+                            <Border BorderBrush="#FF404040" Background="#FF202020" BorderThickness="1" CornerRadius="5">
+                                <WrapPanel Margin="5,0,5,0">
+                                    <TextBlock Margin="0,0,5,5">Randomized Group Size:</TextBlock>
+                                    <TextBox Name="groupMin" Width="20" VerticalAlignment="Center"
+                                                 PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">1</TextBox>
+                                    <TextBlock Margin="5,0,5,0">-</TextBlock>
+                                    <TextBox Name="groupMax" Width="20" VerticalAlignment="Center"
+                                                 PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">3</TextBox>
+                                    <TextBlock Margin="5,0,5,5">Bosses:</TextBlock>
+                                    <TextBox Name="groupMinBoss" Width="20" VerticalAlignment="Center"
+                                             PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">3</TextBox>
+                                    <TextBlock Margin="5,0,5,0">-</TextBlock>
+                                    <TextBox Name="groupMaxBoss" Width="20" VerticalAlignment="Center"
+                                             PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">3</TextBox>
+                                </WrapPanel>
+                            </Border>
+                            <CheckBox Name="multiBoss" IsChecked="False" Margin="0,5,0,5">Boss Groups Are All Bosses</CheckBox>
+                        </StackPanel>
+                        <WrapPanel Margin="0" MaxWidth="500">
+                            <Border BorderBrush="#FF404040" Background="#FF202020" BorderThickness="1" CornerRadius="5" Margin="5,0,0,0">
+                                <WrapPanel Margin="5,0,5,0">
+                                    <CheckBox Name="rarityLevelBoost" IsChecked="True" Margin="0,5,0,5">Minimum Level For Rare Pals:</CheckBox>
+                                    <TextBlock Margin="0,0,0,0" VerticalAlignment="Center">6-7:</TextBlock>
+                                    <TextBox Name="rarity67MinLevel" VerticalAlignment="Center" GotFocus="RarityMinLevel_GotFocus"
+                                             PreviewTextInput="PositiveIntSize3_PreviewTextInput" DataObject.Pasting="PositiveIntSize3_Pasting">18</TextBox>
+                                    <TextBlock Margin="5,0,0,0" VerticalAlignment="Center">8+:</TextBlock>
+                                    <TextBox Name="rarity8UpMinLevel" VerticalAlignment="Center" GotFocus="RarityMinLevel_GotFocus"
+                                             PreviewTextInput="PositiveIntSize3_PreviewTextInput" DataObject.Pasting="PositiveIntSize3_Pasting">30</TextBox>
+                                </WrapPanel>
+                            </Border>
+                            <CheckBox Name="rarity9UpBossOnly" IsChecked="False" Margin="5,5,0,5">Rare (9+) Pals Are Boss-Only</CheckBox>
+                            <WrapPanel>
+                                <WrapPanel.Style>
+                                    <Style TargetType="WrapPanel">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ElementName=groupRandom, Path=IsChecked}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </WrapPanel.Style>
+                                <CheckBox Name="mixHumanAndPal" IsChecked="True" Margin="5,5,0,5">Allow Mixed Pal/Human Groups</CheckBox>
+                            </WrapPanel>
+                            <WrapPanel>
+                                <WrapPanel.Style>
+                                    <Style TargetType="WrapPanel">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ElementName=groupRandom, Path=IsChecked}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </WrapPanel.Style>
+                                <CheckBox Name="rarity8UpSolo" IsChecked="True" Margin="5,5,0,5">Rare (8+) Pals Always Solo</CheckBox>
+                            </WrapPanel>
                         </WrapPanel>
-                    </Border>
-                    <CheckBox Name="multiBoss" IsChecked="False" Margin="0,5,0,5">Boss Groups Are All Bosses</CheckBox>
-                </StackPanel>
+                    </WrapPanel>
+                </GroupBox>
+                <GroupBox Margin="5" Grid.Row="2">
+                    <GroupBox.Header>
+                        <TextBlock Margin="0">Probability</TextBlock>
+                    </GroupBox.Header>
+                    <WrapPanel Margin="0,5,0,10">
+                        <WrapPanel Orientation="Vertical">
+                            <WrapPanel>
+                                <RadioButton Name="weightTypeUniform" GroupName="weightType" VerticalAlignment="Top">Random Weight Range:</RadioButton>
+                                <TextBox Name="weightUniformMin" VerticalAlignment="Top" Margin="0,0,0,0" Height="20" GotFocus="WeightTypeUniform_GotFocus"
+                                         PreviewTextInput="PositiveIntSize4_PreviewTextInput" DataObject.Pasting="PositiveIntSize4_Pasting">10</TextBox>
+                                <TextBlock Margin="0">-</TextBlock>
+                                <TextBox Name="weightUniformMax" VerticalAlignment="Top" Margin="0,0,5,0" Height="20" GotFocus="WeightTypeUniform_GotFocus"
+                                         PreviewTextInput="PositiveIntSize4_PreviewTextInput" DataObject.Pasting="PositiveIntSize4_Pasting">10</TextBox>
+                            </WrapPanel>
+                            <WrapPanel>
+                                <WrapPanel.Style>
+                                    <Style TargetType="WrapPanel">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <MultiDataTrigger>
+                                                <MultiDataTrigger.Conditions>
+                                                    <Condition Binding="{Binding ElementName=methodFull, Path=IsChecked}" Value="False"/>
+                                                    <Condition Binding="{Binding ElementName=methodGlobalSwap, Path=IsChecked}" Value="False"/>
+                                                </MultiDataTrigger.Conditions>
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </MultiDataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </WrapPanel.Style>
+                                <CheckBox Name="equalizeAreaRarity" IsChecked="True">Equalize Global Rarity</CheckBox>
+                            </WrapPanel>
+                        </WrapPanel>
+                        <Border BorderBrush="#FF404040" Background="#FF202020" BorderThickness="1" CornerRadius="5">
+                            <WrapPanel Margin="0,0,5,0">
+                                <RadioButton Name="weightTypeCustom" GroupName="weightType" VerticalAlignment="Top" IsChecked="True" Content="Rarity-Based Weights:"
+                                             Unchecked="WeightTypeCustom_Unchecked"/>
+                                <StackPanel>
+                                    <StackPanel.Style>
+                                        <Style TargetType="StackPanel">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ElementName=weightCustomAdvanced, Path=IsChecked}" Value="True">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </StackPanel.Style>
+                                    <ToggleButton Name="weightCustomAdvanced" Content="Advanced..." Checked="WeightCustomAdvanced_Checked"/>
+                                </StackPanel>
+                                <WrapPanel Margin="0" MaxWidth="{Binding ElementName=rarityPanel, Path=ActualWidth}">
+                                    <WrapPanel.Style>
+                                        <Style TargetType="WrapPanel">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ElementName=weightCustomAdvanced, Path=IsChecked}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </WrapPanel.Style>
+                                    <StackPanel Name="rarityPanel" Orientation="Horizontal" Height="20" Margin="0,0,0,5">
+                                        <TextBlock Margin="0,0,0,0">1:</TextBlock>
+                                        <TextBox Name="weightCustom1" Margin="0" PreviewTextInput="NonNegIntSize4_PreviewTextInput" DataObject.Pasting="NonNegIntSize4_Pasting">60</TextBox>
+                                        <TextBlock Margin="10,0,0,0">2:</TextBlock>
+                                        <TextBox Name="weightCustom2" PreviewTextInput="NonNegIntSize4_PreviewTextInput" DataObject.Pasting="NonNegIntSize4_Pasting">60</TextBox>
+                                        <TextBlock Margin="10,0,0,0">3:</TextBlock>
+                                        <TextBox Name="weightCustom3" PreviewTextInput="NonNegIntSize4_PreviewTextInput" DataObject.Pasting="NonNegIntSize4_Pasting">60</TextBox>
+                                        <TextBlock Margin="10,0,0,0">4:</TextBlock>
+                                        <TextBox Name="weightCustom4" PreviewTextInput="NonNegIntSize4_PreviewTextInput" DataObject.Pasting="NonNegIntSize4_Pasting">25</TextBox>
+                                        <TextBlock Margin="10,0,0,0">5:</TextBlock>
+                                        <TextBox Name="weightCustom5" PreviewTextInput="NonNegIntSize4_PreviewTextInput" DataObject.Pasting="NonNegIntSize4_Pasting">25</TextBox>
+                                        <TextBlock Margin="10,0,0,0">6:</TextBlock>
+                                        <TextBox Name="weightCustom6" PreviewTextInput="NonNegIntSize4_PreviewTextInput" DataObject.Pasting="NonNegIntSize4_Pasting">10</TextBox>
+                                        <TextBlock Margin="10,0,0,0">7:</TextBlock>
+                                        <TextBox Name="weightCustom7" PreviewTextInput="NonNegIntSize4_PreviewTextInput" DataObject.Pasting="NonNegIntSize4_Pasting">10</TextBox>
+                                        <TextBlock Margin="10,0,0,0">8:</TextBlock>
+                                        <TextBox Name="weightCustom8" PreviewTextInput="NonNegIntSize4_PreviewTextInput" DataObject.Pasting="NonNegIntSize4_Pasting">5</TextBox>
+                                        <TextBlock Margin="10,0,0,0">9:</TextBlock>
+                                        <TextBox Name="weightCustom9" PreviewTextInput="NonNegIntSize4_PreviewTextInput" DataObject.Pasting="NonNegIntSize4_Pasting">1</TextBox>
+                                        <TextBlock Margin="10,0,0,0">10:</TextBlock>
+                                        <TextBox Name="weightCustom10" PreviewTextInput="NonNegIntSize4_PreviewTextInput" DataObject.Pasting="NonNegIntSize4_Pasting">1</TextBox>
+                                        <TextBlock Margin="10,0,0,0">20:</TextBlock>
+                                        <TextBox Name="weightCustom20" PreviewTextInput="NonNegIntSize4_PreviewTextInput" DataObject.Pasting="NonNegIntSize4_Pasting">1</TextBox>
+                                    </StackPanel>
+                                    <WrapPanel Margin="10,0,0,0">
+                                        <TextBlock Margin="0,0,5,0">Group Weight Mode:</TextBlock>
+                                        <ComboBox Name="weightCustomMode" ItemsSource="{Binding Source={x:Static local:MainPage.GroupWeightModes}, Mode=OneWay}" IsEditable="False"/>
+                                    </WrapPanel>
+                                    <WrapPanel Margin="10,0,0,0">
+                                        <TextBlock Margin="0,0,5,0" VerticalAlignment="Top">Human Rarity:</TextBlock>
+                                        <TextBox Name="humanRarity" Height="20" VerticalAlignment="Top"
+                                                 PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">4</TextBox>
+                                    </WrapPanel>
+                                    <CheckBox Name="weightAdjustProbability" IsChecked="True">Convert Weights To Percentages</CheckBox>
+                                </WrapPanel>
+                            </WrapPanel>
+                        </Border>
+                        <WrapPanel>
+                            <WrapPanel.Style>
+                                <Style TargetType="WrapPanel">
+                                    <Setter Property="Orientation" Value="Horizontal"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ElementName=weightCustomAdvanced, Path=IsChecked}" Value="True">
+                                            <Setter Property="Orientation" Value="Vertical"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </WrapPanel.Style>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Human Weight:"/>
+                                <TextBox Name="humanWeight" VerticalAlignment="Center" Margin="0"
+                                             PreviewTextInput="NonNegIntSize3_PreviewTextInput" DataObject.Pasting="NonNegIntSize3_Pasting">100</TextBox>
+                                <TextBlock Text="%"/>
+                                <TextBlock Text="Aggro Human Weight:"/>
+                                <TextBox Name="humanWeightAggro" VerticalAlignment="Center" Margin="0"
+                                         PreviewTextInput="NonNegIntSize3_PreviewTextInput" DataObject.Pasting="NonNegIntSize3_Pasting">50</TextBox>
+                                <TextBlock Text="%"/>
+                            </StackPanel>
+                            <WrapPanel Margin="10,0,0,0">
+                                <TextBlock Margin="0,0,5,0" VerticalAlignment="Top">Night-Only Weight Multiplier:</TextBlock>
+                                <TextBox Name="weightNightOnly" Height="20" VerticalAlignment="Top"
+                                         PreviewTextInput="NonNegIntSize5_PreviewTextInput" DataObject.Pasting="NonNegIntSize5_Pasting">10000</TextBox>
+                            </WrapPanel>
+                            <WrapPanel Margin="10,0,0,0">
+                                <TextBlock Margin="0,0,5,0">Int Overflow Fix:</TextBlock>
+                                <ComboBox Name="overflowFixMode" ItemsSource="{Binding Source={x:Static local:MainPage.OverflowFixModes}, Mode=OneWay}" IsEditable="False"/>
+                            </WrapPanel>
+                        </WrapPanel>
+                    </WrapPanel>
+                </GroupBox>
+            </StackPanel>
+            <GroupBox Margin="5">
+                <GroupBox.Header>
+                    <TextBlock Margin="0">Possible Pal Spawns</TextBlock>
+                </GroupBox.Header>
+                <WrapPanel Margin="0,5,0,10">
+                    <CheckBox Name="spawnPals" IsChecked="True">Pals</CheckBox>
+                    <CheckBox Name="spawnHumans" IsChecked="True">Humans (Aggressive)</CheckBox>
+                    <CheckBox Name="spawnPolice" IsChecked="True">Police</CheckBox>
+                    <CheckBox Name="spawnGuards" IsChecked="False">City Guards</CheckBox>
+                    <CheckBox Name="spawnNinja" IsChecked="True">Ninja</CheckBox>
+                    <CheckBox Name="spawnTraders" IsChecked="False">Item Merchants</CheckBox>
+                    <CheckBox Name="spawnPalTraders" IsChecked="False">Pal Merchants</CheckBox>
+                    <CheckBox Name="spawnTowerBosses" IsChecked="True">Tower Bosses</CheckBox>
+                    <CheckBox Name="spawnRaidBosses" IsChecked="False">Raid Bosses</CheckBox>
+                    <CheckBox Name="spawnTowerBosses2" IsChecked="False">Tower Bosses 2</CheckBox>
+                    <CheckBox Name="spawnRaidBosses2" IsChecked="False">Raid Bosses 2</CheckBox>
+                </WrapPanel>
+            </GroupBox>
+            <GroupBox Margin="5">
+                <GroupBox.Header>
+                    <TextBlock Margin="0">Level Adjustment</TextBlock>
+                </GroupBox.Header>
+                <WrapPanel Margin="0,5,0,10">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Overworld Level:"/>
+                        <TextBox Name="fieldLevel" MinWidth="30" VerticalAlignment="Center" Margin="0"
+                                     PreviewTextInput="NonNegIntSize4_PreviewTextInput" DataObject.Pasting="NonNegIntSize4_Pasting">100</TextBox>
+                        <TextBlock Text="%"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Dungeon Level:"/>
+                        <TextBox Name="dungeonLevel" MinWidth="30" VerticalAlignment="Center" Margin="0"
+                                     PreviewTextInput="NonNegIntSize4_PreviewTextInput" DataObject.Pasting="NonNegIntSize4_Pasting">100</TextBox>
+                        <TextBlock Text="%"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Overworld Boss Level:"/>
+                        <TextBox Name="fieldBossLevel" MinWidth="30" VerticalAlignment="Center" Margin="0"
+                                     PreviewTextInput="NonNegIntSize4_PreviewTextInput" DataObject.Pasting="NonNegIntSize4_Pasting">100</TextBox>
+                        <TextBlock Text="%"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Dungeon Boss Level:"/>
+                        <TextBox Name="dungeonBossLevel" MinWidth="30" VerticalAlignment="Center" Margin="0"
+                                     PreviewTextInput="NonNegIntSize4_PreviewTextInput" DataObject.Pasting="NonNegIntSize4_Pasting">100</TextBox>
+                        <TextBlock Text="%"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Level Cap:"/>
+                        <TextBox Name="levelCap" VerticalAlignment="Center" Margin="0"
+                                     PreviewTextInput="PositiveIntSize3_PreviewTextInput" DataObject.Pasting="PositiveIntSize3_Pasting">55</TextBox>
+                        <TextBlock Text="(Only affects spawn data.)"/>
+                    </StackPanel>
+                </WrapPanel>
+            </GroupBox>
+            <GroupBox Margin="5">
+                <GroupBox.Header>
+                    <TextBlock Margin="0">Individual Count Multiplier</TextBlock>
+                </GroupBox.Header>
+                <WrapPanel Margin="0,5,0,10">
+                    <StackPanel Orientation="Horizontal" Margin="0">
+                        <StackPanel.Style>
+                            <Style TargetType="StackPanel">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding ElementName=methodNone, Path=IsChecked}" Value="False"/>
+                                            <Condition Binding="{Binding ElementName=groupVanilla, Path=IsChecked}" Value="False"/>
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
+                        <TextBlock>Base Count:</TextBlock>
+                        <TextBox Name="baseCountMin" VerticalAlignment="Top" Margin="0,0,0,0" Height="20"
+                                 PreviewTextInput="NonNegIntSize2_PreviewTextInput" DataObject.Pasting="NonNegIntSize2_Pasting">1</TextBox>
+                        <TextBlock Margin="0">-</TextBlock>
+                        <TextBox Name="baseCountMax" VerticalAlignment="Top" Margin="0,0,5,0" Height="20"
+                                 PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">1</TextBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Overworld Multiplier:"/>
+                        <TextBox Name="fieldCount" MinWidth="30" VerticalAlignment="Center" Margin="0"
+                                 PreviewTextInput="PositiveIntSize3_PreviewTextInput" DataObject.Pasting="PositiveIntSize3_Pasting">100</TextBox>
+                        <TextBlock Text="%"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Dungeon Multiplier:"/>
+                        <TextBox Name="dungeonCount" MinWidth="30" VerticalAlignment="Center" Margin="0"
+                                 PreviewTextInput="PositiveIntSize3_PreviewTextInput" DataObject.Pasting="PositiveIntSize3_Pasting">100</TextBox>
+                        <TextBlock Text="%"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Overworld Boss Multiplier:"/>
+                        <TextBox Name="fieldBossCount" MinWidth="30" VerticalAlignment="Center" Margin="0"
+                                 PreviewTextInput="PositiveIntSize3_PreviewTextInput" DataObject.Pasting="PositiveIntSize3_Pasting">100</TextBox>
+                        <TextBlock Text="%"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Dungeon Boss Multiplier:"/>
+                        <TextBox Name="dungeonBossCount" MinWidth="30" VerticalAlignment="Center" Margin="0"
+                                 PreviewTextInput="PositiveIntSize3_PreviewTextInput" DataObject.Pasting="PositiveIntSize3_Pasting">100</TextBox>
+                        <TextBlock Text="%"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Count Min/Max:"/>
+                        <TextBox Name="countClampMin" VerticalAlignment="Center" Margin="0"
+                                 PreviewTextInput="NonNegIntSize2_PreviewTextInput" DataObject.Pasting="NonNegIntSize2_Pasting">0</TextBox>
+                        <TextBlock Text="-" Margin="0" VerticalAlignment="Center"/>
+                        <TextBox Name="countClampMax" VerticalAlignment="Center" Margin="0"
+                                 PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">5</TextBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="First Pal Min/Max:"/>
+                        <TextBox Name="countClampFirstMin" VerticalAlignment="Center" Margin="0"
+                                 PreviewTextInput="NonNegIntSize2_PreviewTextInput" DataObject.Pasting="NonNegIntSize2_Pasting">1</TextBox>
+                        <TextBlock Text="-" Margin="0" VerticalAlignment="Center"/>
+                        <TextBox Name="countClampFirstMax" VerticalAlignment="Center" Margin="0"
+                                 PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">5</TextBox>
+                    </StackPanel>
+                </WrapPanel>
+            </GroupBox>
+            <WrapPanel Margin="0,0,0,5">
+                <CheckBox Name="nightOnly" IsChecked="True">Nocturnal Pals Are Night-Only (Overworld)</CheckBox>
+                <CheckBox Name="nightOnlyDungeons">Nocturnal Pals Are Night-Only (Dungeons)</CheckBox>
+                <CheckBox Name="nightOnlyDungeonBosses">Nocturnal Pals Are Night-Only (Dungeon Bosses)</CheckBox>
+                <CheckBox Name="nightOnlyBosses">Nocturnal Pals Are Night-Only (Overworld Bosses)</CheckBox>
             </WrapPanel>
-        </GroupBox>
-        <GroupBox Margin="5">
-            <GroupBox.Header>
-                <TextBlock Margin="0">Possible Pal Spawns</TextBlock>
-            </GroupBox.Header>
-            <WrapPanel Margin="0,5,0,10">
-                <CheckBox Name="spawnPals" IsChecked="True">Pals</CheckBox>
-                <CheckBox Name="spawnHumans" IsChecked="True">Humans (Aggressive)</CheckBox>
-                <CheckBox Name="spawnPolice" IsChecked="True">Police</CheckBox>
-                <CheckBox Name="spawnGuards" IsChecked="False">City Guards</CheckBox>
-                <CheckBox Name="spawnNinja" IsChecked="True">Ninja</CheckBox>
-                <CheckBox Name="spawnTraders" IsChecked="False">Item Merchants</CheckBox>
-                <CheckBox Name="spawnPalTraders" IsChecked="False">Pal Merchants</CheckBox>
-                <CheckBox Name="spawnTowerBosses" IsChecked="True">Tower Bosses</CheckBox>
-                <CheckBox Name="spawnRaidBosses" IsChecked="False">Raid Bosses</CheckBox>
-                <CheckBox Name="spawnTowerBosses2" IsChecked="False">Tower Bosses 2</CheckBox>
-                <CheckBox Name="spawnRaidBosses2" IsChecked="False">Raid Bosses 2</CheckBox>
+            <WrapPanel Margin="0,0,0,5">
+                <CheckBox Name="autoSaveTemplate" IsChecked="True">Auto-Restore Settings</CheckBox>
+                <CheckBox Name="outputLog" IsChecked="False">Generate Log Text File</CheckBox>
             </WrapPanel>
-        </GroupBox>
-        <GroupBox Margin="5">
-            <GroupBox.Header>
-                <TextBlock Margin="0">Level Adjustment</TextBlock>
-            </GroupBox.Header>
-            <WrapPanel Margin="0,5,0,10">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Overworld Level:"/>
-                    <TextBox Name="fieldLevel" MinWidth="30" VerticalAlignment="Center" Margin="0"
-                                 PreviewTextInput="NonNegIntSize4_PreviewTextInput" DataObject.Pasting="NonNegIntSize4_Pasting">100</TextBox>
-                    <TextBlock Text="%"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Dungeon Level:"/>
-                    <TextBox Name="dungeonLevel" MinWidth="30" VerticalAlignment="Center" Margin="0"
-                                 PreviewTextInput="NonNegIntSize4_PreviewTextInput" DataObject.Pasting="NonNegIntSize4_Pasting">100</TextBox>
-                    <TextBlock Text="%"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Overworld Boss Level:"/>
-                    <TextBox Name="fieldBossLevel" MinWidth="30" VerticalAlignment="Center" Margin="0"
-                                 PreviewTextInput="NonNegIntSize4_PreviewTextInput" DataObject.Pasting="NonNegIntSize4_Pasting">100</TextBox>
-                    <TextBlock Text="%"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Dungeon Boss Level:"/>
-                    <TextBox Name="dungeonBossLevel" MinWidth="30" VerticalAlignment="Center" Margin="0"
-                                 PreviewTextInput="NonNegIntSize4_PreviewTextInput" DataObject.Pasting="NonNegIntSize4_Pasting">100</TextBox>
-                    <TextBlock Text="%"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Level Cap:"/>
-                    <TextBox Name="levelCap" Width="30" VerticalAlignment="Center" Margin="0"
-                                 PreviewTextInput="PositiveIntSize3_PreviewTextInput" DataObject.Pasting="PositiveIntSize3_Pasting">55</TextBox>
-                    <TextBlock Text="(Only affects spawn data.)"/>
-                </StackPanel>
-            </WrapPanel>
-        </GroupBox>
-        <WrapPanel Margin="0,0,0,5">
-            <CheckBox Name="nightOnly" IsChecked="True">Nocturnal Pals Are Night-Only (Overworld)</CheckBox>
-            <CheckBox Name="nightOnlyDungeons">Nocturnal Pals Are Night-Only (Dungeons)</CheckBox>
-            <CheckBox Name="nightOnlyDungeonBosses">Nocturnal Pals Are Night-Only (Dungeon Bosses)</CheckBox>
-            <CheckBox Name="nightOnlyBosses">Nocturnal Pals Are Night-Only (Overworld Bosses)</CheckBox>
-        </WrapPanel>
-        <WrapPanel Margin="0,0,0,5">
-            <CheckBox Name="outputLog" IsChecked="False">Generate Log Text File</CheckBox>
-        </WrapPanel>
-        <TextBlock Margin="0"></TextBlock>
-        <WrapPanel Margin="5,10,0,0">
-            <Button Name="savePak" Click="SavePak_Click">
-                <TextBlock Margin="5,2,5,2" Text="Randomize And Save PAK..."/>
-            </Button>
-            <Button Click="ViewSpawns_Click" Margin="10,0,10,0">
-                <TextBlock Margin="5,2,5,2">Open Spawn Editor</TextBlock>
-            </Button>
-        </WrapPanel>
-    </StackPanel>
+            <TextBlock Margin="0"></TextBlock>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <WrapPanel Margin="5,10,0,0">
+                    <Button Name="savePak" Click="SavePak_Click">
+                        <TextBlock Margin="5,2,5,2" Text="Randomize And Save PAK..."/>
+                    </Button>
+                    <Button Click="ViewSpawns_Click" Margin="10,0,10,0">
+                        <TextBlock Margin="5,2,5,2">Open Spawn Editor</TextBlock>
+                    </Button>
+                </WrapPanel>
+                <WrapPanel Margin="5,10,0,0" Grid.Column="2" HorizontalAlignment="Right">
+                    <Button Name="saveTemplate" Click="SaveTemplate_Click">
+                        <TextBlock Margin="5,2,5,2" Text="Save Template..."/>
+                    </Button>
+                    <Button Name="loadTemplate" Margin="10,0,10,0" Click="LoadTemplate_Click">
+                        <TextBlock Margin="5,2,5,2">Apply Template...</TextBlock>
+                    </Button>
+                </WrapPanel>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
     <Grid Panel.ZIndex="-1">
         <Image Name="testImage" MaxHeight="64" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="5"
                    Source="/Resources/Images/PalIcon/T_SheepBall_icon_normal.png"/>
