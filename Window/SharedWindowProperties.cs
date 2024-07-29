@@ -42,7 +42,7 @@ namespace PalworldRandomizer
             try
             {
                 Directory.CreateDirectory(UAssetData.AppDataPath("Config"));
-                File.WriteAllText(UAssetData.AppDataPath(GLOBAL_GONFIG_FILENAME), JsonConvert.SerializeObject(config, Newtonsoft.Json.Formatting.Indented));
+                File.WriteAllText(UAssetData.AppDataPath(GLOBAL_GONFIG_FILENAME), JsonConvert.SerializeObject(config, Formatting.Indented));
             }
             catch
             {

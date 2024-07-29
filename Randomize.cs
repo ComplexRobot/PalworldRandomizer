@@ -118,8 +118,8 @@ namespace PalworldRandomizer
                 if (keyPair.Value.IsPal)
                 {
                     StructPropertyData? nameData = ((DataTableExport) palNames.Exports[0]).Table.Data.Find(property =>
-                        (PalData[keyPair.Key].OverrideNameTextID != null &&
-                        string.Compare(((TextPropertyData) property.Value[0]).Value.Value, $"{PalData[keyPair.Key].OverrideNameTextID}_TextData", true) == 0)
+                        (PalData[keyPair.Key].OverrideNameTextId != null &&
+                        string.Compare(((TextPropertyData) property.Value[0]).Value.Value, $"{PalData[keyPair.Key].OverrideNameTextId}_TextData", true) == 0)
                         || string.Compare(((TextPropertyData) property.Value[0]).Value.Value, $"PAL_NAME_{keyPair.Key}_TextData", true) == 0);
                     string nameString = nameData != null ? ((TextPropertyData) nameData.Value[0]).CultureInvariantString.Value.Trim() : "en_text";
                     while (nameString.Contains("  "))
@@ -180,7 +180,7 @@ namespace PalworldRandomizer
                 else
                 {
                     StructPropertyData? property = ((DataTableExport) humanNames.Exports[0]).Table.Data.Find(property =>
-                        ((TextPropertyData) property.Value[0]).Value.Value == $"{PalData[keyPair.Key].OverrideNameTextID}_TextData");
+                        ((TextPropertyData) property.Value[0]).Value.Value == $"{PalData[keyPair.Key].OverrideNameTextId}_TextData");
                     SimpleName.Add(keyPair.Key, keyPair.Key);
                     if (property != null)
                     {
@@ -190,7 +190,7 @@ namespace PalworldRandomizer
                     {
                         PalName.Add(keyPair.Key, "-");
                     }
-                    if (PalData[keyPair.Key].weapon != null && weapons.TryGetValue(PalData[keyPair.Key].weapon!, out string? value))
+                    if (PalData[keyPair.Key].Weapon != null && weapons.TryGetValue(PalData[keyPair.Key].Weapon!, out string? value))
                     {
                         PalIcon.Add(keyPair.Key, value);
                     }
@@ -664,9 +664,13 @@ namespace PalworldRandomizer
                 {
                     FilterSpawns(basicSpawnsOriginal, bossSpawnsOriginal, spawnEntry =>
                     {
-                        spawnEntry.SpawnList.RemoveAll(x =>
+                        spawnEntry.SpawnList.RemoveAll(spawnData =>
                         {
-                            int rarity = Math.Clamp(Rarity(x), 1, 20);
+                            if (!Data.PalData[spawnData.Name].IsPal)
+                            {
+                                return false;
+                            }
+                            int rarity = Math.Clamp(Rarity(spawnData), 1, 20);
                             return !(rarity > 10 && rarity < 20) && formData.WeightCustom[rarity] == 0;
                         });
                     });
@@ -732,7 +736,7 @@ namespace PalworldRandomizer
             int progressTotal = subList.Count;
             int Rarity(SpawnData spawnData)
             {
-                if (!spawnData.IsPal)
+                if (!Data.PalData[spawnData.Name].IsPal)
                 {
                     return humanRarity;
                 }
@@ -992,40 +996,73 @@ namespace PalworldRandomizer
                         if (original.Count != 0 && !(formData.Rarity8UpSolo && Rarity8Up(spawnEntry.SpawnList[0])))
                         {
                             int groupSize = isBoss ? random.Next(minGroupBoss, maxGroupBoss + 1) : random.Next(minGroup, maxGroup + 1);
-                            if (nightOnly || !formData.MixHumanAndPal || formData.Rarity8UpSolo)
+                            if (nightOnly || !formData.MixHumanAndPal || formData.Rarity8UpSolo || formData.SeparateAggroHumans)
                             {
                                 List<SpawnEntry> spawnsUsed = spawns;
                                 List<SpawnEntry> originalsUsed = original;
                                 if (nightOnly)
                                 {
-                                    List<SpawnEntry> diurnal = spawns.FindAll(entry => !Data.PalData[entry.SpawnList[0].Name].Nocturnal);
-                                    List<SpawnEntry> nocturnal = spawns.FindAll(entry => Data.PalData[entry.SpawnList[0].Name].Nocturnal);
-                                    List<SpawnEntry> diurnalOriginal = original.FindAll(entry => !Data.PalData[entry.SpawnList[0].Name].Nocturnal);
-                                    List<SpawnEntry> nocturnalOriginal = original.FindAll(entry => Data.PalData[entry.SpawnList[0].Name].Nocturnal);
-                                    spawnsUsed = [.. Data.PalData[spawnEntry.SpawnList[0].Name].Nocturnal ? nocturnal : diurnal];
-                                    originalsUsed = [.. Data.PalData[spawnEntry.SpawnList[0].Name].Nocturnal ? nocturnalOriginal : diurnalOriginal];
+                                    SeparateGroupsByCondition(entry => Data.PalData[entry.SpawnList[0].Name].Nocturnal);
                                 }
                                 if (!formData.MixHumanAndPal)
                                 {
-                                    List<SpawnEntry> pal = spawnsUsed.FindAll(entry => Data.PalData[entry.SpawnList[0].Name].IsPal);
-                                    List<SpawnEntry> human = spawnsUsed.FindAll(entry => !Data.PalData[entry.SpawnList[0].Name].IsPal);
-                                    List<SpawnEntry> palOriginal = originalsUsed.FindAll(entry => Data.PalData[entry.SpawnList[0].Name].IsPal);
-                                    List<SpawnEntry> humanOriginal = originalsUsed.FindAll(entry => !Data.PalData[entry.SpawnList[0].Name].IsPal);
-                                    spawnsUsed = [.. spawnEntry.SpawnList[0].IsPal ? pal : human];
-                                    originalsUsed = [.. spawnEntry.SpawnList[0].IsPal ? palOriginal : humanOriginal];
+                                    SeparateGroupsByCondition(entry => Data.PalData[entry.SpawnList[0].Name].IsPal);
+                                }
+                                if (formData.SeparateAggroHumans)
+                                {
+                                    if (!Data.PalData[spawnEntry.SpawnList[0].Name].IsPal && Data.PalData[spawnEntry.SpawnList[0].Name].AIResponse != "Kill_All")
+                                    {
+                                        FilterGroupsByCondition(entry =>
+                                            Data.PalData[entry.SpawnList[0].Name].AIResponse != "Kill_All"
+                                            && Data.PalData[entry.SpawnList[0].Name].AIResponse != "Warlike"
+                                            && Data.PalData[entry.SpawnList[0].Name].AIResponse != "Boss"
+                                            && !entry.SpawnList[0].IsBoss);
+                                    }
+                                    else if (Data.PalData[spawnEntry.SpawnList[0].Name].AIResponse == "Kill_All"
+                                            || Data.PalData[spawnEntry.SpawnList[0].Name].AIResponse == "Warlike"
+                                            || Data.PalData[spawnEntry.SpawnList[0].Name].AIResponse == "Boss"
+                                            || spawnEntry.SpawnList[0].IsBoss)
+                                    {
+                                        FilterGroupsByCondition(entry =>
+                                            Data.PalData[entry.SpawnList[0].Name].IsPal || Data.PalData[entry.SpawnList[0].Name].AIResponse == "Kill_All");
+                                    }
+                                    else if (spawnsUsed.Exists(entry =>
+                                            !Data.PalData[entry.SpawnList[0].Name].IsPal && Data.PalData[entry.SpawnList[0].Name].AIResponse != "Kill_All"))
+                                    {
+                                        FilterGroupsByCondition(entry =>
+                                            Data.PalData[entry.SpawnList[0].Name].IsPal || Data.PalData[entry.SpawnList[0].Name].AIResponse != "Kill_All");
+                                    }
                                 }
                                 if (formData.Rarity8UpSolo)
                                 {
-                                    spawnsUsed = spawnsUsed.FindAll(entry => !entry.SpawnList.Exists(x => Rarity8Up(x)));
-                                    originalsUsed = originalsUsed.FindAll(entry => !entry.SpawnList.Exists(x => Rarity8Up(x)));
+                                    FilterGroupsByCondition(entry => !entry.SpawnList.Exists(x => Rarity8Up(x)));
                                 }
-                                while (spawnEntry.SpawnList.Count < groupSize)
+                                void FilterGroupsByCondition(Func<SpawnEntry, bool> condition)
                                 {
-                                    spawnEntry.SpawnList.Add(NextSpecies(spawnsUsed, originalsUsed, spawnEntry.SpawnList));
+                                    spawnsUsed = spawnsUsed.FindAll(entry => condition(entry));
+                                    originalsUsed = originalsUsed.FindAll(entry => condition(entry));
                                 }
-                                if (spawns.Count == 0)
-                                    spawns.AddRange(original);
-                                spawns.RemoveAll(entry => spawnEntry.SpawnList.Exists(spawnData => entry.SpawnList[0].Name == spawnData.Name));
+                                void SeparateGroupsByCondition(Func<SpawnEntry, bool> condition)
+                                {
+                                    if (condition(spawnEntry))
+                                    {
+                                        FilterGroupsByCondition(condition);
+                                    }
+                                    else
+                                    {
+                                        FilterGroupsByCondition(entry => !condition(entry));
+                                    }
+                                }
+                                if (originalsUsed.Count != 0)
+                                {
+                                    while (spawnEntry.SpawnList.Count < groupSize)
+                                    {
+                                        spawnEntry.SpawnList.Add(NextSpecies(spawnsUsed, originalsUsed, spawnEntry.SpawnList));
+                                    }
+                                    if (spawns.Count == 0)
+                                        spawns.AddRange(original);
+                                    spawns.RemoveAll(entry => spawnEntry.SpawnList.Exists(spawnData => entry.SpawnList[0].Name == spawnData.Name));
+                                }
                             }
                             else
                             {
@@ -1408,7 +1445,7 @@ namespace PalworldRandomizer
                             maxLevel = area.maxLevel;
                         }
                         GenerateLevels(spawnEntry, [.. spawnEntry.SpawnList.ConvertAll(x => (int) x.MinLevel)], [.. spawnEntry.SpawnList.ConvertAll(x => (int) x.MaxLevel)],
-                            minLevel, maxLevel, (x) => LevelMultiplierEx(x, isDungeon || isDungeonBoss));
+                            minLevel, maxLevel, x => LevelMultiplierEx(x, isDungeon || isDungeonBoss));
                     }
                     PostProcessArea(area.SpawnEntries, area.SpawnEntries.Sum(x => (long) x.Weight), nightOnly);
                 }

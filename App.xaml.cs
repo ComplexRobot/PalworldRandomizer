@@ -44,7 +44,7 @@ namespace PalworldRandomizer
                     e.Cancel = true;
                 };
             });
-            DispatcherOperation mainWindowOperation = Dispatcher.BeginInvoke(() =>
+            Dispatcher.BeginInvoke(() =>
             {
                 MainWindow = new AppWindow(() => new MainPage(dataOperation)) { Title = "Palworld Randomizer", Width = 1280, Height = 720 };
                 MainWindow.Closed += (sender, e) => Shutdown();

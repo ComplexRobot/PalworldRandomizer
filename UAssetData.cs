@@ -143,7 +143,7 @@ namespace PalworldRandomizer
     {
         private readonly UAsset uAsset = asset;
         private readonly StructPropertyData structPropertyData = dataTable;
-        public string? OverrideNameTextID
+        public string? OverrideNameTextId
         {
             get => ((NamePropertyData) structPropertyData.Value[0]).Value?.ToString();
             set => ((NamePropertyData) structPropertyData.Value[0]).Value = value == null ? null : new FName(uAsset, value);
@@ -213,7 +213,7 @@ namespace PalworldRandomizer
             get => ((EnumPropertyData) structPropertyData.Value[13]).Value?.ToString();
             set => ((EnumPropertyData) structPropertyData.Value[13]).Value = value == null ? null : FName.DefineDummy(uAsset, value);
         }
-        public string? weapon
+        public string? Weapon
         {
             get => ((EnumPropertyData) structPropertyData.Value[14]).Value?.ToString();
             set => ((EnumPropertyData) structPropertyData.Value[14]).Value = value == null ? null : FName.DefineDummy(uAsset, value);

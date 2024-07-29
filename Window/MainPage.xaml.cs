@@ -58,8 +58,9 @@ namespace PalworldRandomizer
         public int Rarity67MinLevel = int.Parse(window?.rarity67MinLevel.Text ?? "0");
         public int Rarity8UpMinLevel = int.Parse(window?.rarity8UpMinLevel.Text ?? "0");
         public bool Rarity9UpBossOnly = window?.rarity9UpBossOnly.IsChecked == true;
-        public bool MixHumanAndPal = window?.mixHumanAndPal.IsChecked == true;
         public bool Rarity8UpSolo = window?.rarity8UpSolo.IsChecked == true;
+        public bool MixHumanAndPal = window?.mixHumanAndPal.IsChecked == true;
+        public bool SeparateAggroHumans = window?.separateAggroHumans.IsChecked == true;
         public bool WeightTypeUniform = window?.weightTypeUniform.IsChecked == true;
         public bool WeightTypeCustom = window?.weightTypeCustom.IsChecked == true;
         public int WeightUniformMin = int.Parse(window?.weightUniformMin.Text ?? "0");
