@@ -358,6 +358,11 @@ namespace PalworldRandomizer
         public string IconPath => Data.PalIcon[Name];
         public bool BossChangeable => Data.PalData[Name].IsPal && !Name.StartsWith("GYM_", StringComparison.InvariantCultureIgnoreCase)
              && !Name.StartsWith("RAID_", StringComparison.InvariantCultureIgnoreCase);
+
+        [GeneratedRegex("^((BOSS|GYM|RAID)_)?(.+?)(_[0-9]+(_.+)?)?$", RegexOptions.IgnoreCase)]
+        private static partial Regex baseNameRegex();
+
+        public string BaseName => baseNameRegex().Match(Name).Groups[3].Value;
     }
 
     public class SpawnExportData
@@ -383,6 +388,26 @@ namespace PalworldRandomizer
         public int maxLevelNight = 0;
         public bool modified = false;
         private readonly ObservableList<SpawnEntry> virtualEntries = [];
+
+        public AreaData Clone()
+        {
+            return new AreaData(new(), new(), filename)
+            {
+                minLevel = minLevel,
+                maxLevel = maxLevel,
+                minLevelNight = minLevelNight,
+                maxLevelNight = maxLevelNight,
+                modified = modified,
+                uAsset = UAssetData.LoadAsset($"Assets\\{filename}"),
+                spawnExportData =
+                new SpawnExportData
+                {
+                    header = [.. spawnExportData.header],
+                    footer = [.. spawnExportData.footer],
+                    spawnEntries = SpawnEntries.ConvertAll(entry => entry.Clone())
+                }
+            };
+        }
 
         public int EntriesToShow
         {

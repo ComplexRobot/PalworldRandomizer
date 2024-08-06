@@ -16,7 +16,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="5" Name="form">
             <StackPanel Margin="0" Orientation="Horizontal">
-                <TextBlock FontWeight="Bold">Pal Spawn Randomizer v2.1</TextBlock>
+                <TextBlock FontWeight="Bold">Pal Spawn Randomizer v2.2</TextBlock>
                 <Button BorderThickness="0" Click="InfoButton_Click" ToolTip="Open Website">
                     <emoji:TextBlock Text="ℹ️" Margin="0"/>
                 </Button>
@@ -61,6 +61,26 @@
                     <RadioButton Name="methodLocalSwap" GroupName="randomizationMethod">Match Vanilla Groups Count (Per Area)</RadioButton>
                     <RadioButton Name="methodGlobalSwap" GroupName="randomizationMethod">Global Species Swap</RadioButton>
                     <RadioButton Name="methodNone" GroupName="randomizationMethod">No Randomization</RadioButton>
+                    <WrapPanel>
+                        <WrapPanel.Style>
+                            <Style TargetType="WrapPanel">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ElementName=methodNone, Path=IsChecked}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </WrapPanel.Style>
+                        <Border BorderBrush="#FF404040" Background="#FF202020" BorderThickness="1" CornerRadius="5" Margin="5,0,0,0">
+                            <WrapPanel Margin="5,0,5,0">
+                                <CheckBox Name="vanillaPlus" IsChecked="False" Margin="0">Add To Vanilla With Probability:</CheckBox>
+                                <TextBox Name="vanillaPlusChance" VerticalAlignment="Center" GotFocus="VanillaPlusChance_GotFocus"
+                                         PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">50</TextBox>
+                                <TextBlock Margin="5,0,0,0" VerticalAlignment="Center">%</TextBlock>
+                            </WrapPanel>
+                        </Border>
+                    </WrapPanel>
                 </WrapPanel>
             </GroupBox>
             <StackPanel Margin="0">
@@ -289,9 +309,19 @@
                                 <TextBlock Text="%"/>
                             </StackPanel>
                             <WrapPanel Margin="10,0,0,0">
+                                <WrapPanel.Style>
+                                    <Style TargetType="WrapPanel">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ElementName=vanillaPlus, Path=IsChecked}" Value="True">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </WrapPanel.Style>
                                 <TextBlock Margin="0,0,5,0" VerticalAlignment="Top">Night-Only Weight Multiplier:</TextBlock>
                                 <TextBox Name="weightNightOnly" Height="20" VerticalAlignment="Top"
-                                         PreviewTextInput="NonNegIntSize5_PreviewTextInput" DataObject.Pasting="NonNegIntSize5_Pasting">10000</TextBox>
+                                         PreviewTextInput="NonNegDecSize5_PreviewTextInput" DataObject.Pasting="NonNegDecSize5_Pasting">10000</TextBox>
                             </WrapPanel>
                             <WrapPanel Margin="10,0,0,0">
                                 <TextBlock Margin="0,0,5,0">Int Overflow Fix:</TextBlock>

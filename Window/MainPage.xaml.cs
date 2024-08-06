@@ -10,6 +10,7 @@ using System.Windows.Threading;
 using System.Runtime.ExceptionServices;
 using Newtonsoft.Json;
 using Microsoft.Win32;
+using System.Numerics;
 
 namespace PalworldRandomizer
 {
@@ -31,94 +32,98 @@ namespace PalworldRandomizer
         public static readonly string Dynamic = "Dynamic (Multi-Pass)";
     }
 
-    public class FormData(MainPage? window)
+    public class FormData(MainPage window)
     {
-        public int RandomSeed = int.Parse(window?.randomSeed.Text ?? "0");
-        public bool RandomSeedLocked = window?.randomSeedLocked.IsChecked == true;
-        public bool RandomizeField = window?.randomizeField.IsChecked == true;
-        public bool RandomizeDungeons = window?.randomizeDungeons.IsChecked == true;
-        public bool RandomizeDungeonBosses = window?.randomizeDungeonBosses.IsChecked == true;
-        public bool RandomizeFieldBosses = window?.randomizeFieldBosses.IsChecked == true;
-        public bool EqualizeAreaRarity = window?.equalizeAreaRarity.IsChecked == true;
-        public bool MethodFull = window?.methodFull.IsChecked == true;
-        public bool MethodCustomSize = window?.methodCustomSize.IsChecked == true;
-        public int SpawnListSize = int.Parse(window?.spawnListSize.Text ?? "0");
-        public bool MethodLocalSwap = window?.methodLocalSwap.IsChecked == true;
-        public bool MethodGlobalSwap = window?.methodGlobalSwap.IsChecked == true;
-        public bool MethodNone = window?.methodNone.IsChecked == true;
-        public bool GroupVanilla = window?.groupVanilla.IsChecked == true;
-        public bool GroupRandom = window?.groupRandom.IsChecked == true;
-        public bool FieldBossExtended = window?.fieldBossExtended.IsChecked == true;
-        public int GroupMin = int.Parse(window?.groupMin.Text ?? "0");
-        public int GroupMax = int.Parse(window?.groupMax.Text ?? "0");
-        public int GroupMinBoss = int.Parse(window?.groupMinBoss.Text ?? "0");
-        public int GroupMaxBoss = int.Parse(window?.groupMaxBoss.Text ?? "0");
-        public bool MultiBoss = window?.multiBoss.IsChecked == true;
-        public bool RarityLevelBoost = window?.rarityLevelBoost.IsChecked == true;
-        public int Rarity67MinLevel = int.Parse(window?.rarity67MinLevel.Text ?? "0");
-        public int Rarity8UpMinLevel = int.Parse(window?.rarity8UpMinLevel.Text ?? "0");
-        public bool Rarity9UpBossOnly = window?.rarity9UpBossOnly.IsChecked == true;
-        public bool Rarity8UpSolo = window?.rarity8UpSolo.IsChecked == true;
-        public bool MixHumanAndPal = window?.mixHumanAndPal.IsChecked == true;
-        public bool SeparateAggroHumans = window?.separateAggroHumans.IsChecked == true;
-        public bool WeightTypeUniform = window?.weightTypeUniform.IsChecked == true;
-        public bool WeightTypeCustom = window?.weightTypeCustom.IsChecked == true;
-        public int WeightUniformMin = int.Parse(window?.weightUniformMin.Text ?? "0");
-        public int WeightUniformMax = int.Parse(window?.weightUniformMax.Text ?? "0");
+        public FormData() : this(MainPage.Instance) { }
+
+        public int RandomSeed = int.Parse(window.randomSeed.Text);
+        public bool RandomSeedLocked = window.randomSeedLocked.IsChecked == true;
+        public bool RandomizeField = window.randomizeField.IsChecked == true;
+        public bool RandomizeDungeons = window.randomizeDungeons.IsChecked == true;
+        public bool RandomizeDungeonBosses = window.randomizeDungeonBosses.IsChecked == true;
+        public bool RandomizeFieldBosses = window.randomizeFieldBosses.IsChecked == true;
+        public bool EqualizeAreaRarity = window.equalizeAreaRarity.IsChecked == true;
+        public bool MethodFull = window.methodFull.IsChecked == true;
+        public bool MethodCustomSize = window.methodCustomSize.IsChecked == true;
+        public int SpawnListSize = int.Parse(window.spawnListSize.Text);
+        public bool MethodLocalSwap = window.methodLocalSwap.IsChecked == true;
+        public bool MethodGlobalSwap = window.methodGlobalSwap.IsChecked == true;
+        public bool MethodNone = window.methodNone.IsChecked == true;
+        public bool VanillaPlus = window.vanillaPlus.IsChecked == true;
+        public int VanillaPlusChance = int.Parse(window.vanillaPlusChance.Text);
+        public bool GroupVanilla = window.groupVanilla.IsChecked == true;
+        public bool GroupRandom = window.groupRandom.IsChecked == true;
+        public bool FieldBossExtended = window.fieldBossExtended.IsChecked == true;
+        public int GroupMin = int.Parse(window.groupMin.Text);
+        public int GroupMax = int.Parse(window.groupMax.Text);
+        public int GroupMinBoss = int.Parse(window.groupMinBoss.Text);
+        public int GroupMaxBoss = int.Parse(window.groupMaxBoss.Text);
+        public bool MultiBoss = window.multiBoss.IsChecked == true;
+        public bool RarityLevelBoost = window.rarityLevelBoost.IsChecked == true;
+        public int Rarity67MinLevel = int.Parse(window.rarity67MinLevel.Text);
+        public int Rarity8UpMinLevel = int.Parse(window.rarity8UpMinLevel.Text);
+        public bool Rarity9UpBossOnly = window.rarity9UpBossOnly.IsChecked == true;
+        public bool Rarity8UpSolo = window.rarity8UpSolo.IsChecked == true;
+        public bool MixHumanAndPal = window.mixHumanAndPal.IsChecked == true;
+        public bool SeparateAggroHumans = window.separateAggroHumans.IsChecked == true;
+        public bool WeightTypeUniform = window.weightTypeUniform.IsChecked == true;
+        public bool WeightTypeCustom = window.weightTypeCustom.IsChecked == true;
+        public int WeightUniformMin = int.Parse(window.weightUniformMin.Text);
+        public int WeightUniformMax = int.Parse(window.weightUniformMax.Text);
         public int[] WeightCustom = ((Func<int[]>) (() =>
         {
             int[] weightCustom = new int[21];
-            weightCustom[1] = int.Parse(window?.weightCustom1.Text ?? "0");
-            weightCustom[2] = int.Parse(window?.weightCustom2.Text ?? "0");
-            weightCustom[3] = int.Parse(window?.weightCustom3.Text ?? "0");
-            weightCustom[4] = int.Parse(window?.weightCustom4.Text ?? "0");
-            weightCustom[5] = int.Parse(window?.weightCustom5.Text ?? "0");
-            weightCustom[6] = int.Parse(window?.weightCustom6.Text ?? "0");
-            weightCustom[7] = int.Parse(window?.weightCustom7.Text ?? "0");
-            weightCustom[8] = int.Parse(window?.weightCustom8.Text ?? "0");
-            weightCustom[9] = int.Parse(window?.weightCustom9.Text ?? "0");
-            weightCustom[10] = int.Parse(window?.weightCustom10.Text ?? "0");
-            weightCustom[20] = int.Parse(window?.weightCustom20.Text ?? "0");
+            weightCustom[1] = int.Parse(window.weightCustom1.Text);
+            weightCustom[2] = int.Parse(window.weightCustom2.Text);
+            weightCustom[3] = int.Parse(window.weightCustom3.Text);
+            weightCustom[4] = int.Parse(window.weightCustom4.Text);
+            weightCustom[5] = int.Parse(window.weightCustom5.Text);
+            weightCustom[6] = int.Parse(window.weightCustom6.Text);
+            weightCustom[7] = int.Parse(window.weightCustom7.Text);
+            weightCustom[8] = int.Parse(window.weightCustom8.Text);
+            weightCustom[9] = int.Parse(window.weightCustom9.Text);
+            weightCustom[10] = int.Parse(window.weightCustom10.Text);
+            weightCustom[20] = int.Parse(window.weightCustom20.Text);
             return weightCustom;
         }))();
-        public string WeightCustomMode = window?.weightCustomMode.Text ?? "";
-        public int HumanRarity = int.Parse(window?.humanRarity.Text ?? "0");
-        public bool WeightAdjustProbability = window?.weightAdjustProbability.IsChecked == true;
-        public int HumanWeight = int.Parse(window?.humanWeight.Text ?? "0");
-        public int HumanWeightAggro = int.Parse(window?.humanWeightAggro.Text ?? "0");
-        public int WeightNightOnly = int.Parse(window?.weightNightOnly.Text ?? "0");
-        public string OverflowFixMode = window?.overflowFixMode.Text ?? "";
-        public bool SpawnPals = window?.spawnPals.IsChecked == true;
-        public bool SpawnHumans = window?.spawnHumans.IsChecked == true;
-        public bool SpawnPolice = window?.spawnPolice.IsChecked == true;
-        public bool SpawnGuards = window?.spawnGuards.IsChecked == true;
-        public bool SpawnNinja = window?.spawnNinja.IsChecked == true;
-        public bool SpawnTraders = window?.spawnTraders.IsChecked == true;
-        public bool SpawnPalTraders = window?.spawnPalTraders.IsChecked == true;
-        public bool SpawnTowerBosses = window?.spawnTowerBosses.IsChecked == true;
-        public bool SpawnTowerBosses2 = window?.spawnTowerBosses2.IsChecked == true;
-        public bool SpawnRaidBosses = window?.spawnRaidBosses.IsChecked == true;
-        public bool SpawnRaidBosses2 = window?.spawnRaidBosses2.IsChecked == true;
-        public int FieldLevel = int.Parse(window?.fieldLevel.Text ?? "0");
-        public int DungeonLevel = int.Parse(window?.dungeonLevel.Text ?? "0");
-        public int FieldBossLevel = int.Parse(window?.fieldBossLevel.Text ?? "0");
-        public int DungeonBossLevel = int.Parse(window?.dungeonBossLevel.Text ?? "0");
-        public int LevelCap = int.Parse(window?.levelCap.Text ?? "0");
-        public int BaseCountMin = int.Parse(window?.baseCountMin.Text ?? "0");
-        public int BaseCountMax = int.Parse(window?.baseCountMax.Text ?? "0");
-        public int FieldCount = int.Parse(window?.fieldCount.Text ?? "0");
-        public int DungeonCount = int.Parse(window?.dungeonCount.Text ?? "0");
-        public int FieldBossCount = int.Parse(window?.fieldBossCount.Text ?? "0");
-        public int DungeonBossCount = int.Parse(window?.dungeonBossCount.Text ?? "0");
-        public int CountClampMin = int.Parse(window?.countClampMin.Text ?? "0");
-        public int CountClampMax = int.Parse(window?.countClampMax.Text ?? "0");
-        public int CountClampFirstMin = int.Parse(window?.countClampFirstMin.Text ?? "0");
-        public int CountClampFirstMax = int.Parse(window?.countClampFirstMax.Text ?? "0");
-        public bool NightOnly = window?.nightOnly.IsChecked == true;
-        public bool NightOnlyDungeons = window?.nightOnlyDungeons.IsChecked == true;
-        public bool NightOnlyDungeonBosses = window?.nightOnlyDungeonBosses.IsChecked == true;
-        public bool NightOnlyBosses = window?.nightOnlyBosses.IsChecked == true;
-        public bool OutputLog = window?.outputLog.IsChecked == true;
+        public string WeightCustomMode = window.weightCustomMode.Text;
+        public int HumanRarity = int.Parse(window.humanRarity.Text);
+        public bool WeightAdjustProbability = window.weightAdjustProbability.IsChecked == true;
+        public int HumanWeight = int.Parse(window.humanWeight.Text);
+        public int HumanWeightAggro = int.Parse(window.humanWeightAggro.Text);
+        public decimal WeightNightOnly = decimal.Parse(window.weightNightOnly.Text);
+        public string OverflowFixMode = window.overflowFixMode.Text;
+        public bool SpawnPals = window.spawnPals.IsChecked == true;
+        public bool SpawnHumans = window.spawnHumans.IsChecked == true;
+        public bool SpawnPolice = window.spawnPolice.IsChecked == true;
+        public bool SpawnGuards = window.spawnGuards.IsChecked == true;
+        public bool SpawnNinja = window.spawnNinja.IsChecked == true;
+        public bool SpawnTraders = window.spawnTraders.IsChecked == true;
+        public bool SpawnPalTraders = window.spawnPalTraders.IsChecked == true;
+        public bool SpawnTowerBosses = window.spawnTowerBosses.IsChecked == true;
+        public bool SpawnTowerBosses2 = window.spawnTowerBosses2.IsChecked == true;
+        public bool SpawnRaidBosses = window.spawnRaidBosses.IsChecked == true;
+        public bool SpawnRaidBosses2 = window.spawnRaidBosses2.IsChecked == true;
+        public int FieldLevel = int.Parse(window.fieldLevel.Text);
+        public int DungeonLevel = int.Parse(window.dungeonLevel.Text);
+        public int FieldBossLevel = int.Parse(window.fieldBossLevel.Text);
+        public int DungeonBossLevel = int.Parse(window.dungeonBossLevel.Text);
+        public int LevelCap = int.Parse(window.levelCap.Text);
+        public int BaseCountMin = int.Parse(window.baseCountMin.Text);
+        public int BaseCountMax = int.Parse(window.baseCountMax.Text);
+        public int FieldCount = int.Parse(window.fieldCount.Text);
+        public int DungeonCount = int.Parse(window.dungeonCount.Text);
+        public int FieldBossCount = int.Parse(window.fieldBossCount.Text);
+        public int DungeonBossCount = int.Parse(window.dungeonBossCount.Text);
+        public int CountClampMin = int.Parse(window.countClampMin.Text);
+        public int CountClampMax = int.Parse(window.countClampMax.Text);
+        public int CountClampFirstMin = int.Parse(window.countClampFirstMin.Text);
+        public int CountClampFirstMax = int.Parse(window.countClampFirstMax.Text);
+        public bool NightOnly = window.nightOnly.IsChecked == true;
+        public bool NightOnlyDungeons = window.nightOnlyDungeons.IsChecked == true;
+        public bool NightOnlyDungeonBosses = window.nightOnlyDungeonBosses.IsChecked == true;
+        public bool NightOnlyBosses = window.nightOnlyBosses.IsChecked == true;
+        public bool OutputLog = window.outputLog.IsChecked == true;
 
         public void RestoreToWindow(MainPage window)
         {
@@ -173,6 +178,13 @@ namespace PalworldRandomizer
         }
     }
 
+    // Needed because the default json writer always adds a decimal point with a trailing zero otherwise
+    public class JsonWriterDecimal : JsonConverter<decimal>
+    {
+        public override decimal ReadJson(JsonReader reader, Type objectType, decimal existingValue, bool hasExistingValue, JsonSerializer serializer) => throw new NotImplementedException();
+        public override void WriteJson(JsonWriter writer, decimal value, JsonSerializer serializer) => writer.WriteRawValue(value.ToString());
+    }
+
     public partial class MainPage : Grid
     {
         public static readonly string AUTO_TEMPLATE_FILENAME = @"Config\AutoSavedTemplate.json";
@@ -219,7 +231,7 @@ namespace PalworldRandomizer
         {
             try
             {
-                File.WriteAllText(templatePath, JsonConvert.SerializeObject(formData, Formatting.Indented));
+                File.WriteAllText(templatePath, JsonConvert.SerializeObject(formData, Formatting.Indented, new JsonSerializerSettings{ Converters = [new JsonWriterDecimal()] }));
             }
             catch (Exception e)
             {
@@ -236,6 +248,7 @@ namespace PalworldRandomizer
             ValidateNumericText(groupMinBoss, 1);
             ValidateNumericText(groupMaxBoss, int.Parse(groupMinBoss.Text));
             ValidateNumericText(spawnListSize, 1, 50);
+            ValidateNumericText(vanillaPlusChance, 1, 50, 99);
             ValidateNumericText(fieldLevel, 0, 100);
             ValidateNumericText(dungeonLevel, 0, 100);
             ValidateNumericText(fieldBossLevel, 0, 100);
@@ -259,7 +272,7 @@ namespace PalworldRandomizer
             ValidateNumericText(humanRarity, 1, 4, 20);
             ValidateNumericText(humanWeight, 0, 100);
             ValidateNumericText(humanWeightAggro, 0, 50);
-            ValidateNumericText(weightNightOnly, 1, 10000);
+            ValidateNumericText(weightNightOnly, 0m, 10000);
             ValidateNumericText(baseCountMin, 0, 1);
             ValidateNumericText(baseCountMax, Math.Max(1, int.Parse(baseCountMin.Text)));
             ValidateNumericText(fieldCount, 0, 100);
@@ -278,7 +291,7 @@ namespace PalworldRandomizer
             {
                 overflowFixMode.SelectedItem = OverflowFixMode.Dynamic;
             }
-            static void ValidateNumericText(TextBox textBox, int minValue, int? defaultValue = null, int? maxValue = null)
+            static void ValidateNumericText<T>(TextBox textBox, T minValue, T? defaultValue = null, T? maxValue = null) where T : struct, INumber<T>
             {
                 defaultValue ??= minValue;
                 try
@@ -287,11 +300,11 @@ namespace PalworldRandomizer
                     {
                         textBox.Text = $"{defaultValue}";
                     }
-                    else if (int.Parse(textBox.Text) < minValue)
+                    else if (T.Parse(textBox.Text, null) < minValue)
                     {
                         textBox.Text = $"{minValue}";
                     }
-                    else if (maxValue != null && int.Parse(textBox.Text) > maxValue)
+                    else if (maxValue != null && T.Parse(textBox.Text, null) > maxValue)
                     {
                         textBox.Text = $"{maxValue}";
                     }
@@ -383,6 +396,7 @@ namespace PalworldRandomizer
             };
             if (openDialog.ShowDialog() == true && openDialog.FileName != string.Empty)
             {
+                ValidateFormData();
                 FormData? formData = LoadTemplate(openDialog.FileName);
                 if (formData != null)
                 {
@@ -422,6 +436,11 @@ namespace PalworldRandomizer
             weightTypeCustom.IsChecked = true;
         }
 
+        private void VanillaPlusChance_GotFocus(object sender, RoutedEventArgs e)
+        {
+            vanillaPlus.IsChecked = true;
+        }
+
         private void PositiveIntSize2_PreviewTextInput(object sender, TextCompositionEventArgs e) => SharedWindow.PositiveIntSize2_PreviewTextInput(sender, e);
         private void PositiveIntSize2_Pasting(object sender, DataObjectPastingEventArgs e) => SharedWindow.PositiveIntSize2_Pasting(sender, e);
         private void PositiveIntSize3_PreviewTextInput(object sender, TextCompositionEventArgs e) => SharedWindow.PositiveIntSize3_PreviewTextInput(sender, e);
@@ -438,5 +457,7 @@ namespace PalworldRandomizer
         private void NonNegIntSize5_Pasting(object sender, DataObjectPastingEventArgs e) => SharedWindow.NonNegIntSize5_Pasting(sender, e);
         private void NonNegIntSize9_PreviewTextInput(object sender, TextCompositionEventArgs e) => SharedWindow.NonNegIntSize9_PreviewTextInput(sender, e);
         private void NonNegIntSize9_Pasting(object sender, DataObjectPastingEventArgs e) => SharedWindow.NonNegIntSize9_Pasting(sender, e);
+        private void NonNegDecSize5_PreviewTextInput(object sender, TextCompositionEventArgs e) => SharedWindow.NonNegDecSize5_PreviewTextInput(sender, e);
+        private void NonNegDecSize5_Pasting(object sender, DataObjectPastingEventArgs e) => SharedWindow.NonNegDecSize5_Pasting(sender, e);
     }
 }

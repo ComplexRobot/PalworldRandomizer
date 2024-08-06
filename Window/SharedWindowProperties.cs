@@ -161,6 +161,11 @@ namespace PalworldRandomizer
         private static partial Regex nonNegIntSize9Regex();
         public static void NonNegIntSize9_PreviewTextInput(object sender, TextCompositionEventArgs e) => TextBox_PreviewTextInput(nonNegIntSize9Regex(), sender, e);
         public static void NonNegIntSize9_Pasting(object sender, DataObjectPastingEventArgs e) => TextBox_Pasting(nonNegIntSize9Regex(), sender, e);
+
+        [GeneratedRegex(@"^(0|(?!0)\d{0,5}|(?=.{0,5}[^.]?$)(0\.\d*|(?![0.])\d*\.\d*))$", RegexOptions.ExplicitCapture)]
+        private static partial Regex NonNegDecSize5Regex();
+        public static void NonNegDecSize5_PreviewTextInput(object sender, TextCompositionEventArgs e) => TextBox_PreviewTextInput(NonNegDecSize5Regex(), sender, e);
+        public static void NonNegDecSize5_Pasting(object sender, DataObjectPastingEventArgs e) => TextBox_Pasting(NonNegDecSize5Regex(), sender, e);
     }
 
     public class MathConverter : IMultiValueConverter, IValueConverter

@@ -138,7 +138,6 @@ namespace PalworldRandomizer
 #endif
     }
 
-#pragma warning disable IDE1006
     public class CharacterData(UAsset asset, StructPropertyData dataTable)
     {
         private readonly UAsset uAsset = asset;
@@ -514,5 +513,4 @@ namespace PalworldRandomizer
             set => ((NamePropertyData) structPropertyData.Value[73]).Value = value == null ? null : new FName(uAsset, value);
         }
     }
-#pragma warning restore IDE1006
 }
