@@ -182,6 +182,7 @@ namespace PalworldRandomizer
             if (areaList.SelectedItem != null && ((AreaData) areaList.SelectedItem).modified == false)
             {
                 ((AreaData) areaList.SelectedItem).modified = true;
+                Randomize.AreaListChanged = true;
                 areaList.Items.Refresh();
             }
         }

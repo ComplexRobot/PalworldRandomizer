@@ -56,6 +56,7 @@ namespace PalworldRandomizer
 
         private void Application_Exit(object sender, ExitEventArgs e)
         {
+            Randomize.SaveBackup();
             if (MainPage.Instance == null)
             {
                 return;

@@ -392,7 +392,7 @@ namespace PalworldRandomizer
 
         public AreaData Clone()
         {
-            return new AreaData(new(), new(), filename)
+            return new(new(), new(), filename)
             {
                 minLevel = minLevel,
                 maxLevel = maxLevel,
@@ -401,7 +401,7 @@ namespace PalworldRandomizer
                 modified = modified,
                 uAsset = UAssetData.LoadAsset($"Assets\\{filename}"),
                 spawnExportData =
-                new SpawnExportData
+                new()
                 {
                     header = [.. spawnExportData.header],
                     footer = [.. spawnExportData.footer],

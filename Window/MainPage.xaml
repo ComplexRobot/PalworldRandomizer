@@ -16,7 +16,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="5" Name="form">
             <StackPanel Margin="0" Orientation="Horizontal">
-                <TextBlock FontWeight="Bold">Pal Spawn Randomizer v2.3</TextBlock>
+                <TextBlock FontWeight="Bold">Pal Spawn Randomizer v2.4</TextBlock>
                 <Button BorderThickness="0" Click="InfoButton_Click" ToolTip="Open Website">
                     <emoji:TextBlock Text="ℹ️" Margin="0"/>
                 </Button>
@@ -73,13 +73,26 @@
                             </Style>
                         </WrapPanel.Style>
                         <Border BorderBrush="#FF404040" Background="#FF202020" BorderThickness="1" CornerRadius="5" Margin="5,0,0,0">
-                            <WrapPanel Margin="5,0,5,0">
+                            <WrapPanel Margin="5,0,0,0">
                                 <CheckBox Name="vanillaPlus" IsChecked="False" Margin="0">Add To Vanilla With Probability:</CheckBox>
                                 <TextBox Name="vanillaPlusChance" VerticalAlignment="Center" GotFocus="VanillaPlusChance_GotFocus"
                                          PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">50</TextBox>
                                 <TextBlock Margin="5,0,0,0" VerticalAlignment="Center">%</TextBlock>
                             </WrapPanel>
                         </Border>
+                        <WrapPanel>
+                            <WrapPanel.Style>
+                                <Style TargetType="WrapPanel">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ElementName=methodNone, Path=IsChecked}" Value="True">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </WrapPanel.Style>
+                            <CheckBox Name="vanillaMerge" IsChecked="False" Margin="5,0,0,0">Merge Vanilla</CheckBox>
+                        </WrapPanel>
                     </WrapPanel>
                 </WrapPanel>
             </GroupBox>
