@@ -276,7 +276,7 @@ namespace PalworldRandomizer
             object[] levelStrings = MinLevel == MaxLevel ? [MinLevel] : [MinLevel, "-", MaxLevel];
             object[] groupStrings = MinGroupSize == MaxGroupSize ? [MinGroupSize] : [MinGroupSize, "-", MaxGroupSize];
             stringBuilder.AppendJoin(null,
-                ["  ", Data.PalName[Name], (Name.EndsWith("_Flower") ? "🌺" : ""), .. nameAppend, " <> Lv. ", .. levelStrings, ", Count: ", .. groupStrings]);
+                ["  ", ResolvedName, .. nameAppend, " <> Lv. ", .. levelStrings, ", Count: ", .. groupStrings]);
             stringBuilder.AppendLine();
         }
         public SpawnData() { }
@@ -306,6 +306,7 @@ namespace PalworldRandomizer
             MaxLevel = 4;
         }
 
+        // TODO: Use explicit capture
         [GeneratedRegex("^(RAID_)?.+?(_([0-9]+(_.+)?))?$", RegexOptions.IgnoreCase)]
         private static partial Regex nameSuffixRegex();
         

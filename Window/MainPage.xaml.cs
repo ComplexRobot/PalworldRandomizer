@@ -150,7 +150,7 @@ namespace PalworldRandomizer
                 }
                 void AssignIsChecked(object? control, bool value)
                 {
-                    if (control != null)
+                    if (control != null && (value || control is not RadioButton))
                     {
                         ((ToggleButton) control).IsChecked = value;
                     }

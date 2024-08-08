@@ -9,6 +9,7 @@ using System.Resources;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Channels;
 using System.Windows;
 using UAssetAPI;
 using UAssetAPI.ExportTypes;
@@ -784,7 +785,6 @@ namespace PalworldRandomizer
                     || (formData.NightOnlyDungeons && isDungeon)
                     || (formData.NightOnlyDungeonBosses && isDungeonBoss)
                     || (formData.NightOnlyBosses && isFieldBoss);
-                int changes = 1;
                 float LevelMultiplier(SpawnData spawnData)
                 {
                     return LevelMultiplierEx(spawnData, isDungeon || isDungeonBoss);
@@ -1179,13 +1179,13 @@ namespace PalworldRandomizer
                     }
                     if (formData.MethodFull || formData.MethodGlobalSwap || !formData.EqualizeAreaRarity)
                     {
-                        PostProcessArea(spawnEntries, weightSum, nightOnly, area.filename);
+                        PostProcessArea(area, weightSum, nightOnly);
                     }
                 }
                 // No Randomization
                 else
                 {
-                    changes = 0;
+                    int changes = 0;
                     foreach (SpawnEntry spawnEntry in area.SpawnEntries)
                     {
                         changes += spawnEntry.SpawnList.RemoveAll(spawnData => !allowedNames.Contains(spawnData.Name));
@@ -1227,18 +1227,23 @@ namespace PalworldRandomizer
                                 + (spawnData.MinGroupSize != originalGroupMin ? 1 : 0) + (spawnData.MaxGroupSize != originalGroupMax ? 1 : 0);
                         }
                     }
+                    WriteAreaAsset(area, changes != 0);
                 }
+            }
+            void WriteAreaAsset(AreaData area, bool saveData = true)
+            {
                 if (formData.OutputLog)
                 {
                     outputLog.AppendLine(Path.GetFileNameWithoutExtension(area.filename)["BP_PalSpawner_Sheets_".Length..]);
                     area.SpawnEntries.ForEach(entry => { entry.Print(outputLog); totalSpeciesCount += entry.SpawnList.Count; });
                     outputLog.AppendLine();
                 }
-                if (changes == 0)
-                    continue;
-                area.modified = true;
-                PalSpawn.MutateAsset(area.uAsset, area.spawnExportData);
-                area.uAsset.Write($"{outputPath}\\{area.filename}");
+                if (saveData)
+                {
+                    area.modified = true;
+                    PalSpawn.MutateAsset(area.uAsset, area.spawnExportData);
+                    area.uAsset.Write($"{outputPath}\\{area.filename}");
+                }
             }
             if (!formData.MethodNone && !formData.MethodFull && !formData.MethodGlobalSwap && formData.EqualizeAreaRarity)
             {
@@ -1360,6 +1365,7 @@ namespace PalworldRandomizer
                         return [.. duplicateLists.SelectMany(x => x)];
                         string UniqueKey(SpawnEntry spawnEntry)
                         {
+                            // TODO: if any bosses, remove all non-bosses from key
                             string[] names = [.. spawnEntry.SpawnList.ConvertAll(x => x.Name)];
                             Array.Sort(names, string.Compare);
                             return string.Join(",", names);
@@ -1516,11 +1522,12 @@ namespace PalworldRandomizer
                         GenerateLevels(spawnEntry, [.. spawnEntry.SpawnList.ConvertAll(x => (int) x.MinLevel)], [.. spawnEntry.SpawnList.ConvertAll(x => (int) x.MaxLevel)],
                             minLevel, maxLevel, x => LevelMultiplierEx(x, isDungeon || isDungeonBoss));
                     }
-                    PostProcessArea(area.SpawnEntries, area.SpawnEntries.Sum(x => (long) x.Weight), nightOnly, area.filename);
+                    PostProcessArea(area, area.SpawnEntries.Sum(x => (long) x.Weight), nightOnly);
                 }
             }
-            void PostProcessArea(List<SpawnEntry> spawnEntries, long weightSum, bool nightOnly, string filename)
+            void PostProcessArea(AreaData area, long weightSum, bool nightOnly)
             {
+                List<SpawnEntry> spawnEntries = area.SpawnEntries;
                 // Adjust Probability
                 if (formData.WeightTypeCustom && formData.WeightAdjustProbability)
                 {
@@ -1581,7 +1588,7 @@ namespace PalworldRandomizer
                 List<SpawnEntry> vanillaSpawns = [];
                 if (formData.VanillaPlus)
                 {
-                    vanillaSpawns = Data.AreaData[filename].SpawnEntries.ConvertAll(entry => entry.Clone());
+                    vanillaSpawns = Data.AreaData[area.filename].SpawnEntries.ConvertAll(entry => entry.Clone());
                     long vanillaWeightSum = vanillaSpawns.Sum(x => (long) x.Weight);
                     long vanillaNightSum = vanillaSpawns.FindAll(x => x.NightOnly).Sum(x => (long) x.Weight);
                     List<SpawnEntry> nightSpawns = spawnEntries.FindAll(x => x.NightOnly);
@@ -1766,6 +1773,7 @@ namespace PalworldRandomizer
                     }
                     return string.Compare(x.SpawnList[0].Name, y.SpawnList[0].Name);
                 });
+                WriteAreaAsset(area);
             }
             MainPage.Instance.Dispatcher.Invoke(() => MainPage.Instance.progressBar.Visibility = Visibility.Collapsed);
             areaList.Sort((x, y) =>
@@ -1800,7 +1808,7 @@ namespace PalworldRandomizer
             MainPage.Instance.Dispatcher.Invoke(() => MainPage.Instance.statusBar.Text = "💾 Creating PAK...");
             return FileModify.GenerateAndSavePak();
         }
-        public static string GetRandomPal() => Data.PalList[new Random().Next(0, Data.PalList.Count)];
+        public static string GetRandomPal() => Data.PalList[new Random().Next(Data.PalList.Count)];
     }
 
     public static class FileModify
