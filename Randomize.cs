@@ -31,6 +31,7 @@ namespace PalworldRandomizer
         public static List<string> TowerBossNames2 { get; private set; } = [];
         public static List<string> RaidBossNames { get; private set; } = [];
         public static List<string> RaidBossNames2 { get; private set; } = [];
+        public static HashSet<string> FlyingNames { get; private set; } = [];
         public static Dictionary<string, List<SpawnEntry>> SoloEntries { get; private set; } = new(StringComparer.InvariantCultureIgnoreCase);
         public static Dictionary<string, List<SpawnEntry>> BossEntries { get; private set; } = new(StringComparer.InvariantCultureIgnoreCase);
         public static List<SpawnEntry> GroupEntries { get; private set; } = [];
@@ -115,6 +116,21 @@ namespace PalworldRandomizer
                 { "GrenadeLauncher", "/Resources/Images/InventoryItemIcon/T_itemicon_Weapon_GrenadeLauncher.png" }
                 // Katana - No sprite available
             };
+            string[] flyingSuffixes =
+            [
+                "HawkBird",
+                "Eagle",
+                "BirdDragon",
+                "BirdDragon_Ice",
+                "ThunderBird",
+                "RedArmorBird",
+                "HadesBird",
+                "HadesBird_Electric",
+                "Suzaku",
+                "Suzaku_Water",
+                "Horus",
+                "Horus_2"
+            ];
             foreach (KeyValuePair<string, CharacterData> keyPair in PalData)
             {
                 if (keyPair.Value.IsPal)
@@ -177,6 +193,10 @@ namespace PalworldRandomizer
                     else
                     {
                         PalIcon.Add(keyPair.Key, "/Resources/Images/PalIcon/T_icon_unknown.png");
+                    }
+                    if (Array.Exists(flyingSuffixes, keyPair.Key.EndsWith))
+                    {
+                        FlyingNames.Add(keyPair.Key);
                     }
                 }
                 else
@@ -613,14 +633,17 @@ namespace PalworldRandomizer
         {
             try
             {
-                bool different = false;
-                Data.AreaForEachIfDiff(GeneratedAreaList, x => different = true);
-                if (different && AreaListChanged)
+                if (AreaListChanged)
                 {
-                    Directory.CreateDirectory(UAssetData.AppDataPath("Backups"));
-                    File.WriteAllText(UAssetData.AppDataPath($"Backups\\{DateTime.Now:MM-dd-yy-HH-mm-ss}.csv"), FileModify.GenerateCSV(GeneratedAreaList), Encoding.UTF8);
+                    AreaListChanged = false;
+                    bool different = false;
+                    Data.AreaForEachIfDiff(GeneratedAreaList, x => different = true);
+                    if (different)
+                    {
+                        Directory.CreateDirectory(UAssetData.AppDataPath("Backups"));
+                        File.WriteAllText(UAssetData.AppDataPath($"Backups\\{DateTime.Now:MM-dd-yy-HH-mm-ss}.csv"), FileModify.GenerateCSV(GeneratedAreaList), Encoding.UTF8);
+                    }
                 }
-                AreaListChanged = false;
             }
             catch
             {
@@ -711,6 +734,8 @@ namespace PalworldRandomizer
             }
             List<SpawnEntry> basicSpawnsCurrent = [.. basicSpawnsOriginal];
             List<SpawnEntry> bossSpawnsCurrent = [.. bossSpawnsOriginal];
+            List<SpawnEntry> basicSpawnsOriginalBackup = [.. basicSpawnsOriginal];
+            List<SpawnEntry> bossSpawnsOriginalBackup = [.. bossSpawnsOriginal];
             HashSet<string> allowedNames = [.. GetAllowedNames(formData)];
             Random random = new(formData.RandomSeed);
             List<AreaData> areaList = Data.AreaDataCopy();
@@ -741,6 +766,7 @@ namespace PalworldRandomizer
                     return -1;
                 return string.Compare(x.filename, y.filename);
             });
+            bool equalizeAreaRarity = formData.EqualizeAreaRarity && !formData.MethodNone && !formData.MethodFull && !formData.MethodGlobalSwap && !formData.VanillaRestrict;
             int progress = 0;
             int progressTotal = subList.Count;
             int Rarity(SpawnData spawnData)
@@ -856,6 +882,7 @@ namespace PalworldRandomizer
                 {
                     List<SpawnEntry> spawnEntries = [];
                     List<SpawnEntry> spawnEntriesOriginal = area.SpawnEntries;
+                    HashSet<string> vanillaNames = [.. spawnEntriesOriginal.FindAll(x => x.Weight != 0).ConvertAll(x => x.SpawnList.ConvertAll(y => y.Name)).SelectMany(x => x).Distinct()];
                     area.SpawnEntries = spawnEntries;
                     long weightSum = 0;
                     void AddEntry(SpawnEntry value)
@@ -940,7 +967,7 @@ namespace PalworldRandomizer
                         }
                         spawnEntry.Weight = Math.Max(1, spawnEntry.Weight);
                         weightSum += spawnEntry.Weight;
-                        if (formData.MethodFull || formData.MethodGlobalSwap || !formData.EqualizeAreaRarity)
+                        if (!equalizeAreaRarity)
                         {
                             GenerateLevels(spawnEntry, [.. value.SpawnList.ConvertAll(x => (int) x.MinLevel)], [.. value.SpawnList.ConvertAll(x => (int) x.MaxLevel)],
                                 minLevel, maxLevel, LevelMultiplier);
@@ -1025,6 +1052,10 @@ namespace PalworldRandomizer
                                 {
                                     SeparateGroupsByCondition(entry => Data.PalData[entry.SpawnList[0].Name].IsPal);
                                 }
+                                if (formData.SeparateFlying)
+                                {
+                                    SeparateGroupsByCondition(entry => Data.FlyingNames.Contains(entry.SpawnList[0].Name));
+                                }
                                 if (formData.SeparateAggroHumans)
                                 {
                                     if (!Data.PalData[spawnEntry.SpawnList[0].Name].IsPal && Data.PalData[spawnEntry.SpawnList[0].Name].AIResponse != "Kill_All")
@@ -1096,6 +1127,19 @@ namespace PalworldRandomizer
                             spawnEntry.SpawnList[1..].ForEach(spawnData => { spawnData.MinLevel = 2; spawnData.MaxLevel = 6; });
                         }
                         return spawnEntry;
+                    }
+                    if (formData.VanillaRestrict && !formData.MethodGlobalSwap)
+                    {
+                        basicSpawnsOriginal = FilterSpawnList(basicSpawnsOriginalBackup.ConvertAll(x => x.Clone()), false);
+                        bossSpawnsOriginal = FilterSpawnList(bossSpawnsOriginalBackup.ConvertAll(x => x.Clone()), true);
+                        basicSpawnsCurrent = [.. basicSpawnsOriginal];
+                        bossSpawnsCurrent = [.. bossSpawnsOriginal];
+                        List<SpawnEntry> FilterSpawnList(List<SpawnEntry> spawnList, bool bossList)
+                        {
+                            spawnList.ForEach(x => x.SpawnList.RemoveAll(y => !vanillaNames.Contains(y.Name)));
+                            spawnList.RemoveAll(x => x.SpawnList.Count == 0 || (bossList && !x.SpawnList.Exists(y => y.IsBoss)));
+                            return spawnList;
+                        }
                     }
                     // All Species Everywhere
                     if (formData.MethodFull)
@@ -1202,7 +1246,7 @@ namespace PalworldRandomizer
                             }
                         }
                     }
-                    if (formData.MethodFull || formData.MethodGlobalSwap || !formData.EqualizeAreaRarity)
+                    if (!equalizeAreaRarity)
                     {
                         PostProcessArea(area, weightSum, nightOnly);
                     }
@@ -1283,7 +1327,7 @@ namespace PalworldRandomizer
                     area.uAsset.Write($"{outputPath}\\{area.filename}");
                 }
             }
-            if (!formData.MethodNone && !formData.MethodFull && !formData.MethodGlobalSwap && formData.EqualizeAreaRarity)
+            if (equalizeAreaRarity)
             {
                 List<AreaData> fieldList = [];
                 List<AreaData> dungeonList = [];
@@ -1534,15 +1578,7 @@ namespace PalworldRandomizer
                                         maxIndex = i;
                                     }
                                 }
-                                int addIndex;
-                                if (maxIndex != -1)
-                                {
-                                    addIndex = maxIndex;
-                                }
-                                else
-                                {
-                                    addIndex = minIndex;
-                                }
+                                int addIndex = maxIndex != -1 ? maxIndex : minIndex;
                                 spawnList.Add(spawns[addIndex]);
                                 raritySum += spawns[addIndex].SpawnList.Sum(x => (long) Rarity(x));
                                 rarityCount += spawns[addIndex].SpawnList.Count;
@@ -1866,6 +1902,7 @@ namespace PalworldRandomizer
                             }
                         }
                         random.Shuffle(CollectionsMarshal.AsSpan(newSpawns)[lastIndex..]);
+                        // The simplest way to do a stable sort?
                         MemoryExtensions.Sort([.. vanSpawns.Select((x, i) => new KeyValuePair<SpawnEntry, int>(x, i))], CollectionsMarshal.AsSpan(vanSpawns), (x, y) =>
                         {
                             if (x.Key.Weight != y.Key.Weight)

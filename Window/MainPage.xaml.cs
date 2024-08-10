@@ -60,6 +60,7 @@ namespace PalworldRandomizer
         public int GroupMinBoss = int.Parse(window.groupMinBoss.Text);
         public int GroupMaxBoss = int.Parse(window.groupMaxBoss.Text);
         public bool MultiBoss = window.multiBoss.IsChecked == true;
+        public bool VanillaRestrict = window.vanillaRestrict.IsChecked == true;
         public bool RarityLevelBoost = window.rarityLevelBoost.IsChecked == true;
         public int Rarity67MinLevel = int.Parse(window.rarity67MinLevel.Text);
         public int Rarity8UpMinLevel = int.Parse(window.rarity8UpMinLevel.Text);
@@ -67,6 +68,7 @@ namespace PalworldRandomizer
         public bool Rarity8UpSolo = window.rarity8UpSolo.IsChecked == true;
         public bool MixHumanAndPal = window.mixHumanAndPal.IsChecked == true;
         public bool SeparateAggroHumans = window.separateAggroHumans.IsChecked == true;
+        public bool SeparateFlying = window.separateFlying.IsChecked == true;
         public bool WeightTypeUniform = window.weightTypeUniform.IsChecked == true;
         public bool WeightTypeCustom = window.weightTypeCustom.IsChecked == true;
         public int WeightUniformMin = int.Parse(window.weightUniformMin.Text);

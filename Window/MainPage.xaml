@@ -16,7 +16,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="5" Name="form">
             <StackPanel Margin="0" Orientation="Horizontal">
-                <TextBlock FontWeight="Bold">Pal Spawn Randomizer v2.4</TextBlock>
+                <TextBlock FontWeight="Bold">Pal Spawn Randomizer v2.5</TextBlock>
                 <Button BorderThickness="0" Click="InfoButton_Click" ToolTip="Open Website">
                     <emoji:TextBlock Text="ℹ️" Margin="0"/>
                 </Button>
@@ -120,33 +120,62 @@
                             <CheckBox Name="fieldBossExtended" IsChecked="False" Margin="5,0,5,10">Multiple Spawn Groups For Overworld Bosses</CheckBox>
                         </StackPanel>
                         <StackPanel Margin="0,0,0,5">
-                            <StackPanel.Style>
-                                <Style TargetType="StackPanel">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding ElementName=groupRandom, Path=IsChecked}" Value="True">
-                                            <Setter Property="Visibility" Value="Visible"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </StackPanel.Style>
-                            <Border BorderBrush="#FF404040" Background="#FF202020" BorderThickness="1" CornerRadius="5">
-                                <WrapPanel Margin="5,0,5,0">
-                                    <TextBlock Margin="0,0,5,5">Randomized Group Size:</TextBlock>
-                                    <TextBox Name="groupMin" Width="20" VerticalAlignment="Center"
-                                                 PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">1</TextBox>
-                                    <TextBlock Margin="5,0,5,0">-</TextBlock>
-                                    <TextBox Name="groupMax" Width="20" VerticalAlignment="Center"
+                            <WrapPanel>
+                                <WrapPanel.Style>
+                                    <Style TargetType="WrapPanel">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ElementName=groupRandom, Path=IsChecked}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </WrapPanel.Style>
+                                <Border BorderBrush="#FF404040" Background="#FF202020" BorderThickness="1" CornerRadius="5">
+                                    <WrapPanel Margin="5,0,5,0">
+                                        <TextBlock Margin="0,0,5,5">Randomized Group Size:</TextBlock>
+                                        <TextBox Name="groupMin" Width="20" VerticalAlignment="Center"
+                                                     PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">1</TextBox>
+                                        <TextBlock Margin="5,0,5,0">-</TextBlock>
+                                        <TextBox Name="groupMax" Width="20" VerticalAlignment="Center"
+                                                     PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">3</TextBox>
+                                        <TextBlock Margin="5,0,5,5">Bosses:</TextBlock>
+                                        <TextBox Name="groupMinBoss" Width="20" VerticalAlignment="Center"
                                                  PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">3</TextBox>
-                                    <TextBlock Margin="5,0,5,5">Bosses:</TextBlock>
-                                    <TextBox Name="groupMinBoss" Width="20" VerticalAlignment="Center"
-                                             PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">3</TextBox>
-                                    <TextBlock Margin="5,0,5,0">-</TextBlock>
-                                    <TextBox Name="groupMaxBoss" Width="20" VerticalAlignment="Center"
-                                             PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">3</TextBox>
+                                        <TextBlock Margin="5,0,5,0">-</TextBlock>
+                                        <TextBox Name="groupMaxBoss" Width="20" VerticalAlignment="Center"
+                                                 PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">3</TextBox>
+                                    </WrapPanel>
+                                </Border>
+                            </WrapPanel>
+                            <WrapPanel>
+                                <WrapPanel>
+                                    <WrapPanel.Style>
+                                        <Style TargetType="WrapPanel">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ElementName=groupRandom, Path=IsChecked}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </WrapPanel.Style>
+                                    <CheckBox Name="multiBoss" IsChecked="False" Margin="0,5,0,5">Boss Groups Are All Bosses</CheckBox>
                                 </WrapPanel>
-                            </Border>
-                            <CheckBox Name="multiBoss" IsChecked="False" Margin="0,5,0,5">Boss Groups Are All Bosses</CheckBox>
+                                <WrapPanel>
+                                    <WrapPanel.Style>
+                                        <Style TargetType="WrapPanel">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ElementName=methodGlobalSwap, Path=IsChecked}" Value="False">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </WrapPanel.Style>
+                                    <CheckBox Name="vanillaRestrict" IsChecked="False" Margin="5,5,0,5">Restrict To Vanilla</CheckBox>
+                                </WrapPanel>
+                            </WrapPanel>
                         </StackPanel>
                         <WrapPanel Margin="0" MaxWidth="600">
                             <Border BorderBrush="#FF404040" Background="#FF202020" BorderThickness="1" CornerRadius="5" Margin="5,0,0,0">
@@ -161,6 +190,19 @@
                                 </WrapPanel>
                             </Border>
                             <CheckBox Name="rarity9UpBossOnly" IsChecked="False" Margin="5,5,0,5">Rare (9+) Pals Are Boss-Only</CheckBox>
+                            <WrapPanel>
+                                <WrapPanel.Style>
+                                    <Style TargetType="WrapPanel">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ElementName=groupRandom, Path=IsChecked}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </WrapPanel.Style>
+                                <CheckBox Name="separateFlying" IsChecked="True" Margin="5,5,0,5">Flying Pal Sanity</CheckBox>
+                            </WrapPanel>
                             <WrapPanel>
                                 <WrapPanel.Style>
                                     <Style TargetType="WrapPanel">
@@ -226,6 +268,7 @@
                                                 <MultiDataTrigger.Conditions>
                                                     <Condition Binding="{Binding ElementName=methodFull, Path=IsChecked}" Value="False"/>
                                                     <Condition Binding="{Binding ElementName=methodGlobalSwap, Path=IsChecked}" Value="False"/>
+                                                    <Condition Binding="{Binding ElementName=vanillaRestrict, Path=IsChecked}" Value="False"/>
                                                 </MultiDataTrigger.Conditions>
                                                 <Setter Property="Visibility" Value="Visible"/>
                                             </MultiDataTrigger>
