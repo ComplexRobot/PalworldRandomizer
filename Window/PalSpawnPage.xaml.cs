@@ -41,7 +41,9 @@ namespace PalworldRandomizer
             if (MessageBox.Show(GetWindow(), "Are you sure you want to revert back to vanilla spawns?", "Revert All Spawns", MessageBoxButton.OKCancel, MessageBoxImage.Warning)
                 == MessageBoxResult.OK)
             {
+                Randomize.SaveBackup();
                 areaList.ItemsSource = Data.AreaDataCopy();
+                Randomize.AreaListChanged = true;
             }
         }
 
@@ -179,11 +181,14 @@ namespace PalworldRandomizer
 
         private void AreaProperty_SourceUpdated(object sender, EventArgs e)
         {
-            if (areaList.SelectedItem != null && ((AreaData) areaList.SelectedItem).modified == false)
+            if (areaList.SelectedItem != null)
             {
-                ((AreaData) areaList.SelectedItem).modified = true;
+                if (((AreaData) areaList.SelectedItem).modified == false)
+                {
+                    ((AreaData) areaList.SelectedItem).modified = true;
+                    areaList.Items.Refresh();
+                }
                 Randomize.AreaListChanged = true;
-                areaList.Items.Refresh();
             }
         }
 

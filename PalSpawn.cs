@@ -388,6 +388,12 @@ namespace PalworldRandomizer
         public int minLevelNight = 0;
         public int maxLevelNight = 0;
         public bool modified = false;
+        public bool isFieldBoss = false;
+        public bool isDungeonBoss = false;
+        public bool isDungeon = false;
+        public bool isField = false;
+        public bool isBoss = false;
+        public bool isInDungeon = false;
         private readonly ObservableList<SpawnEntry> virtualEntries = [];
 
         public AreaData Clone()
@@ -399,6 +405,12 @@ namespace PalworldRandomizer
                 minLevelNight = minLevelNight,
                 maxLevelNight = maxLevelNight,
                 modified = modified,
+                isFieldBoss = isFieldBoss,
+                isDungeonBoss = isDungeonBoss,
+                isDungeon = isDungeon,
+                isField = isField,
+                isBoss = isBoss,
+                isInDungeon = isInDungeon,
                 uAsset = UAssetData.LoadAsset($"Assets\\{filename}"),
                 spawnExportData =
                 new()
@@ -469,7 +481,7 @@ namespace PalworldRandomizer
         public int Count => SpawnEntries.Count;
         public ObservableCollection<SpawnEntry> SpawnEntriesView => virtualEntries;
         public List<SpawnEntry> SpawnEntries { get => spawnExportData.spawnEntries; set => spawnExportData.spawnEntries = value; }
-        public string Name => Path.GetFileNameWithoutExtension(filename)["BP_PalSpawner_Sheets_".Length..] + (modified ? "*" : "");
+        public string Name => SimpleName + (modified ? "*" : "");
         public string SimpleName => Path.GetFileNameWithoutExtension(filename)["BP_PalSpawner_Sheets_".Length..];
         public override string ToString() => Name;
     }

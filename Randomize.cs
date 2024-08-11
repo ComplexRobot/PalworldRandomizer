@@ -282,6 +282,12 @@ namespace PalworldRandomizer
                     AreaData[filename].minLevelNight = Convert.ToInt32(nightAverageLevel / nightWeightSum - nightLevelRange / 2.0f / nightWeightSum);
                     AreaData[filename].maxLevelNight = Convert.ToInt32(nightAverageLevel / nightWeightSum + nightLevelRange / 2.0f / nightWeightSum);
                 }
+                AreaData[filename].isBoss = filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase);
+                AreaData[filename].isInDungeon = filename.Contains("dungeon", StringComparison.InvariantCultureIgnoreCase);
+                AreaData[filename].isFieldBoss = AreaData[filename].isBoss && !AreaData[filename].isInDungeon;
+                AreaData[filename].isDungeonBoss = AreaData[filename].isBoss && AreaData[filename].isInDungeon;
+                AreaData[filename].isDungeon = !AreaData[filename].isBoss && AreaData[filename].isInDungeon;
+                AreaData[filename].isField = !AreaData[filename].isBoss && !AreaData[filename].isInDungeon;
             }
             AreaData["BP_PalSpawner_Sheets_1_1_plain_begginer.uasset"].minLevel = 1;
             AreaData["BP_PalSpawner_Sheets_1_1_plain_begginer.uasset"].maxLevel = 3;
@@ -636,13 +642,25 @@ namespace PalworldRandomizer
                 if (AreaListChanged)
                 {
                     AreaListChanged = false;
-                    bool different = false;
-                    Data.AreaForEachIfDiff(GeneratedAreaList, x => different = true);
-                    if (different)
-                    {
-                        Directory.CreateDirectory(UAssetData.AppDataPath("Backups"));
-                        File.WriteAllText(UAssetData.AppDataPath($"Backups\\{DateTime.Now:MM-dd-yy-HH-mm-ss}.csv"), FileModify.GenerateCSV(GeneratedAreaList), Encoding.UTF8);
-                    }
+                    List<AreaData> areaList = (List<AreaData>) PalSpawnPage.Instance.areaList.ItemsSource;
+                    Directory.CreateDirectory(UAssetData.AppDataPath("Backups"));
+                    File.WriteAllText(UAssetData.AppDataPath($"Backups\\{DateTime.Now:MM-dd-yy-HH-mm-ss}.csv"), FileModify.GenerateCSV(areaList), Encoding.UTF8);
+                }
+            }
+            catch
+            {
+            }
+        }
+
+        public static void RestoreBackup()
+        {
+            try
+            {
+                string[] backups = [.. ((IEnumerable<FileInfo>) [.. new DirectoryInfo(UAssetData.AppDataPath("Backups")).GetFiles("*.csv"),
+                    .. new DirectoryInfo(UAssetData.AppDataPath("Log")).GetFiles("*.csv")]).OrderByDescending(x => x.LastWriteTime).Select(x => x.FullName)];
+                if (backups.Length != 0)
+                {
+                    GeneratedAreaList = FileModify.ConvertCSV(backups[0]);
                 }
             }
             catch
@@ -741,34 +759,26 @@ namespace PalworldRandomizer
             List<AreaData> areaList = Data.AreaDataCopy();
             List<AreaData> subList = areaList.FindAll(area =>
             {
-                bool isFieldBoss = area.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase)
-                    && !area.filename.Contains("dungeon", StringComparison.InvariantCultureIgnoreCase);
-                bool isDungeonBoss = area.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase)
-                    && area.filename.Contains("dungeon", StringComparison.InvariantCultureIgnoreCase);
-                bool isDungeon = !area.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase)
-                    && area.filename.Contains("dungeon", StringComparison.InvariantCultureIgnoreCase);
-                bool isField = !area.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase)
-                    && !area.filename.Contains("dungeon", StringComparison.InvariantCultureIgnoreCase);
-                return (formData.RandomizeField || !isField)
-                    && (formData.RandomizeDungeons || !isDungeon)
-                    && (formData.RandomizeDungeonBosses || !isDungeonBoss)
-                    && (formData.RandomizeFieldBosses || !isFieldBoss);
+                return (formData.RandomizeField || !area.isField)
+                    && (formData.RandomizeDungeons || !area.isDungeon)
+                    && (formData.RandomizeDungeonBosses || !area.isDungeonBoss)
+                    && (formData.RandomizeFieldBosses || !area.isFieldBoss);
             });
             subList.Sort((x, y) =>
             {
-                if (x.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase) && !y.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase))
-                    return 1;
-                if (!x.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase) && y.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase))
-                    return -1;
-                if (x.filename.Contains("dungeon", StringComparison.InvariantCultureIgnoreCase) && !y.filename.Contains("dungeon", StringComparison.InvariantCultureIgnoreCase))
-                    return 1;
-                if (!x.filename.Contains("dungeon", StringComparison.InvariantCultureIgnoreCase) && y.filename.Contains("dungeon", StringComparison.InvariantCultureIgnoreCase))
-                    return -1;
+                if (x.isBoss != y.isBoss)
+                    return (x.isBoss ? 1 : 0) - (y.isBoss ? 1 : 0);
+                if (x.isInDungeon != y.isInDungeon)
+                    return (x.isInDungeon ? 1 : 0) - (y.isInDungeon ? 1 : 0);
                 return string.Compare(x.filename, y.filename);
             });
             bool equalizeAreaRarity = formData.EqualizeAreaRarity && !formData.MethodNone && !formData.MethodFull && !formData.MethodGlobalSwap && !formData.VanillaRestrict;
             int progress = 0;
             int progressTotal = subList.Count;
+            bool NightOnly(AreaData area) => (formData.NightOnly && area.isField)
+                    || (formData.NightOnlyDungeons && area.isDungeon)
+                    || (formData.NightOnlyDungeonBosses && area.isDungeonBoss)
+                    || (formData.NightOnlyBosses && area.isFieldBoss);
             int Rarity(SpawnData spawnData)
             {
                 if (!Data.PalData[spawnData.Name].IsPal)
@@ -827,26 +837,14 @@ namespace PalworldRandomizer
             {
                 ++progress;
                 MainPage.Instance.Dispatcher.BeginInvoke(() => MainPage.Instance.progressBar.Value = Math.Ceiling(100.0 * progress / progressTotal));
-                bool isFieldBoss = area.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase)
-                    && !area.filename.Contains("dungeon", StringComparison.InvariantCultureIgnoreCase);
-                bool isDungeonBoss = area.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase)
-                    && area.filename.Contains("dungeon", StringComparison.InvariantCultureIgnoreCase);
-                bool isDungeon = !area.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase)
-                    && area.filename.Contains("dungeon", StringComparison.InvariantCultureIgnoreCase);
-                bool isField = !area.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase)
-                    && !area.filename.Contains("dungeon", StringComparison.InvariantCultureIgnoreCase);
-                bool isBoss = area.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase);
-                bool nightOnly = (formData.NightOnly && isField)
-                    || (formData.NightOnlyDungeons && isDungeon)
-                    || (formData.NightOnlyDungeonBosses && isDungeonBoss)
-                    || (formData.NightOnlyBosses && isFieldBoss);
+                bool nightOnly = NightOnly(area);
                 float LevelMultiplier(SpawnData spawnData)
                 {
-                    return LevelMultiplierEx(spawnData, isDungeon || isDungeonBoss);
+                    return LevelMultiplierEx(spawnData, area.isInDungeon);
                 }
                 float CountMultiplier(SpawnData spawnData)
                 {
-                    return CountMultiplierEx(spawnData, isDungeon || isDungeonBoss);
+                    return CountMultiplierEx(spawnData, area.isInDungeon);
                 }
                 float CustomWeight(float rarity, bool lerp, float scale)
                 {
@@ -1024,7 +1022,7 @@ namespace PalworldRandomizer
                         SpawnEntry spawnEntry = new();
                         List<SpawnEntry> spawns = basicSpawnsCurrent;
                         List<SpawnEntry> original = basicSpawnsOriginal;
-                        if (isBoss)
+                        if (area.isBoss)
                         {
                             spawnEntry.SpawnList.Add(NextSpecies(bossSpawnsCurrent, bossSpawnsOriginal));
                             if (formData.MultiBoss)
@@ -1039,7 +1037,7 @@ namespace PalworldRandomizer
                         }
                         if (original.Count != 0 && !(formData.Rarity8UpSolo && Rarity8Up(spawnEntry.SpawnList[0])))
                         {
-                            int groupSize = isBoss ? random.Next(minGroupBoss, maxGroupBoss + 1) : random.Next(minGroup, maxGroup + 1);
+                            int groupSize = area.isBoss ? random.Next(minGroupBoss, maxGroupBoss + 1) : random.Next(minGroup, maxGroup + 1);
                             if (nightOnly || !formData.MixHumanAndPal || formData.Rarity8UpSolo || formData.SeparateAggroHumans)
                             {
                                 List<SpawnEntry> spawnsUsed = spawns;
@@ -1120,7 +1118,7 @@ namespace PalworldRandomizer
                                 }
                             }
                         }
-                        if (isBoss && spawnEntry.SpawnList.Count > 1 && !formData.MultiBoss)
+                        if (area.isBoss && spawnEntry.SpawnList.Count > 1 && !formData.MultiBoss)
                         {
                             spawnEntry.SpawnList[0].MinLevel = 4;
                             spawnEntry.SpawnList[0].MaxLevel = 8;
@@ -1145,19 +1143,19 @@ namespace PalworldRandomizer
                     if (formData.MethodFull)
                     {
                         // area.filename check for first boss area to reset the lists when changing from non-boss to bosses
-                        if (!isFieldBoss || formData.FieldBossExtended || area.filename == "BP_PalSpawner_Sheets_1_10_plain_F_Boss_BlueDragon.uasset")
+                        if (!area.isFieldBoss || formData.FieldBossExtended || area.filename == "BP_PalSpawner_Sheets_1_10_plain_F_Boss_BlueDragon.uasset")
                         {
                             basicSpawnsCurrent = [.. basicSpawnsOriginal];
                             bossSpawnsCurrent = [.. bossSpawnsOriginal];
                         }
                         int speciesCount = 0;
-                        int maxSpecies = isFieldBoss && !formData.FieldBossExtended
+                        int maxSpecies = area.isFieldBoss && !formData.FieldBossExtended
                             ? 1
-                            : (isBoss ? bossSpawnsOriginal : basicSpawnsOriginal).Sum(entry => entry.SpawnList.Count);
+                            : (area.isBoss ? bossSpawnsOriginal : basicSpawnsOriginal).Sum(entry => entry.SpawnList.Count);
                         if (formData.GroupVanilla)
                         {
-                            List<SpawnEntry> spawns = isBoss ? bossSpawnsCurrent : basicSpawnsCurrent;
-                            List<SpawnEntry> original = isBoss ? bossSpawnsOriginal : basicSpawnsOriginal;
+                            List<SpawnEntry> spawns = area.isBoss ? bossSpawnsCurrent : basicSpawnsCurrent;
+                            List<SpawnEntry> original = area.isBoss ? bossSpawnsOriginal : basicSpawnsOriginal;
                             while (speciesCount < maxSpecies)
                             {
                                 if (spawns.Count == 0)
@@ -1172,7 +1170,7 @@ namespace PalworldRandomizer
                         }
                         else if (formData.GroupRandom)
                         {
-                            if (isBoss && !formData.MultiBoss)
+                            if (area.isBoss && !formData.MultiBoss)
                             {
                                 while (speciesCount < maxSpecies)
                                 {
@@ -1195,7 +1193,7 @@ namespace PalworldRandomizer
                     // NOT All Species Everywhere
                     else
                     {
-                        int entryCount = isFieldBoss && !formData.FieldBossExtended
+                        int entryCount = area.isFieldBoss && !formData.FieldBossExtended
                             ? 1
                             : (formData.MethodCustomSize ? spawnListSize : spawnEntriesOriginal.Count);
                         for (int i = 0; i < entryCount; ++i)
@@ -1207,8 +1205,8 @@ namespace PalworldRandomizer
                                 {
                                     if (formData.GroupVanilla)
                                     {
-                                        List<SpawnEntry> spawns = isBoss ? bossSpawnsCurrent : basicSpawnsCurrent;
-                                        List<SpawnEntry> original = isBoss ? bossSpawnsOriginal : basicSpawnsOriginal;
+                                        List<SpawnEntry> spawns = area.isBoss ? bossSpawnsCurrent : basicSpawnsCurrent;
+                                        List<SpawnEntry> original = area.isBoss ? bossSpawnsOriginal : basicSpawnsOriginal;
                                         if (spawns.Count == 0)
                                         {
                                             spawns.AddRange(original);
@@ -1229,8 +1227,8 @@ namespace PalworldRandomizer
                             {
                                 if (formData.GroupVanilla)
                                 {
-                                    List<SpawnEntry> spawns = isBoss ? bossSpawnsCurrent : basicSpawnsCurrent;
-                                    List<SpawnEntry> original = isBoss ? bossSpawnsOriginal : basicSpawnsOriginal;
+                                    List<SpawnEntry> spawns = area.isBoss ? bossSpawnsCurrent : basicSpawnsCurrent;
+                                    List<SpawnEntry> original = area.isBoss ? bossSpawnsOriginal : basicSpawnsOriginal;
                                     if (spawns.Count == 0)
                                     {
                                         spawns.AddRange(original);
@@ -1254,19 +1252,11 @@ namespace PalworldRandomizer
                 // No Randomization
                 else
                 {
-                    WriteAreaAsset(area, FilterVanillaSpawns(area.SpawnEntries, area.filename));
+                    WriteAreaAsset(area, FilterVanillaSpawns(area.SpawnEntries, area));
                 }
             }
-            bool FilterVanillaSpawns(List<SpawnEntry> spawnEntries, string filename)
+            bool FilterVanillaSpawns(List<SpawnEntry> spawnEntries, AreaData area)
             {
-                bool isFieldBoss = filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase)
-                    && !filename.Contains("dungeon", StringComparison.InvariantCultureIgnoreCase);
-                bool isDungeonBoss = filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase)
-                    && filename.Contains("dungeon", StringComparison.InvariantCultureIgnoreCase);
-                bool isDungeon = !filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase)
-                    && filename.Contains("dungeon", StringComparison.InvariantCultureIgnoreCase);
-                bool isField = !filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase)
-                    && !filename.Contains("dungeon", StringComparison.InvariantCultureIgnoreCase);
                 int changes = 0;
                 foreach (SpawnEntry spawnEntry in spawnEntries)
                 {
@@ -1275,10 +1265,7 @@ namespace PalworldRandomizer
                 changes += spawnEntries.RemoveAll(entry => entry.SpawnList.Count == 0);
                 foreach (SpawnEntry spawnEntry in spawnEntries)
                 {
-                    if ((!formData.NightOnly && isField)
-                        || (!formData.NightOnlyDungeons && isDungeon)
-                        || (!formData.NightOnlyDungeonBosses && isDungeonBoss)
-                        || (!formData.NightOnlyBosses && isFieldBoss))
+                    if (NightOnly(area))
                     {
                         changes += spawnEntry.NightOnly == true ? 1 : 0;
                         spawnEntry.NightOnly = false;
@@ -1292,10 +1279,10 @@ namespace PalworldRandomizer
                         uint originalGroupMax = spawnData.MaxGroupSize;
                         float range = spawnData.MaxLevel - spawnData.MinLevel;
                         float average = (spawnData.MaxLevel + spawnData.MinLevel) / 2.0f;
-                        float levelMultiplier = LevelMultiplierEx(spawnData, isDungeon || isDungeonBoss);
+                        float levelMultiplier = LevelMultiplierEx(spawnData, area.isInDungeon);
                         spawnData.MinLevel = (uint) Math.Clamp(Convert.ToInt32(levelMultiplier * average - range / 2.0f), 1, levelCap);
                         spawnData.MaxLevel = (uint) Math.Clamp(Convert.ToInt32(levelMultiplier * average + range / 2.0f), 1, levelCap);
-                        float countMultiplier = CountMultiplierEx(spawnData, isDungeon || isDungeonBoss);
+                        float countMultiplier = CountMultiplierEx(spawnData, area.isInDungeon);
                         if (i == 0)
                         {
                             spawnData.MinGroupSize = (uint) Math.Clamp(Convert.ToInt32(spawnData.MinGroupSize * countMultiplier), countClampFirstMin, countClampFirstMax);
@@ -1335,9 +1322,9 @@ namespace PalworldRandomizer
                 List<AreaData> dungeonBossList = [];
                 foreach (AreaData area in subList)
                 {
-                    if (area.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase))
+                    if (area.isBoss)
                     {
-                        if (area.filename.Contains("dungeon", StringComparison.InvariantCultureIgnoreCase))
+                        if (area.isInDungeon)
                         {
                             dungeonBossList.Add(area);
                         }
@@ -1348,7 +1335,7 @@ namespace PalworldRandomizer
                     }
                     else
                     {
-                        if (area.filename.Contains("dungeon", StringComparison.InvariantCultureIgnoreCase))
+                        if (area.isInDungeon)
                         {
                             dungeonList.Add(area);
                         }
@@ -1590,18 +1577,6 @@ namespace PalworldRandomizer
                 }
                 foreach (AreaData area in subList)
                 {
-                    bool isFieldBoss = area.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase)
-                    && !area.filename.Contains("dungeon", StringComparison.InvariantCultureIgnoreCase);
-                    bool isDungeonBoss = area.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase)
-                    && area.filename.Contains("dungeon", StringComparison.InvariantCultureIgnoreCase);
-                    bool isDungeon = !area.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase)
-                    && area.filename.Contains("dungeon", StringComparison.InvariantCultureIgnoreCase);
-                    bool isField = !area.filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase)
-                    && !area.filename.Contains("dungeon", StringComparison.InvariantCultureIgnoreCase);
-                    bool nightOnly = (formData.NightOnly && isField)
-                    || (formData.NightOnlyDungeons && isDungeon)
-                    || (formData.NightOnlyDungeonBosses && isDungeonBoss)
-                    || (formData.NightOnlyBosses && isFieldBoss);
                     foreach (SpawnEntry spawnEntry in area.SpawnEntries)
                     {
                         int minLevel, maxLevel;
@@ -1616,15 +1591,15 @@ namespace PalworldRandomizer
                             maxLevel = area.maxLevel;
                         }
                         GenerateLevels(spawnEntry, [.. spawnEntry.SpawnList.ConvertAll(x => (int) x.MinLevel)], [.. spawnEntry.SpawnList.ConvertAll(x => (int) x.MaxLevel)],
-                            minLevel, maxLevel, x => LevelMultiplierEx(x, isDungeon || isDungeonBoss));
+                            minLevel, maxLevel, x => LevelMultiplierEx(x, area.isInDungeon));
                     }
-                    PostProcessArea(area, area.SpawnEntries.Sum(x => (long) x.Weight), nightOnly);
+                    PostProcessArea(area, area.SpawnEntries.Sum(x => (long) x.Weight), NightOnly(area));
                 }
             }
             void PostProcessArea(AreaData area, long weightSum, bool nightOnly)
             {
                 List<SpawnEntry> spawnEntries = area.SpawnEntries;
-                // Adjust Probability
+                // Convert To Percentage
                 if (formData.WeightTypeCustom && formData.WeightAdjustProbability)
                 {
                     List<SpawnEntry> diurnalEntries = [];
@@ -1656,11 +1631,16 @@ namespace PalworldRandomizer
                         }
                         int[] breakpoints = [ 1, 5, 10, 25, 59 ];
                         int[] minWeights = [ 5, 10, 16, 31, int.MaxValue ];
-                        int percent = 0;
+                        int skippedPercent = 0;
+                        int lastPercent = 0;
                         for (int i = 0; i < breakpoints.Length; ++i)
                         {
-                            percent += breakpoints[i];
+                            int percent = breakpoints[i];
                             int endIndex = entries.FindIndex(x => x.Weight >= minWeights[i]);
+                            if (lastPercent == 0 && endIndex == -1)
+                            {
+                                lastPercent = percent;
+                            }
                             if (endIndex == -1 || endIndex == 0)
                             {
                                 if (i == breakpoints.Length - 1)
@@ -1669,14 +1649,22 @@ namespace PalworldRandomizer
                                 }
                                 else
                                 {
+                                    skippedPercent += percent;
                                     continue;
+                                }
+                            }
+                            if (i == breakpoints.Length - 1)
+                            {
+                                percent += skippedPercent;
+                                if (lastPercent < breakpoints.Last())
+                                {
+                                    percent = Math.Min(percent, Convert.ToInt32(lastPercent * (4.0f / 3)));
                                 }
                             }
                             List<SpawnEntry> adjustedEntries = entries[..endIndex];
                             entries = entries[endIndex..];
                             double scale = percent / 100.0 * totalSum / adjustedEntries.Sum(x => (long) x.Weight);
                             adjustedEntries.ForEach(x => x.Weight = Math.Max(1, Convert.ToInt32(x.Weight * scale)));
-                            percent = 0;
                         }
                     }
                 }
@@ -1685,7 +1673,7 @@ namespace PalworldRandomizer
                 if (formData.VanillaPlus)
                 {
                     vanillaSpawns = Data.AreaData[area.filename].SpawnEntries.ConvertAll(entry => entry.Clone());
-                    FilterVanillaSpawns(vanillaSpawns, area.filename);
+                    FilterVanillaSpawns(vanillaSpawns, area);
                     long vanillaWeightSum = vanillaSpawns.Sum(x => (long) x.Weight);
                     long vanillaNightSum = vanillaSpawns.FindAll(x => x.NightOnly).Sum(x => (long) x.Weight);
                     List<SpawnEntry> nightSpawns = spawnEntries.FindAll(x => x.NightOnly);
@@ -1768,7 +1756,7 @@ namespace PalworldRandomizer
                         }
                     }
                 }
-                // Int overflow fix
+                // Int Overflow Fix
                 if (weightSum > int.MaxValue)
                 {
                     void ScaleWeights(List<SpawnEntry> entries, long sum, int maxValue)
@@ -1877,7 +1865,7 @@ namespace PalworldRandomizer
                 if (formData.VanillaMerge)
                 {
                     List<SpawnEntry> mergedVanillaSpawns = Data.AreaData[area.filename].SpawnEntries.ConvertAll(x => x.Clone());
-                    FilterVanillaSpawns(mergedVanillaSpawns, area.filename);
+                    FilterVanillaSpawns(mergedVanillaSpawns, area);
                     List<SpawnEntry> vanillaSpawnsDay = mergedVanillaSpawns.FindAll(x => !x.NightOnly && x.Weight != 0);
                     List<SpawnEntry> vanillaSpawnsNight = mergedVanillaSpawns.FindAll(x => x.NightOnly && x.Weight != 0);
                     List<SpawnEntry> spawnsDay = spawnEntries[vanillaSpawns.Count..].FindAll(x => !x.NightOnly);
@@ -2114,63 +2102,11 @@ namespace PalworldRandomizer
             };
             if (openDialog.ShowDialog() == true && openDialog.FileName != string.Empty)
             {
-                string[] fileLines = File.ReadAllLines(openDialog.FileName, Encoding.UTF8)[1..];
                 try
                 {
-                    List<string[]> csvData = [.. fileLines.Select(x => x.Split(',').Select(x => x.Trim()).ToArray())/*.Where(x => x.Length > 1)*/];
-                    Dictionary<string, AreaData> areaDict = Data.AreaDataCopy().ToDictionary(x => x.SimpleName, x => x);
-                    HashSet<string> addedNames = [];
-                    foreach (string[] list in csvData)
-                    {
-                        AreaData area = areaDict[list[0]];
-                        if (addedNames.Add(list[0]))
-                        {
-                            area.SpawnEntries = [];
-                        }
-                        if (list[1].Length == 0)
-                            continue;
-                        int spawnIndex = int.Parse(list[1]);
-                        while (area.SpawnEntries.Count < spawnIndex + 1)
-                        {
-                            area.SpawnEntries.Add(new());
-                        }
-                        SpawnEntry spawnEntry = area.SpawnEntries[spawnIndex];
-                        if (list[2].Length != 0)
-                            spawnEntry.Weight = int.Parse(list[2]);
-                        if (list[3].Length != 0)
-                            spawnEntry.NightOnly = bool.Parse(list[3]);
-                        if (!Data.SimpleName.TryGetValue(list[4], out string? palName))
-                        {
-                            if (Data.PalData.ContainsKey(list[4]))
-                            {
-                                palName = list[4];
-                            }
-                            else
-                            {
-                                throw new Exception($"Unknown Character Name: \"{list[4]}\"");
-                            }
-                        }
-                        spawnEntry.SpawnList.Add(new()
-                        {
-                            Name = palName,
-                            IsPal = Data.PalData[palName].IsPal,
-                            IsBoss = bool.Parse(list[5]),
-                            MinLevel = uint.Parse(list[6]),
-                            MaxLevel = uint.Parse(list[7]),
-                            MinGroupSize = uint.Parse(list[8]),
-                            MaxGroupSize = uint.Parse(list[9])
-                        });
-                    }
-                    List<AreaData> areaList = [.. areaDict.Values];
-                    areaList.ForEach(area => area.SpawnEntries.RemoveAll(entry => entry.SpawnList.Count == 0));
-                    Data.AreaForEachIfDiff(areaList, area => area.modified = true);
-                    areaList.Sort((x, y) =>
-                    {
-                        if (x.modified == y.modified)
-                            return string.Compare(x.filename, y.filename);
-                        return (y.modified ? 1 : 0) - (x.modified ? 1 : 0);
-                    });
-                    PalSpawnPage.Instance.areaList.ItemsSource = areaList;
+                    Randomize.SaveBackup();
+                    PalSpawnPage.Instance.areaList.ItemsSource = ConvertCSV(openDialog.FileName);
+                    Randomize.AreaListChanged = true;
                 }
                 catch (Exception e)
                 {
@@ -2180,6 +2116,65 @@ namespace PalworldRandomizer
             else
                 return "Cancel";
             return null;
+        }
+
+        public static List<AreaData> ConvertCSV(string filename)
+        {
+            string[] fileLines = File.ReadAllLines(filename, Encoding.UTF8)[1..];
+            List<string[]> csvData = [.. fileLines.Select(x => x.Split(',').Select(x => x.Trim()).ToArray())/*.Where(x => x.Length > 1)*/];
+            Dictionary<string, AreaData> areaDict = Data.AreaDataCopy().ToDictionary(x => x.SimpleName, x => x);
+            HashSet<string> addedNames = [];
+            foreach (string[] list in csvData)
+            {
+                AreaData area = areaDict[list[0]];
+                if (addedNames.Add(list[0]))
+                {
+                    area.SpawnEntries = [];
+                }
+                if (list[1].Length == 0)
+                    continue;
+                int spawnIndex = int.Parse(list[1]);
+                while (area.SpawnEntries.Count < spawnIndex + 1)
+                {
+                    area.SpawnEntries.Add(new());
+                }
+                SpawnEntry spawnEntry = area.SpawnEntries[spawnIndex];
+                if (list[2].Length != 0)
+                    spawnEntry.Weight = int.Parse(list[2]);
+                if (list[3].Length != 0)
+                    spawnEntry.NightOnly = bool.Parse(list[3]);
+                if (!Data.SimpleName.TryGetValue(list[4], out string? palName))
+                {
+                    if (Data.PalData.ContainsKey(list[4]))
+                    {
+                        palName = list[4];
+                    }
+                    else
+                    {
+                        throw new Exception($"Unknown Character Name: \"{list[4]}\"");
+                    }
+                }
+                spawnEntry.SpawnList.Add(new()
+                {
+                    Name = palName,
+                    IsPal = Data.PalData[palName].IsPal,
+                    IsBoss = bool.Parse(list[5]),
+                    MinLevel = uint.Parse(list[6]),
+                    MaxLevel = uint.Parse(list[7]),
+                    MinGroupSize = uint.Parse(list[8]),
+                    MaxGroupSize = uint.Parse(list[9])
+                });
+            }
+            List<AreaData> areaList = [.. areaDict.Values];
+            areaList.ForEach(area => area.SpawnEntries.RemoveAll(entry => entry.SpawnList.Count == 0));
+            Data.AreaForEachIfDiff(areaList, area => area.modified = true);
+            areaList.Sort((x, y) =>
+            {
+                if (x.modified == y.modified)
+                    return string.Compare(x.filename, y.filename);
+                return (y.modified ? 1 : 0) - (x.modified ? 1 : 0);
+            });
+            return areaList;
         }
     }
 }

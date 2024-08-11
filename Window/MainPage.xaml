@@ -16,7 +16,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="5" Name="form">
             <StackPanel Margin="0" Orientation="Horizontal">
-                <TextBlock FontWeight="Bold">Pal Spawn Randomizer v2.5</TextBlock>
+                <TextBlock FontWeight="Bold">Pal Spawn Randomizer v2.5.1</TextBlock>
                 <Button BorderThickness="0" Click="InfoButton_Click" ToolTip="Open Website">
                     <emoji:TextBlock Text="ℹ️" Margin="0"/>
                 </Button>
@@ -395,14 +395,38 @@
                     <CheckBox Name="spawnPals" IsChecked="True">Pals</CheckBox>
                     <CheckBox Name="spawnHumans" IsChecked="True">Humans (Aggressive)</CheckBox>
                     <CheckBox Name="spawnPolice" IsChecked="True">Police</CheckBox>
-                    <CheckBox Name="spawnGuards" IsChecked="False">City Guards</CheckBox>
+                    <WrapPanel>
+                        <WrapPanel.Style>
+                            <Style TargetType="WrapPanel">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ElementName=methodNone, Path=IsChecked}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </WrapPanel.Style>
+                        <CheckBox Name="spawnGuards" IsChecked="False">City Guards</CheckBox>
+                    </WrapPanel>
                     <CheckBox Name="spawnNinja" IsChecked="True">Ninja</CheckBox>
-                    <CheckBox Name="spawnTraders" IsChecked="False">Item Merchants</CheckBox>
-                    <CheckBox Name="spawnPalTraders" IsChecked="False">Pal Merchants</CheckBox>
-                    <CheckBox Name="spawnTowerBosses" IsChecked="True">Tower Bosses</CheckBox>
-                    <CheckBox Name="spawnRaidBosses" IsChecked="False">Raid Bosses</CheckBox>
-                    <CheckBox Name="spawnTowerBosses2" IsChecked="False">Tower Bosses 2</CheckBox>
-                    <CheckBox Name="spawnRaidBosses2" IsChecked="False">Raid Bosses 2</CheckBox>
+                    <WrapPanel>
+                        <WrapPanel.Style>
+                            <Style TargetType="WrapPanel">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ElementName=methodNone, Path=IsChecked}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </WrapPanel.Style>
+                        <CheckBox Name="spawnTraders" IsChecked="False">Item Merchants</CheckBox>
+                        <CheckBox Name="spawnPalTraders" IsChecked="False">Pal Merchants</CheckBox>
+                        <CheckBox Name="spawnTowerBosses" IsChecked="True">Tower Bosses</CheckBox>
+                        <CheckBox Name="spawnRaidBosses" IsChecked="False">Raid Bosses</CheckBox>
+                        <CheckBox Name="spawnTowerBosses2" IsChecked="False">Tower Bosses 2</CheckBox>
+                        <CheckBox Name="spawnRaidBosses2" IsChecked="False">Raid Bosses 2</CheckBox>
+                    </WrapPanel>
                 </WrapPanel>
             </GroupBox>
             <GroupBox Margin="5">
