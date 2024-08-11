@@ -775,10 +775,10 @@ namespace PalworldRandomizer
             bool equalizeAreaRarity = formData.EqualizeAreaRarity && !formData.MethodNone && !formData.MethodFull && !formData.MethodGlobalSwap && !formData.VanillaRestrict;
             int progress = 0;
             int progressTotal = subList.Count;
-            bool NightOnly(AreaData area) => (formData.NightOnly && area.isField)
-                    || (formData.NightOnlyDungeons && area.isDungeon)
-                    || (formData.NightOnlyDungeonBosses && area.isDungeonBoss)
-                    || (formData.NightOnlyBosses && area.isFieldBoss);
+            bool NightOnly(AreaData area, bool condition = true) => (formData.NightOnly == condition && area.isField)
+                    || (formData.NightOnlyDungeons == condition && area.isDungeon)
+                    || (formData.NightOnlyDungeonBosses == condition && area.isDungeonBoss)
+                    || (formData.NightOnlyBosses == condition && area.isFieldBoss);
             int Rarity(SpawnData spawnData)
             {
                 if (!Data.PalData[spawnData.Name].IsPal)
@@ -1265,7 +1265,7 @@ namespace PalworldRandomizer
                 changes += spawnEntries.RemoveAll(entry => entry.SpawnList.Count == 0);
                 foreach (SpawnEntry spawnEntry in spawnEntries)
                 {
-                    if (NightOnly(area))
+                    if (NightOnly(area, false))
                     {
                         changes += spawnEntry.NightOnly == true ? 1 : 0;
                         spawnEntry.NightOnly = false;
