@@ -657,6 +657,8 @@ namespace PalworldRandomizer
         {
             try
             {
+                Directory.CreateDirectory(UAssetData.AppDataPath("Backups"));
+                Directory.CreateDirectory(UAssetData.AppDataPath("Log"));
                 string[] backups = [.. ((IEnumerable<FileInfo>) [.. new DirectoryInfo(UAssetData.AppDataPath("Backups")).GetFiles("*.csv"),
                     .. new DirectoryInfo(UAssetData.AppDataPath("Log")).GetFiles("*.csv")]).OrderByDescending(x => x.LastWriteTime).Select(x => x.FullName)];
                 if (backups.Length != 0)

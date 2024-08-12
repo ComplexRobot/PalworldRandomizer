@@ -16,7 +16,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="5" Name="form">
             <StackPanel Margin="0" Orientation="Horizontal">
-                <TextBlock FontWeight="Bold">Pal Spawn Randomizer v2.5.3</TextBlock>
+                <TextBlock FontWeight="Bold">Pal Spawn Randomizer v2.5.4</TextBlock>
                 <Button BorderThickness="0" Click="InfoButton_Click" ToolTip="Open Website">
                     <emoji:TextBlock Text="ℹ️" Margin="0"/>
                 </Button>
