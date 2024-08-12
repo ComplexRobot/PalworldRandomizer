@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Resources;
+using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -989,15 +990,16 @@ namespace PalworldRandomizer
                                 spawnData.MinGroupSize = (uint) baseCountMin;
                                 spawnData.MaxGroupSize = (uint) baseCountMax;
                             }
+                            float countMultiplier = CountMultiplier(spawnData);
                             if (i == 0)
                             {
-                                spawnData.MinGroupSize = (uint) Math.Clamp(Convert.ToInt32(spawnData.MinGroupSize * CountMultiplier(spawnData)), countClampFirstMin, countClampFirstMax);
-                                spawnData.MaxGroupSize = (uint) Math.Clamp(Convert.ToInt32(spawnData.MaxGroupSize * CountMultiplier(spawnData)), countClampFirstMin, countClampFirstMax);
+                                spawnData.MinGroupSize = (uint) Math.Clamp(Convert.ToInt32(spawnData.MinGroupSize * countMultiplier), countClampFirstMin, countClampFirstMax);
+                                spawnData.MaxGroupSize = (uint) Math.Clamp(Convert.ToInt32(spawnData.MaxGroupSize * countMultiplier), countClampFirstMin, countClampFirstMax);
                             }
                             else
                             {
-                                spawnData.MinGroupSize = (uint) Math.Clamp(Convert.ToInt32(spawnData.MinGroupSize * CountMultiplier(spawnData)), countClampMin, countClampMax);
-                                spawnData.MaxGroupSize = (uint) Math.Clamp(Convert.ToInt32(spawnData.MaxGroupSize * CountMultiplier(spawnData)), countClampMin, countClampMax);
+                                spawnData.MinGroupSize = (uint) Math.Clamp(Convert.ToInt32(spawnData.MinGroupSize * countMultiplier), countClampMin, countClampMax);
+                                spawnData.MaxGroupSize = (uint) Math.Clamp(Convert.ToInt32(spawnData.MaxGroupSize * countMultiplier), countClampMin, countClampMax);
                             }
                         }
                     }
@@ -2022,8 +2024,8 @@ namespace PalworldRandomizer
                 unrealPak.WaitForExit();
                 if (unrealPak.ExitCode != 0)
                     return "UnrealPak failed to extract the file.";
-                string[] files = Directory.GetFiles(outputPath, "BP_PalSpawner_Sheets_*.uasset").Select(Path.GetFileName).ToArray()!;
-                if (files.Length == 0)
+                HashSet<string> files = [.. Directory.GetFiles(outputPath, "BP_PalSpawner_Sheets_*.uasset").Select(Path.GetFileName)];
+                if (files.Count == 0)
                     return "No valid uasset files were found.";
                 List<AreaData> areaList = Data.AreaDataCopy();
                 foreach (AreaData area in areaList)
@@ -2041,7 +2043,9 @@ namespace PalworldRandomizer
                         return string.Compare(x.filename, y.filename);
                     return (y.modified ? 1 : 0) - (x.modified ? 1 : 0);
                 });
+                Randomize.SaveBackup();
                 PalSpawnPage.Instance.areaList.ItemsSource = areaList;
+                Randomize.AreaListChanged = true;
             }
             else
             {
@@ -2110,7 +2114,11 @@ namespace PalworldRandomizer
                 }
                 catch (Exception e)
                 {
-                    return e.ToString();
+                    if (e.Source == "FileIO")
+                    {
+                        ExceptionDispatchInfo.Capture(e).Throw();
+                    }
+                    return e.Message;
                 }
             }
             else
@@ -2120,7 +2128,16 @@ namespace PalworldRandomizer
 
         public static List<AreaData> ConvertCSV(string filename)
         {
-            string[] fileLines = File.ReadAllLines(filename, Encoding.UTF8)[1..];
+            string[] fileLines = [];
+            try
+            {
+                fileLines = File.ReadAllLines(filename, Encoding.UTF8)[1..];
+            }
+            catch (Exception e)
+            {
+                e.Source = "FileIO";
+                ExceptionDispatchInfo.Capture(e).Throw();
+            }
             List<string[]> csvData = [.. fileLines.Select(x => x.Split(',').Select(x => x.Trim()).ToArray())/*.Where(x => x.Length > 1)*/];
             Dictionary<string, AreaData> areaDict = Data.AreaDataCopy().ToDictionary(x => x.SimpleName, x => x);
             HashSet<string> addedNames = [];

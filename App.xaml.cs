@@ -11,18 +11,16 @@ namespace PalworldRandomizer
     {
         private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs eventArgs)
         {
+            try { File.AppendAllText(UAssetData.AppDataPath("error-log.txt"), $"{DateTime.Now}\n{eventArgs.Exception}\n\n\n"); } catch { }
             try
             {
-                File.AppendAllText(UAssetData.AppDataPath("error-log.txt"), $"{DateTime.Now}\n{eventArgs.Exception}\n\n\n");
+#if DEBUG
+                string message = eventArgs.Exception.ToString();
+                Console.WriteLine(message[..message.TakeWhile(x => x != '\n').Count()]);
+#endif
+                MessageBox.Show(eventArgs.Exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            catch
-            {
-            }
-            string message = eventArgs.Exception.ToString();
-            int newLine = message.IndexOf('\n');
-            message = message[..(newLine == -1 ? message.Length : newLine)];
-            Console.WriteLine(message);
-            MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            catch { }
             eventArgs.Handled = true;
         }
 

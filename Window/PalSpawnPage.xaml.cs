@@ -50,16 +50,13 @@ namespace PalworldRandomizer
         private void LoadPak_Click(object sender, RoutedEventArgs e)
         {
             string? status = FileModify.LoadPak();
-            if (status != null)
-            {
-                if (status != "Cancel")
-                {
-                    MessageBox.Show(GetWindow(), "Error: Invalid or incorrect PAK file.\n" + status, "Failed To Load Pak", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
-            else
+            if (status == null)
             {
                 MessageBox.Show(GetWindow(), "Successfully loaded PAK file.", "Pak Loaded", MessageBoxButton.OK, MessageBoxImage.None);
+            }
+            else if (status != "Cancel")
+            {
+                MessageBox.Show(GetWindow(), "Error: Invalid or incorrect PAK file.\n\n" + status, "Failed To Load Pak", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -72,16 +69,13 @@ namespace PalworldRandomizer
         private void LoadCsv_Click(object sender, RoutedEventArgs e)
         {
             string? status = FileModify.LoadCSV();
-            if (status != null)
-            {
-                if (status != "Cancel")
-                {
-                    MessageBox.Show(GetWindow(), "Error: Invalid or corrupt CSV file.\n" + status, "Failed To Load CSV", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
-            else
+            if (status == null)
             {
                 MessageBox.Show(GetWindow(), "Successfully loaded CSV file.", "CSV Loaded", MessageBoxButton.OK, MessageBoxImage.None);
+            }
+            else if (status != "Cancel")
+            {
+                MessageBox.Show(GetWindow(), "Error: Invalid or corrupt CSV file.\n\n" + status, "Failed To Load CSV", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

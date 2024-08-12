@@ -238,7 +238,7 @@ namespace PalworldRandomizer
             }
             catch (Exception e)
             {
-                return e.ToString();
+                return e.Message;
             }
             return null;
         }
@@ -385,7 +385,7 @@ namespace PalworldRandomizer
                 string? message = SaveTemplate(new FormData(this), saveDialog.FileName);
                 if (message != null)
                 {
-                    MessageBox.Show(message, "Failed to Save File", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(GetWindow(), message, "Failed to Save Template", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -405,11 +405,11 @@ namespace PalworldRandomizer
                 {
                     formData.RestoreToWindow(this);
                     ValidateFormData();
-                    MessageBox.Show("Successfully applied template.", "Template Applied", MessageBoxButton.OK, MessageBoxImage.None);
+                    MessageBox.Show(GetWindow(), "Successfully applied template.", "Template Applied", MessageBoxButton.OK, MessageBoxImage.None);
                 }
                 else
                 {
-                    MessageBox.Show("Failed to apply template!", "Apply Template Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(GetWindow(), "Failed to apply template!", "Apply Template Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
