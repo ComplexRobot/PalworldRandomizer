@@ -322,8 +322,8 @@ namespace PalworldRandomizer
                                         || baseList[j].IsPal != newList[j].IsPal
                                         || baseList[j].MinLevel != newList[j].MinLevel
                                         || baseList[j].MaxLevel != newList[j].MaxLevel
-                                        || baseList[j].MinGroupSize != newList[j].MinGroupSize
-                                        || baseList[j].MaxGroupSize != newList[j].MaxGroupSize)
+                                        || baseList[j].MinCount != newList[j].MinCount
+                                        || baseList[j].MaxCount != newList[j].MaxCount)
                                     {
                                         return true;
                                     }
@@ -354,6 +354,8 @@ namespace PalworldRandomizer
         private static Dictionary<string, SpawnEntry> bossSpawns = [];
         private static List<SpawnEntry> humanSpawns = [];
         public static bool AreaListChanged { get; set; } = false;
+        public static bool AutoSaveRestoreBackups { get; set; } = true;
+        public static bool AutoSaveGenerationData { get; set; } = true;
 
         public static void Initialize()
         {
@@ -380,11 +382,11 @@ namespace PalworldRandomizer
                             int maxCount = 1;
                             foreach (SpawnEntry spawnEntry in soloValue)
                             {
-                                minCount = (int) Math.Max(minCount, spawnEntry.SpawnList[0].MinGroupSize);
-                                maxCount = (int) Math.Max(maxCount, spawnEntry.SpawnList[0].MaxGroupSize);
+                                minCount = (int) Math.Max(minCount, spawnEntry.SpawnList[0].MinCount);
+                                maxCount = (int) Math.Max(maxCount, spawnEntry.SpawnList[0].MaxCount);
                             }
-                            spawnData.MinGroupSize = (uint) minCount;
-                            spawnData.MaxGroupSize = (uint) maxCount;
+                            spawnData.MinCount = (uint) minCount;
+                            spawnData.MaxCount = (uint) maxCount;
                         }
                         else if (Data.GroupEntries.Exists(entry => entry.SpawnList.Exists(spawnData => spawnData.Name == key)))
                         {
@@ -396,7 +398,7 @@ namespace PalworldRandomizer
                                     int currentCount = 0;
                                     foreach (SpawnData currentData in spawnEntry.SpawnList)
                                     {
-                                        currentCount += (int) currentData.MinGroupSize + (int) currentData.MaxGroupSize;
+                                        currentCount += (int) currentData.MinCount + (int) currentData.MaxCount;
                                     }
                                     if (currentCount > palCount)
                                     {
@@ -415,8 +417,8 @@ namespace PalworldRandomizer
                                 string baseName = key[..key.IndexOf('_')];
                                 if (Data.SoloEntries.TryGetValue(baseName, out List<SpawnEntry>? soloValue2))
                                 {
-                                    spawnData.MinGroupSize = soloValue2[0].SpawnList[0].MinGroupSize;
-                                    spawnData.MaxGroupSize = soloValue2[0].SpawnList[0].MaxGroupSize;
+                                    spawnData.MinCount = soloValue2[0].SpawnList[0].MinCount;
+                                    spawnData.MaxCount = soloValue2[0].SpawnList[0].MaxCount;
                                 }
                             }
                         }
@@ -442,7 +444,7 @@ namespace PalworldRandomizer
                                 int currentCount = 0;
                                 foreach (SpawnData currentData in spawnEntry.SpawnList)
                                 {
-                                    currentCount += (int) currentData.MinGroupSize + (int) currentData.MaxGroupSize;
+                                    currentCount += (int) currentData.MinCount + (int) currentData.MaxCount;
                                 }
                                 if (currentCount > palCount)
                                 {
@@ -466,20 +468,20 @@ namespace PalworldRandomizer
                                     Name = key,
                                     MinLevel = baseEntry.SpawnList[1].MinLevel,
                                     MaxLevel = baseEntry.SpawnList[1].MaxLevel,
-                                    MinGroupSize = baseEntry.SpawnList[1].MinGroupSize,
-                                    MaxGroupSize = baseEntry.SpawnList[1].MaxGroupSize
+                                    MinCount = baseEntry.SpawnList[1].MinCount,
+                                    MaxCount = baseEntry.SpawnList[1].MaxCount
                                 });
                                 bossData.MinLevel = baseEntry.SpawnList[0].MinLevel;
                                 bossData.MaxLevel = baseEntry.SpawnList[0].MaxLevel;
                             }
                         }
-                        if (bossEntry.SpawnList.Count == 1 && formData.SpawnPals && basicSpawns[key].SpawnList[0].MaxGroupSize > 1)
+                        if (bossEntry.SpawnList.Count == 1 && formData.SpawnPals && basicSpawns[key].SpawnList[0].MaxCount > 1)
                         {
                             bossEntry.SpawnList.Add(new()
                             {
                                 Name = key,
-                                MinGroupSize = Math.Max(2, basicSpawns[key].SpawnList[0].MinGroupSize),
-                                MaxGroupSize = basicSpawns[key].SpawnList[0].MaxGroupSize,
+                                MinCount = Math.Max(2, basicSpawns[key].SpawnList[0].MinCount),
+                                MaxCount = basicSpawns[key].SpawnList[0].MaxCount,
                                 MinLevel = 2,
                                 MaxLevel = 6
                             });
@@ -502,8 +504,8 @@ namespace PalworldRandomizer
                         int maxCount = 1;
                         foreach (SpawnEntry spawnEntry in keyPair.Value)
                         {
-                            spawnData.MinGroupSize = (uint) Math.Max(minCount, spawnEntry.SpawnList[0].MinGroupSize);
-                            spawnData.MaxGroupSize = (uint) Math.Max(maxCount, spawnEntry.SpawnList[0].MaxGroupSize);
+                            spawnData.MinCount = (uint) Math.Max(minCount, spawnEntry.SpawnList[0].MinCount);
+                            spawnData.MaxCount = (uint) Math.Max(maxCount, spawnEntry.SpawnList[0].MaxCount);
                         }
                     }
                 }
@@ -521,7 +523,7 @@ namespace PalworldRandomizer
                         int humanCount = 0;
                         foreach (SpawnData spawnData in spawnEntry.SpawnList)
                         {
-                            humanCount += (int) (spawnData.MinGroupSize + spawnData.MaxGroupSize);
+                            humanCount += (int) (spawnData.MinCount + spawnData.MaxCount);
                         }
                         for (int j = i + 1; j < groupEntriesCopy.Count;)
                         {
@@ -540,7 +542,7 @@ namespace PalworldRandomizer
                                     {
                                         return false;
                                     }
-                                    currentCount += (int) (spawnEntry2.SpawnList[k].MinGroupSize + spawnEntry2.SpawnList[k].MaxGroupSize);
+                                    currentCount += (int) (spawnEntry2.SpawnList[k].MinCount + spawnEntry2.SpawnList[k].MaxCount);
                                 }
                                 return true;
                             }))())
@@ -643,9 +645,12 @@ namespace PalworldRandomizer
                 if (AreaListChanged)
                 {
                     AreaListChanged = false;
-                    List<AreaData> areaList = (List<AreaData>) PalSpawnPage.Instance.areaList.ItemsSource;
-                    Directory.CreateDirectory(UAssetData.AppDataPath("Backups"));
-                    File.WriteAllText(UAssetData.AppDataPath($"Backups\\{DateTime.Now:MM-dd-yy-HH-mm-ss}.csv"), FileModify.GenerateCSV(areaList), Encoding.UTF8);
+                    if (AutoSaveRestoreBackups)
+                    {
+                        List<AreaData> areaList = (List<AreaData>) PalSpawnPage.Instance.areaList.ItemsSource;
+                        Directory.CreateDirectory(UAssetData.AppDataPath("Backups"));
+                        File.WriteAllText(UAssetData.AppDataPath($"Backups\\{DateTime.Now:MM-dd-yy-HH-mm-ss}.csv"), FileModify.GenerateCSV(areaList), Encoding.UTF8);
+                    }
                 }
             }
             catch
@@ -657,13 +662,16 @@ namespace PalworldRandomizer
         {
             try
             {
-                Directory.CreateDirectory(UAssetData.AppDataPath("Backups"));
-                Directory.CreateDirectory(UAssetData.AppDataPath("Log"));
-                string[] backups = [.. ((IEnumerable<FileInfo>) [.. new DirectoryInfo(UAssetData.AppDataPath("Backups")).GetFiles("*.csv"),
-                    .. new DirectoryInfo(UAssetData.AppDataPath("Log")).GetFiles("*.csv")]).OrderByDescending(x => x.LastWriteTime).Select(x => x.FullName)];
-                if (backups.Length != 0)
+                if (AutoSaveRestoreBackups)
                 {
-                    GeneratedAreaList = FileModify.ConvertCSV(backups[0]);
+                    DirectoryInfo backupDir = new(UAssetData.AppDataPath("Backups"));
+                    DirectoryInfo logDir = new(UAssetData.AppDataPath("Log"));
+                    string? backupPath = ((IEnumerable<FileInfo>) [.. (backupDir.Exists ? backupDir.GetFiles("*.csv") : []), .. (logDir.Exists ? logDir.GetFiles("*.csv") : [])])
+                        .MaxBy(x => x.LastWriteTime)?.FullName;
+                    if (backupPath != null)
+                    {
+                        GeneratedAreaList = FileModify.ConvertCSV(backupPath);
+                    }
                 }
             }
             catch
@@ -674,7 +682,9 @@ namespace PalworldRandomizer
         private static void RandomizeAndSaveAssets(FormData formData)
         {
             SaveBackup();
-            StringBuilder outputLog = formData.OutputLog ? new($"Random Seed: {formData.RandomSeed}\n\n") : null!;
+            bool outputLog = false;
+            MainPage.Instance.Dispatcher.Invoke(() => outputLog = MainPage.Instance.outputLog.IsChecked == true);
+            StringBuilder outputLogBuilder = outputLog ? new($"Random Seed: {formData.RandomSeed}\n\n") : null!;
             int minGroup = Math.Max(1, formData.GroupMin);
             int maxGroup = Math.Max(minGroup, formData.GroupMax);
             int minGroupBoss = Math.Max(1, formData.GroupMinBoss);
@@ -761,12 +771,10 @@ namespace PalworldRandomizer
             Random random = new(formData.RandomSeed);
             List<AreaData> areaList = Data.AreaDataCopy();
             List<AreaData> subList = areaList.FindAll(area =>
-            {
-                return (formData.RandomizeField || !area.isField)
-                    && (formData.RandomizeDungeons || !area.isDungeon)
-                    && (formData.RandomizeDungeonBosses || !area.isDungeonBoss)
-                    && (formData.RandomizeFieldBosses || !area.isFieldBoss);
-            });
+                (formData.RandomizeField || !area.isField)
+                && (formData.RandomizeDungeons || !area.isDungeon)
+                && (formData.RandomizeDungeonBosses || !area.isDungeonBoss)
+                && (formData.RandomizeFieldBosses || !area.isFieldBoss));
             subList.Sort((x, y) =>
             {
                 if (x.isBoss != y.isBoss)
@@ -892,7 +900,7 @@ namespace PalworldRandomizer
                         {
                             Weight = formData.WeightTypeUniform ? random.Next(weightUniformMin, weightUniformMax + 1) : 10,
                             SpawnList = value.SpawnList.ConvertAll(spawnData =>
-                                new SpawnData(spawnData.Name, spawnData.MinGroupSize, spawnData.MaxGroupSize)
+                                new SpawnData(spawnData.Name, spawnData.MinCount, spawnData.MaxCount)
                                 {
                                     IsPal = Data.PalData[spawnData.Name].IsPal,
                                     MinLevel = spawnData.MinLevel,
@@ -989,19 +997,19 @@ namespace PalworldRandomizer
                             SpawnData spawnData = spawnEntry.SpawnList[i];
                             if (!formData.GroupVanilla)
                             {
-                                spawnData.MinGroupSize = (uint) baseCountMin;
-                                spawnData.MaxGroupSize = (uint) baseCountMax;
+                                spawnData.MinCount = (uint) baseCountMin;
+                                spawnData.MaxCount = (uint) baseCountMax;
                             }
                             float countMultiplier = CountMultiplier(spawnData);
                             if (i == 0)
                             {
-                                spawnData.MinGroupSize = (uint) Math.Clamp(Convert.ToInt32(spawnData.MinGroupSize * countMultiplier), countClampFirstMin, countClampFirstMax);
-                                spawnData.MaxGroupSize = (uint) Math.Clamp(Convert.ToInt32(spawnData.MaxGroupSize * countMultiplier), countClampFirstMin, countClampFirstMax);
+                                spawnData.MinCount = (uint) Math.Clamp(Convert.ToInt32(spawnData.MinCount * countMultiplier), countClampFirstMin, countClampFirstMax);
+                                spawnData.MaxCount = (uint) Math.Clamp(Convert.ToInt32(spawnData.MaxCount * countMultiplier), countClampFirstMin, countClampFirstMax);
                             }
                             else
                             {
-                                spawnData.MinGroupSize = (uint) Math.Clamp(Convert.ToInt32(spawnData.MinGroupSize * countMultiplier), countClampMin, countClampMax);
-                                spawnData.MaxGroupSize = (uint) Math.Clamp(Convert.ToInt32(spawnData.MaxGroupSize * countMultiplier), countClampMin, countClampMax);
+                                spawnData.MinCount = (uint) Math.Clamp(Convert.ToInt32(spawnData.MinCount * countMultiplier), countClampMin, countClampMax);
+                                spawnData.MaxCount = (uint) Math.Clamp(Convert.ToInt32(spawnData.MaxCount * countMultiplier), countClampMin, countClampMax);
                             }
                         }
                     }
@@ -1279,8 +1287,8 @@ namespace PalworldRandomizer
                         SpawnData spawnData = spawnEntry.SpawnList[i];
                         uint originalMin = spawnData.MinLevel;
                         uint originalMax = spawnData.MaxLevel;
-                        uint originalGroupMin = spawnData.MinGroupSize;
-                        uint originalGroupMax = spawnData.MaxGroupSize;
+                        uint originalGroupMin = spawnData.MinCount;
+                        uint originalGroupMax = spawnData.MaxCount;
                         float range = spawnData.MaxLevel - spawnData.MinLevel;
                         float average = (spawnData.MaxLevel + spawnData.MinLevel) / 2.0f;
                         float levelMultiplier = LevelMultiplierEx(spawnData, area.isInDungeon);
@@ -1289,27 +1297,27 @@ namespace PalworldRandomizer
                         float countMultiplier = CountMultiplierEx(spawnData, area.isInDungeon);
                         if (i == 0)
                         {
-                            spawnData.MinGroupSize = (uint) Math.Clamp(Convert.ToInt32(spawnData.MinGroupSize * countMultiplier), countClampFirstMin, countClampFirstMax);
-                            spawnData.MaxGroupSize = (uint) Math.Clamp(Convert.ToInt32(spawnData.MaxGroupSize * countMultiplier), countClampFirstMin, countClampFirstMax);
+                            spawnData.MinCount = (uint) Math.Clamp(Convert.ToInt32(spawnData.MinCount * countMultiplier), countClampFirstMin, countClampFirstMax);
+                            spawnData.MaxCount = (uint) Math.Clamp(Convert.ToInt32(spawnData.MaxCount * countMultiplier), countClampFirstMin, countClampFirstMax);
                         }
                         else
                         {
-                            spawnData.MinGroupSize = (uint) Math.Clamp(Convert.ToInt32(spawnData.MinGroupSize * countMultiplier), countClampMin, countClampMax);
-                            spawnData.MaxGroupSize = (uint) Math.Clamp(Convert.ToInt32(spawnData.MaxGroupSize * countMultiplier), countClampMin, countClampMax);
+                            spawnData.MinCount = (uint) Math.Clamp(Convert.ToInt32(spawnData.MinCount * countMultiplier), countClampMin, countClampMax);
+                            spawnData.MaxCount = (uint) Math.Clamp(Convert.ToInt32(spawnData.MaxCount * countMultiplier), countClampMin, countClampMax);
                         }
                         changes += (spawnData.MinLevel != originalMin ? 1 : 0) + (spawnData.MaxLevel != originalMax ? 1 : 0)
-                            + (spawnData.MinGroupSize != originalGroupMin ? 1 : 0) + (spawnData.MaxGroupSize != originalGroupMax ? 1 : 0);
+                            + (spawnData.MinCount != originalGroupMin ? 1 : 0) + (spawnData.MaxCount != originalGroupMax ? 1 : 0);
                     }
                 }
                 return changes != 0;
             }
             void WriteAreaAsset(AreaData area, bool saveData = true)
             {
-                if (formData.OutputLog)
+                if (outputLog)
                 {
-                    outputLog.AppendLine(Path.GetFileNameWithoutExtension(area.filename)["BP_PalSpawner_Sheets_".Length..]);
-                    area.SpawnEntries.ForEach(entry => { entry.Print(outputLog); totalSpeciesCount += entry.SpawnList.Count; });
-                    outputLog.AppendLine();
+                    outputLogBuilder.AppendLine(Path.GetFileNameWithoutExtension(area.filename)["BP_PalSpawner_Sheets_".Length..]);
+                    area.SpawnEntries.ForEach(entry => { entry.Print(outputLogBuilder); totalSpeciesCount += entry.SpawnList.Count; });
+                    outputLogBuilder.AppendLine();
                 }
                 if (saveData)
                 {
@@ -1929,14 +1937,14 @@ namespace PalworldRandomizer
             });
             GeneratedAreaList = areaList;
             PalSpawnPage.Instance.Dispatcher.Invoke(() => PalSpawnPage.Instance.areaList.ItemsSource = GeneratedAreaList);
-            if (formData.OutputLog)
+            if (outputLog)
             {
-                outputLog.AppendJoin(' ', [totalSpeciesCount, "Total Entries"]);
-                outputLog.AppendLine("\n");
-                outputLog.AppendLine(JsonConvert.SerializeObject(formData, Formatting.Indented, new JsonSerializerSettings { Converters = [new JsonWriterDecimal()] }));
+                outputLogBuilder.AppendJoin(' ', [totalSpeciesCount, "Total Entries"]);
+                outputLogBuilder.AppendLine("\n");
+                outputLogBuilder.AppendLine(JsonConvert.SerializeObject(formData, Formatting.Indented, new JsonSerializerSettings { Converters = [new JsonWriterDecimal()] }));
                 try
                 {
-                    File.WriteAllText("Palworld-Randomizer-Log.txt", outputLog.ToString());
+                    File.WriteAllText("Palworld-Randomizer-Log.txt", outputLogBuilder.ToString());
                 }
                 catch (Exception e)
                 {
@@ -1947,11 +1955,14 @@ namespace PalworldRandomizer
             }
             try
             {
-                string date = $"{DateTime.Now:MM-dd-yy-HH-mm-ss}";
-                Directory.CreateDirectory(UAssetData.AppDataPath("Log"));
-                File.WriteAllText(UAssetData.AppDataPath($"Log\\{date}.csv"), FileModify.GenerateCSV(areaList), Encoding.UTF8);
-                File.WriteAllText(UAssetData.AppDataPath($"Log\\{date}.json"),
-                    JsonConvert.SerializeObject(formData, Formatting.Indented, new JsonSerializerSettings { Converters = [new JsonWriterDecimal()] }));
+                if (AutoSaveGenerationData)
+                {
+                    string date = $"{DateTime.Now:MM-dd-yy-HH-mm-ss}";
+                    Directory.CreateDirectory(UAssetData.AppDataPath("Log"));
+                    File.WriteAllText(UAssetData.AppDataPath($"Log\\{date}.csv"), FileModify.GenerateCSV(areaList), Encoding.UTF8);
+                    File.WriteAllText(UAssetData.AppDataPath($"Log\\{date}.json"),
+                        JsonConvert.SerializeObject(formData, Formatting.Indented, new JsonSerializerSettings { Converters = [new JsonWriterDecimal()] }));
+                }
             }
             catch
             {
@@ -2091,7 +2102,7 @@ namespace PalworldRandomizer
                     {
                         SpawnData spawnData = entry.SpawnList[j];
                         stringBuilder.AppendJoin(',', [areaName, i, (j == 0 ? entry.Weight : ""), (j == 0 ? entry.NightOnly : ""), spawnData.SimpleName, spawnData.IsBoss,
-                                spawnData.MinLevel, spawnData.MaxLevel, spawnData.MinGroupSize, spawnData.MaxGroupSize]);
+                                spawnData.MinLevel, spawnData.MaxLevel, spawnData.MinCount, spawnData.MaxCount]);
                         stringBuilder.AppendLine();
                     }
                 }
@@ -2180,8 +2191,8 @@ namespace PalworldRandomizer
                     IsBoss = bool.Parse(list[5]),
                     MinLevel = uint.Parse(list[6]),
                     MaxLevel = uint.Parse(list[7]),
-                    MinGroupSize = uint.Parse(list[8]),
-                    MaxGroupSize = uint.Parse(list[9])
+                    MinCount = uint.Parse(list[8]),
+                    MaxCount = uint.Parse(list[9])
                 });
             }
             List<AreaData> areaList = [.. areaDict.Values];

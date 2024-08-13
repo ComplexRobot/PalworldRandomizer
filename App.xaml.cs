@@ -62,6 +62,7 @@ namespace PalworldRandomizer
             }
             ConfigData config = SharedWindow.GetConfig();
             config.AutoRestoreTemplate = MainPage.Instance.autoSaveTemplate.IsChecked == true;
+            config.OutputLog = MainPage.Instance.outputLog.IsChecked == true;
             SharedWindow.SaveConfig(config);
             if (config.AutoRestoreTemplate)
             {

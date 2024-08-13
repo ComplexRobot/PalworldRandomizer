@@ -17,6 +17,9 @@ namespace PalworldRandomizer
         public float AssetVersion = 0;
         public bool AutoReplaceOldFiles = true;
         public bool AutoRestoreTemplate = true;
+        public bool OutputLog = false;
+        public bool AutoSaveRestoreBackups = true;
+        public bool AutoSaveGenerationData = true;
     }
 
     internal static partial class SharedWindow

@@ -128,20 +128,20 @@ namespace PalworldRandomizer
                 position += 4;
                 if (skipMinGroupSize)
                 {
-                    spawnData.MinGroupSize = 0;
+                    spawnData.MinCount = 0;
                 }
                 else
                 {
-                    spawnData.MinGroupSize = BitConverter.ToUInt32(rawExport.Data, position);
+                    spawnData.MinCount = BitConverter.ToUInt32(rawExport.Data, position);
                     position += 4;
                 }
                 if (skipMaxGroupSize)
                 {
-                    spawnData.MaxGroupSize = 0;
+                    spawnData.MaxCount = 0;
                 }
                 else
                 {
-                    spawnData.MaxGroupSize = BitConverter.ToUInt32(rawExport.Data, position);
+                    spawnData.MaxCount = BitConverter.ToUInt32(rawExport.Data, position);
                     position += 4;
                 }
                 if (position + 1 >= rawExport.Data.Length || (rawExport.Data[position] == 0x80 && rawExport.Data[position + 1] == 0x09))
@@ -188,11 +188,11 @@ namespace PalworldRandomizer
                 foreach (SpawnData spawnData in spawnEntry.SpawnList)
                 {
                     int nameIndex = uAsset.AddNameReference(new(spawnData.Name, Encoding.ASCII));
-                    if (spawnData.MinGroupSize == 0)
+                    if (spawnData.MinCount == 0)
                     {
                         bytes.AddRange([0x80, 0x0D, 0x10]);
                     }
-                    else if (spawnData.MaxGroupSize == 0)
+                    else if (spawnData.MaxCount == 0)
                     {
                         bytes.AddRange([0x80, 0x0D, 0x20]);
                     }
@@ -214,13 +214,13 @@ namespace PalworldRandomizer
                     }
                     bytes.AddRange(BitConverter.GetBytes(spawnData.MinLevel));
                     bytes.AddRange(BitConverter.GetBytes(spawnData.MaxLevel));
-                    if (spawnData.MinGroupSize != 0)
+                    if (spawnData.MinCount != 0)
                     {
-                        bytes.AddRange(BitConverter.GetBytes(spawnData.MinGroupSize));
+                        bytes.AddRange(BitConverter.GetBytes(spawnData.MinCount));
                     }
-                    if (spawnData.MaxGroupSize != 0)
+                    if (spawnData.MaxCount != 0 || spawnData.MinCount == 0)
                     {
-                        bytes.AddRange(BitConverter.GetBytes(spawnData.MaxGroupSize));
+                        bytes.AddRange(BitConverter.GetBytes(spawnData.MaxCount));
                     }
                 }
             }
@@ -229,7 +229,7 @@ namespace PalworldRandomizer
         }
     }
 
-    // A spawn group containing meta data and a list of character 
+    // A spawn group containing meta data and a list of character spawn data
     public class SpawnEntry
     {
         public int Weight { get; set; } = 10;
@@ -266,17 +266,17 @@ namespace PalworldRandomizer
         public string Name { get; set; } = string.Empty;
         public uint MinLevel { get; set; } = 1;
         public uint MaxLevel { get; set; } = 1;
-        public uint MinGroupSize { get; set; } = 1;
-        public uint MaxGroupSize { get; set; } = 1;
+        public uint MinCount { get; set; } = 1;
+        public uint MaxCount { get; set; } = 1;
         public event PropertyChangedEventHandler? PropertyChanged;
         public void NotifyPropertyChanged(string name) => PropertyChanged?.Invoke(this, new(name));
         public void Print(StringBuilder stringBuilder)
         {
             object[] nameAppend = IsPal ? [(IsBoss ? " {BOSS}" : "")] : [" (", Name, ")"];
             object[] levelStrings = MinLevel == MaxLevel ? [MinLevel] : [MinLevel, "-", MaxLevel];
-            object[] groupStrings = MinGroupSize == MaxGroupSize ? [MinGroupSize] : [MinGroupSize, "-", MaxGroupSize];
+            object[] countStrings = MinCount == MaxCount ? [MinCount] : [MinCount, "-", MaxCount];
             stringBuilder.AppendJoin(null,
-                ["  ", ResolvedName, .. nameAppend, " <> Lv. ", .. levelStrings, ", Count: ", .. groupStrings]);
+                ["  ", ResolvedName, .. nameAppend, " <> Lv. ", .. levelStrings, ", Count: ", .. countStrings]);
             stringBuilder.AppendLine();
         }
         public SpawnData() { }
@@ -288,15 +288,15 @@ namespace PalworldRandomizer
                 IsPal = IsPal,
                 MinLevel = MinLevel,
                 MaxLevel = MaxLevel,
-                MinGroupSize = MinGroupSize,
-                MaxGroupSize = MaxGroupSize
+                MinCount = MinCount,
+                MaxCount = MaxCount
             };
         }
         public SpawnData(string characterName, uint minSize, uint maxSize)
         {
             Name = characterName;
-            MinGroupSize = minSize;
-            MaxGroupSize = maxSize;
+            MinCount = minSize;
+            MaxCount = maxSize;
             MaxLevel = 4;
         }
 

@@ -126,7 +126,6 @@ namespace PalworldRandomizer
         public bool NightOnlyDungeons = window.nightOnlyDungeons.IsChecked == true;
         public bool NightOnlyDungeonBosses = window.nightOnlyDungeonBosses.IsChecked == true;
         public bool NightOnlyBosses = window.nightOnlyBosses.IsChecked == true;
-        public bool OutputLog = window.outputLog.IsChecked == true;
 
         public void RestoreToWindow(MainPage window)
         {
@@ -206,10 +205,13 @@ namespace PalworldRandomizer
             Dispatcher.BeginInvoke(() =>
             {
                 dataOperation.Wait();
-                weightCustomMode.SelectedItem = GroupWeightMode.RarityAverageBlend10To20;
+                weightCustomMode.SelectedItem = GroupWeightMode.WeightMinimum;
                 overflowFixMode.SelectedItem = OverflowFixMode.Dynamic;
                 ConfigData config = SharedWindow.GetConfig();
                 autoSaveTemplate.IsChecked = config.AutoRestoreTemplate;
+                outputLog.IsChecked = config.OutputLog;
+                Randomize.AutoSaveRestoreBackups = config.AutoSaveRestoreBackups;
+                Randomize.AutoSaveGenerationData = config.AutoSaveGenerationData;
                 if (config.AutoRestoreTemplate)
                 {
                     LoadTemplate(UAssetData.AppDataPath(AUTO_TEMPLATE_FILENAME))?.RestoreToWindow(this);
@@ -288,7 +290,7 @@ namespace PalworldRandomizer
             ValidateNumericText(countClampFirstMax, Math.Max(1, int.Parse(countClampFirstMin.Text)));
             if (!GroupWeightModes.Contains(weightCustomMode.Text))
             {
-                weightCustomMode.SelectedItem = GroupWeightMode.RarityAverageBlend10To20;
+                weightCustomMode.SelectedItem = GroupWeightMode.WeightMinimum;
             }
             if (!OverflowFixModes.Contains(overflowFixMode.Text))
             {
@@ -382,7 +384,7 @@ namespace PalworldRandomizer
             if (saveDialog.ShowDialog() == true)
             {
                 ValidateFormData();
-                string? message = SaveTemplate(new FormData(this), saveDialog.FileName);
+                string? message = SaveTemplate(new FormData(this)/* { RandomSeedLocked = true }*/, saveDialog.FileName);
                 if (message != null)
                 {
                     MessageBox.Show(GetWindow(), message, "Failed to Save Template", MessageBoxButton.OK, MessageBoxImage.Error);
