@@ -112,6 +112,8 @@ namespace PalworldRandomizer
         public int FieldBossLevel = int.Parse(window.fieldBossLevel.Text);
         public int DungeonBossLevel = int.Parse(window.dungeonBossLevel.Text);
         public int LevelCap = int.Parse(window.levelCap.Text);
+        public int BossAddLevel = int.Parse(window.bossAddLevel.Text);
+        public bool ForceAddLevel = window.forceAddLevel.IsChecked == true;
         public int BaseCountMin = int.Parse(window.baseCountMin.Text);
         public int BaseCountMax = int.Parse(window.baseCountMax.Text);
         public int FieldCount = int.Parse(window.fieldCount.Text);
@@ -205,6 +207,8 @@ namespace PalworldRandomizer
             Dispatcher.BeginInvoke(() =>
             {
                 dataOperation.Wait();
+                Version assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version!;
+                version.Text = $"v{assemblyVersion.Major}.{assemblyVersion.Minor}{(assemblyVersion.Build != 0 ? $".{assemblyVersion.Build}" : "")}";
                 weightCustomMode.SelectedItem = GroupWeightMode.WeightMinimum;
                 overflowFixMode.SelectedItem = OverflowFixMode.Dynamic;
                 ConfigData config = SharedWindow.GetConfig();
@@ -259,6 +263,7 @@ namespace PalworldRandomizer
             ValidateNumericText(fieldBossLevel, 0, 100);
             ValidateNumericText(dungeonBossLevel, 0, 100);
             ValidateNumericText(levelCap, 1, 55);
+            ValidateNumericText(bossAddLevel, 0, 85);
             ValidateNumericText(rarity67MinLevel, 1, Math.Min(18, int.Parse(levelCap.Text)), int.Parse(levelCap.Text));
             ValidateNumericText(rarity8UpMinLevel, 1, Math.Min(30, int.Parse(levelCap.Text)), int.Parse(levelCap.Text));
             ValidateNumericText(weightUniformMin, 1, 10);

@@ -122,9 +122,9 @@ namespace PalworldRandomizer
                 }
                 spawnData.Name = uAsset.GetNameReference(nameIndex).Value;
                 position += 13;
-                spawnData.MinLevel = BitConverter.ToUInt32(rawExport.Data, position);
+                spawnData.MinLevel = BitConverter.ToInt32(rawExport.Data, position);
                 position += 4;
-                spawnData.MaxLevel = BitConverter.ToUInt32(rawExport.Data, position);
+                spawnData.MaxLevel = BitConverter.ToInt32(rawExport.Data, position);
                 position += 4;
                 if (skipMinGroupSize)
                 {
@@ -132,7 +132,7 @@ namespace PalworldRandomizer
                 }
                 else
                 {
-                    spawnData.MinCount = BitConverter.ToUInt32(rawExport.Data, position);
+                    spawnData.MinCount = BitConverter.ToInt32(rawExport.Data, position);
                     position += 4;
                 }
                 if (skipMaxGroupSize)
@@ -141,7 +141,7 @@ namespace PalworldRandomizer
                 }
                 else
                 {
-                    spawnData.MaxCount = BitConverter.ToUInt32(rawExport.Data, position);
+                    spawnData.MaxCount = BitConverter.ToInt32(rawExport.Data, position);
                     position += 4;
                 }
                 if (position + 1 >= rawExport.Data.Length || (rawExport.Data[position] == 0x80 && rawExport.Data[position + 1] == 0x09))
@@ -264,10 +264,10 @@ namespace PalworldRandomizer
     {
         public bool IsPal { get; set; } = true;
         public string Name { get; set; } = string.Empty;
-        public uint MinLevel { get; set; } = 1;
-        public uint MaxLevel { get; set; } = 1;
-        public uint MinCount { get; set; } = 1;
-        public uint MaxCount { get; set; } = 1;
+        public int MinLevel { get; set; } = 1;
+        public int MaxLevel { get; set; } = 1;
+        public int MinCount { get; set; } = 1;
+        public int MaxCount { get; set; } = 1;
         public event PropertyChangedEventHandler? PropertyChanged;
         public void NotifyPropertyChanged(string name) => PropertyChanged?.Invoke(this, new(name));
         public void Print(StringBuilder stringBuilder)
@@ -292,7 +292,7 @@ namespace PalworldRandomizer
                 MaxCount = MaxCount
             };
         }
-        public SpawnData(string characterName, uint minSize, uint maxSize)
+        public SpawnData(string characterName, int minSize, int maxSize)
         {
             Name = characterName;
             MinCount = minSize;

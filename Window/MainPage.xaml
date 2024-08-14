@@ -16,7 +16,8 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="5" Name="form">
             <StackPanel Margin="0" Orientation="Horizontal">
-                <TextBlock FontWeight="Bold">Pal Spawn Randomizer v2.5.5</TextBlock>
+                <TextBlock FontWeight="Bold">Pal Spawn Randomizer</TextBlock>
+                <TextBlock FontWeight="Bold" Margin="0,5,5,5" Name="version"/>
                 <Button BorderThickness="0" Click="InfoButton_Click" ToolTip="Open Website">
                     <emoji:TextBlock Text="ℹ️" Margin="0"/>
                 </Button>
@@ -462,8 +463,42 @@
                         <TextBlock Text="Level Cap:"/>
                         <TextBox Name="levelCap" VerticalAlignment="Center" Margin="0"
                                      PreviewTextInput="PositiveIntSize3_PreviewTextInput" DataObject.Pasting="PositiveIntSize3_Pasting">55</TextBox>
-                        <TextBlock Text="(Only affects spawn data.)"/>
                     </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="5,0,0,0">
+                        <StackPanel.Style>
+                            <Style TargetType="StackPanel">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ElementName=methodNone, Path=IsChecked}" Value="False">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ElementName=forceAddLevel, Path=IsChecked}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
+                        <TextBlock Text="Extras With Boss Level Scale:"/>
+                        <TextBox Name="bossAddLevel" VerticalAlignment="Center" Margin="0"
+                                 PreviewTextInput="NonNegIntSize4_PreviewTextInput" DataObject.Pasting="NonNegIntSize4_Pasting">85</TextBox>
+                        <TextBlock Text="%"/>
+                    </StackPanel>
+                    <WrapPanel>
+                        <WrapPanel.Style>
+                            <Style TargetType="WrapPanel">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ElementName=methodNone, Path=IsChecked}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ElementName=groupVanilla, Path=IsChecked}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </WrapPanel.Style>
+                        <CheckBox Name="forceAddLevel" IsChecked="False">Enforce Vanilla Extras With Boss Levels</CheckBox>
+                    </WrapPanel>
                 </WrapPanel>
             </GroupBox>
             <GroupBox Margin="5">
