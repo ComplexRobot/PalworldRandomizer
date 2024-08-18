@@ -47,8 +47,9 @@ namespace PalworldRandomizer
                 Directory.CreateDirectory(UAssetData.AppDataPath("Config"));
                 File.WriteAllText(UAssetData.AppDataPath(GLOBAL_GONFIG_FILENAME), JsonConvert.SerializeObject(config, Formatting.Indented));
             }
-            catch
+            catch (Exception exception)
             {
+                App.LogException(exception);
             }
         }
 

@@ -289,8 +289,9 @@ namespace PalworldRandomizer
                 AreaData[filename].isDungeon = !AreaData[filename].isBoss && AreaData[filename].isInDungeon;
                 AreaData[filename].isField = !AreaData[filename].isBoss && !AreaData[filename].isInDungeon;
             }
-            AreaData["BP_PalSpawner_Sheets_1_1_plain_begginer.uasset"].minLevel = 1;
-            AreaData["BP_PalSpawner_Sheets_1_1_plain_begginer.uasset"].maxLevel = 3;
+            string firstAreaName = "BP_PalSpawner_Sheets_1_1_plain_begginer.uasset";
+            AreaData[firstAreaName].minLevel = AreaData[firstAreaName].SpawnEntries[0].SpawnList[0].MinLevel;
+            AreaData[firstAreaName].maxLevel = AreaData[firstAreaName].SpawnEntries[0].SpawnList[0].MaxLevel;
         }
         public static List<AreaData> AreaDataCopy()
         {
@@ -643,6 +644,8 @@ namespace PalworldRandomizer
             float fieldBossLevel = Math.Max(0, formData.FieldBossLevel) / 100.0f;
             float dungeonBossLevel = Math.Max(0, formData.DungeonBossLevel) / 100.0f;
             int levelCap = Math.Max(1, formData.LevelCap);
+            int randomLevelMin = Math.Clamp(formData.RandomLevelMin, 1, levelCap);
+            int randomLevelMax = Math.Clamp(formData.RandomLevelMax, randomLevelMin, levelCap);
             int rarity67MinLevel = Math.Clamp(formData.Rarity67MinLevel, 1, levelCap);
             int rarity8UpMinLevel = Math.Clamp(formData.Rarity8UpMinLevel, 1, levelCap);
             int weightUniformMin = Math.Max(1, formData.WeightUniformMin);
@@ -815,25 +818,108 @@ namespace PalworldRandomizer
                         float currentRange = spawnEntry.SpawnList[i].MaxLevel - spawnEntry.SpawnList[i].MinLevel;
                         float currentAverage = (spawnEntry.SpawnList[i].MaxLevel + spawnEntry.SpawnList[i].MinLevel) / 2.0f;
                         float newRange = (firstRange == 0 ? currentRange : range * currentRange / firstRange);
-                        ApplyLevelRange(spawnEntry.SpawnList[i], LevelMultiplier(spawnEntry.SpawnList[i]) * average * currentAverage / firstAverage, newRange);
+                        ApplyLevelRange(spawnEntry.SpawnList[i], LevelMultiplier(spawnEntry.SpawnList[i]), average * currentAverage / firstAverage, newRange);
                     }
                 }
-                ApplyLevelRange(spawnEntry.SpawnList[0], LevelMultiplier(spawnEntry.SpawnList[0]) * average, range);
+                ApplyLevelRange(spawnEntry.SpawnList[0], LevelMultiplier(spawnEntry.SpawnList[0]), average, range);
             }
-            void ApplyLevelRange(SpawnData spawnData, float average, float range)
+            void ApplyLevelRange(SpawnData spawnData, float multiplier, float average, float range, bool rarityCheck = true)
             {
-                average = Math.Clamp(average, 1, levelCap);
-                spawnData.MinLevel = Math.Clamp(Convert.ToInt32(average - range / 2.0f), 1, levelCap);
-                spawnData.MaxLevel = Math.Clamp(Convert.ToInt32(average + range / 2.0f), 1, levelCap);
-                if ((spawnData.MinLevel == 1 || spawnData.MaxLevel == levelCap) && Math.Abs((spawnData.MinLevel + spawnData.MaxLevel) / 2.0f - average) > 0.49f)
+                int forcedMinimum = 1;
+                if (formData.RarityLevelBoost && rarityCheck && spawnData.IsPal)
                 {
-                    if (spawnData.MinLevel == 1)
+                    int rarity = Rarity(spawnData);
+                    if ((rarity == 6 || rarity == 7) && !spawnData.Name.EndsWith("NightFox", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        spawnData.MaxLevel = Math.Clamp(Convert.ToInt32(2 * average - 1), 1, levelCap);
+                        forcedMinimum = rarity67MinLevel;
                     }
-                    else if (spawnData.MaxLevel == levelCap)
+                    else if (rarity >= 8 && !spawnData.Name.EndsWith("PlantSlime_Flower", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        spawnData.MinLevel = Math.Clamp(Convert.ToInt32(2 * average - levelCap), 1, levelCap);
+                        forcedMinimum = rarity8UpMinLevel;
+                    }
+                }
+                if (formData.LevelScaleMode == LevelScaleMode.Random)
+                {
+                    spawnData.MinLevel = Math.Max(randomLevelMin, forcedMinimum);
+                    spawnData.MaxLevel = Math.Clamp(randomLevelMax, spawnData.MinLevel, levelCap);
+                }
+                else
+                {
+                    int minLevel = Math.Clamp(Convert.ToInt32(average - range / 2.0f), 1, levelCap);
+                    int maxLevel = Math.Clamp(Convert.ToInt32(average + range / 2.0f), minLevel, levelCap);
+                    if (formData.LevelScaleMode == LevelScaleMode.MaxLevel)
+                    {
+                        spawnData.MinLevel = Math.Max(minLevel, forcedMinimum);
+                        spawnData.MaxLevel = Math.Clamp(Convert.ToInt32(maxLevel * multiplier), spawnData.MinLevel, levelCap);
+                    }
+                    else if (formData.LevelScaleMode == LevelScaleMode.MinLevel)
+                    {
+                        spawnData.MaxLevel = Math.Max(maxLevel, forcedMinimum);
+                        spawnData.MinLevel = Math.Clamp(Convert.ToInt32(minLevel * multiplier), forcedMinimum, spawnData.MaxLevel);
+                    }
+                    else if (formData.LevelScaleMode == LevelScaleMode.BothLevels)
+                    {
+                        spawnData.MinLevel = Math.Clamp(Convert.ToInt32(minLevel * multiplier), forcedMinimum, levelCap);
+                        spawnData.MaxLevel = Math.Clamp(Convert.ToInt32(maxLevel * multiplier), spawnData.MinLevel, levelCap);
+                    }
+                    else
+                    {
+                        float newAverage = Math.Clamp(average * multiplier, 1, levelCap);
+                        if (formData.LevelScaleMode == LevelScaleMode.Average)
+                        {
+                            spawnData.MinLevel = Math.Clamp(Convert.ToInt32(newAverage - range / 2.0f), 1, levelCap);
+                            spawnData.MaxLevel = Math.Clamp(Convert.ToInt32(newAverage + range / 2.0f), spawnData.MinLevel, levelCap);
+                        }
+                        else if (formData.LevelScaleMode == LevelScaleMode.LockExtreme)
+                        {
+                            if (newAverage > average)
+                            {
+                                spawnData.MinLevel = minLevel;
+                                ExtendToAverageMax(newAverage);
+                            }
+                            else
+                            {
+                                spawnData.MaxLevel = maxLevel;
+                                ExtendToAverageMin(newAverage);
+                            }
+                        }
+                        else if (formData.LevelScaleMode == LevelScaleMode.MaxRange)
+                        {
+                            if (newAverage < (levelCap + 1) / 2.0f)
+                            {
+                                spawnData.MinLevel = 1;
+                                ExtendToAverageMax(newAverage);
+                            }
+                            else
+                            {
+                                spawnData.MaxLevel = levelCap;
+                                ExtendToAverageMin(newAverage);
+                            }
+                        }
+                        if ((spawnData.MinLevel == 1 || spawnData.MaxLevel == levelCap) && Math.Abs((spawnData.MinLevel + spawnData.MaxLevel) / 2.0f - newAverage) > 0.49f)
+                        {
+                            if (spawnData.MinLevel == 1)
+                            {
+                                ExtendToAverageMax(newAverage);
+                            }
+                            else if (spawnData.MaxLevel == levelCap)
+                            {
+                                ExtendToAverageMin(newAverage);
+                            }
+                        }
+                        if (forcedMinimum != 1)
+                        {
+                            spawnData.MinLevel = Math.Max(spawnData.MinLevel, forcedMinimum);
+                            spawnData.MaxLevel = Math.Clamp(spawnData.MaxLevel, spawnData.MinLevel, levelCap);
+                        }
+                    }
+                    void ExtendToAverageMin(float avg)
+                    {
+                        spawnData.MinLevel = Math.Clamp(Convert.ToInt32(2 * avg - spawnData.MaxLevel), 1, spawnData.MaxLevel);
+                    }
+                    void ExtendToAverageMax(float avg)
+                    {
+                        spawnData.MaxLevel = Math.Clamp(Convert.ToInt32(2 * avg - spawnData.MinLevel), spawnData.MinLevel, levelCap);
                     }
                 }
             }
@@ -875,10 +961,7 @@ namespace PalworldRandomizer
                         }
                     }
                 }
-                float WeightScale(SpawnData spawnData)
-                {
-                    return spawnData.IsPal ? 1 : (Data.PalData[spawnData.Name].AIResponse == "Kill_All" ? humanWeightAggro : humanWeight);
-                }
+                float WeightScale(SpawnData spawnData) => spawnData.IsPal ? 1 : (Data.PalData[spawnData.Name].AIResponse == "Kill_All" ? humanWeightAggro : humanWeight);
                 // NOT No Randomization
                 if (!formData.MethodNone)
                 {
@@ -956,7 +1039,7 @@ namespace PalworldRandomizer
                         {
                             spawnEntry.Weight = Convert.ToInt32(weight);
                         }
-                        catch
+                        catch // OverflowException
                         {
                             spawnEntry.Weight = int.MaxValue;
                         }
@@ -1051,29 +1134,30 @@ namespace PalworldRandomizer
                                 {
                                     SeparateGroupsByCondition(entry => Data.FlyingNames.Contains(entry.SpawnList[0].Name));
                                 }
+                                bool separateAggroHumansApplied = false;
                                 if (formData.SeparateAggroHumans)
                                 {
-                                    if (!Data.PalData[spawnEntry.SpawnList[0].Name].IsPal && Data.PalData[spawnEntry.SpawnList[0].Name].AIResponse != "Kill_All")
+                                    SeparateAggroHumanFilter();
+                                }
+                                void SeparateAggroHumanFilter()
+                                {
+                                    if (!spawnEntry.SpawnList[^1].IsPal && Data.PalData[spawnEntry.SpawnList[^1].Name].AIResponse != "Kill_All")
                                     {
                                         FilterGroupsByCondition(entry =>
                                             Data.PalData[entry.SpawnList[0].Name].AIResponse != "Kill_All"
                                             && Data.PalData[entry.SpawnList[0].Name].AIResponse != "Warlike"
                                             && Data.PalData[entry.SpawnList[0].Name].AIResponse != "Boss"
                                             && !entry.SpawnList[0].IsBoss);
+                                        separateAggroHumansApplied = true;
                                     }
-                                    else if (Data.PalData[spawnEntry.SpawnList[0].Name].AIResponse == "Kill_All"
-                                            || Data.PalData[spawnEntry.SpawnList[0].Name].AIResponse == "Warlike"
-                                            || Data.PalData[spawnEntry.SpawnList[0].Name].AIResponse == "Boss"
-                                            || spawnEntry.SpawnList[0].IsBoss)
+                                    else if (Data.PalData[spawnEntry.SpawnList[^1].Name].AIResponse == "Kill_All"
+                                            || Data.PalData[spawnEntry.SpawnList[^1].Name].AIResponse == "Warlike"
+                                            || Data.PalData[spawnEntry.SpawnList[^1].Name].AIResponse == "Boss"
+                                            || spawnEntry.SpawnList[^1].IsBoss)
                                     {
                                         FilterGroupsByCondition(entry =>
                                             Data.PalData[entry.SpawnList[0].Name].IsPal || Data.PalData[entry.SpawnList[0].Name].AIResponse == "Kill_All");
-                                    }
-                                    else if (spawnsUsed.Exists(entry =>
-                                            !Data.PalData[entry.SpawnList[0].Name].IsPal && Data.PalData[entry.SpawnList[0].Name].AIResponse != "Kill_All"))
-                                    {
-                                        FilterGroupsByCondition(entry =>
-                                            Data.PalData[entry.SpawnList[0].Name].IsPal || Data.PalData[entry.SpawnList[0].Name].AIResponse != "Kill_All");
+                                        separateAggroHumansApplied = true;
                                     }
                                 }
                                 if (formData.Rarity8UpSolo)
@@ -1101,6 +1185,10 @@ namespace PalworldRandomizer
                                     while (spawnEntry.SpawnList.Count < groupSize)
                                     {
                                         spawnEntry.SpawnList.Add(NextSpecies(spawnsUsed, originalsUsed, spawnEntry.SpawnList));
+                                        if (formData.SeparateAggroHumans && !separateAggroHumansApplied)
+                                        {
+                                            SeparateAggroHumanFilter();
+                                        }
                                     }
                                     if (spawns.Count == 0)
                                         spawns.AddRange(original);
@@ -1285,7 +1373,7 @@ namespace PalworldRandomizer
                         {
                             average = (spawnData.MaxLevel + spawnData.MinLevel) / 2.0f;
                         }
-                        ApplyLevelRange(spawnData, LevelMultiplierEx(spawnData, area.isInDungeon) * average, range);
+                        ApplyLevelRange(spawnData, LevelMultiplierEx(spawnData, area.isInDungeon), average, range, false);
                         float countMultiplier = CountMultiplierEx(spawnData, area.isInDungeon);
                         if (i == 0)
                         {
@@ -1751,7 +1839,7 @@ namespace PalworldRandomizer
                             {
                                 spawnEntry.Weight = Convert.ToInt32(spawnEntry.Weight * scale);
                             }
-                            catch
+                            catch // OverflowException
                             {
                                 spawnEntry.Weight = int.MaxValue;
                             }
@@ -1811,32 +1899,6 @@ namespace PalworldRandomizer
                             else
                             {
                                 ScaleWeights(spawnEntries, nocturnalSum + diurnalSum, int.MaxValue);
-                            }
-                        }
-                    }
-                }
-                if (formData.RarityLevelBoost)
-                {
-                    foreach (SpawnEntry spawnEntry in spawnEntries[vanillaSpawns.Count..])
-                    {
-                        foreach (SpawnData spawnData in spawnEntry.SpawnList)
-                        {
-                            if (!spawnData.IsPal)
-                            {
-                                continue;
-                            }
-                            int rarity = Rarity(spawnData);
-                            if ((rarity == 6 || rarity == 7) && spawnData.MinLevel < rarity67MinLevel && !spawnData.Name.EndsWith("NightFox", StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                int levelDiff = rarity67MinLevel - spawnData.MinLevel;
-                                spawnData.MinLevel = Math.Clamp(spawnData.MinLevel + levelDiff, 1, levelCap);
-                                spawnData.MaxLevel = Math.Clamp(spawnData.MaxLevel + levelDiff, 1, levelCap);
-                            }
-                            else if (rarity >= 8 && spawnData.MinLevel < rarity8UpMinLevel && !spawnData.Name.EndsWith("PlantSlime_Flower", StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                int levelDiff = rarity8UpMinLevel - spawnData.MinLevel;
-                                spawnData.MinLevel = Math.Clamp(spawnData.MinLevel + levelDiff, 1, levelCap);
-                                spawnData.MaxLevel = Math.Clamp(spawnData.MaxLevel + levelDiff, 1, levelCap);
                             }
                         }
                     }
@@ -1939,7 +2001,7 @@ namespace PalworldRandomizer
                 catch (Exception e)
                 {
                     MainPage.Instance.Dispatcher.Invoke(() =>
-                        MessageBox.Show(MainPage.Instance.GetWindow(), "Error: Failed to write output log.\n" + e.Message, "Output Log Failed",
+                        MessageBox.Show(MainPage.Instance.GetWindow(), "Error: Failed to write output log.\n\n" + e.Message, "Output Log Failed",
                             MessageBoxButton.OK, MessageBoxImage.Error));
                 }
             }
@@ -1954,8 +2016,9 @@ namespace PalworldRandomizer
                         JsonConvert.SerializeObject(formData, Formatting.Indented, new JsonSerializerSettings { Converters = [new JsonWriterDecimal()] }));
                 }
             }
-            catch
+            catch (Exception exception)
             {
+                App.LogException(exception);
             }
         }
         
@@ -1983,8 +2046,9 @@ namespace PalworldRandomizer
                     }
                 }
             }
-            catch
+            catch (Exception exception)
             {
+                App.LogException(exception);
             }
         }
 
@@ -2004,8 +2068,9 @@ namespace PalworldRandomizer
                     }
                 }
             }
-            catch
+            catch (Exception exception)
             {
+                App.LogException(exception);
             }
         }
     }

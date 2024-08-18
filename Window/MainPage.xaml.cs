@@ -32,6 +32,17 @@ namespace PalworldRandomizer
         public static readonly string Dynamic = "Dynamic (Multi-Pass)";
     }
 
+    public static class LevelScaleMode
+    {
+        public static readonly string Average = "Average Level";
+        public static readonly string BothLevels = "Full";
+        public static readonly string MaxLevel = "Max. Level";
+        public static readonly string LockExtreme = "Extend Min./Max.";
+        public static readonly string MaxRange = "Maximize Range";
+        public static readonly string MinLevel = "Min. Level";
+        public static readonly string Random = "Random";
+    }
+
     public class FormData(MainPage window)
     {
         public FormData() : this(MainPage.Instance) { }
@@ -114,6 +125,9 @@ namespace PalworldRandomizer
         public int LevelCap = int.Parse(window.levelCap.Text);
         public int BossAddLevel = int.Parse(window.bossAddLevel.Text);
         public bool ForceAddLevel = window.forceAddLevel.IsChecked == true;
+        public string LevelScaleMode = window.levelScaleMode.Text;
+        public int RandomLevelMin = int.Parse(window.randomLevelMin.Text);
+        public int RandomLevelMax = int.Parse(window.randomLevelMax.Text);
         public int BaseCountMin = int.Parse(window.baseCountMin.Text);
         public int BaseCountMax = int.Parse(window.baseCountMax.Text);
         public int FieldCount = int.Parse(window.fieldCount.Text);
@@ -193,10 +207,9 @@ namespace PalworldRandomizer
     {
         public static readonly string AUTO_TEMPLATE_FILENAME = @"Config\AutoSavedTemplate.json";
         public static MainPage Instance { get; private set; } = null!;
-        public static readonly string[] GroupWeightModes = typeof(GroupWeightMode).GetFields(BindingFlags.Public | BindingFlags.Static)
-            .Select(x => (string) x.GetValue(null)!).ToArray();
-        public static readonly string[] OverflowFixModes = typeof(OverflowFixMode).GetFields(BindingFlags.Public | BindingFlags.Static)
-            .Select(x => (string) x.GetValue(null)!).ToArray();
+        public static readonly string[] GroupWeightModes = [.. typeof(GroupWeightMode).GetFields(BindingFlags.Public | BindingFlags.Static).Select(x => (string) x.GetValue(null)!)];
+        public static readonly string[] OverflowFixModes = [.. typeof(OverflowFixMode).GetFields(BindingFlags.Public | BindingFlags.Static).Select(x => (string) x.GetValue(null)!)];
+        public static readonly string[] LevelScaleModes = [.. typeof(LevelScaleMode).GetFields(BindingFlags.Public | BindingFlags.Static).Select(x => (string) x.GetValue(null)!)];
         public MainPage(DispatcherOperation dataOperation)
         {
             Instance = this;
@@ -211,6 +224,7 @@ namespace PalworldRandomizer
                 version.Text = $"v{assemblyVersion.Major}.{assemblyVersion.Minor}{(assemblyVersion.Build != 0 ? $".{assemblyVersion.Build}" : "")}";
                 weightCustomMode.SelectedItem = GroupWeightMode.WeightMinimum;
                 overflowFixMode.SelectedItem = OverflowFixMode.Dynamic;
+                levelScaleMode.SelectedItem = LevelScaleMode.BothLevels;
                 ConfigData config = SharedWindow.GetConfig();
                 autoSaveTemplate.IsChecked = config.AutoRestoreTemplate;
                 outputLog.IsChecked = config.OutputLog;
@@ -244,6 +258,7 @@ namespace PalworldRandomizer
             }
             catch (Exception e)
             {
+                App.LogException(e);
                 return e.Message;
             }
             return null;
@@ -264,6 +279,8 @@ namespace PalworldRandomizer
             ValidateNumericText(dungeonBossLevel, 0, 100);
             ValidateNumericText(levelCap, 1, 55);
             ValidateNumericText(bossAddLevel, 0, 85);
+            ValidateNumericText(randomLevelMin, 1, 1, int.Parse(levelCap.Text));
+            ValidateNumericText(randomLevelMax, Math.Max(1, int.Parse(randomLevelMin.Text)), int.Parse(levelCap.Text), int.Parse(levelCap.Text));
             ValidateNumericText(rarity67MinLevel, 1, Math.Min(18, int.Parse(levelCap.Text)), int.Parse(levelCap.Text));
             ValidateNumericText(rarity8UpMinLevel, 1, Math.Min(30, int.Parse(levelCap.Text)), int.Parse(levelCap.Text));
             ValidateNumericText(weightUniformMin, 1, 10);
@@ -301,6 +318,10 @@ namespace PalworldRandomizer
             {
                 overflowFixMode.SelectedItem = OverflowFixMode.Dynamic;
             }
+            if (!LevelScaleModes.Contains(levelScaleMode.Text))
+            {
+                levelScaleMode.SelectedItem = LevelScaleMode.BothLevels;
+            }
             static void ValidateNumericText<T>(TextBox textBox, T minValue, T? defaultValue = null, T? maxValue = null) where T : struct, INumber<T>
             {
                 defaultValue ??= minValue;
@@ -319,7 +340,7 @@ namespace PalworldRandomizer
                         textBox.Text = $"{maxValue}";
                     }
                 }
-                catch
+                catch // FormatException, OverflowException
                 {
                     textBox.Text = $"{defaultValue}";
                 }

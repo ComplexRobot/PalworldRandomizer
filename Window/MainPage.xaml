@@ -435,36 +435,52 @@
                     <TextBlock Margin="0">Level Adjustment</TextBlock>
                 </GroupBox.Header>
                 <WrapPanel Margin="0,5,0,10">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Overworld Level:"/>
-                        <TextBox Name="fieldLevel" MinWidth="30" VerticalAlignment="Center" Margin="0"
-                                     PreviewTextInput="NonNegIntSize4_PreviewTextInput" DataObject.Pasting="NonNegIntSize4_Pasting">100</TextBox>
-                        <TextBlock Text="%"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Dungeon Level:"/>
-                        <TextBox Name="dungeonLevel" MinWidth="30" VerticalAlignment="Center" Margin="0"
-                                     PreviewTextInput="NonNegIntSize4_PreviewTextInput" DataObject.Pasting="NonNegIntSize4_Pasting">100</TextBox>
-                        <TextBlock Text="%"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Overworld Boss Level:"/>
-                        <TextBox Name="fieldBossLevel" MinWidth="30" VerticalAlignment="Center" Margin="0"
-                                     PreviewTextInput="NonNegIntSize4_PreviewTextInput" DataObject.Pasting="NonNegIntSize4_Pasting">100</TextBox>
-                        <TextBlock Text="%"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Dungeon Boss Level:"/>
-                        <TextBox Name="dungeonBossLevel" MinWidth="30" VerticalAlignment="Center" Margin="0"
-                                     PreviewTextInput="NonNegIntSize4_PreviewTextInput" DataObject.Pasting="NonNegIntSize4_Pasting">100</TextBox>
-                        <TextBlock Text="%"/>
-                    </StackPanel>
+                    <WrapPanel>
+                        <WrapPanel.Style>
+                            <Style TargetType="WrapPanel">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ElementName=levelScaleMode, Path=Text}" Value="Random">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </WrapPanel.Style>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Overworld Level:"/>
+                            <TextBox Name="fieldLevel" MinWidth="30" VerticalAlignment="Center" Margin="0"
+                                         PreviewTextInput="NonNegIntSize4_PreviewTextInput" DataObject.Pasting="NonNegIntSize4_Pasting">100</TextBox>
+                            <TextBlock Text="%"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Dungeon Level:"/>
+                            <TextBox Name="dungeonLevel" MinWidth="30" VerticalAlignment="Center" Margin="0"
+                                         PreviewTextInput="NonNegIntSize4_PreviewTextInput" DataObject.Pasting="NonNegIntSize4_Pasting">100</TextBox>
+                            <TextBlock Text="%"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Overworld Boss Level:"/>
+                            <TextBox Name="fieldBossLevel" MinWidth="30" VerticalAlignment="Center" Margin="0"
+                                         PreviewTextInput="NonNegIntSize4_PreviewTextInput" DataObject.Pasting="NonNegIntSize4_Pasting">100</TextBox>
+                            <TextBlock Text="%"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Dungeon Boss Level:"/>
+                            <TextBox Name="dungeonBossLevel" MinWidth="30" VerticalAlignment="Center" Margin="0"
+                                         PreviewTextInput="NonNegIntSize4_PreviewTextInput" DataObject.Pasting="NonNegIntSize4_Pasting">100</TextBox>
+                            <TextBlock Text="%"/>
+                        </StackPanel>
+                    </WrapPanel>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Level Cap:"/>
                         <TextBox Name="levelCap" VerticalAlignment="Center" Margin="0"
                                      PreviewTextInput="PositiveIntSize3_PreviewTextInput" DataObject.Pasting="PositiveIntSize3_Pasting">55</TextBox>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="5,0,0,0">
+                    <WrapPanel Margin="5,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Margin="0,0,5,0" VerticalAlignment="Center">Scale Mode:</TextBlock>
+                        <ComboBox Name="levelScaleMode" ItemsSource="{Binding Source={x:Static local:MainPage.LevelScaleModes}, Mode=OneWay}" IsEditable="False"/>
+                    </WrapPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
                         <StackPanel.Style>
                             <Style TargetType="StackPanel">
                                 <Setter Property="Visibility" Value="Collapsed"/>
@@ -475,10 +491,13 @@
                                     <DataTrigger Binding="{Binding ElementName=forceAddLevel, Path=IsChecked}" Value="True">
                                         <Setter Property="Visibility" Value="Visible"/>
                                     </DataTrigger>
+                                    <DataTrigger Binding="{Binding ElementName=levelScaleMode, Path=Text}" Value="Random">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </StackPanel.Style>
-                        <TextBlock Text="Extras With Boss Level Scale:"/>
+                        <TextBlock Text="w/Boss Level Scale:"/>
                         <TextBox Name="bossAddLevel" VerticalAlignment="Center" Margin="0"
                                  PreviewTextInput="NonNegIntSize4_PreviewTextInput" DataObject.Pasting="NonNegIntSize4_Pasting">85</TextBox>
                         <TextBlock Text="%"/>
@@ -494,11 +513,32 @@
                                     <DataTrigger Binding="{Binding ElementName=groupVanilla, Path=IsChecked}" Value="True">
                                         <Setter Property="Visibility" Value="Visible"/>
                                     </DataTrigger>
+                                    <DataTrigger Binding="{Binding ElementName=levelScaleMode, Path=Text}" Value="Random">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </WrapPanel.Style>
-                        <CheckBox Name="forceAddLevel" IsChecked="False">Enforce Vanilla Extras With Boss Levels</CheckBox>
+                        <CheckBox Name="forceAddLevel" IsChecked="False">Enforce Vanilla w/Boss Levels</CheckBox>
                     </WrapPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0">
+                        <StackPanel.Style>
+                            <Style TargetType="StackPanel">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ElementName=levelScaleMode, Path=Text}" Value="Random">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
+                        <TextBlock>Level Range:</TextBlock>
+                        <TextBox Name="randomLevelMin" VerticalAlignment="Top" Margin="0,0,0,0" Height="20"
+                                 PreviewTextInput="PositiveIntSize3_PreviewTextInput" DataObject.Pasting="PositiveIntSize3_Pasting">1</TextBox>
+                        <TextBlock Margin="0">-</TextBlock>
+                        <TextBox Name="randomLevelMax" VerticalAlignment="Top" Margin="0,0,5,0" Height="20"
+                                 PreviewTextInput="PositiveIntSize3_PreviewTextInput" DataObject.Pasting="PositiveIntSize3_Pasting">55</TextBox>
+                    </StackPanel>
                 </WrapPanel>
             </GroupBox>
             <GroupBox Margin="5">

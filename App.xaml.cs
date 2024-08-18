@@ -11,7 +11,7 @@ namespace PalworldRandomizer
     {
         private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs eventArgs)
         {
-            try { File.AppendAllText(UAssetData.AppDataPath("error-log.txt"), $"{DateTime.Now}\n{eventArgs.Exception}\n\n\n"); } catch { }
+            LogException(eventArgs.Exception);
             try
             {
 #if DEBUG
@@ -20,8 +20,16 @@ namespace PalworldRandomizer
 #endif
                 MessageBox.Show(eventArgs.Exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            catch { }
+            catch (Exception e)
+            {
+                LogException(e);
+            }
             eventArgs.Handled = true;
+        }
+
+        public static void LogException(Exception e)
+        {
+            try { File.AppendAllText(UAssetData.AppDataPath("error-log.txt"), $"{DateTime.Now}\n{e}\n\n\n"); } catch { }
         }
 
         private void Application_Startup(object sender, StartupEventArgs e)
@@ -55,29 +63,30 @@ namespace PalworldRandomizer
 
         private void Application_Exit(object sender, ExitEventArgs e)
         {
-            Randomize.SaveBackup();
-            if (MainPage.Instance == null)
+            try
             {
-                return;
-            }
-            ConfigData config = SharedWindow.GetConfig();
-            config.AutoRestoreTemplate = MainPage.Instance.autoSaveTemplate.IsChecked == true;
-            config.OutputLog = MainPage.Instance.outputLog.IsChecked == true;
-            SharedWindow.SaveConfig(config);
-            if (config.AutoRestoreTemplate)
-            {
-                MainPage.Instance.ValidateFormData();
-                MainPage.SaveTemplate(new FormData(MainPage.Instance), UAssetData.AppDataPath(MainPage.AUTO_TEMPLATE_FILENAME));
-            }
-            else
-            {
-                try
+                Randomize.SaveBackup();
+                if (MainPage.Instance == null)
+                {
+                    return;
+                }
+                ConfigData config = SharedWindow.GetConfig();
+                config.AutoRestoreTemplate = MainPage.Instance.autoSaveTemplate.IsChecked == true;
+                config.OutputLog = MainPage.Instance.outputLog.IsChecked == true;
+                SharedWindow.SaveConfig(config);
+                if (config.AutoRestoreTemplate)
+                {
+                    MainPage.Instance.ValidateFormData();
+                    MainPage.SaveTemplate(new FormData(MainPage.Instance), UAssetData.AppDataPath(MainPage.AUTO_TEMPLATE_FILENAME));
+                }
+                else
                 {
                     File.Delete(UAssetData.AppDataPath(MainPage.AUTO_TEMPLATE_FILENAME));
                 }
-                catch
-                {
-                }
+            }
+            catch (Exception exception)
+            {
+                LogException(exception);
             }
         }
     }

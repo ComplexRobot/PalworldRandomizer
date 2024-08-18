@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version>2.6</Version>
+    <Version>2.7</Version>
     <TargetFramework>net8.0-windows</TargetFramework>
     <UseWPF>True</UseWPF>
     <Nullable>enable</Nullable>
