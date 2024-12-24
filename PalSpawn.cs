@@ -409,6 +409,7 @@ namespace PalworldRandomizer
                 isField = isField,
                 isBoss = isBoss,
                 isInDungeon = isInDungeon,
+                isPredator = isPredator,
                 uAsset = UAssetData.LoadAsset($"Assets\\{filename}"),
                 spawnExportData =
                 new()

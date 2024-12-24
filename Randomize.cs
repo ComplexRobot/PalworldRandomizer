@@ -6,7 +6,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Numerics;
 using System.Resources;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
@@ -1426,6 +1425,10 @@ namespace PalworldRandomizer
             }
             bool FilterVanillaSpawns(List<SpawnEntry> spawnEntries, AreaData area)
             {
+                if (area.isPredator)
+                {
+                    return false;
+                }
                 int changes = 0;
                 foreach (SpawnEntry spawnEntry in spawnEntries)
                 {
