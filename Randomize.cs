@@ -829,7 +829,8 @@ namespace PalworldRandomizer
                 (formData.RandomizeField || !area.isField)
                 && (formData.RandomizeDungeons || !area.isDungeon)
                 && (formData.RandomizeDungeonBosses || !area.isDungeonBoss)
-                && (formData.RandomizeFieldBosses || !area.isFieldBoss));
+                && (formData.RandomizeFieldBosses || !area.isFieldBoss)
+                && !area.isPredator);
             subList.Sort((x, y) =>
             {
                 if (x.isBoss != y.isBoss)
@@ -1425,10 +1426,6 @@ namespace PalworldRandomizer
             }
             bool FilterVanillaSpawns(List<SpawnEntry> spawnEntries, AreaData area)
             {
-                if (area.isPredator)
-                {
-                    return false;
-                }
                 int changes = 0;
                 foreach (SpawnEntry spawnEntry in spawnEntries)
                 {
