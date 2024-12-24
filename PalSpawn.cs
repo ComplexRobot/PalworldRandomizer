@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace PalworldRandomizer
 {
@@ -41,62 +42,52 @@ namespace PalworldRandomizer
                 bool skipMaxGroupSize = false;
                 if (rawExport.Data[position] == 0x80)
                 {
-                    if (rawExport.Data[position + 1] == 0x09)
+                    ushort bitFlags = BitConverter.ToUInt16(rawExport.Data, position + 1);
+                    if (bitFlags == 0x0409 || bitFlags == 0x130D)
                     {
                         SpawnEntry spawnEntry = new();
                         spawnEntries.Add(spawnEntry);
-                        if (rawExport.Data[position + 2] == 0x04)
-                        {
-                            spawnEntry.Weight = BitConverter.ToInt32(rawExport.Data, position + 3);
-                            spawnEntry.NightOnly = true;
-                            position += 14;
-                        }
-                        else if (rawExport.Data[position + 2] == 0x05)
-                        {
-                            spawnEntry.Weight = 0;
-                            spawnEntry.NightOnly = true;
-                            position += 10;
-                        }
-                        else if (rawExport.Data[position + 2] == 0x06)
-                        {
-                            spawnEntry.Weight = BitConverter.ToInt32(rawExport.Data, position + 3);
-                            position += 13;
-                        }
-                        else if (rawExport.Data[position + 2] == 0x07)
-                        {
-                            spawnEntry.Weight = 0;
-                            position += 9;
-                        }
-                        else
-                        {
-                            throw new Exception($"{Path.GetFileNameWithoutExtension(uAsset.FilePath)}: "
-                                + $"Unknown value 0x{Convert.ToHexString(rawExport.Data[(position + 2)..(position + 3)])} "
-                                + $"at offset 0x{Convert.ToHexString([.. BitConverter.GetBytes(position + 2).Reverse()])}.");
-                        }
+                        spawnEntry.Weight = BitConverter.ToInt32(rawExport.Data, position + 3);
+                        spawnEntry.NightOnly = true;
+                        position += 14;
                     }
-                    else if (rawExport.Data[position + 1] == 0x0D)
+                    else if (bitFlags == 0x0509 || bitFlags == 0x170D)
                     {
-                        if (rawExport.Data[position + 2] == 0x10)
-                        {
-                            skipMinGroupSize = true;
-                        }
-                        else if (rawExport.Data[position + 2] == 0x20)
-                        {
-                            skipMaxGroupSize = true;
-                        }
-                        else
-                        {
-                            throw new Exception($"{Path.GetFileNameWithoutExtension(uAsset.FilePath)}: "
-                                + $"Unknown value 0x{Convert.ToHexString(rawExport.Data[(position + 2)..(position + 3)])} "
-                                + $"at offset 0x{Convert.ToHexString([.. BitConverter.GetBytes(position + 2).Reverse()])}.");
-                        }
+                        SpawnEntry spawnEntry = new();
+                        spawnEntries.Add(spawnEntry);
+                        spawnEntry.Weight = 0;
+                        spawnEntry.NightOnly = true;
+                        position += 10;
+                    }
+                    else if (bitFlags == 0x0609 || bitFlags == 0x1B0D)
+                    {
+                        SpawnEntry spawnEntry = new();
+                        spawnEntries.Add(spawnEntry);
+                        spawnEntry.Weight = BitConverter.ToInt32(rawExport.Data, position + 3);
+                        position += 13;
+                    }
+                    else if (bitFlags == 0x0709 || bitFlags == 0x1F0D)
+                    {
+                        SpawnEntry spawnEntry = new();
+                        spawnEntries.Add(spawnEntry);
+                        spawnEntry.Weight = 0;
+                        position += 9;
+                    }
+                    else if (bitFlags == 0x100D)
+                    {
+                        skipMinGroupSize = true;
+                        position += 3;
+                    }
+                    else if (bitFlags == 0x200D)
+                    {
+                        skipMaxGroupSize = true;
                         position += 3;
                     }
                     else
                     {
                         throw new Exception($"{Path.GetFileNameWithoutExtension(uAsset.FilePath)}: "
-                                + $"Unknown value 0x{Convert.ToHexString(rawExport.Data[(position + 1)..(position + 2)])} "
-                                + $"at offset 0x{Convert.ToHexString([.. BitConverter.GetBytes(position + 1).Reverse()])}.");
+                            + $"Unknown value 0x{Convert.ToHexString([.. rawExport.Data[(position + 1)..(position + 3)].Reverse()])} "
+                            + $"at offset 0x{Convert.ToHexString([.. BitConverter.GetBytes(position + 1).Reverse()])}.");
                     }
                 }
                 else
@@ -163,26 +154,26 @@ namespace PalworldRandomizer
             List<byte> bytes = [.. spawnExportData.header, .. BitConverter.GetBytes(spawnExportData.spawnEntries.Count)];
             foreach (SpawnEntry spawnEntry in spawnExportData.spawnEntries)
             {
-                bytes.AddRange([0x80, 0x09]);
+                bytes.AddRange([0x80, 0x0D]);
                 if (spawnEntry.NightOnly && spawnEntry.Weight != 0)
                 {
-                    bytes.Add(0x04);
+                    bytes.Add(0x13);
                     bytes.AddRange(BitConverter.GetBytes(spawnEntry.Weight));
                     bytes.Add(0x02);
                 }
                 else if (spawnEntry.NightOnly && spawnEntry.Weight == 0)
                 {
-                    bytes.Add(0x05);
+                    bytes.Add(0x17);
                     bytes.Add(0x02);
                 }
                 else if (spawnEntry.Weight != 0)
                 {
-                    bytes.Add(0x06);
+                    bytes.Add(0x1B);
                     bytes.AddRange(BitConverter.GetBytes(spawnEntry.Weight));
                 }
                 else if (spawnEntry.Weight == 0)
                 {
-                    bytes.Add(0x07);
+                    bytes.Add(0x1F);
                 }
                 bytes.AddRange(BitConverter.GetBytes(spawnEntry.SpawnList.Count));
                 foreach (SpawnData spawnData in spawnEntry.SpawnList)
@@ -306,8 +297,7 @@ namespace PalworldRandomizer
             MaxLevel = 4;
         }
 
-        // TODO: Use explicit capture
-        [GeneratedRegex("^(RAID_)?.+?(_([0-9]+(_.+)?))?$", RegexOptions.IgnoreCase)]
+        [GeneratedRegex("^(?<prefix>(RAID|PREDATOR|SUMMON)_)?.+?(_(?<suffix>[0-9]+(_.+)?|MAX|Oilrig))?$", RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture)]
         private static partial Regex nameSuffixRegex();
         
         public string ResolvedName
@@ -317,9 +307,12 @@ namespace PalworldRandomizer
                 if (Name.EndsWith("_Flower"))
                     return $"{Data.PalName[Name]}🌺";
                 Match match = nameSuffixRegex().Match(Name);
-                if (match.Groups[1].Value.Length != 0 || match.Groups[3].Value.Length != 0)
+                if (match.Groups["prefix"].Value.Length != 0 || match.Groups["suffix"].Value.Length != 0)
                 {
-                    return $"{Data.PalName[Name]} ({((match.Groups[1].Value.Length != 0 ? "Raid_" : "") + match.Groups[3].Value).Trim('_').Replace('_', '-')})";
+                    return $"{Data.PalName[Name]} ({CultureInfo.InvariantCulture.TextInfo.ToTitleCase(
+                    (
+                        match.Groups["prefix"].Value + match.Groups["suffix"].Value
+                    ).Trim('_').Replace('_', ' ').ToLower()).Replace(' ', '-')})";
                 }
                 return Data.PalName[Name];
             }
@@ -350,17 +343,21 @@ namespace PalworldRandomizer
                 if (value != IsBoss)
                 {
                     if (value)
-                        Name = Data.BossName[Name];
-                    else
+                    {
+                        if (Data.BossName.TryGetValue(Name, out var name))
+                            Name = name;
+                    }
+                    else if (Data.PalData.ContainsKey(Name[(Name.IndexOf('_') + 1)..]))
                         Name = Name[(Name.IndexOf('_') + 1)..];
                 }
             }
         }
         public string IconPath => Data.PalIcon[Name];
         public bool BossChangeable => Data.PalData[Name].IsPal && !Name.StartsWith("GYM_", StringComparison.InvariantCultureIgnoreCase)
-             && !Name.StartsWith("RAID_", StringComparison.InvariantCultureIgnoreCase);
+             && !Name.StartsWith("RAID_", StringComparison.InvariantCultureIgnoreCase) && !Name.StartsWith("PREDATOR_", StringComparison.InvariantCultureIgnoreCase)
+            && (IsBoss && Data.PalData.ContainsKey(Name[(Name.IndexOf('_') + 1)..]) || !IsBoss && Data.BossName.ContainsKey(Name));
 
-        [GeneratedRegex("^((BOSS|GYM|RAID)_)?(.+?)(_[0-9]+(_.+)?)?$", RegexOptions.IgnoreCase)]
+        [GeneratedRegex("^((BOSS|GYM|RAID|PREDATOR|SUMMON)_)?(.+?)(_([0-9]+(_.+)?|MAX|Oilrig))?$", RegexOptions.IgnoreCase)]
         private static partial Regex baseNameRegex();
 
         public string BaseName => baseNameRegex().Match(Name).Groups[3].Value;
@@ -394,6 +391,7 @@ namespace PalworldRandomizer
         public bool isField = false;
         public bool isBoss = false;
         public bool isInDungeon = false;
+        public bool isPredator = false;
         private readonly ObservableList<SpawnEntry> virtualEntries = [];
 
         public AreaData Clone()

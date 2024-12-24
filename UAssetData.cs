@@ -14,7 +14,7 @@ namespace PalworldRandomizer
 {
     public static class UAssetData
     {
-        public const float ASSET_VERSION = 1;
+        public const float ASSET_VERSION = 2;
         private static string? appDataPath;
         private static Usmap? usmap;
 
@@ -58,9 +58,19 @@ namespace PalworldRandomizer
         {
             PalDataAsset = LoadAsset(@"Data\DT_PalMonsterParameter.uasset");
             HumanDataAsset = LoadAsset(@"Data\DT_PalHumanParameter.uasset");
-            return new Collection<KeyValuePair<string, CharacterData>>
+            Dictionary<string, CharacterData> palData = new Collection<KeyValuePair<string, CharacterData>>
                 ([.. CreateReferencePairs(PalDataAsset, (asset, dataTable) => new(asset, dataTable)),
                 .. CreateReferencePairs(HumanDataAsset, (asset, dataTable) => new(asset, dataTable))]).ToDictionary();
+            StructPropertyData referenceData = ((DataTableExport) PalDataAsset.Exports[0]).Table.Data[0];
+            StructPropertyData dummyData = (StructPropertyData) referenceData.Clone();
+            CharacterData rowNameData = new CharacterData(PalDataAsset, dummyData)
+            {
+                ZukanIndex = -1,
+                OverrideNameTextID = null,
+                IsBoss = false
+            };
+            palData["RowName"] = rowNameData;
+            return palData;
             static List<KeyValuePair<string, CharacterData>> CreateReferencePairs(UAsset uAsset, Func<UAsset, StructPropertyData, CharacterData> createFunc) =>
                 ((DataTableExport) uAsset.Exports[0]).Table.Data
                 .ConvertAll(structPropertyData => new KeyValuePair<string, CharacterData>($"{structPropertyData.Name}", createFunc(uAsset, structPropertyData)));
@@ -69,7 +79,6 @@ namespace PalworldRandomizer
 #if DEBUG
         public static void PrintClassDefinition(string name, string filepath)
         {
-            Console.WriteLine("#pragma warning disable IDE1006");
             Console.WriteLine($"public class {name}(UAsset asset, StructPropertyData dataTable)\n{{");
             Console.WriteLine("    private readonly UAsset uAsset = asset;");
             Console.WriteLine("    private readonly StructPropertyData structPropertyData = dataTable;");
@@ -133,7 +142,6 @@ namespace PalworldRandomizer
                 break;
             }
             Console.WriteLine("}");
-            Console.Write("#pragma warning restore IDE1006");
         }
 #endif
     }
@@ -142,7 +150,7 @@ namespace PalworldRandomizer
     {
         private readonly UAsset uAsset = asset;
         private readonly StructPropertyData structPropertyData = dataTable;
-        public string? OverrideNameTextId
+        public string? OverrideNameTextID
         {
             get => ((NamePropertyData) structPropertyData.Value[0]).Value?.ToString();
             set => ((NamePropertyData) structPropertyData.Value[0]).Value = value == null ? null : new FName(uAsset, value);
@@ -222,7 +230,7 @@ namespace PalworldRandomizer
             get => ((BoolPropertyData) structPropertyData.Value[15]).Value;
             set => ((BoolPropertyData) structPropertyData.Value[15]).Value = value;
         }
-        public int HP
+        public int Hp
         {
             get => ((IntPropertyData) structPropertyData.Value[16]).Value;
             set => ((IntPropertyData) structPropertyData.Value[16]).Value = value;
@@ -357,160 +365,175 @@ namespace PalworldRandomizer
             get => ((BoolPropertyData) structPropertyData.Value[42]).Value;
             set => ((BoolPropertyData) structPropertyData.Value[42]).Value = value;
         }
+        public bool IgnoreStun
+        {
+            get => ((BoolPropertyData) structPropertyData.Value[43]).Value;
+            set => ((BoolPropertyData) structPropertyData.Value[43]).Value = value;
+        }
         public int MaxFullStomach
         {
-            get => ((IntPropertyData) structPropertyData.Value[43]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[43]).Value = value;
+            get => ((IntPropertyData) structPropertyData.Value[44]).Value;
+            set => ((IntPropertyData) structPropertyData.Value[44]).Value = value;
         }
         public float FullStomachDecreaseRate
         {
-            get => ((FloatPropertyData) structPropertyData.Value[44]).Value;
-            set => ((FloatPropertyData) structPropertyData.Value[44]).Value = value;
+            get => ((FloatPropertyData) structPropertyData.Value[45]).Value;
+            set => ((FloatPropertyData) structPropertyData.Value[45]).Value = value;
         }
         public int FoodAmount
-        {
-            get => ((IntPropertyData) structPropertyData.Value[45]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[45]).Value = value;
-        }
-        public int ViewingDistance
         {
             get => ((IntPropertyData) structPropertyData.Value[46]).Value;
             set => ((IntPropertyData) structPropertyData.Value[46]).Value = value;
         }
-        public int ViewingAngle
+        public int ViewingDistance
         {
             get => ((IntPropertyData) structPropertyData.Value[47]).Value;
             set => ((IntPropertyData) structPropertyData.Value[47]).Value = value;
         }
+        public int ViewingAngle
+        {
+            get => ((IntPropertyData) structPropertyData.Value[48]).Value;
+            set => ((IntPropertyData) structPropertyData.Value[48]).Value = value;
+        }
         public float HearingRate
         {
-            get => ((FloatPropertyData) structPropertyData.Value[48]).Value;
-            set => ((FloatPropertyData) structPropertyData.Value[48]).Value = value;
+            get => ((FloatPropertyData) structPropertyData.Value[49]).Value;
+            set => ((FloatPropertyData) structPropertyData.Value[49]).Value = value;
         }
         public bool NooseTrap
-        {
-            get => ((BoolPropertyData) structPropertyData.Value[49]).Value;
-            set => ((BoolPropertyData) structPropertyData.Value[49]).Value = value;
-        }
-        public bool Nocturnal
         {
             get => ((BoolPropertyData) structPropertyData.Value[50]).Value;
             set => ((BoolPropertyData) structPropertyData.Value[50]).Value = value;
         }
+        public bool Nocturnal
+        {
+            get => ((BoolPropertyData) structPropertyData.Value[51]).Value;
+            set => ((BoolPropertyData) structPropertyData.Value[51]).Value = value;
+        }
         public int BiologicalGrade
         {
-            get => ((IntPropertyData) structPropertyData.Value[51]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[51]).Value = value;
+            get => ((IntPropertyData) structPropertyData.Value[52]).Value;
+            set => ((IntPropertyData) structPropertyData.Value[52]).Value = value;
         }
         public bool Predator
-        {
-            get => ((BoolPropertyData) structPropertyData.Value[52]).Value;
-            set => ((BoolPropertyData) structPropertyData.Value[52]).Value = value;
-        }
-        public bool Edible
         {
             get => ((BoolPropertyData) structPropertyData.Value[53]).Value;
             set => ((BoolPropertyData) structPropertyData.Value[53]).Value = value;
         }
-        public int Stamina
+        public bool Edible
         {
-            get => ((IntPropertyData) structPropertyData.Value[54]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[54]).Value = value;
+            get => ((BoolPropertyData) structPropertyData.Value[54]).Value;
+            set => ((BoolPropertyData) structPropertyData.Value[54]).Value = value;
         }
-        public int MaleProbability
+        public int Stamina
         {
             get => ((IntPropertyData) structPropertyData.Value[55]).Value;
             set => ((IntPropertyData) structPropertyData.Value[55]).Value = value;
         }
-        public int CombiRank
+        public int MaleProbability
         {
             get => ((IntPropertyData) structPropertyData.Value[56]).Value;
             set => ((IntPropertyData) structPropertyData.Value[56]).Value = value;
         }
-        public int WorkSuitability_EmitFlame
+        public int CombiRank
         {
             get => ((IntPropertyData) structPropertyData.Value[57]).Value;
             set => ((IntPropertyData) structPropertyData.Value[57]).Value = value;
         }
-        public int WorkSuitability_Watering
+        public bool IgnoreCombi
         {
-            get => ((IntPropertyData) structPropertyData.Value[58]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[58]).Value = value;
+            get => ((BoolPropertyData) structPropertyData.Value[58]).Value;
+            set => ((BoolPropertyData) structPropertyData.Value[58]).Value = value;
         }
-        public int WorkSuitability_Seeding
+        public int WorkSuitability_EmitFlame
         {
             get => ((IntPropertyData) structPropertyData.Value[59]).Value;
             set => ((IntPropertyData) structPropertyData.Value[59]).Value = value;
         }
-        public int WorkSuitability_GenerateElectricity
+        public int WorkSuitability_Watering
         {
             get => ((IntPropertyData) structPropertyData.Value[60]).Value;
             set => ((IntPropertyData) structPropertyData.Value[60]).Value = value;
         }
-        public int WorkSuitability_Handcraft
+        public int WorkSuitability_Seeding
         {
             get => ((IntPropertyData) structPropertyData.Value[61]).Value;
             set => ((IntPropertyData) structPropertyData.Value[61]).Value = value;
         }
-        public int WorkSuitability_Collection
+        public int WorkSuitability_GenerateElectricity
         {
             get => ((IntPropertyData) structPropertyData.Value[62]).Value;
             set => ((IntPropertyData) structPropertyData.Value[62]).Value = value;
         }
-        public int WorkSuitability_Deforest
+        public int WorkSuitability_Handcraft
         {
             get => ((IntPropertyData) structPropertyData.Value[63]).Value;
             set => ((IntPropertyData) structPropertyData.Value[63]).Value = value;
         }
-        public int WorkSuitability_Mining
+        public int WorkSuitability_Collection
         {
             get => ((IntPropertyData) structPropertyData.Value[64]).Value;
             set => ((IntPropertyData) structPropertyData.Value[64]).Value = value;
         }
-        public int WorkSuitability_OilExtraction
+        public int WorkSuitability_Deforest
         {
             get => ((IntPropertyData) structPropertyData.Value[65]).Value;
             set => ((IntPropertyData) structPropertyData.Value[65]).Value = value;
         }
-        public int WorkSuitability_ProductMedicine
+        public int WorkSuitability_Mining
         {
             get => ((IntPropertyData) structPropertyData.Value[66]).Value;
             set => ((IntPropertyData) structPropertyData.Value[66]).Value = value;
         }
-        public int WorkSuitability_Cool
+        public int WorkSuitability_OilExtraction
         {
             get => ((IntPropertyData) structPropertyData.Value[67]).Value;
             set => ((IntPropertyData) structPropertyData.Value[67]).Value = value;
         }
-        public int WorkSuitability_Transport
+        public int WorkSuitability_ProductMedicine
         {
             get => ((IntPropertyData) structPropertyData.Value[68]).Value;
             set => ((IntPropertyData) structPropertyData.Value[68]).Value = value;
         }
-        public int WorkSuitability_MonsterFarm
+        public int WorkSuitability_Cool
         {
             get => ((IntPropertyData) structPropertyData.Value[69]).Value;
             set => ((IntPropertyData) structPropertyData.Value[69]).Value = value;
         }
+        public int WorkSuitability_Transport
+        {
+            get => ((IntPropertyData) structPropertyData.Value[70]).Value;
+            set => ((IntPropertyData) structPropertyData.Value[70]).Value = value;
+        }
+        public int WorkSuitability_MonsterFarm
+        {
+            get => ((IntPropertyData) structPropertyData.Value[71]).Value;
+            set => ((IntPropertyData) structPropertyData.Value[71]).Value = value;
+        }
         public string? PassiveSkill1
-        {
-            get => ((NamePropertyData) structPropertyData.Value[70]).Value?.ToString();
-            set => ((NamePropertyData) structPropertyData.Value[70]).Value = value == null ? null : new FName(uAsset, value);
-        }
-        public string? PassiveSkill2
-        {
-            get => ((NamePropertyData) structPropertyData.Value[71]).Value?.ToString();
-            set => ((NamePropertyData) structPropertyData.Value[71]).Value = value == null ? null : new FName(uAsset, value);
-        }
-        public string? PassiveSkill3
         {
             get => ((NamePropertyData) structPropertyData.Value[72]).Value?.ToString();
             set => ((NamePropertyData) structPropertyData.Value[72]).Value = value == null ? null : new FName(uAsset, value);
         }
-        public string? PassiveSkill4
+        public string? PassiveSkill2
         {
             get => ((NamePropertyData) structPropertyData.Value[73]).Value?.ToString();
             set => ((NamePropertyData) structPropertyData.Value[73]).Value = value == null ? null : new FName(uAsset, value);
+        }
+        public string? PassiveSkill3
+        {
+            get => ((NamePropertyData) structPropertyData.Value[74]).Value?.ToString();
+            set => ((NamePropertyData) structPropertyData.Value[74]).Value = value == null ? null : new FName(uAsset, value);
+        }
+        public string? PassiveSkill4
+        {
+            get => ((NamePropertyData) structPropertyData.Value[75]).Value?.ToString();
+            set => ((NamePropertyData) structPropertyData.Value[75]).Value = value == null ? null : new FName(uAsset, value);
+        }
+        public string? FirstDefeatRewardItemID
+        {
+            get => ((NamePropertyData) structPropertyData.Value[76]).Value?.ToString();
+            set => ((NamePropertyData) structPropertyData.Value[76]).Value = value == null ? null : new FName(uAsset, value);
         }
     }
 }

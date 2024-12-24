@@ -683,6 +683,46 @@ namespace PalworldRandomizer.Resources {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_50_14_dungeon_Yamijima {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_50_14_dungeon_Yamijima", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_50_14_dungeon_Yamijima1 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_50_14_dungeon_Yamijima1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_50_15_dungeon_Yamijima_boss {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_50_15_dungeon_Yamijima_boss", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_50_15_dungeon_Yamijima_boss1 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_50_15_dungeon_Yamijima_boss1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] BP_PalSpawner_Sheets_50_2_dungeon_grass_boss {
             get {
                 object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_50_2_dungeon_grass_boss", resourceCulture);
@@ -1683,6 +1723,1126 @@ namespace PalworldRandomizer.Resources {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_1 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_10 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_10", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_101 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_101", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_11 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_11", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_111 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_111", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_112 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_112", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_12 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_12", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_121 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_121", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_13 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_13", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_131 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_131", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_14 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_14", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_141 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_141", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_15 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_15", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_151 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_151", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_16 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_16", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_161 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_161", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_17 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_17", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_171 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_171", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_18 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_18", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_181 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_181", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_19 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_19", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_191 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_191", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_2 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_2", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_20 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_20", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_201 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_201", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_21 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_21", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_211 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_211", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_212 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_212", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_22 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_22", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_221 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_221", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_23 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_23", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_231 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_231", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_3 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_3", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_31 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_31", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_4 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_4", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_41 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_41", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_5 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_5", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_51 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_51", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_6 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_6", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_61 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_61", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_7 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_7", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_71 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_71", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_8 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_8", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_81 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_81", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_9 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_9", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_91 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_81_5_Yamijima_FBOSS_91", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_1 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_10 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_10", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_101 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_101", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_11 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_11", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_111 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_111", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_112 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_112", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_12 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_12", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_121 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_121", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_13 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_13", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_131 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_131", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_14 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_14", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_141 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_141", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_15 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_15", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_151 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_151", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_16 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_16", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_161 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_161", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_17 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_17", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_171 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_171", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_18 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_18", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_181 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_181", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_19 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_19", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_191 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_191", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_2 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_2", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_20 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_20", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_201 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_201", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_21 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_21", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_211 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_211", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_212 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_212", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_22 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_22", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_221 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_221", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_23 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_23", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_231 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_231", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_24 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_24", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_241 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_241", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_25 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_25", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_251 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_251", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_26 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_26", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_261 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_261", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_27 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_27", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_271 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_271", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_28 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_28", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_281 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_281", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_29 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_29", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_291 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_291", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_3 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_3", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_30 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_30", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_301 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_301", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_31 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_31", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_311 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_311", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_312 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_312", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_32 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_32", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_321 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_321", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_33 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_33", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_331 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_331", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_4 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_4", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_41 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_41", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_5 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_5", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_51 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_51", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_6 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_6", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_61 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_61", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_7 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_7", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_71 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_71", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_8 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_8", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_81 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_81", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_9 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_9", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_82_1_PreBOSS_91 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_82_1_PreBOSS_91", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] BP_PalSpawner_Sheets_PvP_21_1_1 {
             get {
                 object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_PvP_21_1_1", resourceCulture);
@@ -1943,6 +3103,126 @@ namespace PalworldRandomizer.Resources {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_yamijima_7_1_YellowArea {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_yamijima_7_1_YellowArea", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_yamijima_7_1_YellowArea1 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_yamijima_7_1_YellowArea1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_yamijima_7_2_DarkArea {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_yamijima_7_2_DarkArea", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_yamijima_7_2_DarkArea1 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_yamijima_7_2_DarkArea1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_yamijima_7_3_RedArea_Magma {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_yamijima_7_3_RedArea_Magma", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_yamijima_7_3_RedArea_Magma1 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_yamijima_7_3_RedArea_Magma1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_yamijima_7_4_RedArea_Desert {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_yamijima_7_4_RedArea_Desert", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_yamijima_7_4_RedArea_Desert1 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_yamijima_7_4_RedArea_Desert1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_yamijima_7_5_RedArea_South {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_yamijima_7_5_RedArea_South", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_yamijima_7_5_RedArea_South1 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_yamijima_7_5_RedArea_South1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_yamijima_7_6_RedArea_North {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_yamijima_7_6_RedArea_North", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] BP_PalSpawner_Sheets_yamijima_7_6_RedArea_North1 {
+            get {
+                object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_yamijima_7_6_RedArea_North1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] DT_HumanNameText {
             get {
                 object obj = ResourceManager.GetObject("DT_HumanNameText", resourceCulture);
@@ -1956,6 +3236,26 @@ namespace PalworldRandomizer.Resources {
         internal static byte[] DT_HumanNameText1 {
             get {
                 object obj = ResourceManager.GetObject("DT_HumanNameText1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] DT_PalBossNPCIcon {
+            get {
+                object obj = ResourceManager.GetObject("DT_PalBossNPCIcon", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] DT_PalBossNPCIcon1 {
+            get {
+                object obj = ResourceManager.GetObject("DT_PalBossNPCIcon1", resourceCulture);
                 return ((byte[])(obj));
             }
         }

@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Numerics;
 using System.Resources;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
@@ -32,6 +33,8 @@ namespace PalworldRandomizer
         public static List<string> TowerBossNames2 { get; private set; } = [];
         public static List<string> RaidBossNames { get; private set; } = [];
         public static List<string> RaidBossNames2 { get; private set; } = [];
+        public static List<string> PredatorNames { get; private set; } = [];
+        public static List<string> HumanBossNames { get; private set; } = [];
         public static HashSet<string> FlyingNames { get; private set; } = [];
         public static Dictionary<string, List<SpawnEntry>> SoloEntries { get; private set; } = new(StringComparer.InvariantCultureIgnoreCase);
         public static Dictionary<string, List<SpawnEntry>> BossEntries { get; private set; } = new(StringComparer.InvariantCultureIgnoreCase);
@@ -54,7 +57,16 @@ namespace PalworldRandomizer
             "Male_Scientist01_LaserRifle",
             "Scientist_FlameThrower",
             "Hunter_MissileLauncher",
-            "Hunter_GrenadeLauncher"
+            "Hunter_GrenadeLauncher",
+            "Male_Soldier01_EnemyGroup",
+            "Male_Soldier02_EnemyGroup",
+            "Male_Soldier02_Invader",
+            "Female_Soldier03_Invader",
+            "Female_Soldier04_Invader",
+            "Male_Ninja01",
+            "Male_NinjaElite01",
+            "Viking",
+            "Viking_Elite"
         ];
         public static readonly string[] policeNames =
         [
@@ -65,7 +77,12 @@ namespace PalworldRandomizer
         public static readonly string[] guardNames =
         [
             "Guard_Rifle",
-            "Guard_Shotgun"
+            "Guard_Shotgun",
+            "Male_DarkTrader01",
+            "Male_DarkTrader02",
+            "Yamishima_guide5",
+            "Escort_PalTamer01",
+            "Escort_Warrior01"
         ];
         public static readonly string[] traderNames =
         [
@@ -75,7 +92,9 @@ namespace PalworldRandomizer
             "SalesPerson_Volcano",
             "SalesPerson_Volcano2",
             "SalesPerson_Wander",
-            "Male_DarkTrader02"
+            "CaravanLeader01",
+            "CaravanLeader02",
+            "CaravanLeader03"
         ];
         public static readonly string[] palTraderNames =
         [
@@ -83,15 +102,13 @@ namespace PalworldRandomizer
             "PalDealer_Desert",
             "PalDealer_Volcano",
             "RandomEventShop",
-            "Male_DarkTrader01"
         ];
-        public static readonly string[] ninjaNames =
+        public static readonly string[] specialNames =
         [
-            "Male_Ninja01",
-            "Male_NinjaElite01"
+            "PalPassive_Doctor"
         ];
 
-        [GeneratedRegex("^(.+?)(_[0-9]+(_.+)?|_Flower)?$", RegexOptions.IgnoreCase)]
+        [GeneratedRegex("^(.+?)(_[0-9]+(_.+)?|_Flower|_MAX|_Oilrig)?$", RegexOptions.IgnoreCase)]
         private static partial Regex resourceKeyRegex();
 
         public static void Initialize(ResourceManager resourceManager)
@@ -99,6 +116,7 @@ namespace PalworldRandomizer
             PalData = UAssetData.CreatePalData();
             UAsset palNames = UAssetData.LoadAsset(@"Data\DT_PalNameText.uasset");
             UAsset humanNames = UAssetData.LoadAsset(@"Data\DT_HumanNameText.uasset");
+            UAsset bossNPCIcons = UAssetData.LoadAsset(@"Data\DT_PalBossNPCIcon.uasset");
             HashSet<string> resourceNames = new(resourceManager.GetResourceSet(CultureInfo.InvariantCulture, true, true)!.Cast<DictionaryEntry>()
                 .Select(x => (string) x.Key), StringComparer.InvariantCultureIgnoreCase);
             Dictionary<string, string> weapons = new()
@@ -114,8 +132,8 @@ namespace PalworldRandomizer
                 { "BowGun", "/Resources/Images/InventoryItemIcon/T_itemicon_Weapon_BowGun.png" },
                 { "LaserRifle", "/Resources/Images/InventoryItemIcon/T_itemicon_Weapon_LaserRifle.png" },
                 { "MissileLauncher", "/Resources/Images/InventoryItemIcon/T_itemicon_Weapon_GuidedMissileLauncher.png" },
-                { "GrenadeLauncher", "/Resources/Images/InventoryItemIcon/T_itemicon_Weapon_GrenadeLauncher.png" }
-                // Katana - No sprite available
+                { "GrenadeLauncher", "/Resources/Images/InventoryItemIcon/T_itemicon_Weapon_GrenadeLauncher.png" },
+                { "Katana", "/Resources/Images/InventoryItemIcon/T_itemicon_Weapon_Katana.png" }
             };
             string[] flyingSuffixes =
             [
@@ -130,34 +148,45 @@ namespace PalworldRandomizer
                 "Suzaku",
                 "Suzaku_Water",
                 "Horus",
-                "Horus_2"
+                "Horus_2",
+                "Horus_Water"
             ];
             foreach (KeyValuePair<string, CharacterData> keyPair in PalData)
             {
                 if (keyPair.Value.IsPal)
                 {
                     StructPropertyData? nameData = ((DataTableExport) palNames.Exports[0]).Table.Data.Find(property =>
-                        (PalData[keyPair.Key].OverrideNameTextId != null &&
-                        string.Compare(((TextPropertyData) property.Value[0]).Value.Value, $"{PalData[keyPair.Key].OverrideNameTextId}_TextData", true) == 0)
+                        (PalData[keyPair.Key].OverrideNameTextID != null &&
+                        string.Compare(((TextPropertyData) property.Value[0]).Value.Value, $"{PalData[keyPair.Key].OverrideNameTextID}_TextData", true) == 0)
                         || string.Compare(((TextPropertyData) property.Value[0]).Value.Value, $"PAL_NAME_{keyPair.Key}_TextData", true) == 0);
                     string nameString = nameData != null ? ((TextPropertyData) nameData.Value[0]).CultureInvariantString.Value.Trim() : "en_text";
+                    if (nameString == "-")
+                    {
+                        nameString = "en_text";
+                    }
                     while (nameString.Contains("  "))
                     {
                         nameString = nameString.Replace("  ", " ");
                     }
                     bool isTowerBoss = keyPair.Key.StartsWith("GYM_", StringComparison.InvariantCultureIgnoreCase);
                     bool isRaidBoss = keyPair.Key.StartsWith("RAID_", StringComparison.InvariantCultureIgnoreCase);
-                    bool isBoss = keyPair.Key.StartsWith("BOSS_", StringComparison.InvariantCultureIgnoreCase) || isTowerBoss || isRaidBoss;
+                    bool isPredator = keyPair.Key.StartsWith("PREDATOR_", StringComparison.InvariantCultureIgnoreCase);
+                    bool isBoss = keyPair.Key.StartsWith("BOSS_", StringComparison.InvariantCultureIgnoreCase) || isTowerBoss || isRaidBoss || isPredator;
+                    bool isSummon = keyPair.Key.StartsWith("SUMMON_", StringComparison.InvariantCultureIgnoreCase);
+                    bool isOilrig = keyPair.Key.EndsWith("_Oilrig", StringComparison.InvariantCultureIgnoreCase);
                     PalName.Add(keyPair.Key, nameString == "en_text" ? (isBoss ? keyPair.Key[(keyPair.Key.IndexOf('_') + 1)..] : keyPair.Key) : nameString);
-                    if (keyPair.Value.ZukanIndex > 0)
+                    if (keyPair.Value.ZukanIndex > 0 && !isSummon && !isOilrig)
                     {
                         PalList.Add(keyPair.Key);
                     }
-                    if (!isBoss || isTowerBoss || isRaidBoss)
+                    if (!isBoss || isTowerBoss || isRaidBoss || isPredator)
                     {
                         if (!isBoss)
                         {
-                            BossName.Add(keyPair.Key, PalData.Keys.First(key => string.Compare(key, $"BOSS_{keyPair.Key}", true) == 0));
+                            if (keyPair.Value.ZukanIndex > 0 && !isSummon && !isOilrig)
+                            {
+                                BossName.Add(keyPair.Key, PalData.Keys.First(key => string.Compare(key, $"BOSS_{keyPair.Key}", true) == 0));
+                            }
                         }
                         else if (isTowerBoss)
                         {
@@ -170,6 +199,10 @@ namespace PalworldRandomizer
                             {
                                 TowerBossNames.Add(keyPair.Key);
                             }
+                        }
+                        else if (isPredator)
+                        {
+                            PredatorNames.Add(keyPair.Key);
                         }
                         else
                         {
@@ -185,7 +218,7 @@ namespace PalworldRandomizer
                         SimpleName.Add(new SpawnData(keyPair.Key).SimpleName, keyPair.Key);
                     }
                     string resourceKey = resourceKeyRegex().Match(keyPair.Key).Groups[1].Value;
-                    resourceKey = isBoss ? resourceKey[(resourceKey.IndexOf('_') + 1)..] : resourceKey;
+                    resourceKey = isBoss || isSummon ? resourceKey[(resourceKey.IndexOf('_') + 1)..] : resourceKey;
                     string resourceName = $"Resources/Images/PalIcon/T_{resourceKey}_icon_normal.png";
                     if (resourceNames.Contains(resourceName))
                     {
@@ -202,8 +235,34 @@ namespace PalworldRandomizer
                 }
                 else
                 {
+                    if (keyPair.Key.StartsWith("BOSS_", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        HumanBossNames.Add(keyPair.Key);
+                        StructPropertyData? bossProperty = ((DataTableExport)bossNPCIcons.Exports[0]).Table.Data.Find(property => property.Name.Value.Value == keyPair.Key);
+                        if (bossProperty != null)
+                        {
+                            string resourceKey = ((SoftObjectPropertyData)bossProperty.Value[0]).Value.AssetPath.PackageName.Value.Value;
+                            resourceKey = resourceKey[(resourceKey.LastIndexOf('/') + 1)..];
+                            string resourceName = $"Resources/Images/NPC/{resourceKey}.png";
+                            if (resourceNames.Contains(resourceName))
+                            {
+                                PalIcon.Add(keyPair.Key, $"/{resourceName}");
+                            }
+                        }
+                    }
+                    if (!PalIcon.ContainsKey(keyPair.Key))
+                    {
+                        if (PalData[keyPair.Key].Weapon != null && weapons.TryGetValue(PalData[keyPair.Key].Weapon!, out string? value))
+                        {
+                            PalIcon.Add(keyPair.Key, value);
+                        }
+                        else
+                        {
+                            PalIcon.Add(keyPair.Key, "/Resources/Images/PalIcon/T_CommonHuman_icon_normal.png");
+                        }
+                    }
                     StructPropertyData? property = ((DataTableExport) humanNames.Exports[0]).Table.Data.Find(property =>
-                        ((TextPropertyData) property.Value[0]).Value.Value == $"{PalData[keyPair.Key].OverrideNameTextId}_TextData");
+                        ((TextPropertyData) property.Value[0]).Value.Value == $"{PalData[keyPair.Key].OverrideNameTextID}_TextData");
                     SimpleName.Add(keyPair.Key, keyPair.Key);
                     if (property != null)
                     {
@@ -212,14 +271,6 @@ namespace PalworldRandomizer
                     else
                     {
                         PalName.Add(keyPair.Key, "-");
-                    }
-                    if (PalData[keyPair.Key].Weapon != null && weapons.TryGetValue(PalData[keyPair.Key].Weapon!, out string? value))
-                    {
-                        PalIcon.Add(keyPair.Key, value);
-                    }
-                    else
-                    {
-                        PalIcon.Add(keyPair.Key, "/Resources/Images/PalIcon/T_CommonHuman_icon_normal.png");
                     }
                 }
             }
@@ -239,6 +290,10 @@ namespace PalworldRandomizer
                 float nightWeightSum = 0;
                 foreach (SpawnEntry spawnEntry in spawnExportData.spawnEntries)
                 {
+                    if (spawnEntry.SpawnList[0].Name == "RowName")
+                    {
+                        continue;
+                    }
                     if (spawnEntry.SpawnList.Count == 1 && !spawnEntry.SpawnList[0].IsBoss)
                     {
                         if (!SoloEntries.TryGetValue(spawnEntry.SpawnList[0].Name, out List<SpawnEntry>? value))
@@ -250,12 +305,15 @@ namespace PalworldRandomizer
                     }
                     else if (spawnEntry.SpawnList[0].IsBoss)
                     {
-                        if (!BossEntries.TryGetValue(spawnEntry.SpawnList[0].Name, out List<SpawnEntry>? value))
+                        if (!spawnEntry.SpawnList[0].Name.StartsWith("PREDATOR_", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            value = [];
-                            BossEntries.Add(spawnEntry.SpawnList[0].Name, value);
+                            if (!BossEntries.TryGetValue(spawnEntry.SpawnList[0].Name, out List<SpawnEntry>? value))
+                            {
+                                value = [];
+                                BossEntries.Add(spawnEntry.SpawnList[0].Name, value);
+                            }
+                            value.Add(spawnEntry);
                         }
-                        value.Add(spawnEntry);
                     }
                     else
                     {
@@ -275,6 +333,12 @@ namespace PalworldRandomizer
                     }
                 }
                 AreaData.Add(filename, new(uAsset, spawnExportData, filename));
+                if (weightSum == 0)
+                {
+                    averageLevel = nightAverageLevel;
+                    levelRange = nightLevelRange;
+                    weightSum = nightWeightSum;
+                }
                 AreaData[filename].minLevel = Convert.ToInt32(averageLevel / weightSum - levelRange / 2.0f / weightSum);
                 AreaData[filename].maxLevel = Convert.ToInt32(averageLevel / weightSum + levelRange / 2.0f / weightSum);
                 if (nightWeightSum != 0)
@@ -284,7 +348,8 @@ namespace PalworldRandomizer
                 }
                 AreaData[filename].isBoss = filename.Contains("boss", StringComparison.InvariantCultureIgnoreCase);
                 AreaData[filename].isInDungeon = filename.Contains("dungeon", StringComparison.InvariantCultureIgnoreCase);
-                AreaData[filename].isFieldBoss = AreaData[filename].isBoss && !AreaData[filename].isInDungeon;
+                AreaData[filename].isPredator = filename.Contains("PreBOSS", StringComparison.InvariantCultureIgnoreCase);
+                AreaData[filename].isFieldBoss = AreaData[filename].isBoss && !AreaData[filename].isInDungeon && !AreaData[filename].isPredator;
                 AreaData[filename].isDungeonBoss = AreaData[filename].isBoss && AreaData[filename].isInDungeon;
                 AreaData[filename].isDungeon = !AreaData[filename].isBoss && AreaData[filename].isInDungeon;
                 AreaData[filename].isField = !AreaData[filename].isBoss && !AreaData[filename].isInDungeon;
@@ -483,8 +548,7 @@ namespace PalworldRandomizer
                 {
                     if (!Data.PalData[keyPair.Key].IsPal &&
                         ((formData.SpawnHumans && Data.humanNames.Contains(keyPair.Key))
-                        || (formData.SpawnPolice && Data.policeNames.Contains(keyPair.Key))
-                        || (formData.SpawnNinja && Data.ninjaNames.Contains(keyPair.Key)))
+                        || (formData.SpawnPolice && Data.policeNames.Contains(keyPair.Key)))
                         )
                     {
                         SpawnData spawnData = new() { Name = keyPair.Key, IsPal = false };
@@ -504,8 +568,7 @@ namespace PalworldRandomizer
                     SpawnEntry spawnEntry = groupEntriesCopy[i];
                     if (!spawnEntry.SpawnList[0].IsPal &&
                         ((formData.SpawnHumans && Data.humanNames.Contains(spawnEntry.SpawnList[0].Name))
-                        || (formData.SpawnPolice && Data.policeNames.Contains(spawnEntry.SpawnList[0].Name))
-                        || (formData.SpawnNinja && Data.ninjaNames.Contains(spawnEntry.SpawnList[0].Name)))
+                        || (formData.SpawnPolice && Data.policeNames.Contains(spawnEntry.SpawnList[0].Name)))
                         )
                     {
                         humanSpawns.Add(spawnEntry); // shallow copy
@@ -557,6 +620,10 @@ namespace PalworldRandomizer
                 if (formData.SpawnGuards)
                 {
                     humanSpawns.Add(new() { SpawnList = [new("Guard_Rifle", 1, 2), new("Guard_Shotgun", 1, 2)] });
+                    humanSpawns.Add(new() { SpawnList = [new("Male_DarkTrader01")] });
+                    humanSpawns.Add(new() { SpawnList = [new("Male_DarkTrader02")] });
+                    humanSpawns.Add(new() { SpawnList = [new("Yamishima_guide5", 1, 2)] });
+                    humanSpawns.Add(new() { SpawnList = [new("Escort_PalTamer01", 1, 2), new("Escort_Warrior01", 1, 2)] });
                 }
                 if (formData.SpawnHumans)
                 {
@@ -564,6 +631,8 @@ namespace PalworldRandomizer
                     humanSpawns.Add(new() { SpawnList = [new("Scientist_FlameThrower", 1, 2)] });
                     humanSpawns.Add(new() { SpawnList = [new("Hunter_MissileLauncher", 1, 2)] });
                     humanSpawns.Add(new() { SpawnList = [new("Hunter_GrenadeLauncher", 1, 2)] });
+                    humanSpawns.Add(new() { SpawnList = [new("Male_Soldier01_EnemyGroup", 1, 2), new("Male_Soldier02_EnemyGroup", 1, 2), new("Male_Soldier02_Invader")] });
+                    humanSpawns.Add(new() { SpawnList = [new("Female_Soldier03_Invader", 1, 2), new("Female_Soldier04_Invader", 1, 2)] });
                 }
                 if (formData.SpawnTraders)
                 {
@@ -572,6 +641,10 @@ namespace PalworldRandomizer
                 if (formData.SpawnPalTraders)
                 {
                     humanSpawns.AddRange(Data.palTraderNames.Select(name => new SpawnEntry { SpawnList = [new(name)] }));
+                }
+                if (formData.SpawnSpecial)
+                {
+                    humanSpawns.AddRange(Data.specialNames.Select(name => new SpawnEntry { SpawnList = [new(name)] }));
                 }
             }
             else if (formData.GroupRandom)
@@ -586,9 +659,9 @@ namespace PalworldRandomizer
                     .. (formData.SpawnHumans ? Data.humanNames : []),
                     .. (formData.SpawnPolice ? Data.policeNames : []),
                     .. (formData.SpawnGuards ? Data.guardNames : []),
-                    .. (formData.SpawnNinja ? Data.ninjaNames : []),
                     .. (formData.SpawnTraders ? Data.traderNames : []),
-                    .. (formData.SpawnPalTraders ? Data.palTraderNames : [])
+                    .. (formData.SpawnPalTraders ? Data.palTraderNames : []),
+                    .. (formData.SpawnSpecial ? Data.specialNames : [])
                 ]).Select(name => new SpawnEntry { SpawnList = [new(name)] }));
             }
             if (formData.SpawnTowerBosses)
@@ -607,6 +680,14 @@ namespace PalworldRandomizer
             {
                 Data.RaidBossNames2.ForEach(name => bossSpawns.Add(name, new() { SpawnList = [new(name)] }));
             }
+            if (formData.SpawnPredators)
+            {
+                Data.PredatorNames.ForEach(name => bossSpawns.Add(name, new() { SpawnList = [new(name)] }));
+            }
+            if (formData.SpawnHumanBosses)
+            {
+                Data.HumanBossNames.ForEach(name => bossSpawns.Add(name, new() { SpawnList = [new(name)] }));
+            }
         }
         private static ICollection<string> GetAllowedNames(FormData formData)
         {
@@ -618,12 +699,14 @@ namespace PalworldRandomizer
                 .. (formData.SpawnTowerBosses2 ? Data.TowerBossNames2 : []),
                 .. (formData.SpawnRaidBosses ? Data.RaidBossNames : []),
                 .. (formData.SpawnRaidBosses2 ? Data.RaidBossNames2 : []),
+                .. (formData.SpawnPredators ? Data.PredatorNames : []),
+                .. (formData.SpawnHumanBosses ? Data.HumanBossNames : []),
                 .. (formData.SpawnHumans ? Data.humanNames : []),
                 .. (formData.SpawnPolice ? Data.policeNames : []),
                 .. (formData.SpawnGuards ? Data.guardNames : []),
-                .. (formData.SpawnNinja ? Data.ninjaNames : []),
                 .. (formData.SpawnTraders ? Data.traderNames : []),
-                .. (formData.SpawnPalTraders ? Data.palTraderNames : [])
+                .. (formData.SpawnPalTraders ? Data.palTraderNames : []),
+                .. (formData.SpawnSpecial ? Data.specialNames : [])
             ];
         }
 
@@ -648,6 +731,7 @@ namespace PalworldRandomizer
             int randomLevelMax = Math.Clamp(formData.RandomLevelMax, randomLevelMin, levelCap);
             int rarity67MinLevel = Math.Clamp(formData.Rarity67MinLevel, 1, levelCap);
             int rarity8UpMinLevel = Math.Clamp(formData.Rarity8UpMinLevel, 1, levelCap);
+            double bossesEverywhereChance = Math.Clamp(formData.BossesEverywhereChance, 1, 99) / 100.0;
             int weightUniformMin = Math.Max(1, formData.WeightUniformMin);
             int weightUniformMax = Math.Max(weightUniformMin, formData.WeightUniformMax);
             int humanRarity = Math.Clamp(formData.HumanRarity, 1, 20);
