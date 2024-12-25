@@ -430,8 +430,6 @@
                         <CheckBox Name="spawnPalTraders" IsChecked="False">Pal Merchants</CheckBox>
                         <CheckBox Name="spawnTowerBosses" IsChecked="True">Tower Bosses</CheckBox>
                         <CheckBox Name="spawnRaidBosses" IsChecked="False">Raid Bosses</CheckBox>
-                        <CheckBox Name="spawnTowerBosses2" IsChecked="False">Tower Bosses 2</CheckBox>
-                        <CheckBox Name="spawnRaidBosses2" IsChecked="False">Raid Bosses 2</CheckBox>
                         <CheckBox Name="spawnPredators" IsChecked="False">Predators</CheckBox>
                         <CheckBox Name="spawnHumanBosses" IsChecked="False">Human Bounties</CheckBox>
                         <CheckBox Name="spawnSpecial" IsChecked="False">Dr. Brawn</CheckBox>

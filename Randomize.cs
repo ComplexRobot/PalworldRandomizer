@@ -29,9 +29,7 @@ namespace PalworldRandomizer
         public static List<string> PalList { get; private set; } = [];
         public static Dictionary<string, string> BossName { get; private set; } = [];
         public static List<string> TowerBossNames { get; private set; } = [];
-        public static List<string> TowerBossNames2 { get; private set; } = [];
         public static List<string> RaidBossNames { get; private set; } = [];
-        public static List<string> RaidBossNames2 { get; private set; } = [];
         public static List<string> PredatorNames { get; private set; } = [];
         public static List<string> HumanBossNames { get; private set; } = [];
         public static HashSet<string> FlyingNames { get; private set; } = [];
@@ -53,10 +51,13 @@ namespace PalworldRandomizer
             "Hunter_Rifle",
             "Hunter_RocketLauncher",
             "Hunter_Shotgun",
-            "Male_Scientist01_LaserRifle",
-            "Scientist_FlameThrower",
             "Hunter_MissileLauncher",
             "Hunter_GrenadeLauncher",
+            "Hunter_BowGun_Oilrig",
+            "Hunter_Katana_Oilrig",
+            "Hunter_LaserRifle_Oilrig",
+            "Male_Scientist01_LaserRifle",
+            "Scientist_FlameThrower",
             "Male_Soldier01_EnemyGroup",
             "Male_Soldier02_EnemyGroup",
             "Male_Soldier02_Invader",
@@ -147,7 +148,6 @@ namespace PalworldRandomizer
                 "Suzaku",
                 "Suzaku_Water",
                 "Horus",
-                "Horus_2",
                 "Horus_Water"
             ];
             foreach (KeyValuePair<string, CharacterData> keyPair in PalData)
@@ -190,11 +190,7 @@ namespace PalworldRandomizer
                         else if (isTowerBoss)
                         {
                             // TODO: Change to regex
-                            if (keyPair.Key.EndsWith("_2"))
-                            {
-                                TowerBossNames2.Add(keyPair.Key);
-                            }
-                            else if (!keyPair.Key.EndsWith("_2_Avatar") && !keyPair.Key.EndsWith("_2_Servant"))
+                            if (!keyPair.Key.EndsWith("_2") && !keyPair.Key.EndsWith("_2_Avatar") && !keyPair.Key.EndsWith("_2_Servant"))
                             {
                                 TowerBossNames.Add(keyPair.Key);
                             }
@@ -205,11 +201,7 @@ namespace PalworldRandomizer
                         }
                         else
                         {
-                            if (keyPair.Key.EndsWith("_2"))
-                            {
-                                RaidBossNames2.Add(keyPair.Key);
-                            }
-                            else
+                            if (!keyPair.Key.EndsWith("_2"))
                             {
                                 RaidBossNames.Add(keyPair.Key);
                             }
@@ -630,7 +622,11 @@ namespace PalworldRandomizer
                     humanSpawns.Add(new() { SpawnList = [new("Scientist_FlameThrower", 1, 2)] });
                     humanSpawns.Add(new() { SpawnList = [new("Hunter_MissileLauncher", 1, 2)] });
                     humanSpawns.Add(new() { SpawnList = [new("Hunter_GrenadeLauncher", 1, 2)] });
-                    humanSpawns.Add(new() { SpawnList = [new("Male_Soldier01_EnemyGroup", 1, 2), new("Male_Soldier02_EnemyGroup", 1, 2), new("Male_Soldier02_Invader")] });
+                    humanSpawns.Add(new() { SpawnList = [new("Hunter_BowGun_Oilrig", 1, 2)] });
+                    humanSpawns.Add(new() { SpawnList = [new("Hunter_Katana_Oilrig", 1, 2)] });
+                    humanSpawns.Add(new() { SpawnList = [new("Hunter_LaserRifle_Oilrig", 1, 2)] });
+                    humanSpawns.Add(new() { SpawnList = [new("Male_Soldier01_EnemyGroup", 1, 2), new("Male_Soldier02_EnemyGroup", 1, 2)] });
+                    humanSpawns.Add(new() { SpawnList = [new("Male_Soldier02_Invader")] });
                     humanSpawns.Add(new() { SpawnList = [new("Female_Soldier03_Invader", 1, 2), new("Female_Soldier04_Invader", 1, 2)] });
                 }
                 if (formData.SpawnTraders)
@@ -667,17 +663,9 @@ namespace PalworldRandomizer
             {
                 Data.TowerBossNames.ForEach(name => bossSpawns.Add(name, new() { SpawnList = [new(name)] }));
             }
-            if (formData.SpawnTowerBosses2)
-            {
-                Data.TowerBossNames2.ForEach(name => bossSpawns.Add(name, new() { SpawnList = [new(name)] }));
-            }
             if (formData.SpawnRaidBosses)
             {
                 Data.RaidBossNames.ForEach(name => bossSpawns.Add(name, new() { SpawnList = [new(name)] }));
-            }
-            if (formData.SpawnRaidBosses2)
-            {
-                Data.RaidBossNames2.ForEach(name => bossSpawns.Add(name, new() { SpawnList = [new(name)] }));
             }
             if (formData.SpawnPredators)
             {
@@ -695,9 +683,7 @@ namespace PalworldRandomizer
                 .. (formData.SpawnPals ? Data.PalList : []),
                 .. Data.PalList.ConvertAll(name => Data.BossName[name]),
                 .. (formData.SpawnTowerBosses ? Data.TowerBossNames : []),
-                .. (formData.SpawnTowerBosses2 ? Data.TowerBossNames2 : []),
                 .. (formData.SpawnRaidBosses ? Data.RaidBossNames : []),
-                .. (formData.SpawnRaidBosses2 ? Data.RaidBossNames2 : []),
                 .. (formData.SpawnPredators ? Data.PredatorNames : []),
                 .. (formData.SpawnHumanBosses ? Data.HumanBossNames : []),
                 .. (formData.SpawnHumans ? Data.humanNames : []),
@@ -705,7 +691,8 @@ namespace PalworldRandomizer
                 .. (formData.SpawnGuards ? Data.guardNames : []),
                 .. (formData.SpawnTraders ? Data.traderNames : []),
                 .. (formData.SpawnPalTraders ? Data.palTraderNames : []),
-                .. (formData.SpawnSpecial ? Data.specialNames : [])
+                .. (formData.SpawnSpecial ? Data.specialNames : []),
+                "RowName"
             ];
         }
 

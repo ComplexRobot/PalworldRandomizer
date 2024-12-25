@@ -304,15 +304,18 @@ namespace PalworldRandomizer
         {
             get
             {
-                if (Name.EndsWith("_Flower"))
-                    return $"{Data.PalName[Name]}🌺";
-                Match match = nameSuffixRegex().Match(Name);
-                if (match.Groups["prefix"].Value.Length != 0 || match.Groups["suffix"].Value.Length != 0)
+                if (Data.PalData[Name].IsPal)
                 {
-                    return $"{Data.PalName[Name]} ({CultureInfo.InvariantCulture.TextInfo.ToTitleCase(
-                    (
-                        match.Groups["prefix"].Value + match.Groups["suffix"].Value
-                    ).Trim('_').Replace('_', ' ').ToLower()).Replace(' ', '-')})";
+                    if (Name.EndsWith("_Flower"))
+                        return $"{Data.PalName[Name]}🌺";
+                    Match match = nameSuffixRegex().Match(Name);
+                    if (match.Groups["prefix"].Value.Length != 0 || match.Groups["suffix"].Value.Length != 0)
+                    {
+                        return $"{Data.PalName[Name]} ({CultureInfo.InvariantCulture.TextInfo.ToTitleCase(
+                        (
+                            match.Groups["prefix"].Value + match.Groups["suffix"].Value
+                        ).Trim('_').Replace('_', ' ').ToLower()).Replace(' ', '-')})";
+                    }
                 }
                 return Data.PalName[Name];
             }

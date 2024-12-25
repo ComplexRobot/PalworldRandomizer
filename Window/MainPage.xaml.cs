@@ -116,9 +116,7 @@ namespace PalworldRandomizer
         public bool SpawnTraders = window.spawnTraders.IsChecked == true;
         public bool SpawnPalTraders = window.spawnPalTraders.IsChecked == true;
         public bool SpawnTowerBosses = window.spawnTowerBosses.IsChecked == true;
-        public bool SpawnTowerBosses2 = window.spawnTowerBosses2.IsChecked == true;
         public bool SpawnRaidBosses = window.spawnRaidBosses.IsChecked == true;
-        public bool SpawnRaidBosses2 = window.spawnRaidBosses2.IsChecked == true;
         public bool SpawnPredators = window.spawnPredators.IsChecked == true;
         public bool SpawnHumanBosses = window.spawnHumanBosses.IsChecked == true;
         public bool SpawnSpecial = window.spawnSpecial.IsChecked == true;
