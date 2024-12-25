@@ -243,23 +243,11 @@
                                 </WrapPanel.Style>
                                 <CheckBox Name="separateAggroHumans" IsChecked="True" Margin="5,5,0,5">Non-Aggro Human Sanity</CheckBox>
                             </WrapPanel>
-                            <WrapPanel>
-                                <WrapPanel.Style>
-                                    <Style TargetType="WrapPanel">
-                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding ElementName=groupRandom, Path=IsChecked}" Value="True">
-                                                <Setter Property="Visibility" Value="Visible"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </WrapPanel.Style>
-                                <WrapPanel Margin="5,5,0,0" Visibility="Collapsed">
-                                    <CheckBox Name="bossesEverywhere" IsChecked="False" Margin="0">Bosses Everywhere:</CheckBox>
-                                    <TextBox Name="bossesEverywhereChance" VerticalAlignment="Center" GotFocus="VanillaPlusChance_GotFocus"
-                                             PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">5</TextBox>
-                                    <TextBlock Margin="0,0,0,0" VerticalAlignment="Center">%</TextBlock>
-                                </WrapPanel>
+                            <WrapPanel Margin="5,5,0,0">
+                                <CheckBox Name="bossesEverywhere" IsChecked="False" Margin="0">Bosses Everywhere:</CheckBox>
+                                <TextBox Name="bossesEverywhereChance" VerticalAlignment="Center" GotFocus="BossesEverywhereChance_GotFocus"
+                                         PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">5</TextBox>
+                                <TextBlock Margin="0,0,0,0" VerticalAlignment="Center">%</TextBlock>
                             </WrapPanel>
                         </WrapPanel>
                     </WrapPanel>
@@ -543,7 +531,7 @@
                                  PreviewTextInput="PositiveIntSize3_PreviewTextInput" DataObject.Pasting="PositiveIntSize3_Pasting">1</TextBox>
                         <TextBlock Margin="0">-</TextBlock>
                         <TextBox Name="randomLevelMax" VerticalAlignment="Top" Margin="0,0,5,0" Height="20"
-                                 PreviewTextInput="PositiveIntSize3_PreviewTextInput" DataObject.Pasting="PositiveIntSize3_Pasting">55</TextBox>
+                                 PreviewTextInput="PositiveIntSize3_PreviewTextInput" DataObject.Pasting="PositiveIntSize3_Pasting">60</TextBox>
                     </StackPanel>
                 </WrapPanel>
             </GroupBox>

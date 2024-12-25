@@ -475,6 +475,11 @@ namespace PalworldRandomizer
             vanillaPlus.IsChecked = true;
         }
 
+        private void BossesEverywhereChance_GotFocus(object sender, RoutedEventArgs e)
+        {
+            bossesEverywhere.IsChecked = true;
+        }
+
         private void PositiveIntSize2_PreviewTextInput(object sender, TextCompositionEventArgs e) => SharedWindow.PositiveIntSize2_PreviewTextInput(sender, e);
         private void PositiveIntSize2_Pasting(object sender, DataObjectPastingEventArgs e) => SharedWindow.PositiveIntSize2_Pasting(sender, e);
         private void PositiveIntSize3_PreviewTextInput(object sender, TextCompositionEventArgs e) => SharedWindow.PositiveIntSize3_PreviewTextInput(sender, e);
