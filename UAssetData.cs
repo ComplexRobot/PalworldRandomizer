@@ -65,6 +65,7 @@ namespace PalworldRandomizer
             StructPropertyData dummyData = (StructPropertyData) referenceData.Clone();
             CharacterData rowNameData = new CharacterData(PalDataAsset, dummyData)
             {
+                IsPal = true,
                 ZukanIndex = -1,
                 OverrideNameTextID = null,
                 IsBoss = false

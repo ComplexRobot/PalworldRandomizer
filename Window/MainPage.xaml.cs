@@ -53,6 +53,8 @@ namespace PalworldRandomizer
         public bool RandomizeDungeons = window.randomizeDungeons.IsChecked == true;
         public bool RandomizeDungeonBosses = window.randomizeDungeonBosses.IsChecked == true;
         public bool RandomizeFieldBosses = window.randomizeFieldBosses.IsChecked == true;
+        public bool RandomizePredators = window.randomizePredators.IsChecked == true;
+        public int PredatorChance = int.Parse(window.predatorChance.Text);
         public bool EqualizeAreaRarity = window.equalizeAreaRarity.IsChecked == true;
         public bool MethodFull = window.methodFull.IsChecked == true;
         public bool MethodCustomSize = window.methodCustomSize.IsChecked == true;
@@ -82,6 +84,7 @@ namespace PalworldRandomizer
         public bool BossesEverywhere = window.bossesEverywhere.IsChecked == true;
         public int BossesEverywhereChance = int.Parse(window.bossesEverywhereChance.Text);
         public bool SeparateFlying = window.separateFlying.IsChecked == true;
+        public bool PredatorConstraint = window.predatorConstraint.IsChecked == true;
         public bool WeightTypeUniform = window.weightTypeUniform.IsChecked == true;
         public bool WeightTypeCustom = window.weightTypeCustom.IsChecked == true;
         public int WeightUniformMin = int.Parse(window.weightUniformMin.Text);
@@ -104,6 +107,7 @@ namespace PalworldRandomizer
         }))();
         public string WeightCustomMode = window.weightCustomMode.Text;
         public int HumanRarity = int.Parse(window.humanRarity.Text);
+        public int HumanBossRarity = int.Parse(window.humanBossRarity.Text);
         public bool WeightAdjustProbability = window.weightAdjustProbability.IsChecked == true;
         public int HumanWeight = int.Parse(window.humanWeight.Text);
         public int HumanWeightAggro = int.Parse(window.humanWeightAggro.Text);
@@ -116,6 +120,7 @@ namespace PalworldRandomizer
         public bool SpawnTraders = window.spawnTraders.IsChecked == true;
         public bool SpawnPalTraders = window.spawnPalTraders.IsChecked == true;
         public bool SpawnTowerBosses = window.spawnTowerBosses.IsChecked == true;
+        public bool SpawnAlphas = window.spawnAlphas.IsChecked == true;
         public bool SpawnRaidBosses = window.spawnRaidBosses.IsChecked == true;
         public bool SpawnPredators = window.spawnPredators.IsChecked == true;
         public bool SpawnHumanBosses = window.spawnHumanBosses.IsChecked == true;
@@ -124,6 +129,7 @@ namespace PalworldRandomizer
         public int DungeonLevel = int.Parse(window.dungeonLevel.Text);
         public int FieldBossLevel = int.Parse(window.fieldBossLevel.Text);
         public int DungeonBossLevel = int.Parse(window.dungeonBossLevel.Text);
+        public int PredatorLevel = int.Parse(window.predatorLevel.Text);
         public int LevelCap = int.Parse(window.levelCap.Text);
         public int BossAddLevel = int.Parse(window.bossAddLevel.Text);
         public bool ForceAddLevel = window.forceAddLevel.IsChecked == true;
@@ -136,6 +142,7 @@ namespace PalworldRandomizer
         public int DungeonCount = int.Parse(window.dungeonCount.Text);
         public int FieldBossCount = int.Parse(window.fieldBossCount.Text);
         public int DungeonBossCount = int.Parse(window.dungeonBossCount.Text);
+        public int PredatorCount = int.Parse(window.predatorCount.Text);
         public int CountClampMin = int.Parse(window.countClampMin.Text);
         public int CountClampMax = int.Parse(window.countClampMax.Text);
         public int CountClampFirstMin = int.Parse(window.countClampFirstMin.Text);
@@ -144,6 +151,7 @@ namespace PalworldRandomizer
         public bool NightOnlyDungeons = window.nightOnlyDungeons.IsChecked == true;
         public bool NightOnlyDungeonBosses = window.nightOnlyDungeonBosses.IsChecked == true;
         public bool NightOnlyBosses = window.nightOnlyBosses.IsChecked == true;
+        public bool NightOnlyPredators = window.nightOnlyPredators.IsChecked == true;
 
         public void RestoreToWindow(MainPage window)
         {
@@ -268,6 +276,7 @@ namespace PalworldRandomizer
 
         public void ValidateFormData(int seed = 0)
         {
+            ValidateNumericText(predatorChance, 0, 30, 100);
             ValidateNumericText(randomSeed, 0, seed);
             ValidateNumericText(groupMin, 1);
             ValidateNumericText(groupMax, int.Parse(groupMin.Text));
@@ -279,13 +288,14 @@ namespace PalworldRandomizer
             ValidateNumericText(dungeonLevel, 0, 100);
             ValidateNumericText(fieldBossLevel, 0, 100);
             ValidateNumericText(dungeonBossLevel, 0, 100);
+            ValidateNumericText(predatorLevel, 0, 100);
             ValidateNumericText(levelCap, 1, 60);
             ValidateNumericText(bossAddLevel, 0, 85);
             ValidateNumericText(randomLevelMin, 1, 1, int.Parse(levelCap.Text));
             ValidateNumericText(randomLevelMax, Math.Max(1, int.Parse(randomLevelMin.Text)), int.Parse(levelCap.Text), int.Parse(levelCap.Text));
             ValidateNumericText(rarity67MinLevel, 1, Math.Min(18, int.Parse(levelCap.Text)), int.Parse(levelCap.Text));
             ValidateNumericText(rarity8UpMinLevel, 1, Math.Min(30, int.Parse(levelCap.Text)), int.Parse(levelCap.Text));
-            ValidateNumericText(bossesEverywhereChance, 1, 5, 99);
+            ValidateNumericText(bossesEverywhereChance, 1, 5, 100);
             ValidateNumericText(weightUniformMin, 1, 10);
             ValidateNumericText(weightUniformMax, int.Parse(weightUniformMin.Text));
             ValidateNumericText(weightCustom1, 0, 60);
@@ -300,6 +310,7 @@ namespace PalworldRandomizer
             ValidateNumericText(weightCustom10, 0, 1);
             ValidateNumericText(weightCustom20, 0, 1);
             ValidateNumericText(humanRarity, 1, 4, 20);
+            ValidateNumericText(humanBossRarity, 1, 5, 20);
             ValidateNumericText(humanWeight, 0, 100);
             ValidateNumericText(humanWeightAggro, 0, 50);
             ValidateNumericText(weightNightOnly, 0m, 10000);
@@ -309,6 +320,7 @@ namespace PalworldRandomizer
             ValidateNumericText(dungeonCount, 0, 100);
             ValidateNumericText(fieldBossCount, 0, 100);
             ValidateNumericText(dungeonBossCount, 0, 100);
+            ValidateNumericText(predatorCount, 0, 100);
             ValidateNumericText(countClampMin, 0, 0);
             ValidateNumericText(countClampMax, Math.Max(1, int.Parse(countClampMin.Text)));
             ValidateNumericText(countClampFirstMin, 0, 0);
@@ -482,12 +494,16 @@ namespace PalworldRandomizer
 
         private void PositiveIntSize2_PreviewTextInput(object sender, TextCompositionEventArgs e) => SharedWindow.PositiveIntSize2_PreviewTextInput(sender, e);
         private void PositiveIntSize2_Pasting(object sender, DataObjectPastingEventArgs e) => SharedWindow.PositiveIntSize2_Pasting(sender, e);
+        private void PositiveIntPercent_PreviewTextInput(object sender, TextCompositionEventArgs e) => SharedWindow.PositiveIntPercent_PreviewTextInput(sender, e);
+        private void PositiveIntPercent_Pasting(object sender, DataObjectPastingEventArgs e) => SharedWindow.PositiveIntPercent_Pasting(sender, e);
         private void PositiveIntSize3_PreviewTextInput(object sender, TextCompositionEventArgs e) => SharedWindow.PositiveIntSize3_PreviewTextInput(sender, e);
         private void PositiveIntSize3_Pasting(object sender, DataObjectPastingEventArgs e) => SharedWindow.PositiveIntSize3_Pasting(sender, e);
         private void PositiveIntSize4_PreviewTextInput(object sender, TextCompositionEventArgs e) => SharedWindow.PositiveIntSize4_PreviewTextInput(sender, e);
         private void PositiveIntSize4_Pasting(object sender, DataObjectPastingEventArgs e) => SharedWindow.PositiveIntSize4_Pasting(sender, e);
         private void NonNegIntSize2_PreviewTextInput(object sender, TextCompositionEventArgs e) => SharedWindow.NonNegIntSize2_PreviewTextInput(sender, e);
         private void NonNegIntSize2_Pasting(object sender, DataObjectPastingEventArgs e) => SharedWindow.NonNegIntSize2_Pasting(sender, e);
+        private void NonNegIntPercent_PreviewTextInput(object sender, TextCompositionEventArgs e) => SharedWindow.NonNegIntPercent_PreviewTextInput(sender, e);
+        private void NonNegIntPercent_Pasting(object sender, DataObjectPastingEventArgs e) => SharedWindow.NonNegIntPercent_Pasting(sender, e);
         private void NonNegIntSize3_PreviewTextInput(object sender, TextCompositionEventArgs e) => SharedWindow.NonNegIntSize3_PreviewTextInput(sender, e);
         private void NonNegIntSize3_Pasting(object sender, DataObjectPastingEventArgs e) => SharedWindow.NonNegIntSize3_Pasting(sender, e);
         private void NonNegIntSize4_PreviewTextInput(object sender, TextCompositionEventArgs e) => SharedWindow.NonNegIntSize4_PreviewTextInput(sender, e);

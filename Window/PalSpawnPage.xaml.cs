@@ -292,7 +292,7 @@ namespace PalworldRandomizer
             (areaData) =>
             areaData?.Insert(areaData.Count, new()
             {
-                SpawnList = [new() { Name = "SheepBall" }]
+                SpawnList = [new() { Name = "RowName" }]
             }));
         }
 
@@ -406,7 +406,7 @@ namespace PalworldRandomizer
 
         private void GroupPalNew_Click(object sender, RoutedEventArgs e)
         {
-            GroupAction(sender, e, (index, spawnEntry, spawnList, areaData) => spawnList.Insert(spawnList.Count, new() { Name = "SheepBall" }), true);
+            GroupAction(sender, e, (index, spawnEntry, spawnList, areaData) => spawnList.Insert(spawnList.Count, new() { Name = "RowName" }), true);
         }
 
         private void GroupPalDeleteAll_Click(object sender, RoutedEventArgs e)
@@ -414,7 +414,7 @@ namespace PalworldRandomizer
             GroupAction(sender, e, (index, spawnEntry, spawnList, areaData) =>
             {
                 spawnList.Clear();
-                spawnList.Add(new() { Name = "SheepBall" });
+                spawnList.Add(new() { Name = "RowName" });
             }, true);
         }
 

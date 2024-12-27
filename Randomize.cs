@@ -154,6 +154,12 @@ namespace PalworldRandomizer
             {
                 if (keyPair.Value.IsPal)
                 {
+                    bool isTowerBoss = keyPair.Key.StartsWith("GYM_", StringComparison.InvariantCultureIgnoreCase);
+                    bool isRaidBoss = keyPair.Key.StartsWith("RAID_", StringComparison.InvariantCultureIgnoreCase);
+                    bool isPredator = keyPair.Key.StartsWith("PREDATOR_", StringComparison.InvariantCultureIgnoreCase);
+                    bool isBoss = keyPair.Key.StartsWith("BOSS_", StringComparison.InvariantCultureIgnoreCase) || isTowerBoss || isRaidBoss || isPredator;
+                    bool isSummon = keyPair.Key.StartsWith("SUMMON_", StringComparison.InvariantCultureIgnoreCase);
+                    bool isOilrig = keyPair.Key.EndsWith("_Oilrig", StringComparison.InvariantCultureIgnoreCase);
                     StructPropertyData? nameData = ((DataTableExport) palNames.Exports[0]).Table.Data.Find(property =>
                         (PalData[keyPair.Key].OverrideNameTextID != null &&
                         string.Compare(((TextPropertyData) property.Value[0]).Value.Value, $"{PalData[keyPair.Key].OverrideNameTextID}_TextData", true) == 0)
@@ -167,12 +173,6 @@ namespace PalworldRandomizer
                     {
                         nameString = nameString.Replace("  ", " ");
                     }
-                    bool isTowerBoss = keyPair.Key.StartsWith("GYM_", StringComparison.InvariantCultureIgnoreCase);
-                    bool isRaidBoss = keyPair.Key.StartsWith("RAID_", StringComparison.InvariantCultureIgnoreCase);
-                    bool isPredator = keyPair.Key.StartsWith("PREDATOR_", StringComparison.InvariantCultureIgnoreCase);
-                    bool isBoss = keyPair.Key.StartsWith("BOSS_", StringComparison.InvariantCultureIgnoreCase) || isTowerBoss || isRaidBoss || isPredator;
-                    bool isSummon = keyPair.Key.StartsWith("SUMMON_", StringComparison.InvariantCultureIgnoreCase);
-                    bool isOilrig = keyPair.Key.EndsWith("_Oilrig", StringComparison.InvariantCultureIgnoreCase);
                     PalName.Add(keyPair.Key, nameString == "en_text" ? (isBoss ? keyPair.Key[(keyPair.Key.IndexOf('_') + 1)..] : keyPair.Key) : nameString);
                     if (keyPair.Value.ZukanIndex > 0 && !isSummon && !isOilrig)
                     {
@@ -226,6 +226,17 @@ namespace PalworldRandomizer
                 }
                 else
                 {
+                    StructPropertyData? property = ((DataTableExport) humanNames.Exports[0]).Table.Data.Find(property =>
+                        ((TextPropertyData) property.Value[0]).Value.Value == $"{PalData[keyPair.Key].OverrideNameTextID}_TextData");
+                    SimpleName.Add(keyPair.Key, keyPair.Key);
+                    if (property != null)
+                    {
+                        PalName.Add(keyPair.Key, ((TextPropertyData) property.Value[0]).CultureInvariantString.Value.Trim());
+                    }
+                    else
+                    {
+                        PalName.Add(keyPair.Key, "-");
+                    }
                     if (keyPair.Key.StartsWith("BOSS_", StringComparison.InvariantCultureIgnoreCase))
                     {
                         HumanBossNames.Add(keyPair.Key);
@@ -252,19 +263,11 @@ namespace PalworldRandomizer
                             PalIcon.Add(keyPair.Key, "/Resources/Images/PalIcon/T_CommonHuman_icon_normal.png");
                         }
                     }
-                    StructPropertyData? property = ((DataTableExport) humanNames.Exports[0]).Table.Data.Find(property =>
-                        ((TextPropertyData) property.Value[0]).Value.Value == $"{PalData[keyPair.Key].OverrideNameTextID}_TextData");
-                    SimpleName.Add(keyPair.Key, keyPair.Key);
-                    if (property != null)
-                    {
-                        PalName.Add(keyPair.Key, ((TextPropertyData) property.Value[0]).CultureInvariantString.Value.Trim());
-                    }
-                    else
-                    {
-                        PalName.Add(keyPair.Key, "-");
-                    }
                 }
             }
+            PalName["RowName"] = "<None>";
+            SimpleName["<None>"] = "RowName";
+            SimpleName.Remove("RowName");
             SimpleNameValues = [.. SimpleName.Keys];
             SimpleNameValues.Sort();
             string[] files = Directory.GetFiles(UAssetData.AppDataPath("Assets"), "*.uasset").Select(Path.GetFileName).ToArray()!;
@@ -487,52 +490,55 @@ namespace PalworldRandomizer
                             }
                         }
                     }
-                    // TODO: Make this dynamic
-                    if (key == "BlackCentaur")
+                    if (formData.SpawnAlphas)
                     {
-                        continue;
-                    }
-                    string bossKey = Data.BossName[key];
-                    SpawnEntry bossEntry = new();
-                    bossSpawns.Add(bossKey, bossEntry);
-                    if (Data.BossEntries.TryGetValue(bossKey, out List<SpawnEntry>? value))
-                    {
-                        bossEntry.SpawnList = value.MaxBy(spawnEntry => spawnEntry.SpawnList.Sum(x => x.MinCount + x.MaxCount))!.SpawnList;
-                    }
-                    else
-                    {
-                        SpawnData bossData = new() { Name = bossKey };
-                        bossEntry.SpawnList.Add(bossData);
-                        if (bossKey["BOSS_".Length..].Contains('_'))
+                        // TODO: Make this dynamic
+                        if (key == "BlackCentaur") // Skip Necromus since it is included with Paladius
                         {
-                            SpawnEntry baseEntry = bossSpawns[bossKey[..bossKey.LastIndexOf('_')]];
-                            if (baseEntry.SpawnList.Count > 1)
+                            continue;
+                        }
+                        string bossKey = Data.BossName[key];
+                        SpawnEntry bossEntry = new();
+                        bossSpawns.Add(bossKey, bossEntry);
+                        if (Data.BossEntries.TryGetValue(bossKey, out List<SpawnEntry>? value))
+                        {
+                            bossEntry.SpawnList.AddRange(value.MaxBy(spawnEntry => spawnEntry.SpawnList.Sum(x => x.MinCount + x.MaxCount))!.SpawnList.ConvertAll(x => x.Clone()));
+                        }
+                        else
+                        {
+                            SpawnData bossData = new() { Name = bossKey };
+                            bossEntry.SpawnList.Add(bossData);
+                            if (bossKey["BOSS_".Length..].Contains('_'))
                             {
-                                bossEntry.SpawnList.Add(new()
+                                SpawnEntry baseEntry = bossSpawns[bossKey[..bossKey.LastIndexOf('_')]];
+                                if (baseEntry.SpawnList.Count > 1)
                                 {
-                                    Name = key,
-                                    MinLevel = baseEntry.SpawnList[1].MinLevel,
-                                    MaxLevel = baseEntry.SpawnList[1].MaxLevel,
-                                    MinCount = baseEntry.SpawnList[1].MinCount,
-                                    MaxCount = baseEntry.SpawnList[1].MaxCount
-                                });
-                                bossData.MinLevel = baseEntry.SpawnList[0].MinLevel;
-                                bossData.MaxLevel = baseEntry.SpawnList[0].MaxLevel;
+                                    bossEntry.SpawnList.Add(new()
+                                    {
+                                        Name = key,
+                                        MinLevel = baseEntry.SpawnList[1].MinLevel,
+                                        MaxLevel = baseEntry.SpawnList[1].MaxLevel,
+                                        MinCount = baseEntry.SpawnList[1].MinCount,
+                                        MaxCount = baseEntry.SpawnList[1].MaxCount
+                                    });
+                                    bossData.MinLevel = baseEntry.SpawnList[0].MinLevel;
+                                    bossData.MaxLevel = baseEntry.SpawnList[0].MaxLevel;
+                                }
                             }
                         }
-                    }
-                    if (bossEntry.SpawnList.Count == 1 && formData.SpawnPals && (basicSpawns[key].SpawnList[0].MaxCount > 1 || Data.PalData[key].Rarity < 6))
-                    {
-                        bossEntry.SpawnList.Add(new()
+                        if (bossEntry.SpawnList.Count == 1 && formData.SpawnPals && (basicSpawns[key].SpawnList[0].MaxCount > 1 || Data.PalData[key].Rarity < 6))
                         {
-                            Name = key,
-                            MinCount = Math.Max(2, basicSpawns[key].SpawnList[0].MinCount),
-                            MaxCount = Math.Max(2, basicSpawns[key].SpawnList[0].MaxCount),
-                            MinLevel = minAddLevel,
-                            MaxLevel = maxAddLevel
-                        });
-                        bossEntry.SpawnList[0].MinLevel = minBossLevel;
-                        bossEntry.SpawnList[0].MaxLevel = maxBossLevel;
+                            bossEntry.SpawnList.Add(new()
+                            {
+                                Name = key,
+                                MinCount = Math.Max(2, basicSpawns[key].SpawnList[0].MinCount),
+                                MaxCount = Math.Max(2, basicSpawns[key].SpawnList[0].MaxCount),
+                                MinLevel = minAddLevel,
+                                MaxLevel = maxAddLevel
+                            });
+                            bossEntry.SpawnList[0].MinLevel = minBossLevel;
+                            bossEntry.SpawnList[0].MaxLevel = maxBossLevel;
+                        }
                     }
                 }
                 foreach (KeyValuePair<string, List<SpawnEntry>> keyPair in Data.SoloEntries)
@@ -648,7 +654,10 @@ namespace PalworldRandomizer
                 {
                     Data.PalList.ForEach(name => basicSpawns.Add(name, new() { SpawnList = [new(name)] }));
                 }
-                Data.PalList.ConvertAll(name => Data.BossName[name]).ForEach(name => bossSpawns.Add(name, new() { SpawnList = [new(name)] }));
+                if (formData.SpawnAlphas)
+                {
+                    Data.PalList.ConvertAll(name => Data.BossName[name]).ForEach(name => bossSpawns.Add(name, new() { SpawnList = [new(name)] }));
+                }
                 humanSpawns.AddRange(new Collection<string>
                 ([
                     .. (formData.SpawnHumans ? Data.humanNames : []),
@@ -681,7 +690,7 @@ namespace PalworldRandomizer
             return
             [
                 .. (formData.SpawnPals ? Data.PalList : []),
-                .. Data.PalList.ConvertAll(name => Data.BossName[name]),
+                .. (formData.SpawnAlphas ? Data.PalList.ConvertAll(name => Data.BossName[name]) : []),
                 .. (formData.SpawnTowerBosses ? Data.TowerBossNames : []),
                 .. (formData.SpawnRaidBosses ? Data.RaidBossNames : []),
                 .. (formData.SpawnPredators ? Data.PredatorNames : []),
@@ -702,6 +711,7 @@ namespace PalworldRandomizer
             bool outputLog = false;
             MainPage.Instance.Dispatcher.Invoke(() => outputLog = MainPage.Instance.outputLog.IsChecked == true);
             StringBuilder outputLogBuilder = outputLog ? new($"Random Seed: {formData.RandomSeed}\n\n") : null!;
+            double predatorChance = Math.Clamp(formData.PredatorChance, 0, 100) / 100.0;
             int minGroup = Math.Max(1, formData.GroupMin);
             int maxGroup = Math.Max(minGroup, formData.GroupMax);
             int minGroupBoss = Math.Max(1, formData.GroupMinBoss);
@@ -712,15 +722,17 @@ namespace PalworldRandomizer
             float dungeonLevel = Math.Max(0, formData.DungeonLevel) / 100.0f;
             float fieldBossLevel = Math.Max(0, formData.FieldBossLevel) / 100.0f;
             float dungeonBossLevel = Math.Max(0, formData.DungeonBossLevel) / 100.0f;
+            float predatorLevel = Math.Max(0, formData.PredatorLevel) / 100.0f;
             int levelCap = Math.Max(1, formData.LevelCap);
             int randomLevelMin = Math.Clamp(formData.RandomLevelMin, 1, levelCap);
             int randomLevelMax = Math.Clamp(formData.RandomLevelMax, randomLevelMin, levelCap);
             int rarity67MinLevel = Math.Clamp(formData.Rarity67MinLevel, 1, levelCap);
             int rarity8UpMinLevel = Math.Clamp(formData.Rarity8UpMinLevel, 1, levelCap);
-            double bossesEverywhereChance = Math.Clamp(formData.BossesEverywhereChance, 1, 99) / 100.0;
+            double bossesEverywhereChance = Math.Clamp(formData.BossesEverywhereChance, 1, 100) / 100.0;
             int weightUniformMin = Math.Max(1, formData.WeightUniformMin);
             int weightUniformMax = Math.Max(weightUniformMin, formData.WeightUniformMax);
             int humanRarity = Math.Clamp(formData.HumanRarity, 1, 20);
+            int humanBossRarity = Math.Clamp(formData.HumanBossRarity, 1, 20);
             float humanWeight = Math.Max(0, formData.HumanWeight) / 100.0f;
             float humanWeightAggro = Math.Max(0, formData.HumanWeightAggro) / 100.0f;
             double weightNightOnly = Math.Max(0, Convert.ToDouble(formData.WeightNightOnly));
@@ -730,6 +742,7 @@ namespace PalworldRandomizer
             float dungeonCount = Math.Max(0, formData.DungeonCount) / 100.0f;
             float fieldBossCount = Math.Max(0, formData.FieldBossCount) / 100.0f;
             float dungeonBossCount = Math.Max(0, formData.DungeonBossCount) / 100.0f;
+            float predatorCount = Math.Max(0, formData.PredatorCount) / 100.0f;
             int countClampMin = Math.Max(0, formData.CountClampMin);
             int countClampMax = Math.Max(Math.Max(1, countClampMin), formData.CountClampMax);
             int countClampFirstMin = Math.Max(0, formData.CountClampFirstMin);
@@ -817,7 +830,7 @@ namespace PalworldRandomizer
                 && (formData.RandomizeDungeons || !area.isDungeon)
                 && (formData.RandomizeDungeonBosses || !area.isDungeonBoss)
                 && (formData.RandomizeFieldBosses || !area.isFieldBoss)
-                && !area.isPredator);
+                && (formData.RandomizePredators || !area.isPredator));
             if (formData.BossesEverywhere && !formData.MethodNone)
             {
                 List<AreaData> addedBosses = subList.FindAll(area => !area.isBoss).ConvertAll(x => x.Clone());
@@ -830,6 +843,8 @@ namespace PalworldRandomizer
             }
             subList.Sort((x, y) =>
             {
+                if (x.isPredator != y.isPredator)
+                    return (x.isPredator ? 1 : 0) - (y.isPredator ? 1 : 0);
                 if (x.isBoss != y.isBoss)
                     return (x.isBoss ? 1 : 0) - (y.isBoss ? 1 : 0);
                 if (x.isInDungeon != y.isInDungeon)
@@ -842,16 +857,23 @@ namespace PalworldRandomizer
             bool NightOnly(AreaData area, bool condition = true) => (formData.NightOnly == condition && area.isField)
                     || (formData.NightOnlyDungeons == condition && area.isDungeon)
                     || (formData.NightOnlyDungeonBosses == condition && area.isDungeonBoss)
-                    || (formData.NightOnlyBosses == condition && area.isFieldBoss);
+                    || (formData.NightOnlyBosses == condition && area.isFieldBoss)
+                    || (formData.NightOnlyPredators == condition && area.isPredator);
             int Rarity(SpawnData spawnData)
             {
                 if (!Data.PalData[spawnData.Name].IsPal)
                 {
-                    return humanRarity;
+                    return spawnData.IsBoss ? humanBossRarity : humanRarity;
                 }
                 if (!spawnData.IsBoss || !spawnData.Name.StartsWith("BOSS_", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    return Data.PalData[spawnData.Name].Rarity;
+                    int rarity = Data.PalData[spawnData.Name].Rarity;
+                    if (spawnData.IsBoss)
+                    {
+                        int baseRarity = Data.PalData[spawnData.Name[(spawnData.Name.IndexOf('_') + 1)..]].Rarity;
+                        return Math.Max(baseRarity, rarity);
+                    }
+                    return rarity;
                 }
                 return Data.PalData[spawnData.Name["BOSS_".Length..]].Rarity;
             }
@@ -861,6 +883,10 @@ namespace PalworldRandomizer
             }
             float LevelMultiplierEx(SpawnData spawnData, bool isDungeon)
             {
+                if (spawnData.Name.StartsWith("PREDATOR_", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return predatorLevel;
+                }
                 if (isDungeon)
                 {
                     return spawnData.IsBoss ? dungeonBossLevel : dungeonLevel;
@@ -869,6 +895,10 @@ namespace PalworldRandomizer
             }
             float CountMultiplierEx(SpawnData spawnData, bool isDungeon)
             {
+                if (spawnData.Name.StartsWith("PREDATOR_", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return predatorCount;
+                }
                 if (isDungeon)
                 {
                     return spawnData.IsBoss ? dungeonBossCount : dungeonCount;
@@ -1048,12 +1078,16 @@ namespace PalworldRandomizer
                 {
                     List<SpawnEntry> spawnEntries = [];
                     List<SpawnEntry> spawnEntriesOriginal = area.SpawnEntries;
+                    area.SpawnEntries = spawnEntries;
+                    if ((formData.BossesEverywhere && !area.isBoss && bossesEverywhereChance == 1) || (area.isPredator && predatorChance == 0))
+                    {
+                        continue;
+                    }
                     HashSet<string> vanillaNames = [.. spawnEntriesOriginal.FindAll(x => x.Weight != 0).ConvertAll(x => x.SpawnList.ConvertAll(y => y.Name)).SelectMany(x => x).Distinct()];
                     if (formData.BossesEverywhere && area.filename.StartsWith('~'))
                     {
                         vanillaNames.UnionWith(vanillaNames.ToList().FindAll(x => Data.PalData[x].IsPal).ConvertAll(x => Data.BossName[x]));
                     }
-                    area.SpawnEntries = spawnEntries;
                     long weightSum = 0;
                     void AddEntry(SpawnEntry value)
                     {
@@ -1298,14 +1332,32 @@ namespace PalworldRandomizer
                     }
                     if (formData.VanillaRestrict && !formData.MethodGlobalSwap)
                     {
+                        List<SpawnEntry> bossBackupClone = bossSpawnsOriginalBackup.ConvertAll(x => x.Clone());
+                        if (area.isPredator && formData.PredatorConstraint && !formData.SpawnPredators)
+                        {
+                            bossBackupClone.AddRange(Data.PredatorNames.ConvertAll(name => new SpawnEntry { SpawnList = [new(name)] }));
+                        }
                         basicSpawnsOriginal = FilterSpawnList(basicSpawnsOriginalBackup.ConvertAll(x => x.Clone()), false);
-                        bossSpawnsOriginal = FilterSpawnList(bossSpawnsOriginalBackup.ConvertAll(x => x.Clone()), true);
+                        bossSpawnsOriginal = FilterSpawnList(bossBackupClone, true);
                         basicSpawnsCurrent = [.. basicSpawnsOriginal];
                         bossSpawnsCurrent = [.. bossSpawnsOriginal];
                         List<SpawnEntry> FilterSpawnList(List<SpawnEntry> spawnList, bool bossList)
                         {
                             spawnList.ForEach(x => x.SpawnList.RemoveAll(y => !vanillaNames.Contains(y.Name)));
                             spawnList.RemoveAll(x => x.SpawnList.Count == 0 || (bossList && !x.SpawnList.Exists(y => y.IsBoss)));
+                            return spawnList;
+                        }
+                    }
+                    else if (formData.PredatorConstraint && area.isPredator)
+                    {
+                        basicSpawnsOriginal = [];
+                        basicSpawnsCurrent = [];
+                        bossSpawnsOriginal = Data.PredatorNames.ConvertAll(name => new SpawnEntry { SpawnList = [new(name)] });
+                        bossSpawnsCurrent = FilterPredators(bossSpawnsCurrent);
+                        List<SpawnEntry> FilterPredators(List<SpawnEntry> spawnList)
+                        {
+                            spawnList.ForEach(x => x.SpawnList.RemoveAll(y => !y.Name.StartsWith("PREDATOR_", StringComparison.InvariantCultureIgnoreCase)));
+                            spawnList.RemoveAll(x => x.SpawnList.Count == 0 || !x.SpawnList.Exists(y => y.IsBoss));
                             return spawnList;
                         }
                     }
@@ -1319,7 +1371,7 @@ namespace PalworldRandomizer
                             bossSpawnsCurrent = [.. bossSpawnsOriginal];
                         }
                         int speciesCount = 0;
-                        int maxSpecies = area.isFieldBoss && !formData.FieldBossExtended
+                        int maxSpecies = (area.isFieldBoss || area.isPredator) && !formData.FieldBossExtended
                             ? 1
                             : (area.isBoss ? bossSpawnsOriginal : basicSpawnsOriginal).Sum(entry => entry.SpawnList.Count);
                         if (formData.GroupVanilla)
@@ -1371,7 +1423,7 @@ namespace PalworldRandomizer
                                 return x;
                             });
                         }
-                        int entryCount = area.isFieldBoss && !formData.FieldBossExtended
+                        int entryCount = (area.isFieldBoss || area.isPredator) && !formData.FieldBossExtended
                             ? 1
                             : (formData.MethodCustomSize ? spawnListSize : spawnEntriesOriginal.Count);
                         for (int i = 0; i < entryCount; ++i)
@@ -1435,18 +1487,41 @@ namespace PalworldRandomizer
             }
             bool FilterVanillaSpawns(List<SpawnEntry> spawnEntries, AreaData area)
             {
+                if (area.isPredator && predatorChance == 0)
+                {
+                    spawnEntries.Clear();
+                    return true;
+                }
                 int changes = 0;
                 foreach (SpawnEntry spawnEntry in spawnEntries)
                 {
-                    changes += spawnEntry.SpawnList.RemoveAll(spawnData => !allowedNames.Contains(spawnData.Name));
+                    changes += spawnEntry.SpawnList.RemoveAll(spawnData => !allowedNames.Contains(spawnData.Name)
+                        && (formData.MethodNone
+                        || !area.isPredator || !formData.PredatorConstraint || !spawnData.Name.StartsWith("PREDATOR_", StringComparison.InvariantCultureIgnoreCase)));
+                    if (area.isPredator && predatorChance == 1)
+                    {
+                        changes += spawnEntry.SpawnList.RemoveAll(spawnData => spawnData.Name == "RowName");
+                    }
                 }
                 changes += spawnEntries.RemoveAll(entry => entry.SpawnList.Count == 0);
+                if (area.isPredator && predatorChance != 1 && spawnEntries.Count == 2)
+                {
+                    int originalWeight0 = spawnEntries[0].Weight;
+                    int originalWeight1 = spawnEntries[1].Weight;
+                    spawnEntries[0].Weight = Convert.ToInt32(100 * predatorChance);
+                    spawnEntries[1].Weight = 100 - spawnEntries[0].Weight;
+                    changes += (spawnEntries[0].Weight != originalWeight0 ? 1 : 0) + (spawnEntries[1].Weight != originalWeight1 ? 1 : 0);
+                }
                 foreach (SpawnEntry spawnEntry in spawnEntries)
                 {
                     if (NightOnly(area, false))
                     {
                         changes += spawnEntry.NightOnly == true ? 1 : 0;
                         spawnEntry.NightOnly = false;
+                    }
+                    if (spawnEntry.SpawnList[0].Name == "RowName")
+                    {
+                        continue;
                     }
                     float firstAverage = 0;
                     for (int i = 0; i < spawnEntry.SpawnList.Count; ++i)
@@ -1506,9 +1581,14 @@ namespace PalworldRandomizer
                 List<AreaData> dungeonList = [];
                 List<AreaData> fieldBossList = [];
                 List<AreaData> dungeonBossList = [];
+                List<AreaData> predatorList = [];
                 foreach (AreaData area in subList)
                 {
-                    if (area.isBoss)
+                    if (area.isPredator)
+                    {
+                        predatorList.Add(area);
+                    }
+                    else if (area.isBoss)
                     {
                         if (area.isInDungeon)
                         {
@@ -1535,6 +1615,7 @@ namespace PalworldRandomizer
                 EqualizeSpawns(dungeonList);
                 EqualizeSpawns(fieldBossList);
                 EqualizeSpawns(dungeonBossList);
+                EqualizeSpawns(predatorList);
                 void EqualizeSpawns(List<AreaData> editList)
                 {
                     if (editList.Count  == 0)
@@ -1853,10 +1934,14 @@ namespace PalworldRandomizer
                 }
                 // Add To Vanilla
                 List<SpawnEntry> vanillaSpawns = [];
-                if (formData.VanillaPlus && !area.filename.StartsWith('~'))
+                if (formData.VanillaPlus && (!area.filename.StartsWith('~') || bossesEverywhereChance == 1))
                 {
-                    vanillaSpawns = Data.AreaData[area.filename].SpawnEntries.ConvertAll(entry => entry.Clone());
+                    vanillaSpawns = Data.AreaData[area.filename.StartsWith('~') ? area.filename[1..] : area.filename].SpawnEntries.ConvertAll(entry => entry.Clone());
                     FilterVanillaSpawns(vanillaSpawns, area);
+                    if (area.isPredator)
+                    {
+                        vanillaSpawns.RemoveAll(x => x.SpawnList.Exists(y => y.Name == "RowName"));
+                    }
                     long vanillaWeightSum = vanillaSpawns.Sum(x => (long) x.Weight);
                     long vanillaNightSum = vanillaSpawns.FindAll(x => x.NightOnly).Sum(x => (long) x.Weight);
                     List<SpawnEntry> nightSpawns = spawnEntries.FindAll(x => x.NightOnly);
@@ -1866,7 +1951,7 @@ namespace PalworldRandomizer
                     {
                         if (vanillaNightSum != 0)
                         {
-                            if (nightSum != weightSum)
+                            if (nightSum != weightSum && vanillaNightSum != vanillaWeightSum)
                             {
                                 double nightRatio = (double) vanillaNightSum / (vanillaWeightSum - vanillaNightSum);
                                 double nightScale = nightRatio / ((double) nightSum / (weightSum - nightSum));
@@ -1894,7 +1979,7 @@ namespace PalworldRandomizer
                     }
                     else
                     {
-                        if (vanillaNightSum != 0)
+                        if (vanillaNightSum != 0 && vanillaNightSum != vanillaWeightSum)
                         {
                             SelectiveScale(weightSum, vanillaWeightSum - vanillaNightSum, vanillaSpawns, spawnEntries, vanillaPlusChance);
                         }
@@ -1941,6 +2026,10 @@ namespace PalworldRandomizer
                 {
                     List<SpawnEntry> mergedVanillaSpawns = Data.AreaData[area.filename.StartsWith('~') ? area.filename[1..] : area.filename].SpawnEntries.ConvertAll(x => x.Clone());
                     FilterVanillaSpawns(mergedVanillaSpawns, area);
+                    if (area.isPredator)
+                    {
+                        mergedVanillaSpawns.RemoveAll(x => x.SpawnList.Exists(y => y.Name == "RowName"));
+                    }
                     List<SpawnEntry> vanillaSpawnsDay = mergedVanillaSpawns.FindAll(x => !x.NightOnly && x.Weight != 0);
                     List<SpawnEntry> vanillaSpawnsNight = mergedVanillaSpawns.FindAll(x => x.NightOnly && x.Weight != 0);
                     List<SpawnEntry> spawnsDay = spawnEntries[vanillaSpawns.Count..].FindAll(x => !x.NightOnly);
@@ -1988,6 +2077,34 @@ namespace PalworldRandomizer
                             }
                         }
                     }
+                }
+                if (area.isPredator && predatorChance != 1)
+                {
+                    List<SpawnEntry> diurnalSpawns = spawnEntries.FindAll(x => !x.NightOnly);
+                    int nullWeight = Convert.ToInt32(100 * (1 - predatorChance));
+                    SpawnEntry? diurnalNull = null;
+                    if (diurnalSpawns.Count != 0)
+                    {
+                        List<SpawnEntry> nullSpawn = [new() { Weight = nullWeight, SpawnList = [new("RowName") { MaxLevel = 1 }] }];
+                        SelectiveScale(diurnalSpawns.Sum(x => (long)x.Weight), nullWeight, nullSpawn, spawnEntries, predatorChance);
+                        spawnEntries.Insert(Math.Max(spawnEntries.IndexOf(diurnalSpawns[^1]) + 1, vanillaSpawns.Count), nullSpawn[0]);
+                        diurnalNull = nullSpawn[0];
+                    }
+                    if (spawnEntries.Exists(x => x.NightOnly))
+                    {
+                        List<SpawnEntry> nullSpawn = [new() { NightOnly = true, Weight = nullWeight, SpawnList = [new("RowName") { MaxLevel = 1 }] }];
+                        int diurnalNullWeight = diurnalNull != null ? diurnalNull.Weight : 0;
+                        SelectiveScale(spawnEntries.Sum(x => (long)x.Weight) - diurnalNullWeight, nullWeight, nullSpawn, spawnEntries, predatorChance);
+                        if (diurnalNull != null)
+                        {
+                            nullSpawn[0].Weight -= diurnalNull.Weight;
+                        }
+                        if (nullSpawn[0].Weight != 0)
+                        {
+                            spawnEntries.Add(nullSpawn[0]);
+                        }
+                    }
+                    IntOverflowFix(spawnEntries, spawnEntries.Sum(x => (long)x.Weight), nightOnly);
                 }
                 if (!area.filename.StartsWith('~') && (formData.MethodNone || !formData.BossesEverywhere || area.isBoss))
                 {
@@ -2085,38 +2202,45 @@ namespace PalworldRandomizer
                 foreach (AreaData area in subList.FindAll(area => !area.isBoss))
                 {
                     AreaData addedBosses = subList.Find(x => x.filename == $"~{area.filename}")!;
-                    List<SpawnEntry> diurnalSpawns = area.SpawnEntries.FindAll(x => !x.NightOnly);
-                    List<SpawnEntry> nocturnalSpawns = area.SpawnEntries.FindAll(x => x.NightOnly);
-                    List<SpawnEntry> addedDiurnalSpawns = addedBosses.SpawnEntries.FindAll(x => !x.NightOnly);
-                    List<SpawnEntry> addedNocturnalSpawns = addedBosses.SpawnEntries.FindAll(x => x.NightOnly);
-                    if (addedDiurnalSpawns.Count != 0)
+                    if (bossesEverywhereChance == 1)
                     {
-                        if (diurnalSpawns.Count != 0)
+                        area.SpawnEntries = addedBosses.SpawnEntries;
+                    }
+                    else
+                    {
+                        List<SpawnEntry> diurnalSpawns = area.SpawnEntries.FindAll(x => !x.NightOnly);
+                        List<SpawnEntry> nocturnalSpawns = area.SpawnEntries.FindAll(x => x.NightOnly);
+                        List<SpawnEntry> addedDiurnalSpawns = addedBosses.SpawnEntries.FindAll(x => !x.NightOnly);
+                        List<SpawnEntry> addedNocturnalSpawns = addedBosses.SpawnEntries.FindAll(x => x.NightOnly);
+                        if (addedDiurnalSpawns.Count != 0)
                         {
-                            SelectiveScale(addedDiurnalSpawns.Sum(x => (long)x.Weight), diurnalSpawns.Sum(x => (long)x.Weight),
-                                diurnalSpawns, addedDiurnalSpawns, bossesEverywhereChance);
+                            if (diurnalSpawns.Count != 0)
+                            {
+                                SelectiveScale(addedDiurnalSpawns.Sum(x => (long)x.Weight), diurnalSpawns.Sum(x => (long)x.Weight),
+                                    formData.VanillaPlus ? area.SpawnEntries : diurnalSpawns, addedDiurnalSpawns, bossesEverywhereChance);
+                            }
+                            else
+                            {
+                                List<SpawnEntry> nullSpawn = [new() { Weight = 1, SpawnList = [new("RowName") { MaxLevel = 1 }] }];
+                                SelectiveScale(addedDiurnalSpawns.Sum(x => (long)x.Weight), 1, nullSpawn, addedDiurnalSpawns, bossesEverywhereChance);
+                                addedDiurnalSpawns.Add(nullSpawn[0]);
+                            }
+                            area.SpawnEntries.AddRange(addedDiurnalSpawns);
+                            diurnalSpawns.AddRange(addedDiurnalSpawns);
                         }
-                        else
+                        if (nocturnalSpawns.Count != 0 && diurnalSpawns.Count != 0 && !formData.VanillaPlus)
                         {
-                            List<SpawnEntry> nullSpawn = [new() { Weight = 1, SpawnList = [new("RowName") { MaxLevel = 1 }] }];
-                            SelectiveScale(addedDiurnalSpawns.Sum(x => (long)x.Weight), 1, nullSpawn, addedDiurnalSpawns, bossesEverywhereChance);
-                            addedDiurnalSpawns.Add(nullSpawn[0]);
+                            SelectiveScale(nocturnalSpawns.Sum(x => (long)x.Weight), diurnalSpawns.Sum(x => (long)x.Weight), diurnalSpawns,
+                                nocturnalSpawns, (double)weightNightOnly / (weightNightOnly + 1));
                         }
-                        area.SpawnEntries.AddRange(addedDiurnalSpawns);
-                        diurnalSpawns.AddRange(addedDiurnalSpawns);
+                        if (addedNocturnalSpawns.Count != 0)
+                        {
+                            SelectiveScale(addedNocturnalSpawns.Sum(x => (long)x.Weight), area.SpawnEntries.Sum(x => (long)x.Weight),
+                                area.SpawnEntries, addedNocturnalSpawns, bossesEverywhereChance);
+                            area.SpawnEntries.AddRange(addedNocturnalSpawns);
+                        }
+                        IntOverflowFix(area.SpawnEntries, area.SpawnEntries.Sum(x => (long)x.Weight), NightOnly(area));
                     }
-                    if (nocturnalSpawns.Count != 0 && diurnalSpawns.Count != 0 && !formData.VanillaPlus)
-                    {
-                        SelectiveScale(nocturnalSpawns.Sum(x => (long)x.Weight), diurnalSpawns.Sum(x => (long)x.Weight), diurnalSpawns,
-                            nocturnalSpawns, (double)weightNightOnly / (weightNightOnly + 1));
-                    }
-                    if (addedNocturnalSpawns.Count != 0)
-                    {
-                        SelectiveScale(addedNocturnalSpawns.Sum(x => (long)x.Weight), area.SpawnEntries.Sum(x => (long)x.Weight),
-                            area.SpawnEntries, addedNocturnalSpawns, bossesEverywhereChance);
-                        area.SpawnEntries.AddRange(addedNocturnalSpawns);
-                    }
-                    IntOverflowFix(area.SpawnEntries, area.SpawnEntries.Sum(x => (long)x.Weight), NightOnly(area));
                     WriteAreaAsset(area);
                 }
             }

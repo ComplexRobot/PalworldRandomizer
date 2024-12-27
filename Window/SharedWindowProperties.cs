@@ -126,6 +126,11 @@ namespace PalworldRandomizer
         public static void PositiveIntSize2_PreviewTextInput(object sender, TextCompositionEventArgs e) => TextBox_PreviewTextInput(positiveIntSize2Regex(), sender, e);
         public static void PositiveIntSize2_Pasting(object sender, DataObjectPastingEventArgs e) => TextBox_Pasting(positiveIntSize2Regex(), sender, e);
 
+        [GeneratedRegex("^(?:(?!0)[0-9]{0,2}|100)$")]
+        private static partial Regex positiveIntPercentRegex();
+        public static void PositiveIntPercent_PreviewTextInput(object sender, TextCompositionEventArgs e) => TextBox_PreviewTextInput(positiveIntPercentRegex(), sender, e);
+        public static void PositiveIntPercent_Pasting(object sender, DataObjectPastingEventArgs e) => TextBox_Pasting(positiveIntPercentRegex(), sender, e);
+
         [GeneratedRegex("^(?!0)[0-9]{0,3}$")]
         private static partial Regex positiveIntSize3Regex();
         public static void PositiveIntSize3_PreviewTextInput(object sender, TextCompositionEventArgs e) => TextBox_PreviewTextInput(positiveIntSize3Regex(), sender, e);
@@ -145,6 +150,11 @@ namespace PalworldRandomizer
         private static partial Regex nonNegIntSize2Regex();
         public static void NonNegIntSize2_PreviewTextInput(object sender, TextCompositionEventArgs e) => TextBox_PreviewTextInput(nonNegIntSize2Regex(), sender, e);
         public static void NonNegIntSize2_Pasting(object sender, DataObjectPastingEventArgs e) => TextBox_Pasting(nonNegIntSize2Regex(), sender, e);
+
+        [GeneratedRegex("^(?:0|(?!0)[0-9]{0,2}|100)$")]
+        private static partial Regex nonNegIntPercentRegex();
+        public static void NonNegIntPercent_PreviewTextInput(object sender, TextCompositionEventArgs e) => TextBox_PreviewTextInput(nonNegIntPercentRegex(), sender, e);
+        public static void NonNegIntPercent_Pasting(object sender, DataObjectPastingEventArgs e) => TextBox_Pasting(nonNegIntPercentRegex(), sender, e);
 
         [GeneratedRegex("^(?:0|(?!0)[0-9]{0,3})$")]
         private static partial Regex nonNegIntSize3Regex();
