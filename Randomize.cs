@@ -182,9 +182,12 @@ namespace PalworldRandomizer
                     {
                         if (!isBoss)
                         {
-                            if (keyPair.Value.ZukanIndex > 0 && !isSummon && !isOilrig)
+                            try
                             {
                                 BossName.Add(keyPair.Key, PalData.Keys.First(key => string.Compare(key, $"BOSS_{keyPair.Key}", true) == 0));
+                            }
+                            catch
+                            {
                             }
                         }
                         else if (isTowerBoss)

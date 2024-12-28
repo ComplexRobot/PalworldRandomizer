@@ -3223,6 +3223,26 @@ namespace PalworldRandomizer.Resources {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] DT_CapturedCagePal {
+            get {
+                object obj = ResourceManager.GetObject("DT_CapturedCagePal", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] DT_CapturedCagePal1 {
+            get {
+                object obj = ResourceManager.GetObject("DT_CapturedCagePal1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] DT_HumanNameText {
             get {
                 object obj = ResourceManager.GetObject("DT_HumanNameText", resourceCulture);
