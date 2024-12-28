@@ -16,6 +16,7 @@ using UAssetAPI;
 using UAssetAPI.ExportTypes;
 using UAssetAPI.PropertyTypes.Objects;
 using UAssetAPI.PropertyTypes.Structs;
+using UAssetAPI.UnrealTypes;
 
 namespace PalworldRandomizer
 {
@@ -354,6 +355,10 @@ namespace PalworldRandomizer
             string firstAreaName = "BP_PalSpawner_Sheets_1_1_plain_begginer.uasset";
             AreaData[firstAreaName].minLevel = AreaData[firstAreaName].SpawnEntries[0].SpawnList[0].MinLevel;
             AreaData[firstAreaName].maxLevel = AreaData[firstAreaName].SpawnEntries[0].SpawnList[0].MaxLevel;
+            foreach (KeyValuePair<string, AreaData> keyPair in FileModify.ReadCageData(UAssetData.AppDataPath(@"Data\DT_CapturedCagePal.uasset")))
+            {
+                AreaData.Add(keyPair.Key, keyPair.Value);
+            }
         }
         public static List<AreaData> AreaDataCopy()
         {
@@ -363,7 +368,7 @@ namespace PalworldRandomizer
         {
             foreach (AreaData area in areaList)
             {
-                List<SpawnEntry> baseEntries = AreaData[area.filename].SpawnEntries;
+                List<SpawnEntry> baseEntries = AreaData[area.isCage ? $"Cage:{area.filename}" : area.filename].SpawnEntries;
                 List<SpawnEntry> newEntries = area.SpawnEntries;
                 if (baseEntries.Count != newEntries.Count
                     || ((Func<bool>) (() =>
@@ -726,6 +731,7 @@ namespace PalworldRandomizer
             float fieldBossLevel = Math.Max(0, formData.FieldBossLevel) / 100.0f;
             float dungeonBossLevel = Math.Max(0, formData.DungeonBossLevel) / 100.0f;
             float predatorLevel = Math.Max(0, formData.PredatorLevel) / 100.0f;
+            float cageLevel = Math.Max(0, formData.CageLevel) / 100.0f;
             int levelCap = Math.Max(1, formData.LevelCap);
             int randomLevelMin = Math.Clamp(formData.RandomLevelMin, 1, levelCap);
             int randomLevelMax = Math.Clamp(formData.RandomLevelMax, randomLevelMin, levelCap);
@@ -736,6 +742,7 @@ namespace PalworldRandomizer
             int weightUniformMax = Math.Max(weightUniformMin, formData.WeightUniformMax);
             int humanRarity = Math.Clamp(formData.HumanRarity, 1, 20);
             int humanBossRarity = Math.Clamp(formData.HumanBossRarity, 1, 20);
+            int maxCageRarity = Math.Clamp(formData.MaxCageRarity, 1, 20);
             float humanWeight = Math.Max(0, formData.HumanWeight) / 100.0f;
             float humanWeightAggro = Math.Max(0, formData.HumanWeightAggro) / 100.0f;
             double weightNightOnly = Math.Max(0, Convert.ToDouble(formData.WeightNightOnly));
@@ -833,10 +840,11 @@ namespace PalworldRandomizer
                 && (formData.RandomizeDungeons || !area.isDungeon)
                 && (formData.RandomizeDungeonBosses || !area.isDungeonBoss)
                 && (formData.RandomizeFieldBosses || !area.isFieldBoss)
-                && (formData.RandomizePredators || !area.isPredator));
+                && (formData.RandomizePredators || !area.isPredator)
+                && (formData.RandomizeCages || !area.isCage));
             if (formData.BossesEverywhere && !formData.MethodNone)
             {
-                List<AreaData> addedBosses = subList.FindAll(area => !area.isBoss).ConvertAll(x => x.Clone());
+                List<AreaData> addedBosses = subList.FindAll(area => !area.isBoss && !area.isCage).ConvertAll(x => x.Clone());
                 foreach (AreaData area in addedBosses)
                 {
                     area.isBoss = true;
@@ -846,6 +854,8 @@ namespace PalworldRandomizer
             }
             subList.Sort((x, y) =>
             {
+                if (x.isCage != y.isCage)
+                    return (x.isCage ? 1 : 0) - (y.isCage ? 1 : 0);
                 if (x.isPredator != y.isPredator)
                     return (x.isPredator ? 1 : 0) - (y.isPredator ? 1 : 0);
                 if (x.isBoss != y.isBoss)
@@ -884,8 +894,12 @@ namespace PalworldRandomizer
             {
                 return Rarity(spawnData) >= min && !spawnData.Name.EndsWith("PlantSlime_Flower", StringComparison.InvariantCultureIgnoreCase);
             }
-            float LevelMultiplierEx(SpawnData spawnData, bool isDungeon)
+            float LevelMultiplierEx(SpawnData spawnData, bool isDungeon, bool isCage)
             {
+                if (isCage)
+                {
+                    return cageLevel;
+                }
                 if (spawnData.Name.StartsWith("PREDATOR_", StringComparison.InvariantCultureIgnoreCase))
                 {
                     return predatorLevel;
@@ -896,8 +910,12 @@ namespace PalworldRandomizer
                 }
                 return spawnData.IsBoss ? fieldBossLevel : fieldLevel;
             }
-            float CountMultiplierEx(SpawnData spawnData, bool isDungeon)
+            float CountMultiplierEx(SpawnData spawnData, bool isDungeon, bool isCage)
             {
+                if (isCage)
+                {
+                    return 1;
+                }
                 if (spawnData.Name.StartsWith("PREDATOR_", StringComparison.InvariantCultureIgnoreCase))
                 {
                     return predatorCount;
@@ -932,10 +950,10 @@ namespace PalworldRandomizer
                         float currentRange = spawnEntry.SpawnList[i].MaxLevel - spawnEntry.SpawnList[i].MinLevel;
                         float currentAverage = (spawnEntry.SpawnList[i].MaxLevel + spawnEntry.SpawnList[i].MinLevel) / 2.0f;
                         float newRange = (firstRange == 0 ? currentRange : range * currentRange / firstRange);
-                        ApplyLevelRange(spawnEntry.SpawnList[i], LevelMultiplier(spawnEntry.SpawnList[i]), average * currentAverage / firstAverage, newRange);
+                        ApplyLevelRange(spawnEntry.SpawnList[i], LevelMultiplier(spawnEntry.SpawnList[i]), average * currentAverage / firstAverage, newRange, !area.isCage);
                     }
                 }
-                ApplyLevelRange(spawnEntry.SpawnList[0], LevelMultiplier(spawnEntry.SpawnList[0]), average, range);
+                ApplyLevelRange(spawnEntry.SpawnList[0], LevelMultiplier(spawnEntry.SpawnList[0]), average, range, !area.isCage);
             }
             void ApplyLevelRange(SpawnData spawnData, float multiplier, float average, float range, bool rarityCheck = true)
             {
@@ -1044,11 +1062,11 @@ namespace PalworldRandomizer
                 bool nightOnly = NightOnly(area);
                 float LevelMultiplier(SpawnData spawnData)
                 {
-                    return LevelMultiplierEx(spawnData, area.isInDungeon);
+                    return LevelMultiplierEx(spawnData, area.isInDungeon, area.isCage);
                 }
                 float CountMultiplier(SpawnData spawnData)
                 {
-                    return CountMultiplierEx(spawnData, area.isInDungeon);
+                    return CountMultiplierEx(spawnData, area.isInDungeon, area.isCage);
                 }
                 float CustomWeight(float rarity, bool lerp, float scale)
                 {
@@ -1082,7 +1100,7 @@ namespace PalworldRandomizer
                     List<SpawnEntry> spawnEntries = [];
                     List<SpawnEntry> spawnEntriesOriginal = area.SpawnEntries;
                     area.SpawnEntries = spawnEntries;
-                    if ((formData.BossesEverywhere && !area.isBoss && bossesEverywhereChance == 1) || (area.isPredator && predatorChance == 0))
+                    if ((formData.BossesEverywhere && !area.isBoss && bossesEverywhereChance == 1 && !area.isCage) || (area.isPredator && predatorChance == 0))
                     {
                         continue;
                     }
@@ -1171,6 +1189,10 @@ namespace PalworldRandomizer
                         {
                             GenerateLevels(spawnEntry, area, LevelMultiplier);
                         }
+                        if (area.isCage)
+                        {
+                            return;
+                        }
                         if (formData.GroupRandom)
                         {
                             spawnEntry.SpawnList.Sort((x, y) =>
@@ -1236,6 +1258,10 @@ namespace PalworldRandomizer
                         else
                         {
                             spawnEntry.SpawnList.Add(NextSpecies(basicSpawnsCurrent, basicSpawnsOriginal));
+                        }
+                        if (area.isCage)
+                        {
+                            return spawnEntry;
                         }
                         if (original.Count != 0 && !(formData.Rarity8UpSolo && Rarity8Up(spawnEntry.SpawnList[0])))
                         {
@@ -1364,6 +1390,22 @@ namespace PalworldRandomizer
                             return spawnList;
                         }
                     }
+                    if (area.isCage && (area.filename == "Forest1" || (formData.VanillaRestrict && !formData.MethodGlobalSwap)))
+                    {
+                        if (formData.VanillaRestrict && !formData.MethodGlobalSwap)
+                        {
+                            basicSpawnsOriginal = basicSpawnsOriginal.FindAll(x => Rarity(x.SpawnList[0]) <= maxCageRarity);
+                        }
+                        else
+                        {
+                            basicSpawnsOriginal = basicSpawnsOriginalBackup.ConvertAll(x => x.Clone()).FindAll(x => Rarity(x.SpawnList[0]) <= maxCageRarity);
+                        }
+                        if (!formData.AllowCagedHumans)
+                        {
+                            basicSpawnsOriginal = basicSpawnsOriginal.FindAll(x => Data.PalData[x.SpawnList[0].Name].IsPal);
+                        }
+                        basicSpawnsCurrent = [.. basicSpawnsOriginal];
+                    }
                     // All Species Everywhere
                     if (formData.MethodFull)
                     {
@@ -1391,6 +1433,16 @@ namespace PalworldRandomizer
                                 AddEntry(spawns[i]);
                                 speciesCount += spawns[i].SpawnList.Count;
                                 spawns.RemoveAt(i);
+                            }
+                            if (area.isCage)
+                            {
+                                foreach (SpawnEntry entry in spawnEntries)
+                                {
+                                    if (entry.SpawnList.Count > 1)
+                                    {
+                                        entry.SpawnList.RemoveRange(1, entry.SpawnList.Count - 1);
+                                    }
+                                }
                             }
                         }
                         else if (formData.GroupRandom)
@@ -1475,6 +1527,16 @@ namespace PalworldRandomizer
                                     AddEntry(GetRandomGroup());
                                 }
                             }
+                            if (area.isCage && formData.GroupVanilla)
+                            {
+                                foreach (SpawnEntry entry in spawnEntries)
+                                {
+                                    if (entry.SpawnList.Count > 1)
+                                    {
+                                        entry.SpawnList.RemoveRange(1, entry.SpawnList.Count - 1);
+                                    }
+                                }
+                            }
                         }
                     }
                     if (!equalizeAreaRarity)
@@ -1544,8 +1606,8 @@ namespace PalworldRandomizer
                         {
                             average = (spawnData.MaxLevel + spawnData.MinLevel) / 2.0f;
                         }
-                        ApplyLevelRange(spawnData, LevelMultiplierEx(spawnData, area.isInDungeon), average, range, false);
-                        float countMultiplier = CountMultiplierEx(spawnData, area.isInDungeon);
+                        ApplyLevelRange(spawnData, LevelMultiplierEx(spawnData, area.isInDungeon, area.isCage), average, range, false);
+                        float countMultiplier = CountMultiplierEx(spawnData, area.isInDungeon, area.isCage);
                         if (i == 0)
                         {
                             firstAverage = average;
@@ -1567,15 +1629,18 @@ namespace PalworldRandomizer
             {
                 if (outputLog)
                 {
-                    outputLogBuilder.AppendLine(Path.GetFileNameWithoutExtension(area.filename)["BP_PalSpawner_Sheets_".Length..]);
+                    outputLogBuilder.AppendLine(area.SimpleName);
                     area.SpawnEntries.ForEach(entry => { entry.Print(outputLogBuilder); totalSpeciesCount += entry.SpawnList.Count; });
                     outputLogBuilder.AppendLine();
                 }
                 if (saveData)
                 {
                     area.modified = true;
-                    PalSpawn.MutateAsset(area.uAsset, area.spawnExportData);
-                    area.uAsset.Write($"{outputPath}\\{area.filename}");
+                    if (!area.isCage)
+                    {
+                        PalSpawn.MutateAsset(area.uAsset, area.spawnExportData);
+                        area.uAsset.Write($"{outputPath}\\{area.filename}");
+                    }
                 }
             }
             if (equalizeAreaRarity)
@@ -1585,11 +1650,16 @@ namespace PalworldRandomizer
                 List<AreaData> fieldBossList = [];
                 List<AreaData> dungeonBossList = [];
                 List<AreaData> predatorList = [];
+                List<AreaData> cageList = [];
                 foreach (AreaData area in subList)
                 {
                     if (area.isPredator)
                     {
                         predatorList.Add(area);
+                    }
+                    else if (area.isCage)
+                    {
+                        cageList.Add(area);
                     }
                     else if (area.isBoss)
                     {
@@ -1619,6 +1689,7 @@ namespace PalworldRandomizer
                 EqualizeSpawns(fieldBossList);
                 EqualizeSpawns(dungeonBossList);
                 EqualizeSpawns(predatorList);
+                EqualizeSpawns(cageList);
                 void EqualizeSpawns(List<AreaData> editList)
                 {
                     if (editList.Count  == 0)
@@ -1849,7 +1920,7 @@ namespace PalworldRandomizer
                 {
                     foreach (SpawnEntry spawnEntry in area.SpawnEntries)
                     {
-                        GenerateLevels(spawnEntry, area, x => LevelMultiplierEx(x, area.isInDungeon));
+                        GenerateLevels(spawnEntry, area, x => LevelMultiplierEx(x, area.isInDungeon, area.isCage));
                     }
                     PostProcessArea(area, area.SpawnEntries.Sum(x => (long) x.Weight), NightOnly(area));
                 }
@@ -1939,7 +2010,8 @@ namespace PalworldRandomizer
                 List<SpawnEntry> vanillaSpawns = [];
                 if (formData.VanillaPlus && (!area.filename.StartsWith('~') || bossesEverywhereChance == 1))
                 {
-                    vanillaSpawns = Data.AreaData[area.filename.StartsWith('~') ? area.filename[1..] : area.filename].SpawnEntries.ConvertAll(entry => entry.Clone());
+                    vanillaSpawns = Data.AreaData[area.filename.StartsWith('~') ? area.filename[1..] : $"{(area.isCage ? "Cage:" : "")}{area.filename}"]
+                        .SpawnEntries.ConvertAll(entry => entry.Clone());
                     FilterVanillaSpawns(vanillaSpawns, area);
                     if (area.isPredator)
                     {
@@ -2025,7 +2097,7 @@ namespace PalworldRandomizer
                     }
                     return string.Compare(x.SpawnList[0].Name, y.SpawnList[0].Name);
                 });
-                if (formData.VanillaMerge)
+                if (formData.VanillaMerge && !area.isCage)
                 {
                     List<SpawnEntry> mergedVanillaSpawns = Data.AreaData[area.filename.StartsWith('~') ? area.filename[1..] : area.filename].SpawnEntries.ConvertAll(x => x.Clone());
                     FilterVanillaSpawns(mergedVanillaSpawns, area);
@@ -2109,7 +2181,7 @@ namespace PalworldRandomizer
                     }
                     IntOverflowFix(spawnEntries, spawnEntries.Sum(x => (long)x.Weight), nightOnly);
                 }
-                if (!area.filename.StartsWith('~') && (formData.MethodNone || !formData.BossesEverywhere || area.isBoss))
+                if (!area.filename.StartsWith('~') && (formData.MethodNone || !formData.BossesEverywhere || area.isBoss || area.isCage))
                 {
                     WriteAreaAsset(area);
                 }
@@ -2202,7 +2274,7 @@ namespace PalworldRandomizer
             }
             if (!formData.MethodNone && formData.BossesEverywhere)
             {
-                foreach (AreaData area in subList.FindAll(area => !area.isBoss))
+                foreach (AreaData area in subList.FindAll(area => !area.isBoss && !area.isCage))
                 {
                     AreaData addedBosses = subList.Find(x => x.filename == $"~{area.filename}")!;
                     if (bossesEverywhereChance == 1)
@@ -2246,6 +2318,15 @@ namespace PalworldRandomizer
                     }
                     WriteAreaAsset(area);
                 }
+            }
+            string dataPath = UAssetData.AppDataPath(@"Create-Pak\Pal\Content\Pal\DataTable\Character");
+            if (Directory.Exists(dataPath))
+            {
+                Directory.GetFiles(dataPath).ForAll(File.Delete);
+            }
+            if (formData.RandomizeCages)
+            {
+                FileModify.WriteCageData(subList.FindAll(x => x.isCage), dataPath);
             }
             MainPage.Instance.Dispatcher.Invoke(() => MainPage.Instance.progressBar.Visibility = Visibility.Collapsed);
             areaList.Sort((x, y) =>
@@ -2350,19 +2431,96 @@ namespace PalworldRandomizer
             Directory.CreateDirectory(outputPath);
             Directory.GetFiles(outputPath).ForAll(File.Delete);
             bool changesDetected = false;
+            bool cageChanges = false;
             Data.AreaForEachIfDiff(areaList, area =>
             {
                 changesDetected = true;
+                if (area.isCage)
+                {
+                    cageChanges = true;
+                    return;
+                }
                 PalSpawn.MutateAsset(area.uAsset, area.spawnExportData);
                 area.uAsset.Write($"{outputPath}\\{area.filename}");
             });
+            if (cageChanges)
+            {
+                string dataPath = UAssetData.AppDataPath(@"Create-Pak\Pal\Content\Pal\DataTable\Character");
+                Directory.CreateDirectory(dataPath);
+                Directory.GetFiles(dataPath).ForAll(File.Delete);
+                WriteCageData(areaList.FindAll(x => x.isCage), dataPath);
+            }
             return changesDetected;
+        }
+
+        public static Dictionary<string, AreaData> ReadCageData(string filepath)
+        {
+            UAsset uAsset = UAssetData.LoadAssetLocal(filepath);
+            List<CagePalData> cagePalDataList = ((DataTableExport)uAsset.Exports[0]).Table.Data.ConvertAll(x => new CagePalData(uAsset, x));
+            Dictionary<string, AreaData> cageList = [];
+            foreach (CagePalData cagePalData in cagePalDataList)
+            {
+                if (!cageList.TryGetValue($"Cage:{cagePalData.FieldName}", out AreaData? areaData))
+                {
+                    areaData = new(new(), new(), cagePalData.FieldName!)
+                    {
+                        isCage = true,
+                        minLevel = cagePalData.MinLevel,
+                        maxLevel = cagePalData.MaxLevel
+                    };
+                    cageList.Add(areaData.SimpleName, areaData);
+                }
+                areaData.SpawnEntries.Add(new()
+                {
+                    Weight = Convert.ToInt32(cagePalData.Weight),
+                    SpawnList = [new()
+                    {
+                        Name = cagePalData.PalID!,
+                        MinLevel = cagePalData.MinLevel,
+                        MaxLevel = cagePalData.MaxLevel
+                    }]
+                });
+            }
+            return cageList;
+        }
+
+        public static void WriteCageData(List<AreaData> areaList, string savePath)
+        {
+            if (areaList.Count == 0)
+            {
+                return;
+            }
+            Directory.CreateDirectory(savePath);
+            UAsset uAsset = UAssetData.LoadAsset(@"Data\DT_CapturedCagePal.uasset");
+            List<StructPropertyData> spawnList = ((DataTableExport)uAsset.Exports[0]).Table.Data;
+            StructPropertyData baseStruct = spawnList[0];
+            spawnList.Clear();
+            int i = 0;
+            foreach (AreaData area in areaList)
+            {
+                foreach (SpawnEntry spawnEntry in area.SpawnEntries)
+                {
+                    StructPropertyData newData = (StructPropertyData)baseStruct.Clone();
+                    CagePalData cagePalData = new(uAsset, newData)
+                    {
+                        FieldName = area.filename,
+                        PalID = spawnEntry.SpawnList[0].Name,
+                        Weight = spawnEntry.Weight,
+                        MinLevel = spawnEntry.SpawnList[0].MinLevel,
+                        MaxLevel = spawnEntry.SpawnList[0].MaxLevel
+                    };
+                    newData.Name = new FName(uAsset, $"{++i}");
+                    spawnList.Add(newData);
+                }
+            }
+            uAsset.Write($"{savePath}\\DT_CapturedCagePal.uasset");
         }
 
         public static bool GenerateAndSavePak()
         {
             string outputPath = UAssetData.AppDataPath(@"Create-Pak\Pal\Content\Pal\Blueprint\Spawner\SheetsVariant");
-            if (Directory.GetFiles(outputPath).Length == 0)
+            string dataPath = UAssetData.AppDataPath(@"Create-Pak\Pal\Content\Pal\DataTable\Character");
+            if (Directory.GetFiles(outputPath).Length == 0 && Directory.GetFiles(dataPath).Length == 0)
             {
                 return false;
             }
@@ -2395,20 +2553,54 @@ namespace PalworldRandomizer
                 string outputPath = UAssetData.AppDataPath("Extract-Pak");
                 Directory.CreateDirectory(outputPath);
                 Directory.GetFiles(outputPath).ForAll(File.Delete);
+                Directory.GetDirectories(outputPath).ForAll(x => Directory.Delete(x, true));
                 Process unrealPak = Process.Start(new ProcessStartInfo(UAssetData.AppDataPath("UnrealPak.exe"),
                     [openDialog.FileName, "-extract", outputPath]) { CreateNoWindow = true })!;
                 unrealPak.WaitForExit();
                 if (unrealPak.ExitCode != 0)
                     return "UnrealPak failed to extract the file.";
-                HashSet<string> files = [.. Directory.GetFiles(outputPath, "BP_PalSpawner_Sheets_*.uasset").Select(Path.GetFileName)];
-                if (files.Count == 0)
+                string[] files = Directory.GetFiles(outputPath, "BP_PalSpawner_Sheets_*.uasset", SearchOption.AllDirectories);
+                string? cagePath;
+                try
+                {
+                    cagePath = Directory.GetFiles(outputPath, "DT_CapturedCagePal.uasset", SearchOption.AllDirectories).First();
+                }
+                catch
+                {
+                    cagePath = null;
+                }
+                if (files.Length == 0 && cagePath == null)
                     return "No valid uasset files were found.";
                 List<AreaData> areaList = Data.AreaDataCopy();
+                List<AreaData> cages = [];
+                if (cagePath != null)
+                {
+                    cages = [.. ReadCageData(cagePath).Values];
+                }
+                Data.AreaForEachIfDiff(cages, area =>
+                {
+                    AreaData found = areaList.Find(x => x.SimpleName == area.SimpleName)!;
+                    found.SpawnEntries = area.SpawnEntries;
+                    found.modified = true;
+                });
                 foreach (AreaData area in areaList)
                 {
-                    if (files.Contains(area.filename))
+                    if (area.isCage)
                     {
-                        area.uAsset = UAssetData.LoadAsset($"Extract-Pak\\{area.filename}");
+                        continue;
+                    }
+                    string? path;
+                    try
+                    {
+                        path = files.First(x => Path.GetFileName(x) == area.filename);
+                    }
+                    catch
+                    {
+                        path = null;
+                    }
+                    if (path != null)
+                    {
+                        area.uAsset = UAssetData.LoadAssetLocal(path);
                         area.spawnExportData = PalSpawn.ReadAsset(area.uAsset, Data.AreaData[area.filename].spawnExportData.header.Length);
                         area.modified = true;
                     }

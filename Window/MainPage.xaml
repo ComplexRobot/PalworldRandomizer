@@ -49,6 +49,7 @@
                                  PreviewTextInput="NonNegIntPercent_PreviewTextInput" DataObject.Pasting="NonNegIntPercent_Pasting">30</TextBox>
                         <TextBlock Margin="0,0,0,0" VerticalAlignment="Center">%</TextBlock>
                     </WrapPanel>
+                    <CheckBox Name="randomizeCages" IsChecked="True">Cages</CheckBox>
                     <WrapPanel Margin="10,0,0,0">
                         <WrapPanel.Style>
                             <Style TargetType="WrapPanel">
@@ -278,6 +279,34 @@
                                 <TextBox Name="bossesEverywhereChance" VerticalAlignment="Center" GotFocus="BossesEverywhereChance_GotFocus"
                                          PreviewTextInput="PositiveIntPercent_PreviewTextInput" DataObject.Pasting="PositiveIntPercent_Pasting">5</TextBox>
                                 <TextBlock Margin="0,0,0,0" VerticalAlignment="Center">%</TextBlock>
+                            </WrapPanel>
+                            <WrapPanel>
+                                <WrapPanel.Style>
+                                    <Style TargetType="WrapPanel">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ElementName=randomizeCages, Path=IsChecked}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </WrapPanel.Style>
+                                <CheckBox Name="allowCagedHumans" IsChecked="True" Margin="5,5,0,5">Allow Caged Humans</CheckBox>
+                            </WrapPanel>
+                            <WrapPanel>
+                                <WrapPanel.Style>
+                                    <Style TargetType="WrapPanel">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ElementName=randomizeCages, Path=IsChecked}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </WrapPanel.Style>
+                                <TextBlock Margin="5,5,5,0" VerticalAlignment="Top">Max Cage Rarity:</TextBlock>
+                                <TextBox Name="maxCageRarity" Height="20" Margin="0,5,0,0"
+                                         PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">9</TextBox>
                             </WrapPanel>
                         </WrapPanel>
                     </WrapPanel>
@@ -575,6 +604,12 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="Predator:"/>
                             <TextBox Name="predatorLevel" MinWidth="30" VerticalAlignment="Center" Margin="0"
+                                     PreviewTextInput="NonNegIntSize4_PreviewTextInput" DataObject.Pasting="NonNegIntSize4_Pasting">100</TextBox>
+                            <TextBlock Text="%" Margin="0,5,0,0"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Cage:"/>
+                            <TextBox Name="cageLevel" MinWidth="30" VerticalAlignment="Center" Margin="0"
                                      PreviewTextInput="NonNegIntSize4_PreviewTextInput" DataObject.Pasting="NonNegIntSize4_Pasting">100</TextBox>
                             <TextBlock Text="%" Margin="0,5,0,0"/>
                         </StackPanel>

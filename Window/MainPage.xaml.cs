@@ -55,6 +55,7 @@ namespace PalworldRandomizer
         public bool RandomizeFieldBosses = window.randomizeFieldBosses.IsChecked == true;
         public bool RandomizePredators = window.randomizePredators.IsChecked == true;
         public int PredatorChance = int.Parse(window.predatorChance.Text);
+        public bool RandomizeCages = window.randomizeCages.IsChecked == true;
         public bool EqualizeAreaRarity = window.equalizeAreaRarity.IsChecked == true;
         public bool MethodFull = window.methodFull.IsChecked == true;
         public bool MethodCustomSize = window.methodCustomSize.IsChecked == true;
@@ -85,6 +86,7 @@ namespace PalworldRandomizer
         public int BossesEverywhereChance = int.Parse(window.bossesEverywhereChance.Text);
         public bool SeparateFlying = window.separateFlying.IsChecked == true;
         public bool PredatorConstraint = window.predatorConstraint.IsChecked == true;
+        public bool AllowCagedHumans = window.allowCagedHumans.IsChecked == true;
         public bool WeightTypeUniform = window.weightTypeUniform.IsChecked == true;
         public bool WeightTypeCustom = window.weightTypeCustom.IsChecked == true;
         public int WeightUniformMin = int.Parse(window.weightUniformMin.Text);
@@ -108,6 +110,7 @@ namespace PalworldRandomizer
         public string WeightCustomMode = window.weightCustomMode.Text;
         public int HumanRarity = int.Parse(window.humanRarity.Text);
         public int HumanBossRarity = int.Parse(window.humanBossRarity.Text);
+        public int MaxCageRarity = int.Parse(window.maxCageRarity.Text);
         public bool WeightAdjustProbability = window.weightAdjustProbability.IsChecked == true;
         public int HumanWeight = int.Parse(window.humanWeight.Text);
         public int HumanWeightAggro = int.Parse(window.humanWeightAggro.Text);
@@ -130,6 +133,7 @@ namespace PalworldRandomizer
         public int FieldBossLevel = int.Parse(window.fieldBossLevel.Text);
         public int DungeonBossLevel = int.Parse(window.dungeonBossLevel.Text);
         public int PredatorLevel = int.Parse(window.predatorLevel.Text);
+        public int CageLevel = int.Parse(window.cageLevel.Text);
         public int LevelCap = int.Parse(window.levelCap.Text);
         public int BossAddLevel = int.Parse(window.bossAddLevel.Text);
         public bool ForceAddLevel = window.forceAddLevel.IsChecked == true;
@@ -289,6 +293,7 @@ namespace PalworldRandomizer
             ValidateNumericText(fieldBossLevel, 0, 100);
             ValidateNumericText(dungeonBossLevel, 0, 100);
             ValidateNumericText(predatorLevel, 0, 100);
+            ValidateNumericText(cageLevel, 0, 100);
             ValidateNumericText(levelCap, 1, 60);
             ValidateNumericText(bossAddLevel, 0, 85);
             ValidateNumericText(randomLevelMin, 1, 1, int.Parse(levelCap.Text));
@@ -311,6 +316,7 @@ namespace PalworldRandomizer
             ValidateNumericText(weightCustom20, 0, 1);
             ValidateNumericText(humanRarity, 1, 4, 20);
             ValidateNumericText(humanBossRarity, 1, 5, 20);
+            ValidateNumericText(maxCageRarity, 1, 9, 20);
             ValidateNumericText(humanWeight, 0, 100);
             ValidateNumericText(humanWeightAggro, 0, 50);
             ValidateNumericText(weightNightOnly, 0m, 10000);

@@ -537,4 +537,35 @@ namespace PalworldRandomizer
             set => ((NamePropertyData) structPropertyData.Value[76]).Value = value == null ? null : new FName(uAsset, value);
         }
     }
+
+    public class CagePalData(UAsset asset, StructPropertyData dataTable)
+    {
+        private readonly UAsset uAsset = asset;
+        private readonly StructPropertyData structPropertyData = dataTable;
+        public string? FieldName
+        {
+            get => ((NamePropertyData)structPropertyData.Value[0]).Value?.ToString();
+            set => ((NamePropertyData)structPropertyData.Value[0]).Value = value == null ? null : new FName(uAsset, value);
+        }
+        public string? PalID
+        {
+            get => ((NamePropertyData)structPropertyData.Value[1]).Value?.ToString();
+            set => ((NamePropertyData)structPropertyData.Value[1]).Value = value == null ? null : new FName(uAsset, value);
+        }
+        public float Weight
+        {
+            get => ((FloatPropertyData)structPropertyData.Value[2]).Value;
+            set => ((FloatPropertyData)structPropertyData.Value[2]).Value = value;
+        }
+        public int MinLevel
+        {
+            get => ((IntPropertyData)structPropertyData.Value[3]).Value;
+            set => ((IntPropertyData)structPropertyData.Value[3]).Value = value;
+        }
+        public int MaxLevel
+        {
+            get => ((IntPropertyData)structPropertyData.Value[4]).Value;
+            set => ((IntPropertyData)structPropertyData.Value[4]).Value = value;
+        }
+    }
 }
