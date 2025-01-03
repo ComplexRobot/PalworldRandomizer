@@ -118,6 +118,78 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="bp_palmapobjectspawner_palegg_desert_grade_01" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\PalEgg\bp_palmapobjectspawner_palegg_desert_grade_01.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bp_palmapobjectspawner_palegg_desert_grade_011" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\PalEgg\bp_palmapobjectspawner_palegg_desert_grade_01.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bp_palmapobjectspawner_palegg_glacier_grade_01" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\PalEgg\bp_palmapobjectspawner_palegg_glacier_grade_01.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bp_palmapobjectspawner_palegg_glacier_grade_011" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\PalEgg\bp_palmapobjectspawner_palegg_glacier_grade_01.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bp_palmapobjectspawner_palegg_glacier_grade_02" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\PalEgg\bp_palmapobjectspawner_palegg_glacier_grade_02.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bp_palmapobjectspawner_palegg_glacier_grade_021" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\PalEgg\bp_palmapobjectspawner_palegg_glacier_grade_02.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bp_palmapobjectspawner_palegg_grass_grade_01" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\PalEgg\bp_palmapobjectspawner_palegg_grass_grade_01.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bp_palmapobjectspawner_palegg_grass_grade_011" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\PalEgg\bp_palmapobjectspawner_palegg_grass_grade_01.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bp_palmapobjectspawner_palegg_grass_grade_02" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\PalEgg\bp_palmapobjectspawner_palegg_grass_grade_02.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bp_palmapobjectspawner_palegg_grass_grade_021" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\PalEgg\bp_palmapobjectspawner_palegg_grass_grade_02.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bp_palmapobjectspawner_palegg_grass_grade_03" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\PalEgg\bp_palmapobjectspawner_palegg_grass_grade_03.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bp_palmapobjectspawner_palegg_grass_grade_031" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\PalEgg\bp_palmapobjectspawner_palegg_grass_grade_03.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bp_palmapobjectspawner_palegg_grass_grade_04" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\PalEgg\bp_palmapobjectspawner_palegg_grass_grade_04.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bp_palmapobjectspawner_palegg_grass_grade_041" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\PalEgg\bp_palmapobjectspawner_palegg_grass_grade_04.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bp_palmapobjectspawner_palegg_Sakurajima_grade_01" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\PalEgg\bp_palmapobjectspawner_palegg_Sakurajima_grade_01.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bp_palmapobjectspawner_palegg_Sakurajima_grade_011" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\PalEgg\bp_palmapobjectspawner_palegg_Sakurajima_grade_01.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bp_palmapobjectspawner_palegg_tenraku_grade_01" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\PalEgg\bp_palmapobjectspawner_palegg_tenraku_grade_01.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bp_palmapobjectspawner_palegg_tenraku_grade_011" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\PalEgg\bp_palmapobjectspawner_palegg_tenraku_grade_01.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bp_palmapobjectspawner_palegg_tenraku_grade_02" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\PalEgg\bp_palmapobjectspawner_palegg_tenraku_grade_02.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bp_palmapobjectspawner_palegg_tenraku_grade_021" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\PalEgg\bp_palmapobjectspawner_palegg_tenraku_grade_02.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bp_palmapobjectspawner_palegg_volcanic_grade_01" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\PalEgg\bp_palmapobjectspawner_palegg_volcanic_grade_01.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bp_palmapobjectspawner_palegg_volcanic_grade_011" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\PalEgg\bp_palmapobjectspawner_palegg_volcanic_grade_01.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bp_palmapobjectspawner_palegg_volcanic_grade_02" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\PalEgg\bp_palmapobjectspawner_palegg_volcanic_grade_02.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bp_palmapobjectspawner_palegg_volcanic_grade_021" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Assets\PalEgg\bp_palmapobjectspawner_palegg_volcanic_grade_02.uexp;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="BP_PalSpawner_Sheets_1_10_plain_F_Boss_BlueDragon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Assets\BP_PalSpawner_Sheets_1_10_plain_F_Boss_BlueDragon.uasset;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>

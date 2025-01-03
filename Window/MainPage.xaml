@@ -50,6 +50,7 @@
                         <TextBlock Margin="0,0,0,0" VerticalAlignment="Center">%</TextBlock>
                     </WrapPanel>
                     <CheckBox Name="randomizeCages" IsChecked="True">Cages</CheckBox>
+                    <CheckBox Name="randomizeEggs" IsChecked="True">Overworld Eggs</CheckBox>
                     <WrapPanel Margin="10,0,0,0">
                         <WrapPanel.Style>
                             <Style TargetType="WrapPanel">
@@ -765,6 +766,16 @@
                 <CheckBox Name="nightOnlyDungeonBosses">Nocturnal Pals Are Night-Only (Dungeon Bosses)</CheckBox>
                 <CheckBox Name="nightOnlyBosses">Nocturnal Pals Are Night-Only (Overworld Bosses)</CheckBox>
                 <CheckBox Name="nightOnlyPredators" IsChecked="True">Nocturnal Pals Are Night-Only (Predators)</CheckBox>
+                <TextBlock Text="Egg Respawn Time:"/>
+                <TextBox Name="eggRespawnHours" VerticalAlignment="Center" Margin="0"
+                         PreviewTextInput="NonNegIntSize2_PreviewTextInput" DataObject.Pasting="NonNegIntSize2_Pasting">3</TextBox>
+                <TextBlock Text="h" Margin="0,5,5,0"/>
+                <TextBox Name="eggRespawnMinutes" VerticalAlignment="Center" Margin="0"
+                         PreviewTextInput="NonNegIntSize2_PreviewTextInput" DataObject.Pasting="NonNegIntSize2_Pasting">0</TextBox>
+                <TextBlock Text="m" Margin="0,5,5,0"/>
+                <TextBox Name="eggRespawnSeconds" VerticalAlignment="Center" Margin="0"
+                         PreviewTextInput="NonNegIntSize2_PreviewTextInput" DataObject.Pasting="NonNegIntSize2_Pasting">0</TextBox>
+                <TextBlock Text="s" Margin="0,5,5,0"/>
             </WrapPanel>
             <WrapPanel Margin="0,0,0,5">
                 <CheckBox Name="autoSaveTemplate" IsChecked="True">Auto-Restore Settings</CheckBox>

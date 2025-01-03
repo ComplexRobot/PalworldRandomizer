@@ -396,6 +396,9 @@ namespace PalworldRandomizer
         public bool isInDungeon = false;
         public bool isPredator = false;
         public bool isCage = false;
+        public bool isEgg = false;
+        public float eggRespawnTime = 0;
+        public float eggLotteryCooldown = 0;
         private readonly ObservableList<SpawnEntry> virtualEntries = [];
 
         public AreaData Clone()
@@ -415,6 +418,9 @@ namespace PalworldRandomizer
                 isInDungeon = isInDungeon,
                 isPredator = isPredator,
                 isCage = isCage,
+                isEgg = isEgg,
+                eggRespawnTime = eggRespawnTime,
+                eggLotteryCooldown = eggLotteryCooldown,
                 uAsset = isCage ? uAsset : UAssetData.LoadAsset($"Assets\\{filename}"),
                 spawnExportData =
                 new()
@@ -486,7 +492,9 @@ namespace PalworldRandomizer
         public ObservableCollection<SpawnEntry> SpawnEntriesView => virtualEntries;
         public List<SpawnEntry> SpawnEntries { get => spawnExportData.spawnEntries; set => spawnExportData.spawnEntries = value; }
         public string Name => SimpleName + (modified ? "*" : "");
-        public string SimpleName => isCage ? $"Cage:{filename}" : Path.GetFileNameWithoutExtension(filename)["BP_PalSpawner_Sheets_".Length..];
+        public string SimpleName => isCage ? $"Cage:{filename}"
+            : (isEgg ? Path.GetFileNameWithoutExtension(filename)["bp_palmapobjectspawner_".Length..]
+                : Path.GetFileNameWithoutExtension(filename)["BP_PalSpawner_Sheets_".Length..]);
         public override string ToString() => Name;
     }
 }

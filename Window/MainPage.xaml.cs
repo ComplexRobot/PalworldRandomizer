@@ -56,6 +56,7 @@ namespace PalworldRandomizer
         public bool RandomizePredators = window.randomizePredators.IsChecked == true;
         public int PredatorChance = int.Parse(window.predatorChance.Text);
         public bool RandomizeCages = window.randomizeCages.IsChecked == true;
+        public bool RandomizeEggs = window.randomizeEggs.IsChecked == true;
         public bool EqualizeAreaRarity = window.equalizeAreaRarity.IsChecked == true;
         public bool MethodFull = window.methodFull.IsChecked == true;
         public bool MethodCustomSize = window.methodCustomSize.IsChecked == true;
@@ -156,6 +157,9 @@ namespace PalworldRandomizer
         public bool NightOnlyDungeonBosses = window.nightOnlyDungeonBosses.IsChecked == true;
         public bool NightOnlyBosses = window.nightOnlyBosses.IsChecked == true;
         public bool NightOnlyPredators = window.nightOnlyPredators.IsChecked == true;
+        public int EggRespawnHours = int.Parse(window.eggRespawnHours.Text);
+        public int EggRespawnMinutes = int.Parse(window.eggRespawnMinutes.Text);
+        public int EggRespawnSeconds = int.Parse(window.eggRespawnSeconds.Text);
 
         public void RestoreToWindow(MainPage window)
         {
@@ -331,6 +335,9 @@ namespace PalworldRandomizer
             ValidateNumericText(countClampMax, Math.Max(1, int.Parse(countClampMin.Text)));
             ValidateNumericText(countClampFirstMin, 0, 0);
             ValidateNumericText(countClampFirstMax, Math.Max(1, int.Parse(countClampFirstMin.Text)));
+            ValidateNumericText(eggRespawnHours, 0, 3);
+            ValidateNumericText(eggRespawnMinutes, 0, 0);
+            ValidateNumericText(eggRespawnSeconds, 0, 0);
             if (!GroupWeightModes.Contains(weightCustomMode.Text))
             {
                 weightCustomMode.SelectedItem = GroupWeightMode.WeightMinimum;

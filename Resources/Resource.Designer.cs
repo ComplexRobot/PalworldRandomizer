@@ -63,6 +63,246 @@ namespace PalworldRandomizer.Resources {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] bp_palmapobjectspawner_palegg_desert_grade_01 {
+            get {
+                object obj = ResourceManager.GetObject("bp_palmapobjectspawner_palegg_desert_grade_01", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] bp_palmapobjectspawner_palegg_desert_grade_011 {
+            get {
+                object obj = ResourceManager.GetObject("bp_palmapobjectspawner_palegg_desert_grade_011", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] bp_palmapobjectspawner_palegg_glacier_grade_01 {
+            get {
+                object obj = ResourceManager.GetObject("bp_palmapobjectspawner_palegg_glacier_grade_01", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] bp_palmapobjectspawner_palegg_glacier_grade_011 {
+            get {
+                object obj = ResourceManager.GetObject("bp_palmapobjectspawner_palegg_glacier_grade_011", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] bp_palmapobjectspawner_palegg_glacier_grade_02 {
+            get {
+                object obj = ResourceManager.GetObject("bp_palmapobjectspawner_palegg_glacier_grade_02", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] bp_palmapobjectspawner_palegg_glacier_grade_021 {
+            get {
+                object obj = ResourceManager.GetObject("bp_palmapobjectspawner_palegg_glacier_grade_021", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] bp_palmapobjectspawner_palegg_grass_grade_01 {
+            get {
+                object obj = ResourceManager.GetObject("bp_palmapobjectspawner_palegg_grass_grade_01", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] bp_palmapobjectspawner_palegg_grass_grade_011 {
+            get {
+                object obj = ResourceManager.GetObject("bp_palmapobjectspawner_palegg_grass_grade_011", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] bp_palmapobjectspawner_palegg_grass_grade_02 {
+            get {
+                object obj = ResourceManager.GetObject("bp_palmapobjectspawner_palegg_grass_grade_02", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] bp_palmapobjectspawner_palegg_grass_grade_021 {
+            get {
+                object obj = ResourceManager.GetObject("bp_palmapobjectspawner_palegg_grass_grade_021", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] bp_palmapobjectspawner_palegg_grass_grade_03 {
+            get {
+                object obj = ResourceManager.GetObject("bp_palmapobjectspawner_palegg_grass_grade_03", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] bp_palmapobjectspawner_palegg_grass_grade_031 {
+            get {
+                object obj = ResourceManager.GetObject("bp_palmapobjectspawner_palegg_grass_grade_031", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] bp_palmapobjectspawner_palegg_grass_grade_04 {
+            get {
+                object obj = ResourceManager.GetObject("bp_palmapobjectspawner_palegg_grass_grade_04", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] bp_palmapobjectspawner_palegg_grass_grade_041 {
+            get {
+                object obj = ResourceManager.GetObject("bp_palmapobjectspawner_palegg_grass_grade_041", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] bp_palmapobjectspawner_palegg_Sakurajima_grade_01 {
+            get {
+                object obj = ResourceManager.GetObject("bp_palmapobjectspawner_palegg_Sakurajima_grade_01", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] bp_palmapobjectspawner_palegg_Sakurajima_grade_011 {
+            get {
+                object obj = ResourceManager.GetObject("bp_palmapobjectspawner_palegg_Sakurajima_grade_011", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] bp_palmapobjectspawner_palegg_tenraku_grade_01 {
+            get {
+                object obj = ResourceManager.GetObject("bp_palmapobjectspawner_palegg_tenraku_grade_01", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] bp_palmapobjectspawner_palegg_tenraku_grade_011 {
+            get {
+                object obj = ResourceManager.GetObject("bp_palmapobjectspawner_palegg_tenraku_grade_011", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] bp_palmapobjectspawner_palegg_tenraku_grade_02 {
+            get {
+                object obj = ResourceManager.GetObject("bp_palmapobjectspawner_palegg_tenraku_grade_02", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] bp_palmapobjectspawner_palegg_tenraku_grade_021 {
+            get {
+                object obj = ResourceManager.GetObject("bp_palmapobjectspawner_palegg_tenraku_grade_021", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] bp_palmapobjectspawner_palegg_volcanic_grade_01 {
+            get {
+                object obj = ResourceManager.GetObject("bp_palmapobjectspawner_palegg_volcanic_grade_01", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] bp_palmapobjectspawner_palegg_volcanic_grade_011 {
+            get {
+                object obj = ResourceManager.GetObject("bp_palmapobjectspawner_palegg_volcanic_grade_011", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] bp_palmapobjectspawner_palegg_volcanic_grade_02 {
+            get {
+                object obj = ResourceManager.GetObject("bp_palmapobjectspawner_palegg_volcanic_grade_02", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] bp_palmapobjectspawner_palegg_volcanic_grade_021 {
+            get {
+                object obj = ResourceManager.GetObject("bp_palmapobjectspawner_palegg_volcanic_grade_021", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] BP_PalSpawner_Sheets_1_1_plain_begginer {
             get {
                 object obj = ResourceManager.GetObject("BP_PalSpawner_Sheets_1_1_plain_begginer", resourceCulture);
