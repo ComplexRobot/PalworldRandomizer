@@ -276,10 +276,52 @@
                                 <CheckBox Name="separateAggroHumans" IsChecked="True" Margin="5,5,0,5">Non-Aggro Human Sanity</CheckBox>
                             </WrapPanel>
                             <WrapPanel Margin="5,5,0,0">
+                                <WrapPanel.Style>
+                                    <Style TargetType="WrapPanel">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ElementName=randomizeField, Path=IsChecked}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </WrapPanel.Style>
                                 <CheckBox Name="bossesEverywhere" IsChecked="True" Margin="0">Bosses Everywhere:</CheckBox>
                                 <TextBox Name="bossesEverywhereChance" VerticalAlignment="Center" GotFocus="BossesEverywhereChance_GotFocus"
                                          PreviewTextInput="PositiveIntPercent_PreviewTextInput" DataObject.Pasting="PositiveIntPercent_Pasting">5</TextBox>
-                                <TextBlock Margin="0,0,0,0" VerticalAlignment="Center">%</TextBlock>
+                                <TextBlock Margin="0,0,5,0" VerticalAlignment="Center">%</TextBlock>
+                            </WrapPanel>
+                            <WrapPanel Margin="5,5,0,0">
+                                <WrapPanel.Style>
+                                    <Style TargetType="WrapPanel">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ElementName=randomizeDungeons, Path=IsChecked}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </WrapPanel.Style>
+                                <CheckBox Name="bossesEverywhereDungeons" IsChecked="True" Margin="0">Bosses Everywhere (Dungeons):</CheckBox>
+                                <TextBox Name="bossesEverywhereDungeonsChance" VerticalAlignment="Center" GotFocus="BossesEverywhereDungeonsChance_GotFocus"
+                                         PreviewTextInput="PositiveIntPercent_PreviewTextInput" DataObject.Pasting="PositiveIntPercent_Pasting">5</TextBox>
+                                <TextBlock Margin="0,0,5,0" VerticalAlignment="Center">%</TextBlock>
+                            </WrapPanel>
+                            <WrapPanel Margin="5,5,0,0">
+                                <WrapPanel.Style>
+                                    <Style TargetType="WrapPanel">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ElementName=randomizeEggs, Path=IsChecked}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </WrapPanel.Style>
+                                <CheckBox Name="bossEggs" IsChecked="True" Margin="0">Boss Eggs:</CheckBox>
+                                <TextBox Name="bossEggsChance" VerticalAlignment="Center" GotFocus="BossEggsChance_GotFocus"
+                                         PreviewTextInput="PositiveIntPercent_PreviewTextInput" DataObject.Pasting="PositiveIntPercent_Pasting">5</TextBox>
+                                <TextBlock Margin="0,0,5,0" VerticalAlignment="Center">%</TextBlock>
                             </WrapPanel>
                             <WrapPanel>
                                 <WrapPanel.Style>

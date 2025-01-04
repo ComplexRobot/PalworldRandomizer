@@ -85,6 +85,10 @@ namespace PalworldRandomizer
         public bool SeparateAggroHumans = window.separateAggroHumans.IsChecked == true;
         public bool BossesEverywhere = window.bossesEverywhere.IsChecked == true;
         public int BossesEverywhereChance = int.Parse(window.bossesEverywhereChance.Text);
+        public bool BossesEverywhereDungeons = window.bossesEverywhereDungeons.IsChecked == true;
+        public int BossesEverywhereDungeonsChance = int.Parse(window.bossesEverywhereDungeonsChance.Text);
+        public bool BossEggs = window.bossEggs.IsChecked == true;
+        public int BossEggsChance = int.Parse(window.bossEggsChance.Text);
         public bool SeparateFlying = window.separateFlying.IsChecked == true;
         public bool PredatorConstraint = window.predatorConstraint.IsChecked == true;
         public bool AllowCagedHumans = window.allowCagedHumans.IsChecked == true;
@@ -305,6 +309,8 @@ namespace PalworldRandomizer
             ValidateNumericText(rarity67MinLevel, 1, Math.Min(18, int.Parse(levelCap.Text)), int.Parse(levelCap.Text));
             ValidateNumericText(rarity8UpMinLevel, 1, Math.Min(30, int.Parse(levelCap.Text)), int.Parse(levelCap.Text));
             ValidateNumericText(bossesEverywhereChance, 1, 5, 100);
+            ValidateNumericText(bossesEverywhereDungeonsChance, 1, 5, 100);
+            ValidateNumericText(bossEggsChance, 1, 5, 100);
             ValidateNumericText(weightUniformMin, 1, 10);
             ValidateNumericText(weightUniformMax, int.Parse(weightUniformMin.Text));
             ValidateNumericText(weightCustom1, 0, 60);
@@ -503,6 +509,16 @@ namespace PalworldRandomizer
         private void BossesEverywhereChance_GotFocus(object sender, RoutedEventArgs e)
         {
             bossesEverywhere.IsChecked = true;
+        }
+
+        private void BossesEverywhereDungeonsChance_GotFocus(object sender, RoutedEventArgs e)
+        {
+            bossesEverywhereDungeons.IsChecked = true;
+        }
+
+        private void BossEggsChance_GotFocus(object sender, RoutedEventArgs e)
+        {
+            bossEggs.IsChecked = true;
         }
 
         private void PositiveIntSize2_PreviewTextInput(object sender, TextCompositionEventArgs e) => SharedWindow.PositiveIntSize2_PreviewTextInput(sender, e);
