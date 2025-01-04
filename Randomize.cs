@@ -1150,6 +1150,10 @@ namespace PalworldRandomizer
                                     MaxLevel = spawnData.MaxLevel
                                 })
                         };
+                        if ((area.isCage || area.isEgg) && spawnEntry.SpawnList.Count > 1)
+                        {
+                            spawnEntry.SpawnList.RemoveRange(1, spawnEntry.SpawnList.Count - 1);
+                        }
                         spawnEntries.Add(spawnEntry);
                         long weight = spawnEntry.Weight;
                         if (formData.WeightTypeCustom)
@@ -1409,7 +1413,7 @@ namespace PalworldRandomizer
                         basicSpawnsOriginal = [];
                         basicSpawnsCurrent = [];
                         bossSpawnsOriginal = Data.PredatorNames.ConvertAll(name => new SpawnEntry { SpawnList = [new(name)] });
-                        bossSpawnsCurrent = FilterPredators(bossSpawnsCurrent);
+                        bossSpawnsCurrent = FilterPredators(bossSpawnsCurrent.ConvertAll(x => x.Clone()));
                         List<SpawnEntry> FilterPredators(List<SpawnEntry> spawnList)
                         {
                             spawnList.ForEach(x => x.SpawnList.RemoveAll(y => !y.Name.StartsWith("PREDATOR_", StringComparison.InvariantCultureIgnoreCase)));
@@ -1476,16 +1480,6 @@ namespace PalworldRandomizer
                                 speciesCount += spawns[i].SpawnList.Count;
                                 spawns.RemoveAt(i);
                             }
-                            if (area.isCage || area.isEgg)
-                            {
-                                foreach (SpawnEntry entry in spawnEntries)
-                                {
-                                    if (entry.SpawnList.Count > 1)
-                                    {
-                                        entry.SpawnList.RemoveRange(1, entry.SpawnList.Count - 1);
-                                    }
-                                }
-                            }
                         }
                         else if (formData.GroupRandom)
                         {
@@ -1512,13 +1506,20 @@ namespace PalworldRandomizer
                     // NOT All Species Everywhere
                     else
                     {
-                        if (formData.BossesEverywhere && area.filename.StartsWith('~') && formData.MethodGlobalSwap)
+                        if (formData.MethodGlobalSwap)
                         {
-                            spawnEntriesOriginal = spawnEntriesOriginal.FindAll(x => Data.PalData[x.SpawnList[0].Name].IsPal).ConvertAll(x =>
+                            if (area.isEgg)
                             {
-                                x.SpawnList[0].Name = Data.BossName[x.SpawnList[0].Name];
-                                return x;
-                            });
+                                spawnEntriesOriginal = spawnEntriesOriginal.FindAll(x => !x.SpawnList[0].IsBoss);
+                            }
+                            if (formData.BossesEverywhere && area.filename.StartsWith('~'))
+                            {
+                                spawnEntriesOriginal = spawnEntriesOriginal.FindAll(x => Data.PalData[x.SpawnList[0].Name].IsPal).ConvertAll(x =>
+                                {
+                                    x.SpawnList[0].Name = Data.BossName[x.SpawnList[0].Name];
+                                    return x;
+                                });
+                            }
                         }
                         int entryCount = (area.isFieldBoss || area.isPredator) && !formData.FieldBossExtended
                             ? 1
@@ -1528,6 +1529,10 @@ namespace PalworldRandomizer
                             if (formData.MethodGlobalSwap)
                             {
                                 SpawnEntry spawnEntry = spawnEntriesOriginal[i];
+                                if (area.isEgg && swapMap.TryGetValue(spawnEntry.SpawnList[0].Name, out SpawnEntry? value) && !Data.PalData[value.SpawnList[0].Name].IsPal)
+                                {
+                                    swapMap.Remove(spawnEntry.SpawnList[0].Name);
+                                }
                                 if (!swapMap.ContainsKey(spawnEntry.SpawnList[0].Name))
                                 {
                                     if (formData.GroupVanilla)
@@ -1567,16 +1572,6 @@ namespace PalworldRandomizer
                                 else if (formData.GroupRandom)
                                 {
                                     AddEntry(GetRandomGroup());
-                                }
-                            }
-                            if ((area.isCage || area.isEgg) && formData.GroupVanilla)
-                            {
-                                foreach (SpawnEntry entry in spawnEntries)
-                                {
-                                    if (entry.SpawnList.Count > 1)
-                                    {
-                                        entry.SpawnList.RemoveRange(1, entry.SpawnList.Count - 1);
-                                    }
                                 }
                             }
                         }
@@ -1706,6 +1701,7 @@ namespace PalworldRandomizer
                 List<AreaData> predatorList = [];
                 List<AreaData> cageList = [];
                 List<AreaData> eggList = [];
+                List<AreaData> eggBossList = [];
                 foreach (AreaData area in subList)
                 {
                     if (area.isPredator)
@@ -1718,7 +1714,14 @@ namespace PalworldRandomizer
                     }
                     else if (area.isEgg)
                     {
-                        eggList.Add(area);
+                        if (area.isBoss)
+                        {
+                            eggBossList.Add(area);
+                        }
+                        else
+                        {
+                            eggList.Add(area);
+                        }
                     }
                     else if (area.isBoss)
                     {
@@ -1750,6 +1753,7 @@ namespace PalworldRandomizer
                 EqualizeSpawns(predatorList);
                 EqualizeSpawns(cageList);
                 EqualizeSpawns(eggList);
+                EqualizeSpawns(eggBossList);
                 void EqualizeSpawns(List<AreaData> editList)
                 {
                     if (editList.Count  == 0)
