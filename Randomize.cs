@@ -1,12 +1,11 @@
-﻿using Microsoft.Win32;
+﻿using CUE4Parse.UE4.Assets.Objects;
+using CUE4Parse.UE4.Assets.Objects.Properties;
+using Microsoft.Win32;
 using Newtonsoft.Json;
 using Stfu.Linq;
-using System.Collections;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
-using System.Resources;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -112,29 +111,29 @@ namespace PalworldRandomizer
         [GeneratedRegex("^(.+?)(_[0-9]+(_.+)?|_Flower|_MAX|_Oilrig)?$", RegexOptions.IgnoreCase)]
         private static partial Regex resourceKeyRegex();
 
-        public static void Initialize(ResourceManager resourceManager)
+        public static void Initialize()
         {
             PalData = UAssetData.CreatePalData();
             UAsset palNames = UAssetData.LoadAsset(@"Data\DT_PalNameText.uasset");
             UAsset humanNames = UAssetData.LoadAsset(@"Data\DT_HumanNameText.uasset");
             UAsset bossNPCIcons = UAssetData.LoadAsset(@"Data\DT_PalBossNPCIcon.uasset");
-            HashSet<string> resourceNames = new(resourceManager.GetResourceSet(CultureInfo.InvariantCulture, true, true)!.Cast<DictionaryEntry>()
-                .Select(x => (string) x.Key), StringComparer.InvariantCultureIgnoreCase);
+            Dictionary<CUE4Parse.UE4.Objects.UObject.FName, FStructFallback> palIcons
+                = UAssetData.FileProvider.LoadDataTable("Pal/Content/Pal/DataTable/Character/DT_PalCharacterIconDataTable.uasset");
             Dictionary<string, string> weapons = new()
             {
-                { "AssaultRifle", "/Resources/Images/InventoryItemIcon/T_itemicon_Weapon_AssaultRifle_Default1.png" },
-                { "Handgun", "/Resources/Images/InventoryItemIcon/T_itemicon_Weapon_HandGun_Default.png" },
-                { "Shotgun", "/Resources/Images/InventoryItemIcon/T_itemicon_Weapon_PumpActionShotgun.png" },
-                { "RocketLauncher", "/Resources/Images/InventoryItemIcon/T_itemicon_Weapon_Launcher_Default.png" },
-                { "MeleeWeapon", "/Resources/Images/InventoryItemIcon/T_itemicon_Weapon_Bat.png" },
-                { "ThrowObject", "/Resources/Images/InventoryItemIcon/T_itemicon_Weapon_FragGrenade.png" },
-                { "FlameThrower", "/Resources/Images/InventoryItemIcon/T_itemicon_Weapon_FlameThrower_Default.png" },
-                { "GatlingGun", "/Resources/Images/InventoryItemIcon/T_itemicon_Weapon_GatlingGun.png" },
-                { "BowGun", "/Resources/Images/InventoryItemIcon/T_itemicon_Weapon_BowGun.png" },
-                { "LaserRifle", "/Resources/Images/InventoryItemIcon/T_itemicon_Weapon_LaserRifle.png" },
-                { "MissileLauncher", "/Resources/Images/InventoryItemIcon/T_itemicon_Weapon_GuidedMissileLauncher.png" },
-                { "GrenadeLauncher", "/Resources/Images/InventoryItemIcon/T_itemicon_Weapon_GrenadeLauncher.png" },
-                { "Katana", "/Resources/Images/InventoryItemIcon/T_itemicon_Weapon_Katana.png" }
+                { "AssaultRifle", UAssetData.AppDataPath(@"Images\InventoryItemIcon\T_itemicon_Weapon_AssaultRifle_Default1.png") },
+                { "Handgun", UAssetData.AppDataPath(@"Images\InventoryItemIcon\T_itemicon_Weapon_HandGun_Default.png") },
+                { "Shotgun", UAssetData.AppDataPath(@"Images\InventoryItemIcon\T_itemicon_Weapon_PumpActionShotgun.png") },
+                { "RocketLauncher", UAssetData.AppDataPath(@"Images\InventoryItemIcon\T_itemicon_Weapon_Launcher_Default.png") },
+                { "MeleeWeapon", UAssetData.AppDataPath(@"Images\InventoryItemIcon\T_itemicon_Weapon_Bat.png") },
+                { "ThrowObject", UAssetData.AppDataPath(@"Images\InventoryItemIcon\T_itemicon_Weapon_FragGrenade.png") },
+                { "FlameThrower", UAssetData.AppDataPath(@"Images\InventoryItemIcon\T_itemicon_Weapon_FlameThrower_Default.png") },
+                { "GatlingGun", UAssetData.AppDataPath(@"Images\InventoryItemIcon\T_itemicon_Weapon_GatlingGun.png") },
+                { "BowGun", UAssetData.AppDataPath(@"Images\InventoryItemIcon\T_itemicon_Weapon_BowGun.png") },
+                { "LaserRifle", UAssetData.AppDataPath(@"Images\InventoryItemIcon\T_itemicon_Weapon_LaserRifle.png") },
+                { "MissileLauncher", UAssetData.AppDataPath(@"Images\InventoryItemIcon\T_itemicon_Weapon_GuidedMissileLauncher.png") },
+                { "GrenadeLauncher", UAssetData.AppDataPath(@"Images\InventoryItemIcon\T_itemicon_Weapon_GrenadeLauncher.png") },
+                { "Katana", UAssetData.AppDataPath(@"Images\InventoryItemIcon\T_itemicon_Weapon_Katana.png") }
             };
             string[] flyingSuffixes =
             [
@@ -214,14 +213,17 @@ namespace PalworldRandomizer
                     }
                     string resourceKey = resourceKeyRegex().Match(keyPair.Key).Groups[1].Value;
                     resourceKey = isBoss || isSummon ? resourceKey[(resourceKey.IndexOf('_') + 1)..] : resourceKey;
-                    string resourceName = $"Resources/Images/PalIcon/T_{resourceKey}_icon_normal.png";
-                    if (resourceNames.Contains(resourceName))
+                    FStructFallback resourceFound = palIcons.FirstOrDefault(kvp => string.Equals(kvp.Key.Text, resourceKey, StringComparison.OrdinalIgnoreCase)).Value;
+                    CUE4Parse.UE4.Objects.UObject.FName? fName = ((SoftObjectProperty)resourceFound?.Properties[0].Tag!)?.Value.AssetPathName;
+                    if (resourceFound != null && !((CUE4Parse.UE4.Objects.UObject.FName)fName!).IsNone)
                     {
-                        PalIcon.Add(keyPair.Key, $"/{resourceName}");
+                        string foundName = ((CUE4Parse.UE4.Objects.UObject.FName)fName).Text;
+                        string resourceName = UAssetData.AppDataPath($@"Images\PalIcon\{foundName[(foundName.LastIndexOf('/') + 1)..foundName.LastIndexOf('.')]}.png");
+                        PalIcon.Add(keyPair.Key, resourceName);
                     }
                     else
                     {
-                        PalIcon.Add(keyPair.Key, "/Resources/Images/PalIcon/T_icon_unknown.png");
+                        PalIcon.Add(keyPair.Key, UAssetData.AppDataPath(@"Images\PalIcon\T_icon_unknown.png"));
                     }
                     if (Array.Exists(flyingSuffixes, keyPair.Key.EndsWith))
                     {
@@ -248,12 +250,9 @@ namespace PalworldRandomizer
                         if (bossProperty != null)
                         {
                             string resourceKey = ((SoftObjectPropertyData)bossProperty.Value[0]).Value.AssetPath.PackageName.Value.Value;
+                            // null string check?
                             resourceKey = resourceKey[(resourceKey.LastIndexOf('/') + 1)..];
-                            string resourceName = $"Resources/Images/NPC/{resourceKey}.png";
-                            if (resourceNames.Contains(resourceName))
-                            {
-                                PalIcon.Add(keyPair.Key, $"/{resourceName}");
-                            }
+                            PalIcon.Add(keyPair.Key, UAssetData.AppDataPath($@"Images\NPC\{resourceKey}.png"));
                         }
                     }
                     if (!PalIcon.ContainsKey(keyPair.Key))
@@ -264,7 +263,7 @@ namespace PalworldRandomizer
                         }
                         else
                         {
-                            PalIcon.Add(keyPair.Key, "/Resources/Images/PalIcon/T_CommonHuman_icon_normal.png");
+                            PalIcon.Add(keyPair.Key, UAssetData.AppDataPath(@"Images\PalIcon\T_CommonHuman_icon_normal.png"));
                         }
                     }
                 }

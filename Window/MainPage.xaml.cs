@@ -238,7 +238,7 @@ namespace PalworldRandomizer
             InitializeComponent();
             form.Visibility = Visibility.Collapsed;
             statusBar.Text = "⌛ Initializing...";
-            testImage.Source = new BitmapImage(new Uri(Data.PalIcon[Randomize.GetRandomPal()], UriKind.Relative));
+            testImage.Source = new BitmapImage(new Uri(Data.PalIcon[Randomize.GetRandomPal()], UriKind.Absolute));
             Dispatcher.BeginInvoke(() =>
             {
                 dataOperation.Wait();

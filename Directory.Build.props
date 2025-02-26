@@ -1,5 +1,5 @@
 <Project>
-  <PropertyGroup>
+  <PropertyGroup Condition=" '$(MSBuildProjectName)' == 'Palworld Randomizer' ">
     <BaseIntermediateOutputPath>Build</BaseIntermediateOutputPath>
   </PropertyGroup>
 </Project>

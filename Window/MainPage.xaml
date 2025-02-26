@@ -334,7 +334,7 @@
                                         </Style.Triggers>
                                     </Style>
                                 </WrapPanel.Style>
-                                <CheckBox Name="allowCagedHumans" IsChecked="True" Margin="5,5,0,5">Allow Caged Humans</CheckBox>
+                                <CheckBox Name="allowCagedHumans" IsChecked="False" Margin="5,5,0,5">Allow Caged Humans</CheckBox>
                             </WrapPanel>
                             <WrapPanel>
                                 <WrapPanel.Style>
@@ -853,7 +853,7 @@
     </ScrollViewer>
     <Grid Panel.ZIndex="-1">
         <Image Name="testImage" MaxHeight="64" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="5"
-                   Source="/Resources/Images/PalIcon/T_SheepBall_icon_normal.png"/>
+                   Source="/Resources/Images/T_SheepBall_icon_normal.png" RenderOptions.BitmapScalingMode="HighQuality"/>
     </Grid>
     <StatusBar Grid.Row="1">
         <StatusBarItem>

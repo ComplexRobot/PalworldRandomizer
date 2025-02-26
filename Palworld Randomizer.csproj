@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version>2.12.2</Version>
+    <Version>2.13</Version>
     <TargetFramework>net8.0-windows</TargetFramework>
     <UseWPF>True</UseWPF>
     <Nullable>enable</Nullable>
@@ -28,12 +28,25 @@
     <DebugType>embedded</DebugType>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition=" '$(Configuration)' == 'Debug' ">
     <Reference Include="UAssetAPI">
-      <HintPath>UAssetAPI.dll</HintPath>
+      <HintPath>UAssetAPI\UAssetAPI\bin\DebugVerbose\net8.0\UAssetAPI.dll</HintPath>
     </Reference>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Emoji.Wpf" Version="0.3.4" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(Configuration)' == 'Release' ">
+    <Reference Include="UAssetAPI">
+      <HintPath>UAssetAPI\UAssetAPI\bin\Release\net8.0\UAssetAPI.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CUE4Parse" Version="*" />
+    <PackageReference Include="CUE4Parse-Conversion" Version="*" />
+    <PackageReference Include="ini-parser" Version="*" />
+    <PackageReference Include="Newtonsoft.Json" Version="*" />
+    <PackageReference Include="Emoji.Wpf" Version="*" />
+    <PackageReference Include="ZstdSharp.Port" Version="*" />
     <EmbeddedResource Update="Resources\Resource.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resource.Designer.cs</LastGenOutput>
@@ -43,8 +56,12 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
-    <Resource Include="Resources\Images\**" />
-    <Resource Include="Resources\icon.ico" />
+	<Resource Include="Resources\icon.ico" />
+	<Resource Include="Resources\Images\**" />
+    <Compile Remove="UAssetAPI\**" />
+    <EmbeddedResource Remove="UAssetAPI\**" />
+    <None Remove="UAssetAPI\**" />
+    <Page Remove="UAssetAPI\**" />
   </ItemGroup>
 
 </Project>

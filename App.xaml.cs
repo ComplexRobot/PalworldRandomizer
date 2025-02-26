@@ -1,6 +1,4 @@
 ﻿using System.IO;
-using System.Reflection;
-using System.Resources;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -9,6 +7,8 @@ namespace PalworldRandomizer
 {
     public partial class App : Application
     {
+        public static bool InstallationFolderVerified { get; private set; } = false;
+
         private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs eventArgs)
         {
             LogException(eventArgs.Exception);
@@ -34,13 +34,43 @@ namespace PalworldRandomizer
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            Dispatcher.BeginInvoke(() =>
+            {
+                SettingsPage settingsPage = new();
+                AppWindow settingsWindow = new(() => settingsPage) { Title = "Settings", Topmost = true, Width = 800, Height = 200 };
+                settingsWindow.Closing += (sender, e) =>
+                {
+                    if (InstallationFolderVerified)
+                    {
+                        settingsWindow.HideClean();
+                        e.Cancel = true;
+                    }
+                    else
+                    {
+                        Shutdown();
+                    }
+                };
+                VerifyInstallationFolder(settingsWindow);
+            });
+        }
+
+        public void VerifyInstallationFolder(AppWindow settingsWindow)
+        {
+            if (!InstallationFolderVerified && UAssetData.VerifyInstallationFolder(settingsWindow))
+            {
+                InstallationFolderVerified = true;
+                ((AppWindow)SettingsPage.Instance.Parent)?.HideClean();
+                Initialize();
+            }
+        }
+
+        private void Initialize()
+        {
             DispatcherOperation dataOperation = Dispatcher.BeginInvoke(() =>
             {
-                ResourceManager resourceManager = new(Assembly.GetExecutingAssembly().GetName().Name + ".g", Assembly.GetExecutingAssembly());
                 UAssetData.Initialize();
-                Data.Initialize(resourceManager);
+                Data.Initialize();
                 Randomize.Initialize();
-                Dispatcher.BeginInvoke(() => resourceManager.ReleaseAllResources());
                 Randomize.RestoreBackup();
                 PalSpawnPage palSpawnpage = new();
                 AppWindow palSpawnWindow = new(() => palSpawnpage) { Title = "Pal Spawn Editor" };
@@ -55,7 +85,7 @@ namespace PalworldRandomizer
             {
                 MainWindow = new AppWindow(() => new MainPage(dataOperation)) { Title = "Palworld Randomizer", Width = 1280, Height = 720 };
                 MainWindow.Closed += (sender, e) => Shutdown();
-                ((AppWindow) MainWindow).ShowClean();
+                ((AppWindow)MainWindow).ShowClean();
             });
             InputManager.Current.PreNotifyInput += SharedWindow.PreNotifyInput;
             InputManager.Current.PostNotifyInput += SharedWindow.PostNotifyInput;

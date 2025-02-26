@@ -4,6 +4,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.8.34525.116
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Palworld Randomizer", "Palworld Randomizer.csproj", "{CE56834A-62C7-4E18-BA21-CE1B4F7040EE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{178417EC-1177-413E-BE85-C83AECD64279} = {178417EC-1177-413E-BE85-C83AECD64279}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UAssetAPI", "UAssetAPI\UAssetAPI\UAssetAPI.csproj", "{178417EC-1177-413E-BE85-C83AECD64279}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +20,10 @@ Global
 		{CE56834A-62C7-4E18-BA21-CE1B4F7040EE}.Debug|x64.Build.0 = Debug|x64
 		{CE56834A-62C7-4E18-BA21-CE1B4F7040EE}.Release|x64.ActiveCfg = Release|x64
 		{CE56834A-62C7-4E18-BA21-CE1B4F7040EE}.Release|x64.Build.0 = Release|x64
+		{178417EC-1177-413E-BE85-C83AECD64279}.Debug|x64.ActiveCfg = DebugVerbose|Any CPU
+		{178417EC-1177-413E-BE85-C83AECD64279}.Debug|x64.Build.0 = DebugVerbose|Any CPU
+		{178417EC-1177-413E-BE85-C83AECD64279}.Release|x64.ActiveCfg = Release|Any CPU
+		{178417EC-1177-413E-BE85-C83AECD64279}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

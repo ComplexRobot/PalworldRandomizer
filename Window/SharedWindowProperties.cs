@@ -14,6 +14,8 @@ namespace PalworldRandomizer
 {
     public class ConfigData
     {
+        public string InstallationDirectory = @"C:\Program Files (x86)\Steam\steamapps\common\Palworld";
+        public string GameVersion = "0.0.0.0";
         public float AssetVersion = 0;
         public bool AutoReplaceOldFiles = true;
         public bool AutoRestoreTemplate = true;

@@ -1,0 +1,31 @@
+﻿<Grid x:Class="PalworldRandomizer.SettingsPage"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PalworldRandomizer"
+        mc:Ignorable="d"
+        xmlns:emoji="clr-namespace:Emoji.Wpf;assembly=Emoji.Wpf">
+    <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+    </Grid.ColumnDefinitions>
+    <StackPanel>
+        <TextBlock>Palworld Installation Folder</TextBlock>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBox Name="installationFolderTextbox" GotFocus="InstallationFolderTextBox_GotFocus" Text="{Binding Source={x:Static local:UAssetData.InstallationDirectory}, Mode=OneWay}"/>
+            <Button Grid.Column="1" Click="InstallationFolderButton_Click" Margin="0">
+                <TextBlock Margin="5,2,5,2">Browse...</TextBlock>
+            </Button>
+        </Grid>
+    </StackPanel>
+</Grid>

@@ -410,7 +410,8 @@
                                                                               IsEnabled="{Binding BossChangeable}">
                                                                     <MenuItem.Header>
                                                                         <StackPanel Orientation="Horizontal">
-                                                                            <Image Source="/Resources/Images/UI/T_icon_enemy_strong.png" Stretch="Uniform" Height="16"/>
+                                                                            <Image Source="/Resources/Images/UI/T_icon_enemy_strong.png" Stretch="Uniform" Height="16"
+                                                                                   RenderOptions.BitmapScalingMode="HighQuality"/>
                                                                             <TextBlock Text=" Boss" Margin="0"/>
                                                                         </StackPanel>
                                                                     </MenuItem.Header>
@@ -595,14 +596,14 @@
                                                                     <ColumnDefinition Width="Auto"/>
                                                                     <ColumnDefinition Width="Auto"/>
                                                                 </Grid.ColumnDefinitions>
-                                                                <Image Grid.Column="0" Stretch="Uniform" Source="{Binding IconPath}"/>
+                                                                <Image Grid.Column="0" Stretch="Uniform" Source="{Binding IconPath}" RenderOptions.BitmapScalingMode="HighQuality"/>
                                                                 <TextBox Grid.Column="1" Text="{Binding ResolvedName, Mode=OneWay}" Margin="0" VerticalAlignment="Top"
                                                                              BorderThickness="0" GotFocus="NameTextBox_GotFocus" TextWrapping="Wrap" MaxWidth="100"/>
                                                                 <ComboBox Grid.Column="1" ItemsSource="{Binding Source={x:Static local:Data.SimpleNameValues}, Mode=OneWay}"
                                                                               SelectedItem="{Binding SimpleName}" Visibility="Collapsed" SelectionChanged="ComboBox_SelectionChanged"
                                                                               DropDownClosed="ComboBox_DropDownClosed" Binding.SourceUpdated="AreaProperty_SourceUpdated"/>
                                                                 <Image Grid.Column="2" Source="/Resources/Images/UI/T_icon_enemy_strong.png" Stretch="Uniform" Height="16"
-                                                                           VerticalAlignment="Top" ToolTip="Boss">
+                                                                           VerticalAlignment="Top" ToolTip="Boss" RenderOptions.BitmapScalingMode="HighQuality">
                                                                     <Image.Style>
                                                                         <Style TargetType="Image">
                                                                             <Setter Property="Visibility" Value="Visible"/>

@@ -1,24 +1,100 @@
 ﻿using UAssetAPI;
 using UAssetAPI.UnrealTypes;
 using UAssetAPI.Unversioned;
-using UAssetAPI.ExportTypes;
 using UAssetAPI.PropertyTypes.Objects;
 using UAssetAPI.PropertyTypes.Structs;
 using System.Text;
 using System.IO;
 using System.Xml;
 using PalworldRandomizer.Resources;
-using System.Collections.ObjectModel;
+using CUE4Parse.FileProvider.Objects;
+using CUE4Parse.FileProvider.Vfs;
+using CUE4Parse.UE4.Versions;
+using CUE4Parse.MappingsProvider;
+using CUE4Parse.UE4.Assets.Exports;
+using CUE4Parse.UE4.Assets;
+using CUE4Parse.Compression;
+using IniParser.Parser;
+using IniParser.Model;
+using System.Text.RegularExpressions;
+using CUE4Parse.UE4.Assets.Exports.Texture;
+using CUE4Parse_Conversion.Textures;
+using System.Collections.Concurrent;
+using CUE4Parse.UE4.Assets.Objects;
+using CUE4Parse.UE4.Assets.Objects.Properties;
+using CUE4Parse.Utils;
 
 namespace PalworldRandomizer
 {
-    public static class UAssetData
+    public class VfsFileProvider() : AbstractVfsFileProvider(false, new VersionContainer(EGame.GAME_UE5_1)) 
     {
-        public const float ASSET_VERSION = 2;
+        public override void Initialize() { }
+
+        public void AddFile(string file, string mountPoint)
+        {
+            OsGameFile gameFile = new(new(Path.GetDirectoryName(file)!), new(file), mountPoint, new VersionContainer(EGame.GAME_UE5_1));
+            _files.AddFiles(new Dictionary<string, GameFile> { { gameFile.Path, gameFile } });
+        }
+
+        public IEnumerable<UObject> LoadAsset(string path)
+        {
+            if (TryLoadPackage(path, out IPackage package))
+            {
+                return package.GetExports();
+            }
+            throw new Exception($"Failed to load package '{path}'.");
+        }
+
+        public Dictionary<CUE4Parse.UE4.Objects.UObject.FName, FStructFallback> LoadDataTable(string path)
+        {
+            if (LoadAsset(path).First() is CUE4Parse.UE4.Assets.Exports.Engine.UDataTable dataTable)
+            {
+                return dataTable.RowMap;
+            }
+            throw new Exception($"'{path}' is not a data table.");
+        }
+
+        public string GetOsFileName(string path)
+        {
+            if (this[path] is OsGameFile gameFile)
+            {
+                return gameFile.ActualFile.FullName;
+            }
+            throw new Exception($"'{path}' is not located in the user's file system.");
+        }
+    }
+
+    public static partial class UAssetData
+    {
+        public const float ASSET_VERSION = 3;
+        public static string InstallationDirectory { set; get; } = @"C:\Program Files (x86)\Steam\steamapps\common\Palworld";
+        public static string ArchivePath { set; get; } = @"C:\Program Files (x86)\Steam\steamapps\common\Palworld\Pal\Content\Paks\Pal-Windows.pak";
+        public static string GameVersion { set; get; } = "0.0.0.0";
         private static string? appDataPath;
         private static Usmap? usmap;
+        public static VfsFileProvider FileProvider { get; private set; } = null!;
 
-        public static void Initialize()
+        [GeneratedRegex(@"^Pal/Content/Pal/Blueprint/Spawner/SheetsVariant/(?!C_Dummy).+$")]
+        private static partial Regex SpawnSheetsRegex();
+
+        [GeneratedRegex(@"^Pal/Content/Pal/Blueprint/MapObject/Spawner/bp_palmapobjectspawner_palegg_.+$")]
+        private static partial Regex PalEggSpawnSheetsRegex();
+
+        [GeneratedRegex(@"^Pal/Content/(Pal/DataTable/Character/DT_(CapturedCagePal|PalBossNPCIcon|PalHumanParameter|PalMonsterParameter|PalCharacterIconDataTable)"
+            + @"|L10N/en/Pal/DataTable/Text/DT_(HumanNameText|PalNameText))\..+$", RegexOptions.ExplicitCapture)]
+        private static partial Regex DataTableRegex();
+
+        [GeneratedRegex(@"^Pal/Content/Pal/Texture/(PalIcon/Normal/(?!T_dummy_icon).+|UI/Main_Menu/T_icon_unknown)\.uasset$", RegexOptions.ExplicitCapture)]
+        private static partial Regex PalIconRegex();
+
+        [GeneratedRegex(@"^Pal/Content/Pal/Texture/PalIcon/NPC/.+\.uasset$")]
+        private static partial Regex NPCIconRegex();
+
+        [GeneratedRegex(@"^Pal/Content/Others/InventoryItemIcon/Texture/T_itemicon_Weapon_(AssaultRifle_Default1|HandGun_Default|PumpActionShotgun|Launcher_Default|Bat|FragGrenade"
+            + @"|FlameThrower_Default|GatlingGun|BowGun|LaserRifle|GuidedMissileLauncher|GrenadeLauncher|Katana)\.uasset$", RegexOptions.ExplicitCapture)]
+        private static partial Regex WeaponIconRegex();
+
+        public static bool VerifyInstallationFolder(AppWindow settingsWindow)
         {
             appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             if (!appDataPath.EndsWith('\\'))
@@ -28,9 +104,24 @@ namespace PalworldRandomizer
             appDataPath += @"Palworld-Randomizer\";
             Directory.CreateDirectory(appDataPath);
             ConfigData config = SharedWindow.GetConfig();
+            SettingsPage.Instance.installationFolderTextbox.Text = InstallationDirectory = config.InstallationDirectory;
+            ArchivePath = InstallationDirectory + @"\Pal\Content\Paks\Pal-Windows.pak";
+            if (!File.Exists(ArchivePath))
+            {
+                settingsWindow.ShowClean();
+                return false;
+            }
+            return true;
+        }
+
+        public static void Initialize()
+        {
+            ConfigData config = SharedWindow.GetConfig();
+            SettingsPage.Instance.installationFolderTextbox.Text = InstallationDirectory = config.InstallationDirectory;
+            GameVersion = config.GameVersion;
+            ArchivePath = InstallationDirectory + @"\Pal\Content\Paks\Pal-Windows.pak";
             bool replaceAssets = config.AssetVersion < ASSET_VERSION && config.AutoReplaceOldFiles;
             config.AssetVersion = ASSET_VERSION;
-            SharedWindow.SaveConfig(config);
             XmlDocument xmlDoc = new();
             xmlDoc.LoadXml(Resource.Resource_resx);
             foreach (XmlNode resource in xmlDoc.DocumentElement!.SelectNodes("data")!)
@@ -46,99 +137,176 @@ namespace PalworldRandomizer
                 }
             }
             usmap = new Usmap(AppDataPath("Mappings.usmap"));
+            OodleHelper.Initialize(AppDataPath("oo2core_9_win64.dll"));
+            ZlibHelper.Initialize(AppDataPath("zlib-ng2.dll"));
+            
+            VfsFileProvider fileProvider = new() { MappingsContainer = new FileUsmapTypeMappingsProvider(AppDataPath("Mappings.usmap")) };
+            fileProvider.RegisterVfs(ArchivePath);
+            fileProvider.Initialize();
+            fileProvider.Mount();
+            string gameVersion = GameVersion;
+            if (fileProvider.TrySaveAsset("Pal/Config/DefaultGame.ini", out byte[] gameIni))
+            {
+                IniData iniData = new IniDataParser(new() { AllowDuplicateKeys = true }).Parse(Encoding.ASCII.GetString(gameIni));
+                gameVersion = iniData["/Script/EngineSettings.GeneralProjectSettings"]["ProjectVersion"];
+            }
+            bool gameUpdated = gameVersion != GameVersion;
+            config.GameVersion = GameVersion = gameVersion;
+            string assetsFolder = AppDataPath("Assets");
+            string palEggFolder = assetsFolder + @"\PalEgg";
+            Directory.CreateDirectory(palEggFolder);
+            string dataFolder = AppDataPath("Data");
+            Directory.CreateDirectory(dataFolder);
+            string imagesFolder = AppDataPath("Images");
+            string palIconFolder = imagesFolder + @"\PalIcon";
+            Directory.CreateDirectory(palIconFolder);
+            string npcIconFolder = imagesFolder + @"\NPC";
+            Directory.CreateDirectory(npcIconFolder);
+            string weaponIconFolder = imagesFolder + @"\InventoryItemIcon";
+            Directory.CreateDirectory(weaponIconFolder);
+            ConcurrentDictionary<string, string> savedFilePaths = new();
+            Parallel.ForEach(fileProvider.Files, keyValuePair =>
+            {
+                if (SpawnSheetsRegex().IsMatch(keyValuePair.Key))
+                {
+                    SaveAsset(assetsFolder);
+                }
+                else if (PalEggSpawnSheetsRegex().IsMatch(keyValuePair.Key))
+                {
+                    SaveAsset(palEggFolder);
+                }
+                else if (DataTableRegex().IsMatch(keyValuePair.Key))
+                {
+                    SaveAsset(dataFolder);
+                }
+                else if (PalIconRegex().IsMatch(keyValuePair.Key))
+                {
+                    SaveImage(palIconFolder);
+                }
+                else if (NPCIconRegex().IsMatch(keyValuePair.Key))
+                {
+                    SaveImage(npcIconFolder);
+                }
+                else if (WeaponIconRegex().IsMatch(keyValuePair.Key))
+                {
+                    SaveImage(weaponIconFolder);
+                }
+                void SaveAsset(string folder)
+                {
+                    string filename = folder + '\\' + keyValuePair.Value.Name;
+                    if (gameUpdated || !File.Exists(filename))
+                    {
+                        File.WriteAllBytes(filename, keyValuePair.Value.Read());
+                    }
+                    savedFilePaths.TryAdd(filename, keyValuePair.Value.Path[..(keyValuePair.Value.Path.LastIndexOf('/') + 1)]);
+                }
+                void SaveImage(string folder)
+                {
+                    string filename = folder + '\\' + keyValuePair.Value.NameWithoutExtension + ".png";
+                    if ((gameUpdated || !File.Exists(filename)) && fileProvider.TryLoadPackage(keyValuePair.Value, out IPackage package))
+                    {
+                        foreach (UObject export in package.GetExports())
+                        {
+                            if (export is UTexture texture)
+                            {
+                                File.WriteAllBytes(filename, texture.Decode(ETexturePlatform.DesktopMobile)!.Encode(ETextureFormat.Png, 100).ToArray());
+                                break;
+                            }
+                        }
+                    }
+                    savedFilePaths.TryAdd(filename, keyValuePair.Value.Path[..(keyValuePair.Value.Path.LastIndexOf('/') + 1)]);
+                }
+            });
+            FileProvider = new() { MappingsContainer = new FileUsmapTypeMappingsProvider(AppDataPath("Mappings.usmap")) };
+            FileProvider.Initialize();
+            foreach (KeyValuePair<string, string> keyValuePair in savedFilePaths)
+            {
+                FileProvider.AddFile(keyValuePair.Key, keyValuePair.Value);
+            }
+            fileProvider.PostMount();
+            fileProvider.Dispose();
+            SharedWindow.SaveConfig(config);
         }
 
         public static string AppDataPath(string path = null!) => appDataPath + path;
         public static UAsset LoadAsset(string filepath) => new(AppDataPath(filepath), EngineVersion.VER_UE5_1, usmap);
         public static UAsset LoadAssetLocal(string filepath) => new(filepath, EngineVersion.VER_UE5_1, usmap);
 
-        public static UAsset PalDataAsset { get; private set; } = null!;
-        public static UAsset HumanDataAsset { get; private set; } = null!;
         public static Dictionary<string, CharacterData> CreatePalData()
         {
-            PalDataAsset = LoadAsset(@"Data\DT_PalMonsterParameter.uasset");
-            HumanDataAsset = LoadAsset(@"Data\DT_PalHumanParameter.uasset");
-            Dictionary<string, CharacterData> palData = new Collection<KeyValuePair<string, CharacterData>>
-                ([.. CreateReferencePairs(PalDataAsset, (asset, dataTable) => new(asset, dataTable)),
-                .. CreateReferencePairs(HumanDataAsset, (asset, dataTable) => new(asset, dataTable))]).ToDictionary();
-            StructPropertyData referenceData = ((DataTableExport) PalDataAsset.Exports[0]).Table.Data[0];
-            StructPropertyData dummyData = (StructPropertyData) referenceData.Clone();
-            CharacterData rowNameData = new CharacterData(PalDataAsset, dummyData)
+            Dictionary<CUE4Parse.UE4.Objects.UObject.FName, FStructFallback> palDataAsset = FileProvider.LoadDataTable("Pal/Content/Pal/DataTable/Character/DT_PalMonsterParameter.uasset");
+            Dictionary<CUE4Parse.UE4.Objects.UObject.FName, FStructFallback> humanDataAsset = FileProvider.LoadDataTable("Pal/Content/Pal/DataTable/Character/DT_PalHumanParameter.uasset");
+            Dictionary<string, CharacterData> palData = ((IEnumerable<KeyValuePair<string, CharacterData>>)
+                [.. CreateReferencePairs(palDataAsset), .. CreateReferencePairs(humanDataAsset)]).ToDictionary();
+            palData["RowName"] = new CharacterData(palDataAsset.First().Value.Properties)
             {
                 IsPal = true,
                 ZukanIndex = -1,
                 OverrideNameTextID = null,
                 IsBoss = false
             };
-            palData["RowName"] = rowNameData;
             return palData;
-            static List<KeyValuePair<string, CharacterData>> CreateReferencePairs(UAsset uAsset, Func<UAsset, StructPropertyData, CharacterData> createFunc) =>
-                ((DataTableExport) uAsset.Exports[0]).Table.Data
-                .ConvertAll(structPropertyData => new KeyValuePair<string, CharacterData>($"{structPropertyData.Name}", createFunc(uAsset, structPropertyData)));
+            static IEnumerable<KeyValuePair<string, CharacterData>> CreateReferencePairs(Dictionary<CUE4Parse.UE4.Objects.UObject.FName, FStructFallback> rowMap) =>
+                rowMap.Select(keyValuePair => new KeyValuePair<string, CharacterData>($"{keyValuePair.Key.Text}", new(keyValuePair.Value.Properties)));
         }
 
 #if DEBUG
-        public static void PrintClassDefinition(string name, string filepath)
+        // Example: PrintClassDefinition("CharacterData", "Pal/Content/Pal/DataTable/Character/DT_PalMonsterParameter.uasset");
+        public static void PrintClassDefinition(string name, string path)
         {
-            Console.WriteLine($"public class {name}(UAsset asset, StructPropertyData dataTable)\n{{");
-            Console.WriteLine("    private readonly UAsset uAsset = asset;");
-            Console.WriteLine("    private readonly StructPropertyData structPropertyData = dataTable;");
-            UAsset uAsset = LoadAssetLocal(filepath);
-            DataTableExport dataTableExport = (DataTableExport) uAsset.Exports[0];
-            foreach (StructPropertyData structPropertyData in dataTableExport.Table.Data)
+            Console.WriteLine("// Auto-generated with function PrintClassDefinition");
+            Console.WriteLine($"public class {name}(List<FPropertyTag> properties) : StructData\n{{");
+            Dictionary<CUE4Parse.UE4.Objects.UObject.FName, FStructFallback> rowMap = FileProvider.LoadDataTable(path);
+            foreach (FStructFallback structData in rowMap.Values)
             {
-                for (int i = 0; i < structPropertyData.Value.Count; ++i)
+                for (int i = 0; i < structData.Properties.Count; ++i)
                 {
-                    PropertyData propertyData = structPropertyData.Value[i];
-                    switch (propertyData.PropertyType.Value)
+                    FPropertyTag propertyData = structData.Properties[i];
+                    switch (propertyData.PropertyType.Text)
                     {
                     case "NameProperty":
                     case "EnumProperty":
                     case "StrProperty":
-                        Console.WriteLine($"    public string? {propertyData.Name.Value.Value}\n    {{");
+                        Console.Write($"    public string?");
                         break;
                     case "BoolProperty":
-                        Console.WriteLine($"    public bool {propertyData.Name.Value.Value}\n    {{");
+                        Console.Write("    public bool");
                         break;
                     case "IntProperty":
-                        Console.WriteLine($"    public int {propertyData.Name.Value.Value}\n    {{");
+                        Console.Write("    public int");
                         break;
                     case "FloatProperty":
-                        Console.WriteLine($"    public float {propertyData.Name.Value.Value}\n    {{");
+                        Console.Write("    public float");
                         break;
+                    default:
+                        throw new Exception($"Unknown data type '{propertyData.PropertyType.Text}'.");
                     }
-                    switch (propertyData.PropertyType.Value)
+                    Console.Write($" {propertyData.Name.Text} {{ get; set; }} = ");
+                    switch (propertyData.PropertyType.Text)
                     {
                     case "NameProperty":
                     case "EnumProperty":
-                    case "StrProperty":
-                        Console.WriteLine($"        get => (({propertyData.PropertyType.Value}Data) structPropertyData.Value[{i}]).Value?.ToString();");
-                        break;
-                    case "BoolProperty":
-                    case "IntProperty":
-                    case "FloatProperty":
-                        Console.WriteLine($"        get => (({propertyData.PropertyType.Value}Data) structPropertyData.Value[{i}]).Value;");
+                        Console.Write($"NullCheck(");
                         break;
                     }
-                    Console.Write($"        set => (({propertyData.PropertyType.Value}Data) structPropertyData.Value[{i}]).Value = ");
-                    switch (propertyData.PropertyType.Value)
+                    Console.Write($"(({propertyData.PropertyType.Text})FindProp(properties, \"{propertyData.Name.Text}\").Tag!).Value");
+                    switch (propertyData.PropertyType.Text)
                     {
                     case "NameProperty":
-                        Console.WriteLine("value == null ? null : new FName(uAsset, value);");
+                        Console.WriteLine($");");
                         break;
                     case "EnumProperty":
-                        Console.WriteLine("value == null ? null : FName.DefineDummy(uAsset, value);");
+                        Console.WriteLine($")?.SubstringAfterLast(':');");
                         break;
                     case "StrProperty":
-                        Console.WriteLine("value == null ? null : new FString(value, Encoding.ASCII);");
-                        break;
                     case "BoolProperty":
                     case "IntProperty":
                     case "FloatProperty":
-                        Console.WriteLine("value;");
+                        Console.WriteLine($";");
                         break;
+                    default:
+                        throw new Exception($"Unknown data type '{propertyData.PropertyType.Text}'.");
                     }
-                    Console.WriteLine("    }");
                 }
                 break;
             }
@@ -147,395 +315,93 @@ namespace PalworldRandomizer
 #endif
     }
 
-    public class CharacterData(UAsset asset, StructPropertyData dataTable)
+    public abstract class StructData
     {
-        private readonly UAsset uAsset = asset;
-        private readonly StructPropertyData structPropertyData = dataTable;
-        public string? OverrideNameTextID
-        {
-            get => ((NamePropertyData) structPropertyData.Value[0]).Value?.ToString();
-            set => ((NamePropertyData) structPropertyData.Value[0]).Value = value == null ? null : new FName(uAsset, value);
-        }
-        public string? NamePrefixID
-        {
-            get => ((NamePropertyData) structPropertyData.Value[1]).Value?.ToString();
-            set => ((NamePropertyData) structPropertyData.Value[1]).Value = value == null ? null : new FName(uAsset, value);
-        }
-        public string? OverridePartnerSkillTextID
-        {
-            get => ((NamePropertyData) structPropertyData.Value[2]).Value?.ToString();
-            set => ((NamePropertyData) structPropertyData.Value[2]).Value = value == null ? null : new FName(uAsset, value);
-        }
-        public bool IsPal
-        {
-            get => ((BoolPropertyData) structPropertyData.Value[3]).Value;
-            set => ((BoolPropertyData) structPropertyData.Value[3]).Value = value;
-        }
-        public string? Tribe
-        {
-            get => ((EnumPropertyData) structPropertyData.Value[4]).Value?.ToString();
-            set => ((EnumPropertyData) structPropertyData.Value[4]).Value = value == null ? null : FName.DefineDummy(uAsset, value);
-        }
-        public string? BPClass
-        {
-            get => ((NamePropertyData) structPropertyData.Value[5]).Value?.ToString();
-            set => ((NamePropertyData) structPropertyData.Value[5]).Value = value == null ? null : new FName(uAsset, value);
-        }
-        public int ZukanIndex
-        {
-            get => ((IntPropertyData) structPropertyData.Value[6]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[6]).Value = value;
-        }
-        public string? ZukanIndexSuffix
-        {
-            get => ((StrPropertyData) structPropertyData.Value[7]).Value?.ToString();
-            set => ((StrPropertyData) structPropertyData.Value[7]).Value = value == null ? null : new FString(value, Encoding.ASCII);
-        }
-        public string? Size
-        {
-            get => ((EnumPropertyData) structPropertyData.Value[8]).Value?.ToString();
-            set => ((EnumPropertyData) structPropertyData.Value[8]).Value = value == null ? null : FName.DefineDummy(uAsset, value);
-        }
-        public int Rarity
-        {
-            get => ((IntPropertyData) structPropertyData.Value[9]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[9]).Value = value;
-        }
-        public string? ElementType1
-        {
-            get => ((EnumPropertyData) structPropertyData.Value[10]).Value?.ToString();
-            set => ((EnumPropertyData) structPropertyData.Value[10]).Value = value == null ? null : FName.DefineDummy(uAsset, value);
-        }
-        public string? ElementType2
-        {
-            get => ((EnumPropertyData) structPropertyData.Value[11]).Value?.ToString();
-            set => ((EnumPropertyData) structPropertyData.Value[11]).Value = value == null ? null : FName.DefineDummy(uAsset, value);
-        }
-        public string? GenusCategory
-        {
-            get => ((EnumPropertyData) structPropertyData.Value[12]).Value?.ToString();
-            set => ((EnumPropertyData) structPropertyData.Value[12]).Value = value == null ? null : FName.DefineDummy(uAsset, value);
-        }
-        public string? Organization
-        {
-            get => ((EnumPropertyData) structPropertyData.Value[13]).Value?.ToString();
-            set => ((EnumPropertyData) structPropertyData.Value[13]).Value = value == null ? null : FName.DefineDummy(uAsset, value);
-        }
-        public string? Weapon
-        {
-            get => ((EnumPropertyData) structPropertyData.Value[14]).Value?.ToString();
-            set => ((EnumPropertyData) structPropertyData.Value[14]).Value = value == null ? null : FName.DefineDummy(uAsset, value);
-        }
-        public bool WeaponEquip
-        {
-            get => ((BoolPropertyData) structPropertyData.Value[15]).Value;
-            set => ((BoolPropertyData) structPropertyData.Value[15]).Value = value;
-        }
-        public int Hp
-        {
-            get => ((IntPropertyData) structPropertyData.Value[16]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[16]).Value = value;
-        }
-        public int MeleeAttack
-        {
-            get => ((IntPropertyData) structPropertyData.Value[17]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[17]).Value = value;
-        }
-        public int ShotAttack
-        {
-            get => ((IntPropertyData) structPropertyData.Value[18]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[18]).Value = value;
-        }
-        public int Defense
-        {
-            get => ((IntPropertyData) structPropertyData.Value[19]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[19]).Value = value;
-        }
-        public int Support
-        {
-            get => ((IntPropertyData) structPropertyData.Value[20]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[20]).Value = value;
-        }
-        public int CraftSpeed
-        {
-            get => ((IntPropertyData) structPropertyData.Value[21]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[21]).Value = value;
-        }
-        public float EnemyMaxHPRate
-        {
-            get => ((FloatPropertyData) structPropertyData.Value[22]).Value;
-            set => ((FloatPropertyData) structPropertyData.Value[22]).Value = value;
-        }
-        public float EnemyReceiveDamageRate
-        {
-            get => ((FloatPropertyData) structPropertyData.Value[23]).Value;
-            set => ((FloatPropertyData) structPropertyData.Value[23]).Value = value;
-        }
-        public float EnemyInflictDamageRate
-        {
-            get => ((FloatPropertyData) structPropertyData.Value[24]).Value;
-            set => ((FloatPropertyData) structPropertyData.Value[24]).Value = value;
-        }
-        public float CaptureRateCorrect
-        {
-            get => ((FloatPropertyData) structPropertyData.Value[25]).Value;
-            set => ((FloatPropertyData) structPropertyData.Value[25]).Value = value;
-        }
-        public float ExpRatio
-        {
-            get => ((FloatPropertyData) structPropertyData.Value[26]).Value;
-            set => ((FloatPropertyData) structPropertyData.Value[26]).Value = value;
-        }
-        public float Price
-        {
-            get => ((FloatPropertyData) structPropertyData.Value[27]).Value;
-            set => ((FloatPropertyData) structPropertyData.Value[27]).Value = value;
-        }
-        public float StatusResistUpRate
-        {
-            get => ((FloatPropertyData) structPropertyData.Value[28]).Value;
-            set => ((FloatPropertyData) structPropertyData.Value[28]).Value = value;
-        }
-        public string? AIResponse
-        {
-            get => ((NamePropertyData) structPropertyData.Value[29]).Value?.ToString();
-            set => ((NamePropertyData) structPropertyData.Value[29]).Value = value == null ? null : new FName(uAsset, value);
-        }
-        public string? AISightResponse
-        {
-            get => ((NamePropertyData) structPropertyData.Value[30]).Value?.ToString();
-            set => ((NamePropertyData) structPropertyData.Value[30]).Value = value == null ? null : new FName(uAsset, value);
-        }
-        public int SlowWalkSpeed
-        {
-            get => ((IntPropertyData) structPropertyData.Value[31]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[31]).Value = value;
-        }
-        public int WalkSpeed
-        {
-            get => ((IntPropertyData) structPropertyData.Value[32]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[32]).Value = value;
-        }
-        public int RunSpeed
-        {
-            get => ((IntPropertyData) structPropertyData.Value[33]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[33]).Value = value;
-        }
-        public int RideSprintSpeed
-        {
-            get => ((IntPropertyData) structPropertyData.Value[34]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[34]).Value = value;
-        }
-        public int TransportSpeed
-        {
-            get => ((IntPropertyData) structPropertyData.Value[35]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[35]).Value = value;
-        }
-        public bool IsBoss
-        {
-            get => ((BoolPropertyData) structPropertyData.Value[36]).Value;
-            set => ((BoolPropertyData) structPropertyData.Value[36]).Value = value;
-        }
-        public bool IsTowerBoss
-        {
-            get => ((BoolPropertyData) structPropertyData.Value[37]).Value;
-            set => ((BoolPropertyData) structPropertyData.Value[37]).Value = value;
-        }
-        public bool IsRaidBoss
-        {
-            get => ((BoolPropertyData) structPropertyData.Value[38]).Value;
-            set => ((BoolPropertyData) structPropertyData.Value[38]).Value = value;
-        }
-        public bool UseBossHPGauge
-        {
-            get => ((BoolPropertyData) structPropertyData.Value[39]).Value;
-            set => ((BoolPropertyData) structPropertyData.Value[39]).Value = value;
-        }
-        public string? BattleBGM
-        {
-            get => ((EnumPropertyData) structPropertyData.Value[40]).Value?.ToString();
-            set => ((EnumPropertyData) structPropertyData.Value[40]).Value = value == null ? null : FName.DefineDummy(uAsset, value);
-        }
-        public bool IgnoreLeanBack
-        {
-            get => ((BoolPropertyData) structPropertyData.Value[41]).Value;
-            set => ((BoolPropertyData) structPropertyData.Value[41]).Value = value;
-        }
-        public bool IgnoreBlowAway
-        {
-            get => ((BoolPropertyData) structPropertyData.Value[42]).Value;
-            set => ((BoolPropertyData) structPropertyData.Value[42]).Value = value;
-        }
-        public bool IgnoreStun
-        {
-            get => ((BoolPropertyData) structPropertyData.Value[43]).Value;
-            set => ((BoolPropertyData) structPropertyData.Value[43]).Value = value;
-        }
-        public int MaxFullStomach
-        {
-            get => ((IntPropertyData) structPropertyData.Value[44]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[44]).Value = value;
-        }
-        public float FullStomachDecreaseRate
-        {
-            get => ((FloatPropertyData) structPropertyData.Value[45]).Value;
-            set => ((FloatPropertyData) structPropertyData.Value[45]).Value = value;
-        }
-        public int FoodAmount
-        {
-            get => ((IntPropertyData) structPropertyData.Value[46]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[46]).Value = value;
-        }
-        public int ViewingDistance
-        {
-            get => ((IntPropertyData) structPropertyData.Value[47]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[47]).Value = value;
-        }
-        public int ViewingAngle
-        {
-            get => ((IntPropertyData) structPropertyData.Value[48]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[48]).Value = value;
-        }
-        public float HearingRate
-        {
-            get => ((FloatPropertyData) structPropertyData.Value[49]).Value;
-            set => ((FloatPropertyData) structPropertyData.Value[49]).Value = value;
-        }
-        public bool NooseTrap
-        {
-            get => ((BoolPropertyData) structPropertyData.Value[50]).Value;
-            set => ((BoolPropertyData) structPropertyData.Value[50]).Value = value;
-        }
-        public bool Nocturnal
-        {
-            get => ((BoolPropertyData) structPropertyData.Value[51]).Value;
-            set => ((BoolPropertyData) structPropertyData.Value[51]).Value = value;
-        }
-        public int BiologicalGrade
-        {
-            get => ((IntPropertyData) structPropertyData.Value[52]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[52]).Value = value;
-        }
-        public bool Predator
-        {
-            get => ((BoolPropertyData) structPropertyData.Value[53]).Value;
-            set => ((BoolPropertyData) structPropertyData.Value[53]).Value = value;
-        }
-        public bool Edible
-        {
-            get => ((BoolPropertyData) structPropertyData.Value[54]).Value;
-            set => ((BoolPropertyData) structPropertyData.Value[54]).Value = value;
-        }
-        public int Stamina
-        {
-            get => ((IntPropertyData) structPropertyData.Value[55]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[55]).Value = value;
-        }
-        public int MaleProbability
-        {
-            get => ((IntPropertyData) structPropertyData.Value[56]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[56]).Value = value;
-        }
-        public int CombiRank
-        {
-            get => ((IntPropertyData) structPropertyData.Value[57]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[57]).Value = value;
-        }
-        public bool IgnoreCombi
-        {
-            get => ((BoolPropertyData) structPropertyData.Value[58]).Value;
-            set => ((BoolPropertyData) structPropertyData.Value[58]).Value = value;
-        }
-        public int WorkSuitability_EmitFlame
-        {
-            get => ((IntPropertyData) structPropertyData.Value[59]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[59]).Value = value;
-        }
-        public int WorkSuitability_Watering
-        {
-            get => ((IntPropertyData) structPropertyData.Value[60]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[60]).Value = value;
-        }
-        public int WorkSuitability_Seeding
-        {
-            get => ((IntPropertyData) structPropertyData.Value[61]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[61]).Value = value;
-        }
-        public int WorkSuitability_GenerateElectricity
-        {
-            get => ((IntPropertyData) structPropertyData.Value[62]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[62]).Value = value;
-        }
-        public int WorkSuitability_Handcraft
-        {
-            get => ((IntPropertyData) structPropertyData.Value[63]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[63]).Value = value;
-        }
-        public int WorkSuitability_Collection
-        {
-            get => ((IntPropertyData) structPropertyData.Value[64]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[64]).Value = value;
-        }
-        public int WorkSuitability_Deforest
-        {
-            get => ((IntPropertyData) structPropertyData.Value[65]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[65]).Value = value;
-        }
-        public int WorkSuitability_Mining
-        {
-            get => ((IntPropertyData) structPropertyData.Value[66]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[66]).Value = value;
-        }
-        public int WorkSuitability_OilExtraction
-        {
-            get => ((IntPropertyData) structPropertyData.Value[67]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[67]).Value = value;
-        }
-        public int WorkSuitability_ProductMedicine
-        {
-            get => ((IntPropertyData) structPropertyData.Value[68]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[68]).Value = value;
-        }
-        public int WorkSuitability_Cool
-        {
-            get => ((IntPropertyData) structPropertyData.Value[69]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[69]).Value = value;
-        }
-        public int WorkSuitability_Transport
-        {
-            get => ((IntPropertyData) structPropertyData.Value[70]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[70]).Value = value;
-        }
-        public int WorkSuitability_MonsterFarm
-        {
-            get => ((IntPropertyData) structPropertyData.Value[71]).Value;
-            set => ((IntPropertyData) structPropertyData.Value[71]).Value = value;
-        }
-        public string? PassiveSkill1
-        {
-            get => ((NamePropertyData) structPropertyData.Value[72]).Value?.ToString();
-            set => ((NamePropertyData) structPropertyData.Value[72]).Value = value == null ? null : new FName(uAsset, value);
-        }
-        public string? PassiveSkill2
-        {
-            get => ((NamePropertyData) structPropertyData.Value[73]).Value?.ToString();
-            set => ((NamePropertyData) structPropertyData.Value[73]).Value = value == null ? null : new FName(uAsset, value);
-        }
-        public string? PassiveSkill3
-        {
-            get => ((NamePropertyData) structPropertyData.Value[74]).Value?.ToString();
-            set => ((NamePropertyData) structPropertyData.Value[74]).Value = value == null ? null : new FName(uAsset, value);
-        }
-        public string? PassiveSkill4
-        {
-            get => ((NamePropertyData) structPropertyData.Value[75]).Value?.ToString();
-            set => ((NamePropertyData) structPropertyData.Value[75]).Value = value == null ? null : new FName(uAsset, value);
-        }
-        public string? FirstDefeatRewardItemID
-        {
-            get => ((NamePropertyData) structPropertyData.Value[76]).Value?.ToString();
-            set => ((NamePropertyData) structPropertyData.Value[76]).Value = value == null ? null : new FName(uAsset, value);
-        }
+        protected static FPropertyTag FindProp(List<FPropertyTag> properties, string name) => properties.Find(p => string.Equals(p.Name.Text, name, StringComparison.OrdinalIgnoreCase))!;
+
+        protected static string? NullCheck(CUE4Parse.UE4.Objects.UObject.FName fName) => fName.IsNone ? null : fName.Text;
+    }
+
+    // Auto-generated with function PrintClassDefinition
+    public class CharacterData(List<FPropertyTag> properties) : StructData
+    {
+        public string? OverrideNameTextID { get; set; } = NullCheck(((NameProperty)FindProp(properties, "OverrideNameTextID").Tag!).Value);
+        public string? NamePrefixID { get; set; } = NullCheck(((NameProperty)FindProp(properties, "NamePrefixID").Tag!).Value);
+        public string? OverridePartnerSkillTextID { get; set; } = NullCheck(((NameProperty)FindProp(properties, "OverridePartnerSkillTextID").Tag!).Value);
+        public bool IsPal { get; set; } = ((BoolProperty)FindProp(properties, "IsPal").Tag!).Value;
+        public string? Tribe { get; set; } = NullCheck(((EnumProperty)FindProp(properties, "Tribe").Tag!).Value)?.SubstringAfterLast(':');
+        public string? BPClass { get; set; } = NullCheck(((NameProperty)FindProp(properties, "BPClass").Tag!).Value);
+        public int ZukanIndex { get; set; } = ((IntProperty)FindProp(properties, "ZukanIndex").Tag!).Value;
+        public string? ZukanIndexSuffix { get; set; } = ((StrProperty)FindProp(properties, "ZukanIndexSuffix").Tag!).Value;
+        public string? Size { get; set; } = NullCheck(((EnumProperty)FindProp(properties, "Size").Tag!).Value)?.SubstringAfterLast(':');
+        public int Rarity { get; set; } = ((IntProperty)FindProp(properties, "Rarity").Tag!).Value;
+        public string? ElementType1 { get; set; } = NullCheck(((EnumProperty)FindProp(properties, "ElementType1").Tag!).Value)?.SubstringAfterLast(':');
+        public string? ElementType2 { get; set; } = NullCheck(((EnumProperty)FindProp(properties, "ElementType2").Tag!).Value)?.SubstringAfterLast(':');
+        public string? GenusCategory { get; set; } = NullCheck(((EnumProperty)FindProp(properties, "GenusCategory").Tag!).Value)?.SubstringAfterLast(':');
+        public string? Organization { get; set; } = NullCheck(((EnumProperty)FindProp(properties, "Organization").Tag!).Value)?.SubstringAfterLast(':');
+        public string? Weapon { get; set; } = NullCheck(((EnumProperty)FindProp(properties, "Weapon").Tag!).Value)?.SubstringAfterLast(':');
+        public bool WeaponEquip { get; set; } = ((BoolProperty)FindProp(properties, "WeaponEquip").Tag!).Value;
+        public int Hp { get; set; } = ((IntProperty)FindProp(properties, "Hp").Tag!).Value;
+        public int MeleeAttack { get; set; } = ((IntProperty)FindProp(properties, "MeleeAttack").Tag!).Value;
+        public int ShotAttack { get; set; } = ((IntProperty)FindProp(properties, "ShotAttack").Tag!).Value;
+        public int Defense { get; set; } = ((IntProperty)FindProp(properties, "Defense").Tag!).Value;
+        public int Support { get; set; } = ((IntProperty)FindProp(properties, "Support").Tag!).Value;
+        public int CraftSpeed { get; set; } = ((IntProperty)FindProp(properties, "CraftSpeed").Tag!).Value;
+        public float EnemyMaxHPRate { get; set; } = ((FloatProperty)FindProp(properties, "EnemyMaxHPRate").Tag!).Value;
+        public float EnemyReceiveDamageRate { get; set; } = ((FloatProperty)FindProp(properties, "EnemyReceiveDamageRate").Tag!).Value;
+        public float EnemyInflictDamageRate { get; set; } = ((FloatProperty)FindProp(properties, "EnemyInflictDamageRate").Tag!).Value;
+        public float CaptureRateCorrect { get; set; } = ((FloatProperty)FindProp(properties, "CaptureRateCorrect").Tag!).Value;
+        public float ExpRatio { get; set; } = ((FloatProperty)FindProp(properties, "ExpRatio").Tag!).Value;
+        public float Price { get; set; } = ((FloatProperty)FindProp(properties, "Price").Tag!).Value;
+        public float StatusResistUpRate { get; set; } = ((FloatProperty)FindProp(properties, "StatusResistUpRate").Tag!).Value;
+        public string? AIResponse { get; set; } = NullCheck(((NameProperty)FindProp(properties, "AIResponse").Tag!).Value);
+        public string? AISightResponse { get; set; } = NullCheck(((NameProperty)FindProp(properties, "AISightResponse").Tag!).Value);
+        public int SlowWalkSpeed { get; set; } = ((IntProperty)FindProp(properties, "SlowWalkSpeed").Tag!).Value;
+        public int WalkSpeed { get; set; } = ((IntProperty)FindProp(properties, "WalkSpeed").Tag!).Value;
+        public int RunSpeed { get; set; } = ((IntProperty)FindProp(properties, "RunSpeed").Tag!).Value;
+        public int RideSprintSpeed { get; set; } = ((IntProperty)FindProp(properties, "RideSprintSpeed").Tag!).Value;
+        public int TransportSpeed { get; set; } = ((IntProperty)FindProp(properties, "TransportSpeed").Tag!).Value;
+        public bool IsBoss { get; set; } = ((BoolProperty)FindProp(properties, "IsBoss").Tag!).Value;
+        public bool IsTowerBoss { get; set; } = ((BoolProperty)FindProp(properties, "IsTowerBoss").Tag!).Value;
+        public bool IsRaidBoss { get; set; } = ((BoolProperty)FindProp(properties, "IsRaidBoss").Tag!).Value;
+        public bool UseBossHPGauge { get; set; } = ((BoolProperty)FindProp(properties, "UseBossHPGauge").Tag!).Value;
+        public string? BattleBGM { get; set; } = NullCheck(((EnumProperty)FindProp(properties, "BattleBGM").Tag!).Value)?.SubstringAfterLast(':');
+        public bool IgnoreLeanBack { get; set; } = ((BoolProperty)FindProp(properties, "IgnoreLeanBack").Tag!).Value;
+        public bool IgnoreBlowAway { get; set; } = ((BoolProperty)FindProp(properties, "IgnoreBlowAway").Tag!).Value;
+        public bool IgnoreStun { get; set; } = ((BoolProperty)FindProp(properties, "IgnoreStun").Tag!).Value;
+        public int MaxFullStomach { get; set; } = ((IntProperty)FindProp(properties, "MaxFullStomach").Tag!).Value;
+        public float FullStomachDecreaseRate { get; set; } = ((FloatProperty)FindProp(properties, "FullStomachDecreaseRate").Tag!).Value;
+        public int FoodAmount { get; set; } = ((IntProperty)FindProp(properties, "FoodAmount").Tag!).Value;
+        public int ViewingDistance { get; set; } = ((IntProperty)FindProp(properties, "ViewingDistance").Tag!).Value;
+        public int ViewingAngle { get; set; } = ((IntProperty)FindProp(properties, "ViewingAngle").Tag!).Value;
+        public float HearingRate { get; set; } = ((FloatProperty)FindProp(properties, "HearingRate").Tag!).Value;
+        public bool NooseTrap { get; set; } = ((BoolProperty)FindProp(properties, "NooseTrap").Tag!).Value;
+        public bool Nocturnal { get; set; } = ((BoolProperty)FindProp(properties, "Nocturnal").Tag!).Value;
+        public int BiologicalGrade { get; set; } = ((IntProperty)FindProp(properties, "BiologicalGrade").Tag!).Value;
+        public bool Predator { get; set; } = ((BoolProperty)FindProp(properties, "Predator").Tag!).Value;
+        public bool Edible { get; set; } = ((BoolProperty)FindProp(properties, "Edible").Tag!).Value;
+        public int Stamina { get; set; } = ((IntProperty)FindProp(properties, "Stamina").Tag!).Value;
+        public int MaleProbability { get; set; } = ((IntProperty)FindProp(properties, "MaleProbability").Tag!).Value;
+        public int CombiRank { get; set; } = ((IntProperty)FindProp(properties, "CombiRank").Tag!).Value;
+        public bool IgnoreCombi { get; set; } = ((BoolProperty)FindProp(properties, "IgnoreCombi").Tag!).Value;
+        public int WorkSuitability_EmitFlame { get; set; } = ((IntProperty)FindProp(properties, "WorkSuitability_EmitFlame").Tag!).Value;
+        public int WorkSuitability_Watering { get; set; } = ((IntProperty)FindProp(properties, "WorkSuitability_Watering").Tag!).Value;
+        public int WorkSuitability_Seeding { get; set; } = ((IntProperty)FindProp(properties, "WorkSuitability_Seeding").Tag!).Value;
+        public int WorkSuitability_GenerateElectricity { get; set; } = ((IntProperty)FindProp(properties, "WorkSuitability_GenerateElectricity").Tag!).Value;
+        public int WorkSuitability_Handcraft { get; set; } = ((IntProperty)FindProp(properties, "WorkSuitability_Handcraft").Tag!).Value;
+        public int WorkSuitability_Collection { get; set; } = ((IntProperty)FindProp(properties, "WorkSuitability_Collection").Tag!).Value;
+        public int WorkSuitability_Deforest { get; set; } = ((IntProperty)FindProp(properties, "WorkSuitability_Deforest").Tag!).Value;
+        public int WorkSuitability_Mining { get; set; } = ((IntProperty)FindProp(properties, "WorkSuitability_Mining").Tag!).Value;
+        public int WorkSuitability_OilExtraction { get; set; } = ((IntProperty)FindProp(properties, "WorkSuitability_OilExtraction").Tag!).Value;
+        public int WorkSuitability_ProductMedicine { get; set; } = ((IntProperty)FindProp(properties, "WorkSuitability_ProductMedicine").Tag!).Value;
+        public int WorkSuitability_Cool { get; set; } = ((IntProperty)FindProp(properties, "WorkSuitability_Cool").Tag!).Value;
+        public int WorkSuitability_Transport { get; set; } = ((IntProperty)FindProp(properties, "WorkSuitability_Transport").Tag!).Value;
+        public int WorkSuitability_MonsterFarm { get; set; } = ((IntProperty)FindProp(properties, "WorkSuitability_MonsterFarm").Tag!).Value;
+        public string? PassiveSkill1 { get; set; } = NullCheck(((NameProperty)FindProp(properties, "PassiveSkill1").Tag!).Value);
+        public string? PassiveSkill2 { get; set; } = NullCheck(((NameProperty)FindProp(properties, "PassiveSkill2").Tag!).Value);
+        public string? PassiveSkill3 { get; set; } = NullCheck(((NameProperty)FindProp(properties, "PassiveSkill3").Tag!).Value);
+        public string? PassiveSkill4 { get; set; } = NullCheck(((NameProperty)FindProp(properties, "PassiveSkill4").Tag!).Value);
+        public string? FirstDefeatRewardItemID { get; set; } = NullCheck(((NameProperty)FindProp(properties, "FirstDefeatRewardItemID").Tag!).Value);
     }
 
     public class CagePalData(UAsset asset, StructPropertyData dataTable)
