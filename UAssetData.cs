@@ -230,7 +230,10 @@ namespace PalworldRandomizer
                                 }
                             }
                         }
-                        savedFilePaths.TryAdd(filename, keyValuePair.Value.Path[..(keyValuePair.Value.Path.LastIndexOf('/') + 1)]);
+                        if (File.Exists(filename))
+                        {
+                            savedFilePaths.TryAdd(filename, keyValuePair.Value.Path[..(keyValuePair.Value.Path.LastIndexOf('/') + 1)]);
+                        }
                     }
                 }, DispatcherPriority.Background, [kvp]));
             }
