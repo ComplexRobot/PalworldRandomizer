@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -14,11 +15,12 @@ namespace PalworldRandomizer
             LogException(eventArgs.Exception);
             try
             {
+                Exception exception = eventArgs.Exception is TargetInvocationException invocationException ? invocationException.InnerException ?? eventArgs.Exception : eventArgs.Exception;
 #if DEBUG
-                string message = eventArgs.Exception.ToString();
+                string message = exception.ToString();
                 Console.WriteLine(message[..message.TakeWhile(x => x != '\n').Count()]);
 #endif
-                MessageBox.Show(eventArgs.Exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (Exception e)
             {

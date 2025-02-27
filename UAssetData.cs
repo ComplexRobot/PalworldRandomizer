@@ -24,6 +24,7 @@ using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Assets.Objects.Properties;
 using CUE4Parse.Utils;
 using System.Windows.Threading;
+using System.Windows;
 
 namespace PalworldRandomizer
 {
@@ -138,6 +139,7 @@ namespace PalworldRandomizer
                 }
             }
             usmap = new Usmap(AppDataPath("Mappings.usmap"));
+            //CUE4Parse.
             OodleHelper.Initialize(AppDataPath("oo2core_9_win64.dll"));
             ZlibHelper.Initialize(AppDataPath("zlib-ng2.dll"));
             
@@ -167,6 +169,7 @@ namespace PalworldRandomizer
             Directory.CreateDirectory(weaponIconFolder);
             ConcurrentDictionary<string, string> savedFilePaths = new();
             List<DispatcherOperation> dispatcherOps = [];
+            bool imageDecodeFailed = false;
             foreach (KeyValuePair<string, GameFile> kvp in fileProvider.Files)
             {
                 dispatcherOps.Add(SettingsPage.Instance.Dispatcher.BeginInvoke((KeyValuePair<string, GameFile> keyValuePair) =>
@@ -213,7 +216,16 @@ namespace PalworldRandomizer
                             {
                                 if (export is UTexture texture)
                                 {
-                                    File.WriteAllBytes(filename, texture.Decode(ETexturePlatform.DesktopMobile)!.Encode(ETextureFormat.Png, 100).ToArray());
+                                    try
+                                    {
+                                        // Decode: System.DllNotFoundException: Unable to load DLL 'libSkiaSharp' or one of its dependencies: The specified module could not be found.
+                                        File.WriteAllBytes(filename, texture.Decode(ETexturePlatform.DesktopMobile)!.Encode(ETextureFormat.Png, 100).ToArray());
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        App.LogException(e);
+                                        imageDecodeFailed = true;
+                                    }
                                     break;
                                 }
                             }
@@ -225,6 +237,10 @@ namespace PalworldRandomizer
             foreach (DispatcherOperation op in dispatcherOps)
             {
                 op.Wait();
+            }
+            if (imageDecodeFailed)
+            {
+                MessageBox.Show("One or more images failed to decode.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             FileProvider = new() { MappingsContainer = new FileUsmapTypeMappingsProvider(AppDataPath("Mappings.usmap")) };
             FileProvider.Initialize();
