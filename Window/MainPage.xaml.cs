@@ -237,11 +237,12 @@ namespace PalworldRandomizer
             Instance = this;
             InitializeComponent();
             form.Visibility = Visibility.Collapsed;
+            testImage.Visibility = Visibility.Collapsed;
             statusBar.Text = "⌛ Initializing...";
-            testImage.Source = new BitmapImage(new Uri(Data.PalIcon[Randomize.GetRandomPal()], UriKind.Absolute));
-            Dispatcher.BeginInvoke(() =>
+            Dispatcher.BeginInvoke(DispatcherPriority.ContextIdle, () =>
             {
                 dataOperation.Wait();
+                testImage.Source = new BitmapImage(new Uri(Data.PalIcon[Randomize.GetRandomPal()], UriKind.Absolute));
                 Version assemblyVersion = Assembly.GetExecutingAssembly().GetName().Version!;
                 version.Text = $"v{assemblyVersion.Major}.{assemblyVersion.Minor}{(assemblyVersion.Build != 0 ? $".{assemblyVersion.Build}" : "")}";
                 weightCustomMode.SelectedItem = GroupWeightMode.WeightMinimum;
@@ -256,6 +257,7 @@ namespace PalworldRandomizer
                 {
                     LoadTemplate(UAssetData.AppDataPath(AUTO_TEMPLATE_FILENAME))?.RestoreToWindow(this);
                 }
+                testImage.Visibility = Visibility.Visible;
                 form.Visibility = Visibility.Visible;
                 statusBar.Text = "";
             });

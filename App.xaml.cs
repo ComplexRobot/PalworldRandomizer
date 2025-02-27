@@ -34,7 +34,7 @@ namespace PalworldRandomizer
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            Dispatcher.BeginInvoke(() =>
+            Dispatcher.BeginInvoke(DispatcherPriority.Send, () =>
             {
                 SettingsPage settingsPage = new();
                 AppWindow settingsWindow = new(() => settingsPage) { Title = "Settings", Topmost = true, Width = 800, Height = 200 };
@@ -66,7 +66,7 @@ namespace PalworldRandomizer
 
         private void Initialize()
         {
-            DispatcherOperation dataOperation = Dispatcher.BeginInvoke(() =>
+            DispatcherOperation dataOperation = Dispatcher.BeginInvoke(DispatcherPriority.Background, () =>
             {
                 UAssetData.Initialize();
                 Data.Initialize();
@@ -81,7 +81,7 @@ namespace PalworldRandomizer
                     e.Cancel = true;
                 };
             });
-            Dispatcher.BeginInvoke(() =>
+            Dispatcher.BeginInvoke(DispatcherPriority.Send, () =>
             {
                 MainWindow = new AppWindow(() => new MainPage(dataOperation)) { Title = "Palworld Randomizer", Width = 1280, Height = 720 };
                 MainWindow.Closed += (sender, e) => Shutdown();
