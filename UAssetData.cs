@@ -23,25 +23,22 @@ using System.Collections.Concurrent;
 using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Assets.Objects.Properties;
 using CUE4Parse.Utils;
-using System.Windows.Threading;
-using System.Windows;
-using System.Runtime.InteropServices;
 
 namespace PalworldRandomizer
 {
-    public class VfsFileProvider() : AbstractVfsFileProvider(false, new VersionContainer(EGame.GAME_UE5_1)) 
+    public class VfsFileProvider() : AbstractVfsFileProvider(new VersionContainer(EGame.GAME_UE5_1), StringComparer.OrdinalIgnoreCase) 
     {
         public override void Initialize() { }
 
         public void AddFile(string file, string mountPoint)
         {
             OsGameFile gameFile = new(new(Path.GetDirectoryName(file)!), new(file), mountPoint, new VersionContainer(EGame.GAME_UE5_1));
-            _files.AddFiles(new Dictionary<string, GameFile> { { gameFile.Path, gameFile } });
+            Files.AddFiles(new Dictionary<string, GameFile> { { gameFile.Path, gameFile } });
         }
 
         public IEnumerable<UObject> LoadAsset(string path)
         {
-            if (TryLoadPackage(path, out IPackage package))
+            if (TryLoadPackage(path, out IPackage? package))
             {
                 return package.GetExports();
             }
@@ -147,7 +144,7 @@ namespace PalworldRandomizer
             fileProvider.Initialize();
             fileProvider.Mount();
             string gameVersion = GameVersion;
-            if (fileProvider.TrySaveAsset("Pal/Config/DefaultGame.ini", out byte[] gameIni))
+            if (fileProvider.TrySaveAsset("Pal/Config/DefaultGame.ini", out byte[]? gameIni))
             {
                 IniData iniData = new IniDataParser(new() { AllowDuplicateKeys = true }).Parse(Encoding.ASCII.GetString(gameIni));
                 gameVersion = iniData["/Script/EngineSettings.GeneralProjectSettings"]["ProjectVersion"];
@@ -167,74 +164,66 @@ namespace PalworldRandomizer
             string weaponIconFolder = imagesFolder + @"\InventoryItemIcon";
             Directory.CreateDirectory(weaponIconFolder);
             ConcurrentDictionary<string, string> savedFilePaths = new();
-            List<DispatcherOperation> dispatcherOps = [];
-            foreach (KeyValuePair<string, GameFile> kvp in fileProvider.Files)
+            Parallel.ForEach(fileProvider.Files, (KeyValuePair<string, GameFile> keyValuePair) =>
             {
-                dispatcherOps.Add(SettingsPage.Instance.Dispatcher.BeginInvoke((KeyValuePair<string, GameFile> keyValuePair) =>
+                if (SpawnSheetsRegex().IsMatch(keyValuePair.Key))
                 {
-                    if (SpawnSheetsRegex().IsMatch(keyValuePair.Key))
+                    SaveAsset(assetsFolder);
+                }
+                else if (PalEggSpawnSheetsRegex().IsMatch(keyValuePair.Key))
+                {
+                    SaveAsset(palEggFolder);
+                }
+                else if (DataTableRegex().IsMatch(keyValuePair.Key))
+                {
+                    SaveAsset(dataFolder);
+                }
+                else if (PalIconRegex().IsMatch(keyValuePair.Key))
+                {
+                    SaveImage(palIconFolder);
+                }
+                else if (NPCIconRegex().IsMatch(keyValuePair.Key))
+                {
+                    SaveImage(npcIconFolder);
+                }
+                else if (WeaponIconRegex().IsMatch(keyValuePair.Key))
+                {
+                    SaveImage(weaponIconFolder);
+                }
+                void SaveAsset(string folder)
+                {
+                    string filename = folder + '\\' + keyValuePair.Value.Name;
+                    if (gameUpdated || !File.Exists(filename))
                     {
-                        SaveAsset(assetsFolder);
+                        File.WriteAllBytes(filename, keyValuePair.Value.Read());
                     }
-                    else if (PalEggSpawnSheetsRegex().IsMatch(keyValuePair.Key))
+                    savedFilePaths.TryAdd(filename, keyValuePair.Value.Path[..(keyValuePair.Value.Path.LastIndexOf('/') + 1)]);
+                }
+                void SaveImage(string folder)
+                {
+                    string filename = folder + '\\' + keyValuePair.Value.NameWithoutExtension + ".png";
+                    if ((gameUpdated || !File.Exists(filename)) && fileProvider.TryLoadPackage(keyValuePair.Value, out IPackage? package))
                     {
-                        SaveAsset(palEggFolder);
-                    }
-                    else if (DataTableRegex().IsMatch(keyValuePair.Key))
-                    {
-                        SaveAsset(dataFolder);
-                    }
-                    else if (PalIconRegex().IsMatch(keyValuePair.Key))
-                    {
-                        SaveImage(palIconFolder);
-                    }
-                    else if (NPCIconRegex().IsMatch(keyValuePair.Key))
-                    {
-                        SaveImage(npcIconFolder);
-                    }
-                    else if (WeaponIconRegex().IsMatch(keyValuePair.Key))
-                    {
-                        SaveImage(weaponIconFolder);
-                    }
-                    void SaveAsset(string folder)
-                    {
-                        string filename = folder + '\\' + keyValuePair.Value.Name;
-                        if (gameUpdated || !File.Exists(filename))
+                        foreach (UObject export in package.GetExports())
                         {
-                            File.WriteAllBytes(filename, keyValuePair.Value.Read());
-                        }
-                        savedFilePaths.TryAdd(filename, keyValuePair.Value.Path[..(keyValuePair.Value.Path.LastIndexOf('/') + 1)]);
-                    }
-                    void SaveImage(string folder)
-                    {
-                        string filename = folder + '\\' + keyValuePair.Value.NameWithoutExtension + ".png";
-                        if ((gameUpdated || !File.Exists(filename)) && fileProvider.TryLoadPackage(keyValuePair.Value, out IPackage package))
-                        {
-                            foreach (UObject export in package.GetExports())
+                            if (export is UTexture texture)
                             {
-                                if (export is UTexture texture)
-                                {
-                                    File.WriteAllBytes(filename, texture.Decode()!.Encode(ETextureFormat.Png, 100).ToArray());
-                                    break;
-                                }
+                                File.WriteAllBytes(filename, texture.Decode()!.Encode(ETextureFormat.Png, 100).ToArray());
+                                break;
                             }
                         }
-                        if (File.Exists(filename))
-                        {
-                            savedFilePaths.TryAdd(filename, keyValuePair.Value.Path[..(keyValuePair.Value.Path.LastIndexOf('/') + 1)]);
-                        }
                     }
-                }, DispatcherPriority.Background, [kvp]));
-            }
-            foreach (DispatcherOperation op in dispatcherOps)
-            {
-                op.Wait();
-            }
+                    savedFilePaths.TryAdd(filename, keyValuePair.Value.Path[..(keyValuePair.Value.Path.LastIndexOf('/') + 1)]);
+                }
+            });
             FileProvider = new() { MappingsContainer = new FileUsmapTypeMappingsProvider(AppDataPath("Mappings.usmap")) };
             FileProvider.Initialize();
             foreach (KeyValuePair<string, string> keyValuePair in savedFilePaths)
             {
-                FileProvider.AddFile(keyValuePair.Key, keyValuePair.Value);
+                if (File.Exists(keyValuePair.Key))
+                {
+                    FileProvider.AddFile(keyValuePair.Key, keyValuePair.Value);
+                }
             }
             fileProvider.PostMount();
             fileProvider.Dispose();

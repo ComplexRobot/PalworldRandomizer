@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version>2.13.4</Version>
+    <Version>2.13.5</Version>
     <TargetFramework>net8.0-windows</TargetFramework>
     <UseWPF>True</UseWPF>
     <Nullable>enable</Nullable>
@@ -43,12 +43,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CUE4Parse" Version="*" />
-    <PackageReference Include="CUE4Parse-Conversion" Version="*" />
-    <PackageReference Include="ini-parser" Version="*" />
-    <PackageReference Include="Newtonsoft.Json" Version="*" />
-    <PackageReference Include="Emoji.Wpf" Version="*" />
-    <PackageReference Include="ZstdSharp.Port" Version="*" />
+    <PackageReference Include="CUE4Parse" Version="1.2.2" />
+    <PackageReference Include="CUE4Parse-Conversion" Version="1.2.1" />
+    <PackageReference Include="ini-parser" Version="3.4.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Emoji.Wpf" Version="0.3.4" />
+    <PackageReference Include="ZstdSharp.Port" Version="0.8.5" />
     <EmbeddedResource Update="Resources\Resource.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resource.Designer.cs</LastGenOutput>
