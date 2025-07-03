@@ -127,6 +127,18 @@
   <data name="Resource.resx" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resource.resx;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
+  <data name="T_BeardedDragon_icon_normal" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\PalIcon\T_BeardedDragon_icon_normal.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="T_BlackFurDragon_icon_normal" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\PalIcon\T_BlackFurDragon_icon_normal.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="T_DarkMutant_icon_normal" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\PalIcon\T_DarkMutant_icon_normal.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="T_ElecLion_icon_normal" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Images\PalIcon\T_ElecLion_icon_normal.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="UnrealPak" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>UnrealPak.exe;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>

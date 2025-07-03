@@ -108,6 +108,46 @@ namespace PalworldRandomizer.Resources {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] T_BeardedDragon_icon_normal {
+            get {
+                object obj = ResourceManager.GetObject("T_BeardedDragon_icon_normal", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] T_BlackFurDragon_icon_normal {
+            get {
+                object obj = ResourceManager.GetObject("T_BlackFurDragon_icon_normal", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] T_DarkMutant_icon_normal {
+            get {
+                object obj = ResourceManager.GetObject("T_DarkMutant_icon_normal", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] T_ElecLion_icon_normal {
+            get {
+                object obj = ResourceManager.GetObject("T_ElecLion_icon_normal", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] UnrealPak {
             get {
                 object obj = ResourceManager.GetObject("UnrealPak", resourceCulture);

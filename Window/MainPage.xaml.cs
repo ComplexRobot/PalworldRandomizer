@@ -57,6 +57,7 @@ namespace PalworldRandomizer
         public int PredatorChance = int.Parse(window.predatorChance.Text);
         public bool RandomizeCages = window.randomizeCages.IsChecked == true;
         public bool RandomizeEggs = window.randomizeEggs.IsChecked == true;
+        public bool RandomizeQuests = window.randomizeQuests.IsChecked == true;
         public bool EqualizeAreaRarity = window.equalizeAreaRarity.IsChecked == true;
         public bool MethodFull = window.methodFull.IsChecked == true;
         public bool MethodCustomSize = window.methodCustomSize.IsChecked == true;
@@ -133,6 +134,9 @@ namespace PalworldRandomizer
         public bool SpawnPredators = window.spawnPredators.IsChecked == true;
         public bool SpawnHumanBosses = window.spawnHumanBosses.IsChecked == true;
         public bool SpawnSpecial = window.spawnSpecial.IsChecked == true;
+        public bool SpawnTerraria = window.spawnTerraria.IsChecked == true;
+        public bool SpawnTerrariaBosses = window.spawnTerrariaBosses.IsChecked == true;
+        public bool SpawnTowerHumans = window.spawnTowerHumans.IsChecked == true;
         public int FieldLevel = int.Parse(window.fieldLevel.Text);
         public int DungeonLevel = int.Parse(window.dungeonLevel.Text);
         public int FieldBossLevel = int.Parse(window.fieldBossLevel.Text);
@@ -304,7 +308,7 @@ namespace PalworldRandomizer
             ValidateNumericText(dungeonBossLevel, 0, 100);
             ValidateNumericText(predatorLevel, 0, 100);
             ValidateNumericText(cageLevel, 0, 100);
-            ValidateNumericText(levelCap, 1, 60);
+            ValidateNumericText(levelCap, 1, 65);
             ValidateNumericText(bossAddLevel, 0, 85);
             ValidateNumericText(randomLevelMin, 1, 1, int.Parse(levelCap.Text));
             ValidateNumericText(randomLevelMax, Math.Max(1, int.Parse(randomLevelMin.Text)), int.Parse(levelCap.Text), int.Parse(levelCap.Text));

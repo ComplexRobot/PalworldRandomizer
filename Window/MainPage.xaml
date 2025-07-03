@@ -51,6 +51,7 @@
                     </WrapPanel>
                     <CheckBox Name="randomizeCages" IsChecked="True">Cages</CheckBox>
                     <CheckBox Name="randomizeEggs" IsChecked="True">Overworld Eggs</CheckBox>
+                    <CheckBox Name="randomizeQuests" IsChecked="False">Quest Areas</CheckBox>
                     <WrapPanel Margin="10,0,0,0">
                         <WrapPanel.Style>
                             <Style TargetType="WrapPanel">
@@ -602,6 +603,21 @@
                         </WrapPanel.Style>
                         <CheckBox Name="spawnHumanBosses" IsChecked="True">Human Bosses</CheckBox>
                     </WrapPanel>
+                    <CheckBox Name="spawnTerraria" IsChecked="True">Terraria Monsters</CheckBox>
+                    <CheckBox Name="spawnTerrariaBosses" IsChecked="True">Terraria Bosses</CheckBox>
+                    <WrapPanel>
+                        <WrapPanel.Style>
+                            <Style TargetType="WrapPanel">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ElementName=methodNone, Path=IsChecked}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </WrapPanel.Style>
+                        <CheckBox Name="spawnTowerHumans" IsChecked="True">Tower Humans</CheckBox>
+                    </WrapPanel>
                 </WrapPanel>
             </GroupBox>
             <GroupBox Margin="5">
@@ -660,7 +676,7 @@
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Level Cap:"/>
                         <TextBox Name="levelCap" VerticalAlignment="Center" Margin="0"
-                                     PreviewTextInput="PositiveIntSize3_PreviewTextInput" DataObject.Pasting="PositiveIntSize3_Pasting">60</TextBox>
+                                     PreviewTextInput="PositiveIntSize3_PreviewTextInput" DataObject.Pasting="PositiveIntSize3_Pasting">65</TextBox>
                     </StackPanel>
                     <WrapPanel Margin="5,0,0,0" VerticalAlignment="Center">
                         <TextBlock Margin="0,0,5,0" VerticalAlignment="Center">Scale Mode:</TextBlock>
@@ -852,7 +868,7 @@
         </StackPanel>
     </ScrollViewer>
     <Grid Panel.ZIndex="-1">
-        <Image Name="testImage" MaxHeight="64" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="5"
+        <Image Name="testImage" MaxHeight="128" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="5"
                    Source="/Resources/Images/T_SheepBall_icon_normal.png" RenderOptions.BitmapScalingMode="HighQuality"/>
     </Grid>
     <StatusBar Grid.Row="1">

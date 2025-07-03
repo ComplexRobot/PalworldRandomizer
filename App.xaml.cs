@@ -85,7 +85,7 @@ namespace PalworldRandomizer
             });
             Dispatcher.BeginInvoke(DispatcherPriority.Send, () =>
             {
-                MainWindow = new AppWindow(() => new MainPage(dataOperation)) { Title = "Palworld Randomizer", Width = 1280, Height = 720 };
+                MainWindow = new AppWindow(() => new MainPage(dataOperation)) { Title = "Palworld Randomizer", Width = 1280, Height = 800 };
                 MainWindow.Closed += (sender, e) => Shutdown();
                 ((AppWindow)MainWindow).ShowClean();
             });

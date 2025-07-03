@@ -66,7 +66,7 @@ namespace PalworldRandomizer
 
     public static partial class UAssetData
     {
-        public const float ASSET_VERSION = 5;
+        public const float ASSET_VERSION = 6;
         public static string InstallationDirectory { set; get; } = @"C:\Program Files (x86)\Steam\steamapps\common\Palworld";
         public static string ArchivePath { set; get; } = @"C:\Program Files (x86)\Steam\steamapps\common\Palworld\Pal\Content\Paks\Pal-Windows.pak";
         public static string GameVersion { set; get; } = "0.0.0.0";
@@ -81,7 +81,7 @@ namespace PalworldRandomizer
         private static partial Regex PalEggSpawnSheetsRegex();
 
         [GeneratedRegex(@"^Pal/Content/(Pal/DataTable/Character/DT_(CapturedCagePal|PalBossNPCIcon|PalHumanParameter|PalMonsterParameter|PalCharacterIconDataTable)"
-            + @"|L10N/en/Pal/DataTable/Text/DT_(HumanNameText|PalNameText))\..+$", RegexOptions.ExplicitCapture)]
+            + @"|L10N/en/Pal/DataTable/Text/DT_(HumanNameText|PalNameText)_Common)\..+$", RegexOptions.ExplicitCapture)]
         private static partial Regex DataTableRegex();
 
         [GeneratedRegex(@"^Pal/Content/Pal/Texture/(PalIcon/Normal/(?!T_dummy_icon).+|UI/Main_Menu/T_icon_unknown)\.uasset$", RegexOptions.ExplicitCapture)]
@@ -404,6 +404,7 @@ namespace PalworldRandomizer
         public string? PassiveSkill3 { get; set; } = NullCheck(((NameProperty)FindProp(properties, "PassiveSkill3").Tag!).Value);
         public string? PassiveSkill4 { get; set; } = NullCheck(((NameProperty)FindProp(properties, "PassiveSkill4").Tag!).Value);
         public string? FirstDefeatRewardItemID { get; set; } = NullCheck(((NameProperty)FindProp(properties, "FirstDefeatRewardItemID").Tag!).Value);
+        // More properties not added...
     }
 
     public class CagePalData(UAsset asset, StructPropertyData dataTable)

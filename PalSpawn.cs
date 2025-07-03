@@ -297,7 +297,8 @@ namespace PalworldRandomizer
             MaxLevel = 4;
         }
 
-        [GeneratedRegex("^(?<prefix>(RAID|PREDATOR|SUMMON)_)?.+?(_(?<suffix>[0-9]+(_.+)?|MAX|Oilrig))?$", RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture)]
+        [GeneratedRegex("^(?<prefix>(RAID|PREDATOR|SUMMON|Quest(_[^_]+)?)_)?.+?(_(?<suffix>[0-9]+(_.+)?|MAX|Oilrig|Otomo|Hand_(Left|Right)|Head))?$",
+            RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture)]
         private static partial Regex nameSuffixRegex();
         
         public string ResolvedName
@@ -356,8 +357,8 @@ namespace PalworldRandomizer
             }
         }
         public string IconPath => Data.PalIcon[Name];
-        public bool BossChangeable => Data.PalData[Name].IsPal && !Name.StartsWith("GYM_", StringComparison.InvariantCultureIgnoreCase)
-             && !Name.StartsWith("RAID_", StringComparison.InvariantCultureIgnoreCase) && !Name.StartsWith("PREDATOR_", StringComparison.InvariantCultureIgnoreCase)
+        public bool BossChangeable => Data.PalData[Name].IsPal && !Name.StartsWith("GYM_", StringComparison.OrdinalIgnoreCase)
+             && !Name.StartsWith("RAID_", StringComparison.OrdinalIgnoreCase) && !Name.StartsWith("PREDATOR_", StringComparison.OrdinalIgnoreCase)
             && (IsBoss && Data.PalData.ContainsKey(Name[(Name.IndexOf('_') + 1)..]) || !IsBoss && Data.BossName.ContainsKey(Name));
 
         [GeneratedRegex("^((BOSS|GYM|RAID|PREDATOR|SUMMON)_)?(.+?)(_([0-9]+(_.+)?|MAX|Oilrig))?$", RegexOptions.IgnoreCase)]
@@ -397,6 +398,7 @@ namespace PalworldRandomizer
         public bool isPredator = false;
         public bool isCage = false;
         public bool isEgg = false;
+        public bool isQuest = false;
         public float eggRespawnTime = 0;
         public float eggLotteryCooldown = 0;
         private readonly ObservableList<SpawnEntry> virtualEntries = [];
@@ -419,6 +421,7 @@ namespace PalworldRandomizer
                 isPredator = isPredator,
                 isCage = isCage,
                 isEgg = isEgg,
+                isQuest = isQuest,
                 eggRespawnTime = eggRespawnTime,
                 eggLotteryCooldown = eggLotteryCooldown,
                 uAsset = isCage ? uAsset : UAssetData.LoadAsset($"Assets\\{filename}"),
