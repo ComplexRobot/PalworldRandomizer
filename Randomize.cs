@@ -29,6 +29,7 @@ namespace PalworldRandomizer
         public static List<string> PalList { get; private set; } = [];
         public static Dictionary<string, string> BossName { get; private set; } = [];
         public static List<string> TowerBossNames { get; private set; } = [];
+        public static List<string> TowerNonBossNames { get; private set; } = [];
         public static List<string> RaidBossNames { get; private set; } = [];
         public static List<string> PredatorNames { get; private set; } = [];
         public static List<string> HumanBossNames { get; private set; } = [];
@@ -211,6 +212,10 @@ namespace PalworldRandomizer
                             TerrariaMonsters.Add(keyPair.Key);
                         }
                     }
+                    else if (keyPair.Key.EndsWith("_Otomo", StringComparison.OrdinalIgnoreCase))
+                    {
+                        TowerNonBossNames.Add(keyPair.Key);
+                    }
                     if (!isBoss || isTowerBoss || isRaidBoss || isPredator)
                     {
                         if (!isBoss)
@@ -226,7 +231,7 @@ namespace PalworldRandomizer
                         else if (isTowerBoss)
                         {
                             // TODO: Change to regex
-                            if (!keyPair.Key.EndsWith("_2") && !keyPair.Key.EndsWith("_2_Avatar") && !keyPair.Key.EndsWith("_2_Servant"))
+                            if (!keyPair.Key.EndsWith("_2") && !keyPair.Key.EndsWith("_2_Avatar") && !keyPair.Key.EndsWith("_2_Servant") && !keyPair.Key.EndsWith("_Otomo"))
                             {
                                 TowerBossNames.Add(keyPair.Key);
                             }
@@ -506,8 +511,8 @@ namespace PalworldRandomizer
             if (formData.GroupVanilla)
             {
                 IEnumerable<string> palList = [
-                    .. (formData.SpawnPals || formData.SpawnAlphas ? Data.PalList : []),
-                    .. (formData.SpawnTerraria || formData.SpawnTerrariaBosses ? Data.TerrariaMonsters : [])
+                    .. formData.SpawnPals || formData.SpawnAlphas ? Data.PalList : [],
+                    .. formData.SpawnTerraria || formData.SpawnTerrariaBosses ? Data.TerrariaMonsters : []
                 ];
                 foreach (string key in palList)
                 {
@@ -739,7 +744,8 @@ namespace PalworldRandomizer
                 }
                 if (formData.SpawnAlphas)
                 {
-                    Data.PalList.ConvertAll(name => Data.BossName[name]).ForEach(name => bossSpawns.Add(name, new() { SpawnList = [new(name)] }));
+                    Data.PalList.FindAll(Data.BossName.ContainsKey).ConvertAll(name => Data.BossName[name])
+                        .ForEach(name => bossSpawns.Add(name, new() { SpawnList = [new(name)] }));
                 }
                 if (formData.SpawnTerraria)
                 {
@@ -749,20 +755,21 @@ namespace PalworldRandomizer
                 {
                     Data.TerrariaMonstersBosses.ForEach(name => bossSpawns.Add(name, new() { SpawnList = [new(name)] }));
                 }
-                humanSpawns.AddRange(new Collection<string>
-                ([
-                    .. (formData.SpawnHumans ? Data.humanNames : []),
-                    .. (formData.SpawnPolice ? Data.policeNames : []),
-                    .. (formData.SpawnGuards ? Data.guardNames : []),
-                    .. (formData.SpawnTraders ? Data.traderNames : []),
-                    .. (formData.SpawnPalTraders ? Data.palTraderNames : []),
-                    .. (formData.SpawnSpecial ? Data.specialNames : []),
-                    .. (formData.SpawnTowerHumans ? Data.TowerHumanNames : []),
+                humanSpawns.AddRange(((IEnumerable<string>)
+                [
+                    .. formData.SpawnHumans ? Data.humanNames : [],
+                    .. formData.SpawnPolice ? Data.policeNames : [],
+                    .. formData.SpawnGuards ? Data.guardNames : [],
+                    .. formData.SpawnTraders ? Data.traderNames : [],
+                    .. formData.SpawnPalTraders ? Data.palTraderNames : [],
+                    .. formData.SpawnSpecial ? Data.specialNames : [],
+                    .. formData.SpawnTowerHumans ? Data.TowerHumanNames : [],
                 ]).Select(name => new SpawnEntry { SpawnList = [new(name)] }));
             }
             if (formData.SpawnTowerBosses)
             {
                 Data.TowerBossNames.ForEach(name => bossSpawns.Add(name, new() { SpawnList = [new(name)] }));
+                Data.TowerNonBossNames.ForEach(name => basicSpawns.Add(name, new() { SpawnList = [new(name)] }));
             }
             if (formData.SpawnRaidBosses)
             {
@@ -781,21 +788,21 @@ namespace PalworldRandomizer
         {
             return
             [
-                .. (formData.SpawnPals ? Data.PalList : []),
-                .. (formData.SpawnAlphas ? Data.PalList.ConvertAll(name => Data.BossName[name]) : []),
-                .. (formData.SpawnTowerBosses ? Data.TowerBossNames : []),
-                .. (formData.SpawnRaidBosses ? Data.RaidBossNames : []),
-                .. (formData.SpawnPredators ? Data.PredatorNames : []),
-                .. (formData.SpawnHumanBosses ? Data.HumanBossNames : []),
-                .. (formData.SpawnHumans ? Data.humanNames : []),
-                .. (formData.SpawnPolice ? Data.policeNames : []),
-                .. (formData.SpawnGuards ? Data.guardNames : []),
-                .. (formData.SpawnTraders ? Data.traderNames : []),
-                .. (formData.SpawnPalTraders ? Data.palTraderNames : []),
-                .. (formData.SpawnSpecial ? Data.specialNames : []),
-                .. (formData.SpawnTerraria ? Data.TerrariaMonsters : []),
-                .. (formData.SpawnTerrariaBosses ? Data.TerrariaMonstersBosses : []),
-                .. (formData.SpawnTowerHumans ? Data.TowerHumanNames : []),
+                .. formData.SpawnPals ? Data.PalList : [],
+                .. formData.SpawnAlphas ? Data.PalList.FindAll(Data.BossName.ContainsKey).ConvertAll(name => Data.BossName[name]) : [],
+                .. formData.SpawnTowerBosses ? Data.TowerBossNames : [],
+                .. formData.SpawnRaidBosses ? Data.RaidBossNames : [],
+                .. formData.SpawnPredators ? Data.PredatorNames : [],
+                .. formData.SpawnHumanBosses ? Data.HumanBossNames : [],
+                .. formData.SpawnHumans ? Data.humanNames : [],
+                .. formData.SpawnPolice ? Data.policeNames : [],
+                .. formData.SpawnGuards ? Data.guardNames : [],
+                .. formData.SpawnTraders ? Data.traderNames : [],
+                .. formData.SpawnPalTraders ? Data.palTraderNames : [],
+                .. formData.SpawnSpecial ? Data.specialNames : [],
+                .. formData.SpawnTerraria ? Data.TerrariaMonsters : [],
+                .. formData.SpawnTerrariaBosses ? Data.TerrariaMonstersBosses : [],
+                .. formData.SpawnTowerHumans ? Data.TowerHumanNames : [],
                 "RowName"
             ];
         }

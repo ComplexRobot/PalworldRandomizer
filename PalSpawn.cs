@@ -364,7 +364,7 @@ namespace PalworldRandomizer
         [GeneratedRegex("^((BOSS|GYM|RAID|PREDATOR|SUMMON)_)?(.+?)(_([0-9]+(_.+)?|MAX|Oilrig))?$", RegexOptions.IgnoreCase)]
         private static partial Regex baseNameRegex();
 
-        public string BaseName => baseNameRegex().Match(Name).Groups[3].Value;
+        public string BaseName => Name.EndsWith("_Otomo", StringComparison.OrdinalIgnoreCase) ? Name : baseNameRegex().Match(Name).Groups[3].Value;
     }
 
     public class SpawnExportData
