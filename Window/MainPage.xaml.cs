@@ -68,6 +68,8 @@ namespace PalworldRandomizer
         public bool VanillaPlus = window.vanillaPlus.IsChecked == true;
         public int VanillaPlusChance = int.Parse(window.vanillaPlusChance.Text);
         public bool VanillaMerge = window.vanillaMerge.IsChecked == true;
+        public bool VanillaPlusFilter = window.vanillaPlusFilter.IsChecked == true;
+        public bool VanillaMergeFilter = window.vanillaMergeFilter.IsChecked == true;
         public bool GroupVanilla = window.groupVanilla.IsChecked == true;
         public bool GroupRandom = window.groupRandom.IsChecked == true;
         public bool FieldBossExtended = window.fieldBossExtended.IsChecked == true;

@@ -2221,7 +2221,10 @@ namespace PalworldRandomizer
                 {
                     vanillaSpawns = Data.AreaData[area.filename.StartsWith('~') ? area.filename[1..] : $"{(area.isCage ? "Cage:" : "")}{area.filename}"]
                         .SpawnEntries.ConvertAll(entry => entry.Clone());
-                    FilterVanillaSpawns(vanillaSpawns, area);
+                    if (formData.VanillaPlusFilter)
+                    {
+                        FilterVanillaSpawns(vanillaSpawns, area);
+                    }
                     if (area.isPredator)
                     {
                         vanillaSpawns.RemoveAll(x => x.SpawnList.Exists(y => y.Name == "RowName"));
@@ -2315,7 +2318,10 @@ namespace PalworldRandomizer
                 if (formData.VanillaMerge && !area.isCage && !area.isEgg)
                 {
                     List<SpawnEntry> mergedVanillaSpawns = Data.AreaData[area.filename.StartsWith('~') ? area.filename[1..] : area.filename].SpawnEntries.ConvertAll(x => x.Clone());
-                    FilterVanillaSpawns(mergedVanillaSpawns, area);
+                    if (formData.VanillaMergeFilter)
+                    {
+                        FilterVanillaSpawns(mergedVanillaSpawns, area);
+                    }
                     if (area.isPredator)
                     {
                         mergedVanillaSpawns.RemoveAll(x => x.SpawnList.Exists(y => y.Name == "RowName"));
