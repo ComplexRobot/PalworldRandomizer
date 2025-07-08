@@ -3,7 +3,6 @@ using CUE4Parse.UE4.Assets.Objects.Properties;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using Stfu.Linq;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.ExceptionServices;
