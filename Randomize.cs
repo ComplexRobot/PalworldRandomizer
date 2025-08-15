@@ -21,12 +21,12 @@ namespace PalworldRandomizer
     public static partial class Data
     {
         public static Dictionary<string, CharacterData> PalData { get; private set; } = [];
-        public static Dictionary<string, string> PalName { get; private set; } = [];
+        public static Dictionary<string, string> PalName { get; private set; } = new(StringComparer.OrdinalIgnoreCase);
         public static Dictionary<string, string> SimpleName { get; private set; } = [];
         public static List<string> SimpleNameValues { get; private set; } = [];
-        public static Dictionary<string, string> PalIcon { get; private set; } = [];
+        public static Dictionary<string, string> PalIcon { get; private set; } = new(StringComparer.OrdinalIgnoreCase);
         public static List<string> PalList { get; private set; } = [];
-        public static Dictionary<string, string> BossName { get; private set; } = [];
+        public static Dictionary<string, string> BossName { get; private set; } = new(StringComparer.OrdinalIgnoreCase);
         public static List<string> TowerBossNames { get; private set; } = [];
         public static List<string> TowerNonBossNames { get; private set; } = [];
         public static List<string> RaidBossNames { get; private set; } = [];

@@ -66,7 +66,7 @@ namespace PalworldRandomizer
 
     public static partial class UAssetData
     {
-        public const float ASSET_VERSION = 6;
+        public const float ASSET_VERSION = 7;
         public static string InstallationDirectory { set; get; } = @"C:\Program Files (x86)\Steam\steamapps\common\Palworld";
         public static string ArchivePath { set; get; } = @"C:\Program Files (x86)\Steam\steamapps\common\Palworld\Pal\Content\Paks\Pal-Windows.pak";
         public static string GameVersion { set; get; } = "0.0.0.0";
@@ -239,7 +239,7 @@ namespace PalworldRandomizer
             Dictionary<CUE4Parse.UE4.Objects.UObject.FName, FStructFallback> palDataAsset = FileProvider.LoadDataTable("Pal/Content/Pal/DataTable/Character/DT_PalMonsterParameter.uasset");
             Dictionary<CUE4Parse.UE4.Objects.UObject.FName, FStructFallback> humanDataAsset = FileProvider.LoadDataTable("Pal/Content/Pal/DataTable/Character/DT_PalHumanParameter.uasset");
             Dictionary<string, CharacterData> palData = ((IEnumerable<KeyValuePair<string, CharacterData>>)
-                [.. CreateReferencePairs(palDataAsset), .. CreateReferencePairs(humanDataAsset)]).ToDictionary();
+                [.. CreateReferencePairs(palDataAsset), .. CreateReferencePairs(humanDataAsset)]).ToDictionary(StringComparer.OrdinalIgnoreCase);
             palData["RowName"] = new CharacterData(palDataAsset.First().Value.Properties)
             {
                 IsPal = true,

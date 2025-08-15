@@ -297,7 +297,7 @@ namespace PalworldRandomizer
             MaxLevel = 4;
         }
 
-        [GeneratedRegex("^(?<prefix>(RAID|PREDATOR|SUMMON|Quest(_[^_]+)?)_)?.+?(_(?<suffix>[0-9]+(_.+)?|MAX|Oilrig|Otomo|Hand_(Left|Right)|Head))?$",
+        [GeneratedRegex("^(?<prefix>(RAID|PREDATOR|SUMMON|Quest(_[^_]+)?)_)?.+?(_(?<suffix>([0-9]+(_.+)?|MAX|Oilrig|Otomo|Hand_(Left|Right)|Head)(_[0-9]+)?))?$",
             RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture)]
         private static partial Regex nameSuffixRegex();
         
