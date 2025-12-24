@@ -403,9 +403,11 @@ namespace PalworldRandomizer
                 AreaData[filename].isBoss = filename.Contains("boss", StringComparison.OrdinalIgnoreCase);
                 AreaData[filename].isInDungeon = filename.Contains("dungeon", StringComparison.OrdinalIgnoreCase);
                 AreaData[filename].isPredator = filename.Contains("PreBOSS", StringComparison.OrdinalIgnoreCase);
+                AreaData[filename].isMimic = Path.GetFileNameWithoutExtension(filename).EndsWith("_mimic", StringComparison.OrdinalIgnoreCase);
+                AreaData[filename].isMonsterOnly = Path.GetFileNameWithoutExtension(filename).EndsWith("_monsteronly", StringComparison.OrdinalIgnoreCase);
                 AreaData[filename].isFieldBoss = AreaData[filename].isBoss && !AreaData[filename].isInDungeon && !AreaData[filename].isPredator;
                 AreaData[filename].isDungeonBoss = AreaData[filename].isBoss && AreaData[filename].isInDungeon;
-                AreaData[filename].isDungeon = !AreaData[filename].isBoss && AreaData[filename].isInDungeon;
+                AreaData[filename].isDungeon = !AreaData[filename].isBoss && AreaData[filename].isInDungeon && !AreaData[filename].isMimic;
                 AreaData[filename].isField = !AreaData[filename].isBoss && !AreaData[filename].isInDungeon;
                 AreaData[filename].isQuest = AreaData[filename].SimpleName.StartsWith("Quest_", StringComparison.OrdinalIgnoreCase);
             }
@@ -886,6 +888,7 @@ namespace PalworldRandomizer
                             return !(rarity > 10 && rarity < 20) && formData.WeightCustom[rarity] == 0;
                         });
                     });
+                    formData.WeightCustom = [.. formData.WeightCustom.Select(x => Math.Max(1, x))];
                 }
                 if (formData.Rarity9UpBossOnly)
                 {
@@ -959,10 +962,11 @@ namespace PalworldRandomizer
                 && (formData.RandomizePredators || !area.isPredator)
                 && (formData.RandomizeCages || !area.isCage)
                 && (formData.RandomizeEggs || !area.isEgg)
-                && (formData.RandomizeQuests || !area.isQuest));
+                && (formData.RandomizeQuests || !area.isQuest)
+                && (formData.RandomizeMimics || !area.isMimic));
             if (!formData.MethodNone)
             {
-                List<AreaData> addedBosses = subList.FindAll(area => !area.isBoss && !area.isCage && BossesEverywhere(area)).ConvertAll(x => x.Clone());
+                List<AreaData> addedBosses = subList.FindAll(area => !area.isBoss && !area.isCage && !area.isMonsterOnly && BossesEverywhere(area)).ConvertAll(x => x.Clone());
                 foreach (AreaData area in addedBosses)
                 {
                     area.isBoss = true;
@@ -982,6 +986,8 @@ namespace PalworldRandomizer
                     return (x.isBoss ? 1 : 0) - (y.isBoss ? 1 : 0);
                 if (x.isInDungeon != y.isInDungeon)
                     return (x.isInDungeon ? 1 : 0) - (y.isInDungeon ? 1 : 0);
+                if (x.isMimic != y.isMimic)
+                    return (x.isMimic ? 1 : 0) - (y.isMimic ? 1 : 0);
                 bool nightOnlyX = NightOnly(x);
                 bool nightOnlyY = NightOnly(y);
                 if (nightOnlyX != nightOnlyY)
@@ -1229,6 +1235,10 @@ namespace PalworldRandomizer
                 // NOT No Randomization
                 if (!formData.MethodNone)
                 {
+                    if (area.isMonsterOnly)
+                    {
+                        continue;
+                    }
                     List<SpawnEntry> spawnEntries = [];
                     List<SpawnEntry> spawnEntriesOriginal = area.SpawnEntries;
                     area.SpawnEntries = spawnEntries;
@@ -1613,7 +1623,7 @@ namespace PalworldRandomizer
                         if (original.Count != 0 && !(formData.Rarity8UpSolo && Rarity8Up(spawnEntry.SpawnList[0])))
                         {
                             int groupSize = area.isBoss ? random.Next(minGroupBoss, maxGroupBoss + 1) : random.Next(minGroup, maxGroup + 1);
-                            if (nightOnly || !formData.MixHumanAndPal || formData.Rarity8UpSolo || formData.SeparateAggroHumans)
+                            if (nightOnly || !formData.MixHumanAndPal || formData.Rarity8UpSolo || formData.SeparateAggroHumans || formData.SeparateFlying)
                             {
                                 List<SpawnEntry> spawnsUsed = spawns;
                                 List<SpawnEntry> originalsUsed = original;
@@ -2157,11 +2167,12 @@ namespace PalworldRandomizer
                     nocturnalEntries.Sort((x, y) => x.Weight - y.Weight);
                     if (spawnEntries.Count > 1)
                     {
-                        WeightsToPercents(diurnalEntries, Math.Max(10 * spawnEntries.Count, 100));
-                        WeightsToPercents(nocturnalEntries, Convert.ToInt32(Math.Max(10 * spawnEntries.Count, 100) * (formData.VanillaPlus ? 1.0 : weightNightOnly)));
+                        long totalSum = Math.Max(300L * spawnEntries.Count, 100);
+                        WeightsToPercents(diurnalEntries, totalSum);
+                        WeightsToPercents(nocturnalEntries, Convert.ToInt32(totalSum * (formData.VanillaPlus ? 1.0 : weightNightOnly)));
                         weightSum = spawnEntries.Sum(x => (long) x.Weight);
                     }
-                    void WeightsToPercents(List<SpawnEntry> entries, int totalSum)
+                    void WeightsToPercents(List<SpawnEntry> entries, long totalSum)
                     {
                         if (entries.Count == 0)
                         {
@@ -2495,7 +2506,7 @@ namespace PalworldRandomizer
             }
             if (!formData.MethodNone)
             {
-                foreach (AreaData area in subList.FindAll(area => !area.isBoss && !area.isCage && BossesEverywhere(area)))
+                foreach (AreaData area in subList.FindAll(area => !area.isBoss && !area.isCage && !area.isMonsterOnly && BossesEverywhere(area)))
                 {
                     AreaData addedBosses = subList.Find(x => x.filename == $"~{area.filename}")!;
                     if (BossesEverywhereChance(area) == 1)
@@ -2538,6 +2549,16 @@ namespace PalworldRandomizer
                         IntOverflowFix(area.SpawnEntries, area.SpawnEntries.Sum(x => (long)x.Weight), NightOnly(area));
                     }
                     WriteAreaAsset(area);
+
+                    AreaData? monsterOnly = subList.Find(a => string.Compare(Path.GetFileNameWithoutExtension(a.filename),
+                        Path.GetFileNameWithoutExtension(area.filename) + "_monsteronly", true) == 0);
+                    if (monsterOnly != null)
+                    {
+                        monsterOnly.SpawnEntries = area.SpawnEntries.ConvertAll(x => x.Clone());
+                        monsterOnly.SpawnEntries.ForEach(entry => entry.SpawnList.RemoveAll(x => !Data.PalData[x.Name].IsPal));
+                        monsterOnly.SpawnEntries.RemoveAll(x => x.SpawnList.Count == 0);
+                        WriteAreaAsset(monsterOnly);
+                    }
                 }
             }
             if (formData.RandomizeCages)

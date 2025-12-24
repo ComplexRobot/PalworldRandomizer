@@ -58,6 +58,7 @@ namespace PalworldRandomizer
         public bool RandomizeCages = window.randomizeCages.IsChecked == true;
         public bool RandomizeEggs = window.randomizeEggs.IsChecked == true;
         public bool RandomizeQuests = window.randomizeQuests.IsChecked == true;
+        public bool RandomizeMimics = window.randomizeMimics.IsChecked == true;
         public bool EqualizeAreaRarity = window.equalizeAreaRarity.IsChecked == true;
         public bool MethodFull = window.methodFull.IsChecked == true;
         public bool MethodCustomSize = window.methodCustomSize.IsChecked == true;
@@ -336,8 +337,8 @@ namespace PalworldRandomizer
             ValidateNumericText(humanBossRarity, 1, 5, 20);
             ValidateNumericText(maxCageRarity, 1, 9, 20);
             ValidateNumericText(humanWeight, 0, 100);
-            ValidateNumericText(humanWeightAggro, 0, 50);
-            ValidateNumericText(weightNightOnly, 0m, 10000);
+            ValidateNumericText(humanWeightAggro, 0, 25);
+            ValidateNumericText(weightNightOnly, 0m, 1000);
             ValidateNumericText(baseCountMin, 0, 1);
             ValidateNumericText(baseCountMax, Math.Max(1, int.Parse(baseCountMin.Text)));
             ValidateNumericText(fieldCount, 0, 100);

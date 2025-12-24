@@ -52,6 +52,7 @@
                     <CheckBox Name="randomizeCages" IsChecked="True">Cages</CheckBox>
                     <CheckBox Name="randomizeEggs" IsChecked="True">Overworld Eggs</CheckBox>
                     <CheckBox Name="randomizeQuests" IsChecked="False">Quest Areas</CheckBox>
+                    <CheckBox Name="randomizeMimics" IsChecked="False">Mimics</CheckBox>
                     <WrapPanel Margin="10,0,0,0">
                         <WrapPanel.Style>
                             <Style TargetType="WrapPanel">
@@ -326,6 +327,9 @@
                                             <DataTrigger Binding="{Binding ElementName=randomizeDungeons, Path=IsChecked}" Value="True">
                                                 <Setter Property="Visibility" Value="Visible"/>
                                             </DataTrigger>
+                                            <DataTrigger Binding="{Binding ElementName=randomizeMimics, Path=IsChecked}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </WrapPanel.Style>
@@ -498,11 +502,11 @@
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Text="Human Weight:"/>
                                 <TextBox Name="humanWeight" VerticalAlignment="Center" Margin="0"
-                                             PreviewTextInput="NonNegIntSize3_PreviewTextInput" DataObject.Pasting="NonNegIntSize3_Pasting">100</TextBox>
+                                             PreviewTextInput="NonNegIntSize5_PreviewTextInput" DataObject.Pasting="NonNegIntSize5_Pasting">100</TextBox>
                                 <TextBlock Text="%" Margin="0,5,0,0"/>
                                 <TextBlock Text="Aggro Human Weight:"/>
                                 <TextBox Name="humanWeightAggro" VerticalAlignment="Center" Margin="0"
-                                         PreviewTextInput="NonNegIntSize3_PreviewTextInput" DataObject.Pasting="NonNegIntSize3_Pasting">50</TextBox>
+                                         PreviewTextInput="NonNegIntSize5_PreviewTextInput" DataObject.Pasting="NonNegIntSize5_Pasting">25</TextBox>
                                 <TextBlock Text="%" Margin="0,5,0,0"/>
                             </StackPanel>
                             <WrapPanel Margin="10,0,0,0">
@@ -518,7 +522,7 @@
                                 </WrapPanel.Style>
                                 <TextBlock Margin="0,0,5,0" VerticalAlignment="Top">Night-Only Weight Multiplier:</TextBlock>
                                 <TextBox Name="weightNightOnly" Height="20" VerticalAlignment="Top"
-                                         PreviewTextInput="NonNegDecSize5_PreviewTextInput" DataObject.Pasting="NonNegDecSize5_Pasting">10000</TextBox>
+                                         PreviewTextInput="NonNegDecSize5_PreviewTextInput" DataObject.Pasting="NonNegDecSize5_Pasting">1000</TextBox>
                             </WrapPanel>
                             <WrapPanel Margin="10,0,0,0">
                                 <TextBlock Margin="0,0,5,0">Int Overflow Fix:</TextBlock>

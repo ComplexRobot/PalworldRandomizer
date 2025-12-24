@@ -399,6 +399,8 @@ namespace PalworldRandomizer
         public bool isCage = false;
         public bool isEgg = false;
         public bool isQuest = false;
+        public bool isMimic = false;
+        public bool isMonsterOnly = false;
         public float eggRespawnTime = 0;
         public float eggLotteryCooldown = 0;
         private readonly ObservableList<SpawnEntry> virtualEntries = [];
@@ -422,6 +424,8 @@ namespace PalworldRandomizer
                 isCage = isCage,
                 isEgg = isEgg,
                 isQuest = isQuest,
+                isMimic = isMimic,
+                isMonsterOnly = isMonsterOnly,
                 eggRespawnTime = eggRespawnTime,
                 eggLotteryCooldown = eggLotteryCooldown,
                 uAsset = isCage ? uAsset : UAssetData.LoadAsset($"Assets\\{filename}"),

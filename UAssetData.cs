@@ -66,7 +66,7 @@ namespace PalworldRandomizer
 
     public static partial class UAssetData
     {
-        public const float ASSET_VERSION = 8;
+        public const float ASSET_VERSION = 9;
         public static string InstallationDirectory { set; get; } = @"C:\Program Files (x86)\Steam\steamapps\common\Palworld";
         public static string ArchivePath { set; get; } = @"C:\Program Files (x86)\Steam\steamapps\common\Palworld\Pal\Content\Paks\Pal-Windows.pak";
         public static string GameVersion { set; get; } = "0.0.0.0";
