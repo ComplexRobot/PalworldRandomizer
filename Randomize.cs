@@ -2549,9 +2549,12 @@ namespace PalworldRandomizer
                         IntOverflowFix(area.SpawnEntries, area.SpawnEntries.Sum(x => (long)x.Weight), NightOnly(area));
                     }
                     WriteAreaAsset(area);
+                }
 
-                    AreaData? monsterOnly = subList.Find(a => string.Compare(Path.GetFileNameWithoutExtension(a.filename),
-                        Path.GetFileNameWithoutExtension(area.filename) + "_monsteronly", true) == 0);
+                foreach (AreaData area in subList.FindAll(area => !area.filename.StartsWith('~') && !area.isCage && !area.isEgg && !area.isMonsterOnly))
+                {
+                    AreaData? monsterOnly = subList.Find(a => string.Equals(Path.GetFileNameWithoutExtension(a.filename),
+                        Path.GetFileNameWithoutExtension(area.filename) + "_monsteronly", StringComparison.OrdinalIgnoreCase));
                     if (monsterOnly != null)
                     {
                         monsterOnly.SpawnEntries = area.SpawnEntries.ConvertAll(x => x.Clone());
@@ -2561,6 +2564,7 @@ namespace PalworldRandomizer
                     }
                 }
             }
+
             if (formData.RandomizeCages)
             {
                 FileModify.WriteCageData(subList.FindAll(x => x.isCage), basePath + @"\Pal\Content\Pal\DataTable\Character");
