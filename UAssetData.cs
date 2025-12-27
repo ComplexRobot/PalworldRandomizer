@@ -168,7 +168,7 @@ namespace PalworldRandomizer
             string importsFolder = AppDataPath("Imports");
             ConcurrentDictionary<string, string> savedFilePaths = new();
             ConcurrentDictionary<string, byte> addedFiles = new();
-            ConcurrentDictionary<string, FObjectImport> imports = new();
+            ConcurrentDictionary<string, byte> imports = new();
             Parallel.ForEach(fileProvider.Files, (KeyValuePair<string, GameFile> keyValuePair) =>
             {
                 if (SpawnSheetsRegex().IsMatch(keyValuePair.Key))
@@ -233,12 +233,12 @@ namespace PalworldRandomizer
                 {
                     foreach (FObjectImport import in package.ImportMap)
                     {
-                        imports.TryAdd(import.OuterIndex!.Name, import);
+                        imports.TryAdd(import.OuterIndex!.Name, 0);
                     }
                 }
             });
 
-            Parallel.ForEach(imports, (KeyValuePair<string, FObjectImport> keyValuePair) =>
+            Parallel.ForEach(imports, (KeyValuePair<string, byte> keyValuePair) =>
             {
                 if (keyValuePair.Key.StartsWith("/Game/"))
                 {
