@@ -144,6 +144,7 @@ namespace PalworldRandomizer
             fileProvider.RegisterVfs(ArchivePath);
             fileProvider.Initialize();
             fileProvider.Mount();
+            //IPackage spawnExports = fileProvider.LoadPackage("Pal/Content/Pal/Blueprint/Spawner/SheetsVariant/BP_PalSpawner_Sheets_1_1_plain_begginer.uasset");
             string gameVersion = GameVersion;
             if (fileProvider.TrySaveAsset("Pal/Config/DefaultGame.ini", out byte[]? gameIni))
             {
@@ -168,48 +169,41 @@ namespace PalworldRandomizer
             ConcurrentDictionary<string, string> savedFilePaths = new();
             ConcurrentDictionary<string, byte> addedFiles = new();
             ConcurrentDictionary<string, FObjectImport> imports = new();
-            ConcurrentDictionary<string, GameFile> nameToGameFile = new();
             Parallel.ForEach(fileProvider.Files, (KeyValuePair<string, GameFile> keyValuePair) =>
             {
-                fileProvider.TryLoadPackage(keyValuePair.Value, out IPackage? package);
-                
                 if (SpawnSheetsRegex().IsMatch(keyValuePair.Key))
                 {
-                    SaveAsset(assetsFolder, package);
+                    SaveAsset(assetsFolder);
                 }
                 else if (PalEggSpawnSheetsRegex().IsMatch(keyValuePair.Key))
                 {
-                    SaveAsset(palEggFolder, package);
+                    SaveAsset(palEggFolder);
                 }
                 else if (DataTableRegex().IsMatch(keyValuePair.Key))
                 {
-                    SaveAsset(dataFolder, package);
+                    SaveAsset(dataFolder);
                 }
                 else if (PalIconRegex().IsMatch(keyValuePair.Key))
                 {
-                    SaveImage(palIconFolder, package);
+                    SaveImage(palIconFolder);
                 }
                 else if (NPCIconRegex().IsMatch(keyValuePair.Key))
                 {
-                    SaveImage(npcIconFolder, package);
+                    SaveImage(npcIconFolder);
                 }
                 else if (WeaponIconRegex().IsMatch(keyValuePair.Key))
                 {
-                    SaveImage(weaponIconFolder, package);
-                }
-                if (package != null)
-                {
-                    nameToGameFile.TryAdd(package.Summary.FolderName, keyValuePair.Value);
+                    SaveImage(weaponIconFolder);
                 }
 
-                void SaveAsset(string folder, IPackage? package)
+                void SaveAsset(string folder)
                 {
                     string filename = folder + '\\' + keyValuePair.Value.Name;
                     if (gameUpdated || !File.Exists(filename))
                     {
                         File.WriteAllBytes(filename, keyValuePair.Value.Read());
                     }
-                    if (package != null)
+                    if (fileProvider.TryLoadPackage(keyValuePair.Value, out IPackage? package))
                     {
                         ReadImports((Package)package);
                         addedFiles.TryAdd(keyValuePair.Value.Path, 0);
@@ -217,10 +211,10 @@ namespace PalworldRandomizer
                     savedFilePaths.TryAdd(filename, keyValuePair.Value.Path[..(keyValuePair.Value.Path.LastIndexOf('/') + 1)]);
                 }
 
-                void SaveImage(string folder, IPackage? package)
+                void SaveImage(string folder)
                 {
                     string filename = folder + '\\' + keyValuePair.Value.NameWithoutExtension + ".png";
-                    if ((gameUpdated || !File.Exists(filename)) && package != null)
+                    if ((gameUpdated || !File.Exists(filename)) && fileProvider.TryLoadPackage(keyValuePair.Value, out IPackage? package))
                     {
                         foreach (UObject export in package.GetExports())
                         {
@@ -231,10 +225,7 @@ namespace PalworldRandomizer
                             }
                         }
                     }
-                    if (package != null)
-                    {
-                        addedFiles.TryAdd(keyValuePair.Value.Path, 0);
-                    }
+                    addedFiles.TryAdd(keyValuePair.Value.Path, 0);
                     savedFilePaths.TryAdd(filename, keyValuePair.Value.Path[..(keyValuePair.Value.Path.LastIndexOf('/') + 1)]);
                 }
 
@@ -249,32 +240,38 @@ namespace PalworldRandomizer
 
             Parallel.ForEach(imports, (KeyValuePair<string, FObjectImport> keyValuePair) =>
             {
-                if (nameToGameFile.TryGetValue(keyValuePair.Key, out GameFile? gameFile) && !addedFiles.ContainsKey(gameFile.Path))
+                if (keyValuePair.Key.StartsWith("/Game/"))
                 {
-                    string filename = importsFolder + '\\' + gameFile.PathWithoutExtension.Replace('/', '\\');
-                    Directory.CreateDirectory(filename[..filename.LastIndexOf('\\')]);
-                    Parallel.Invoke(
-                    [
-                        () =>
+                    string importPath = "Pal/Content" + keyValuePair.Key["/Game".Length..] + ".uasset";
+                    if (fileProvider.Files.TryGetValue(importPath, out GameFile? gameFile) && !addedFiles.ContainsKey(gameFile.Path))
+                    {
+                        string filename = importsFolder + '\\' + gameFile.PathWithoutExtension.Replace('/', '\\');
+                        string filenameUasset = filename + ".uasset";
+                        string filenameUexp = filename + ".uexp";
+                        Directory.CreateDirectory(filename[..filename.LastIndexOf('\\')]);
+                        Parallel.Invoke(
+                        [
+                            () =>
                         {
-                            if (gameUpdated || !File.Exists(filename + ".uasset"))
+                            if (gameUpdated || !File.Exists(filenameUasset))
                             {
-                                File.WriteAllBytes(filename + ".uasset", gameFile.Read());
+                                File.WriteAllBytes(filenameUasset, gameFile.Read());
                             }
                         },
                         () =>
                         {
-                            if (gameUpdated || !File.Exists(filename + ".uexp"))
+                            if (gameUpdated || !File.Exists(filenameUexp))
                             {
                                 GameFile uexp = fileProvider.Files[gameFile.PathWithoutExtension + ".uexp"];
-                                File.WriteAllBytes(filename + ".uexp", uexp.Read());
+                                File.WriteAllBytes(filenameUexp, uexp.Read());
                             }
                         }
                     ]);
 
-                    string mountPoint = gameFile.Path[..(gameFile.Path.LastIndexOf('/') + 1)];
-                    savedFilePaths.TryAdd(filename + ".uasset", mountPoint);
-                    savedFilePaths.TryAdd(filename + ".uexp", mountPoint);
+                        string mountPoint = gameFile.Path[..(gameFile.Path.LastIndexOf('/') + 1)];
+                        savedFilePaths.TryAdd(filenameUasset, mountPoint);
+                        savedFilePaths.TryAdd(filenameUexp, mountPoint);
+                    }
                 }
             });
 
