@@ -76,7 +76,7 @@ namespace PalworldRandomizer
         public static VfsFileProvider FileProvider { get; private set; } = null!;
 
         [GeneratedRegex(@"^Pal/Content/Pal/Blueprint/Spawner/SheetsVariant/(?!C_Dummy).+$")]
-        private static partial Regex SpawnSheetsRegex();
+        private static partial Regex PalSpawnerRegex();
 
         [GeneratedRegex(@"^Pal/Content/Pal/Blueprint/MapObject/Spawner/bp_palmapobjectspawner_palegg_.+$")]
         private static partial Regex PalEggSpawnSheetsRegex();
@@ -153,27 +153,27 @@ namespace PalworldRandomizer
             }
             bool gameUpdated = gameVersion != GameVersion;
             config.GameVersion = GameVersion = gameVersion;
-            string assetsFolder = AppDataPath("Assets");
-            string palEggFolder = assetsFolder + @"\PalEgg";
+            string palSpawnerFolder = PalSpawnerPath();
+            Directory.CreateDirectory(palSpawnerFolder);
+            string palEggFolder = PalEggPath();
             Directory.CreateDirectory(palEggFolder);
-            string dataFolder = AppDataPath("Data");
+            string dataFolder = DataPath();
             Directory.CreateDirectory(dataFolder);
-            string imagesFolder = AppDataPath("Images");
-            string palIconFolder = imagesFolder + @"\PalIcon";
+            string palIconFolder = PalIconPath();
             Directory.CreateDirectory(palIconFolder);
-            string npcIconFolder = imagesFolder + @"\NPC";
+            string npcIconFolder = NpcIconPath();
             Directory.CreateDirectory(npcIconFolder);
-            string weaponIconFolder = imagesFolder + @"\InventoryItemIcon";
+            string weaponIconFolder = WeaponIconPath();
             Directory.CreateDirectory(weaponIconFolder);
-            string importsFolder = AppDataPath("Imports");
+            string importsFolder = ImportsPath();
             ConcurrentDictionary<string, string> savedFilePaths = new();
             ConcurrentDictionary<string, byte> addedFiles = new();
             ConcurrentDictionary<string, byte> imports = new();
             Parallel.ForEach(fileProvider.Files, (KeyValuePair<string, GameFile> keyValuePair) =>
             {
-                if (SpawnSheetsRegex().IsMatch(keyValuePair.Key))
+                if (PalSpawnerRegex().IsMatch(keyValuePair.Key))
                 {
-                    SaveAsset(assetsFolder);
+                    SaveAsset(palSpawnerFolder);
                 }
                 else if (PalEggSpawnSheetsRegex().IsMatch(keyValuePair.Key))
                 {
@@ -290,6 +290,17 @@ namespace PalworldRandomizer
         }
 
         public static string AppDataPath(string path = null!) => appDataPath + path;
+        public static string? PathSeparator(string path) => path.Length > 0 ? '\\' + path : null;
+        public static string AssetsPath(string path = "") => AppDataPath(@"Assets" + PathSeparator(path));
+        //public static string PalSpawnerPath(string path = "") => AssetsPath(@"PalSpawner" + PathSeparator(path));
+        public static string PalSpawnerPath(string path = "") => AssetsPath(path);
+        public static string PalEggPath(string path = "") => AssetsPath(@"PalEgg" + PathSeparator(path));
+        public static string DataPath(string path = "") => AppDataPath(@"Data" + PathSeparator(path));
+        public static string ImagesPath(string path = "") => AppDataPath(@"Images" + PathSeparator(path));
+        public static string PalIconPath(string path = "") => ImagesPath(@"PalIcon" + PathSeparator(path));
+        public static string NpcIconPath(string path = "") => ImagesPath(@"NPC" + PathSeparator(path));
+        public static string WeaponIconPath(string path = "") => ImagesPath(@"InventoryItemIcon" + PathSeparator(path));
+        public static string ImportsPath(string path = "") => AppDataPath(@"Imports" + PathSeparator(path));
         public static UAsset LoadAsset(string filepath) => new(AppDataPath(filepath), EngineVersion.VER_UE5_1, usmap);
         public static UAsset LoadAssetLocal(string filepath) => new(filepath, EngineVersion.VER_UE5_1, usmap);
 
