@@ -1,28 +1,29 @@
-﻿using UAssetAPI;
-using UAssetAPI.UnrealTypes;
-using UAssetAPI.Unversioned;
-using UAssetAPI.PropertyTypes.Objects;
-using UAssetAPI.PropertyTypes.Structs;
-using System.Text;
-using System.IO;
-using System.Xml;
-using PalworldRandomizer.Resources;
+﻿using CUE4Parse.Compression;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.FileProvider.Vfs;
-using CUE4Parse.UE4.Versions;
 using CUE4Parse.MappingsProvider;
-using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets;
-using CUE4Parse.Compression;
-using IniParser.Parser;
-using IniParser.Model;
-using System.Text.RegularExpressions;
+using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Texture;
-using CUE4Parse_Conversion.Textures;
-using System.Collections.Concurrent;
 using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Assets.Objects.Properties;
+using CUE4Parse.UE4.Objects.UObject;
+using CUE4Parse.UE4.Versions;
 using CUE4Parse.Utils;
+using CUE4Parse_Conversion.Textures;
+using IniParser.Model;
+using IniParser.Parser;
+using PalworldRandomizer.Resources;
+using System.Collections.Concurrent;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Xml;
+using UAssetAPI;
+using UAssetAPI.PropertyTypes.Objects;
+using UAssetAPI.PropertyTypes.Structs;
+using UAssetAPI.UnrealTypes;
+using UAssetAPI.Unversioned;
 
 namespace PalworldRandomizer
 {
@@ -163,46 +164,63 @@ namespace PalworldRandomizer
             Directory.CreateDirectory(npcIconFolder);
             string weaponIconFolder = imagesFolder + @"\InventoryItemIcon";
             Directory.CreateDirectory(weaponIconFolder);
+            string importsFolder = AppDataPath("Imports");
             ConcurrentDictionary<string, string> savedFilePaths = new();
+            ConcurrentDictionary<string, byte> addedFiles = new();
+            ConcurrentDictionary<string, FObjectImport> imports = new();
+            ConcurrentDictionary<string, GameFile> nameToGameFile = new();
             Parallel.ForEach(fileProvider.Files, (KeyValuePair<string, GameFile> keyValuePair) =>
             {
+                fileProvider.TryLoadPackage(keyValuePair.Value, out IPackage? package);
+                
                 if (SpawnSheetsRegex().IsMatch(keyValuePair.Key))
                 {
-                    SaveAsset(assetsFolder);
+                    SaveAsset(assetsFolder, package);
                 }
                 else if (PalEggSpawnSheetsRegex().IsMatch(keyValuePair.Key))
                 {
-                    SaveAsset(palEggFolder);
+                    SaveAsset(palEggFolder, package);
                 }
                 else if (DataTableRegex().IsMatch(keyValuePair.Key))
                 {
-                    SaveAsset(dataFolder);
+                    SaveAsset(dataFolder, package);
                 }
                 else if (PalIconRegex().IsMatch(keyValuePair.Key))
                 {
-                    SaveImage(palIconFolder);
+                    SaveImage(palIconFolder, package);
                 }
                 else if (NPCIconRegex().IsMatch(keyValuePair.Key))
                 {
-                    SaveImage(npcIconFolder);
+                    SaveImage(npcIconFolder, package);
                 }
                 else if (WeaponIconRegex().IsMatch(keyValuePair.Key))
                 {
-                    SaveImage(weaponIconFolder);
+                    SaveImage(weaponIconFolder, package);
                 }
-                void SaveAsset(string folder)
+                if (package != null)
+                {
+                    nameToGameFile.TryAdd(package.Summary.FolderName, keyValuePair.Value);
+                }
+
+                void SaveAsset(string folder, IPackage? package)
                 {
                     string filename = folder + '\\' + keyValuePair.Value.Name;
                     if (gameUpdated || !File.Exists(filename))
                     {
                         File.WriteAllBytes(filename, keyValuePair.Value.Read());
                     }
+                    if (package != null)
+                    {
+                        ReadImports((Package)package);
+                        addedFiles.TryAdd(keyValuePair.Value.Path, 0);
+                    }
                     savedFilePaths.TryAdd(filename, keyValuePair.Value.Path[..(keyValuePair.Value.Path.LastIndexOf('/') + 1)]);
                 }
-                void SaveImage(string folder)
+
+                void SaveImage(string folder, IPackage? package)
                 {
                     string filename = folder + '\\' + keyValuePair.Value.NameWithoutExtension + ".png";
-                    if ((gameUpdated || !File.Exists(filename)) && fileProvider.TryLoadPackage(keyValuePair.Value, out IPackage? package))
+                    if ((gameUpdated || !File.Exists(filename)) && package != null)
                     {
                         foreach (UObject export in package.GetExports())
                         {
@@ -213,9 +231,53 @@ namespace PalworldRandomizer
                             }
                         }
                     }
+                    if (package != null)
+                    {
+                        addedFiles.TryAdd(keyValuePair.Value.Path, 0);
+                    }
                     savedFilePaths.TryAdd(filename, keyValuePair.Value.Path[..(keyValuePair.Value.Path.LastIndexOf('/') + 1)]);
                 }
+
+                void ReadImports(Package package)
+                {
+                    foreach (FObjectImport import in package.ImportMap)
+                    {
+                        imports.TryAdd(import.OuterIndex!.Name, import);
+                    }
+                }
             });
+
+            Parallel.ForEach(imports, (KeyValuePair<string, FObjectImport> keyValuePair) =>
+            {
+                if (nameToGameFile.TryGetValue(keyValuePair.Key, out GameFile? gameFile) && !addedFiles.ContainsKey(gameFile.Path))
+                {
+                    string filename = importsFolder + '\\' + gameFile.PathWithoutExtension.Replace('/', '\\');
+                    Directory.CreateDirectory(filename[..filename.LastIndexOf('\\')]);
+                    Parallel.Invoke(
+                    [
+                        () =>
+                        {
+                            if (gameUpdated || !File.Exists(filename + ".uasset"))
+                            {
+                                File.WriteAllBytes(filename + ".uasset", gameFile.Read());
+                            }
+                        },
+                        () =>
+                        {
+                            if (gameUpdated || !File.Exists(filename + ".uexp"))
+                            {
+                                GameFile uexp = fileProvider.Files[gameFile.PathWithoutExtension + ".uexp"];
+                                File.WriteAllBytes(filename + ".uexp", uexp.Read());
+                            }
+                        }
+                    ]);
+
+                    string mountPoint = gameFile.Path[..(gameFile.Path.LastIndexOf('/') + 1)];
+                    savedFilePaths.TryAdd(filename + ".uasset", mountPoint);
+                    savedFilePaths.TryAdd(filename + ".uexp", mountPoint);
+                }
+            });
+
             FileProvider = new() { MappingsContainer = new FileUsmapTypeMappingsProvider(AppDataPath("Mappings.usmap")) };
             FileProvider.Initialize();
             foreach (KeyValuePair<string, string> keyValuePair in savedFilePaths)
@@ -414,12 +476,12 @@ namespace PalworldRandomizer
         public string? FieldName
         {
             get => ((NamePropertyData)structPropertyData.Value[0]).Value?.ToString();
-            set => ((NamePropertyData)structPropertyData.Value[0]).Value = value == null ? null : new FName(uAsset, value);
+            set => ((NamePropertyData)structPropertyData.Value[0]).Value = value == null ? null : new UAssetAPI.UnrealTypes.FName(uAsset, value);
         }
         public string? PalID
         {
             get => ((NamePropertyData)structPropertyData.Value[1]).Value?.ToString();
-            set => ((NamePropertyData)structPropertyData.Value[1]).Value = value == null ? null : new FName(uAsset, value);
+            set => ((NamePropertyData)structPropertyData.Value[1]).Value = value == null ? null : new UAssetAPI.UnrealTypes.FName(uAsset, value);
         }
         public float Weight
         {
