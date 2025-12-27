@@ -245,7 +245,7 @@ namespace PalworldRandomizer
                     string importPath = "Pal/Content" + keyValuePair.Key["/Game".Length..] + ".uasset";
                     if (fileProvider.Files.TryGetValue(importPath, out GameFile? gameFile) && !addedFiles.ContainsKey(gameFile.Path))
                     {
-                        string filename = importsFolder + '\\' + gameFile.PathWithoutExtension.Replace('/', '\\');
+                        string filename = importsFolder + '\\' + gameFile.PathWithoutExtension["Pal/Content/".Length..].Replace('/', '\\');
                         string filenameUasset = filename + ".uasset";
                         string filenameUexp = filename + ".uexp";
                         Directory.CreateDirectory(filename[..filename.LastIndexOf('\\')]);
