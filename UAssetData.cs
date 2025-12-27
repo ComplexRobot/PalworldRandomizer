@@ -252,21 +252,21 @@ namespace PalworldRandomizer
                         Parallel.Invoke(
                         [
                             () =>
-                        {
-                            if (gameUpdated || !File.Exists(filenameUasset))
                             {
-                                File.WriteAllBytes(filenameUasset, gameFile.Read());
-                            }
-                        },
-                        () =>
-                        {
-                            if (gameUpdated || !File.Exists(filenameUexp))
+                                if (gameUpdated || !File.Exists(filenameUasset))
+                                {
+                                    File.WriteAllBytes(filenameUasset, gameFile.Read());
+                                }
+                            },
+                            () =>
                             {
-                                GameFile uexp = fileProvider.Files[gameFile.PathWithoutExtension + ".uexp"];
-                                File.WriteAllBytes(filenameUexp, uexp.Read());
+                                if (gameUpdated || !File.Exists(filenameUexp))
+                                {
+                                    GameFile uexp = fileProvider.Files[gameFile.PathWithoutExtension + ".uexp"];
+                                    File.WriteAllBytes(filenameUexp, uexp.Read());
+                                }
                             }
-                        }
-                    ]);
+                        ]);
 
                         string mountPoint = gameFile.Path[..(gameFile.Path.LastIndexOf('/') + 1)];
                         savedFilePaths.TryAdd(filenameUasset, mountPoint);
