@@ -3156,7 +3156,7 @@ namespace PalworldRandomizer
                 List<PalSchemaJson> schemaList = GeneratePalSchema(areaList);
 
                 using FileStream fileStream = File.Create(saveDialog.FileName);
-                using ZipArchive zipArchive = new(fileStream, ZipArchiveMode.Create, true);
+                using ZipArchive zipArchive = new(fileStream, ZipArchiveMode.Create);
                 foreach (PalSchemaJson schema in schemaList)
                 {
                     using Stream entryStream = zipArchive.CreateEntry($"CustomPalSpawns/" + schema.FilePath).Open();
