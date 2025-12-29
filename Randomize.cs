@@ -3233,16 +3233,16 @@ namespace PalworldRandomizer
             {
                 Dictionary<string, Dictionary<string, PalCapturedCageInfoDatabaseRow?>> cageSchema = new() { ["DT_CapturedCagePal"] = [] };
                 
-                List<AreaData> originalAreaList = Data.AreaDataCopy();
+                IEnumerable<AreaData> originalCageList = Data.AreaDataCopy().Where(x => x.isCage);
                 // TODO: Update when new PalSchema releases
                 int originalCount = 107;// originalAreaList.Where(x => x.isCage).SelectMany(x => x.SpawnEntries).Count();
                 foreach (AreaData area in cages)
                 {
-                    originalAreaList.Find(x => x.SimpleName == area.SimpleName)!.SpawnEntries = area.SpawnEntries;
+                    originalCageList.First(x => x.SimpleName == area.SimpleName).SpawnEntries = area.SpawnEntries;
                 }
 
                 int i = 0;
-                foreach (AreaData area in originalAreaList.Where(x => x.isCage))
+                foreach (AreaData area in originalCageList)
                 {
                     foreach (SpawnEntry entry in area.SpawnEntries)
                     {
