@@ -3155,20 +3155,14 @@ namespace PalworldRandomizer
             {
                 List<PalSchemaJson> schemaList = GeneratePalSchema(areaList);
 
-                using MemoryStream memoryStream = new();
-                using (ZipArchive zipArchive = new(memoryStream, ZipArchiveMode.Create, true))
+                using FileStream fileStream = File.Create(saveDialog.FileName);
+                using ZipArchive zipArchive = new(fileStream, ZipArchiveMode.Create, true);
+                foreach (PalSchemaJson schema in schemaList)
                 {
-                    foreach (PalSchemaJson schema in schemaList)
-                    {
-                        using Stream entryStream = zipArchive.CreateEntry($"CustomPalSpawns/" + schema.FilePath).Open();
-                        using StreamWriter streamWriter = new(entryStream, Encoding.UTF8);
-                        streamWriter.Write(schema.JsonData);
-                    }
+                    using Stream entryStream = zipArchive.CreateEntry($"CustomPalSpawns/" + schema.FilePath).Open();
+                    using StreamWriter streamWriter = new(entryStream, Encoding.UTF8);
+                    streamWriter.Write(schema.JsonData);
                 }
-
-                using FileStream file = File.Create(saveDialog.FileName);
-                memoryStream.Position = 0;
-                memoryStream.CopyTo(file);
             }
         }
 
