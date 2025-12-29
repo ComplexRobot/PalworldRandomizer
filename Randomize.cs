@@ -1,10 +1,12 @@
 ﻿using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Assets.Objects.Properties;
+using CUE4Parse.Utils;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using Stfu.Linq;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -15,6 +17,8 @@ using UAssetAPI.ExportTypes;
 using UAssetAPI.PropertyTypes.Objects;
 using UAssetAPI.PropertyTypes.Structs;
 using UAssetAPI.UnrealTypes;
+using static PalworldRandomizer.FileModify.PalMapObject;
+using static PalworldRandomizer.FileModify.PalMapObject.PickupItem;
 
 namespace PalworldRandomizer
 {
@@ -2869,7 +2873,7 @@ namespace PalworldRandomizer
                 unrealPak.WaitForExit();
                 if (unrealPak.ExitCode != 0)
                     return "UnrealPak failed to extract the file.";
-                string[] files = [.. Directory.GetFiles(outputPath, "BP_PalSpawner_Sheets_*.uasset", SearchOption.AllDirectories), 
+                string[] files = [.. Directory.GetFiles(outputPath, "BP_PalSpawner_Sheets_*.uasset", SearchOption.AllDirectories),
                     .. Directory.GetFiles(outputPath, "bp_palmapobjectspawner_palegg_*.uasset", SearchOption.AllDirectories)];
                 string? cagePath;
                 try
@@ -3072,6 +3076,198 @@ namespace PalworldRandomizer
             Data.AreaForEachIfDiff(areaList, area => area.modified = true);
             areaList.Sort(AreaSortFunc);
             return areaList;
+        }
+
+        public class PalMonsterData
+        {
+            public string Key { get; set; } = string.Empty;
+        }
+
+        public class PalSpawnerOneTribeInfo
+        {
+            public PalMonsterData PalId { get; set; } = new();
+            public int Level { get; set; } = 1;
+            public int Level_Max { get; set; } = 1;
+            public int Num { get; set; } = 1;
+            public int Num_Max { get; set; } = 1;
+        }
+
+        public class PalSpawnerGroupInfo
+        {
+            public int Weight { get; set; } = 1;
+            public string OnlyTime { get; set; } = "Undefined";
+            public PalSpawnerOneTribeInfo[] PalList { get; set; } = [];
+        }
+
+        public class PalSpawner
+        {
+            public PalSpawnerGroupInfo[] SpawnGroupList { get; set; } = [];
+        }
+
+        public static class PalMapObject
+        {
+            public static class PickupItem
+            {
+                public class PalEggData
+                {
+                    public PalMonsterData PalMonsterId { get; set; } = new();
+                }
+
+                public class PalEggLotteryData
+                {
+                    public PalEggData PalEggData { get; set; } = new();
+                    public float Weight { get; set; } = 1.0f;
+                }
+            }
+
+            public class SpawnerPalEgg
+            {
+                public PalEggLotteryData[] SpawnPalEggLotteryDataArray { get; set; } = [];
+                public float RespawnTimeMinutesObtained { get; set; } = 180.0f;
+            }
+        }
+
+        public class PalCapturedCageInfoDatabaseRow
+        {
+            public string FieldName { get; set; } = string.Empty;
+            public string PalId { get; set; } = string.Empty;
+            public float Weight { get; set; } = 1.0f;
+            public int MinLevel { get; set; } = 1;
+            public int MaxLevel { get; set; } = 1;
+        }
+
+        public class PalSchemaJson
+        {
+            public string FilePath { get; set; } = string.Empty;
+            public string JsonData { get; set; } = string.Empty;
+        }
+
+        public static void SavePalSchema(List<AreaData> areaList)
+        {
+            SaveFileDialog saveDialog = new()
+            {
+                FileName = $"PalworldSpawns-PalSchema-{DateTime.Now:MM-dd-yy-HH-mm-ss}",
+                DefaultExt = ".zip",
+                Filter = "ZIP Archive|*.zip"
+            };
+
+            if (saveDialog.ShowDialog() == true)
+            {
+                List<PalSchemaJson> schemaList = GeneratePalSchema(areaList);
+
+                using MemoryStream memoryStream = new();
+                using (ZipArchive zipArchive = new(memoryStream, ZipArchiveMode.Create, true))
+                {
+                    foreach (PalSchemaJson schema in schemaList)
+                    {
+                        ZipArchiveEntry entry = zipArchive.CreateEntry($"CustomPalSpawns/" + schema.FilePath);
+                        using StreamWriter streamWriter = new(entry.Open(), Encoding.UTF8);
+                        streamWriter.Write(schema.JsonData);
+                    }
+                }
+
+                using FileStream file = File.Create(saveDialog.FileName);
+                memoryStream.Position = 0;
+                memoryStream.CopyTo(file);
+            }
+        }
+
+        public static List<PalSchemaJson> GeneratePalSchema(List<AreaData> areaList)
+        {
+            Dictionary<string, object> blueprintSchema = [];
+            foreach (AreaData area in areaList.Where(x => !x.isCage))
+            {
+                if (area.isEgg)
+                {
+                    blueprintSchema.Add($"/Game/Pal/Blueprint/MapObject/Spawner/{area.FileNameWithoutExtension}.{area.FileNameWithoutExtension}_C",
+                        new SpawnerPalEgg
+                        {
+                            SpawnPalEggLotteryDataArray = [.. area.SpawnEntries.Select(entry =>
+                                new PalEggLotteryData
+                                {
+                                    PalEggData = new PalEggData { PalMonsterId = new() { Key = entry.SpawnList[0].Name } },
+                                    Weight = entry.Weight / 40.0f
+                                }
+                            )],
+                            RespawnTimeMinutesObtained = area.eggRespawnTime
+                        }
+                    );
+                }
+                else
+                {
+                    blueprintSchema.Add($"/Game/Pal/Blueprint/Spawner/SheetsVariant/{area.FileNameWithoutExtension}.{area.FileNameWithoutExtension}_C",
+                        new PalSpawner
+                        {
+                            SpawnGroupList = [.. area.SpawnEntries.Select(entry =>
+                                new PalSpawnerGroupInfo
+                                {
+                                    Weight = entry.Weight,
+                                    OnlyTime = entry.NightOnly ? "Night" : "Undefined",
+                                    PalList = [.. entry.SpawnList.Select(spawn =>
+                                        new PalSpawnerOneTribeInfo
+                                        {
+                                            PalId = new() { Key = spawn.Name },
+                                            Level = spawn.MinLevel,
+                                            Level_Max = spawn.MaxLevel,
+                                            Num = spawn.MinCount,
+                                            Num_Max = spawn.MaxCount
+                                        }
+                                    )]
+                                }
+                            )]
+                        }
+                    );
+                }
+            }
+
+            List<PalSchemaJson> schemas = [];
+
+            if (blueprintSchema.Count != 0)
+            {
+                string filename = areaList.Exists(x => !x.isEgg && !x.isCage) ? (areaList.Exists(x => x.isEgg) ? "PalSpawnsAndEggs" : "PalSpawns") : "Eggs";
+                schemas.Add(new() { FilePath = $"blueprints/{filename}.json", JsonData = JsonConvert.SerializeObject(blueprintSchema, Formatting.Indented) });
+            }
+
+            IEnumerable<AreaData> cages = areaList.Where(x => x.isCage);
+            if (cages.Any())
+            {
+                Dictionary<string, Dictionary<string, PalCapturedCageInfoDatabaseRow?>> cageSchema = new() { ["DT_CapturedCagePal"] = [] };
+                
+                List<AreaData> originalAreaList = Data.AreaDataCopy();
+                // TODO: Update when new PalSchema releases
+                int originalCount = 107;// originalAreaList.Where(x => x.isCage).SelectMany(x => x.SpawnEntries).Count();
+                foreach (AreaData area in cages)
+                {
+                    originalAreaList.Find(x => x.SimpleName == area.SimpleName)!.SpawnEntries = area.SpawnEntries;
+                }
+
+                int i = 0;
+                foreach (AreaData area in originalAreaList.Where(x => x.isCage))
+                {
+                    foreach (SpawnEntry entry in area.SpawnEntries)
+                    {
+                        cageSchema["DT_CapturedCagePal"].Add($"{++i}",
+                            new PalCapturedCageInfoDatabaseRow
+                            {
+                                FieldName = area.filename,
+                                PalId = entry.SpawnList[0].Name,
+                                Weight = entry.Weight / 10.0f,
+                                MinLevel = entry.SpawnList[0].MinLevel,
+                                MaxLevel = entry.SpawnList[0].MaxLevel
+                            }
+                        );
+                    }
+                }
+
+                for (int j = i + 1; j <= originalCount; ++j)
+                {
+                    cageSchema["DT_CapturedCagePal"].Add($"{j}", null);
+                }
+
+                schemas.Add(new() { FilePath = "raw/Cages.json", JsonData = JsonConvert.SerializeObject(cageSchema, Formatting.Indented) });
+            }
+
+            return schemas;
         }
     }
 }

@@ -27,6 +27,18 @@ namespace PalworldRandomizer
             }
         }
 
+        private void SavePalSchema_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateSourceFocusedElement();
+            List<AreaData> modifiedAreas = ((List<AreaData>)areaList.ItemsSource).FindAll(x => x.modified);
+            if (modifiedAreas.Count == 0)
+            {
+                MessageBox.Show(GetWindow(), "Error: No spawn group changes detected.", "Failed To Save PalSchema", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            FileModify.SavePalSchema(modifiedAreas);
+        }
+
         private void SavePak_Click(object sender, RoutedEventArgs e)
         {
             UpdateSourceFocusedElement();
