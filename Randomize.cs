@@ -17,8 +17,6 @@ using UAssetAPI.ExportTypes;
 using UAssetAPI.PropertyTypes.Objects;
 using UAssetAPI.PropertyTypes.Structs;
 using UAssetAPI.UnrealTypes;
-using static PalworldRandomizer.FileModify.PalMapObject;
-using static PalworldRandomizer.FileModify.PalMapObject.PickupItem;
 
 namespace PalworldRandomizer
 {
@@ -3122,7 +3120,7 @@ namespace PalworldRandomizer
 
             public class SpawnerPalEgg
             {
-                public PalEggLotteryData[] SpawnPalEggLotteryDataArray { get; set; } = [];
+                public PickupItem.PalEggLotteryData[] SpawnPalEggLotteryDataArray { get; set; } = [];
                 public float RespawnTimeMinutesObtained { get; set; } = 180.0f;
             }
         }
@@ -3174,10 +3172,10 @@ namespace PalworldRandomizer
                 if (area.isEgg)
                 {
                     blueprintSchema.Add($"/Game/Pal/Blueprint/MapObject/Spawner/{area.FileNameWithoutExtension}.{area.FileNameWithoutExtension}_C",
-                        new SpawnerPalEgg
+                        new PalMapObject.SpawnerPalEgg
                         {
                             SpawnPalEggLotteryDataArray = [.. area.SpawnEntries.Select(entry =>
-                                new PalEggLotteryData
+                                new PalMapObject.PickupItem.PalEggLotteryData
                                 {
                                     PalEggData = new() { PalMonsterId = new() { Key = entry.SpawnList[0].Name } },
                                     Weight = entry.Weight / 40.0f
