@@ -3165,12 +3165,13 @@ namespace PalworldRandomizer
 
         public static List<PalSchemaJson> GeneratePalSchema(List<AreaData> areaList)
         {
-            Dictionary<string, object> blueprintSchema = [];
+            Dictionary<string, PalSpawner> PalSpawnSchema = [];
+            Dictionary<string, PalMapObject.SpawnerPalEgg> EggSchema = [];
             foreach (AreaData area in areaList.Where(x => !x.isCage))
             {
                 if (area.isEgg)
                 {
-                    blueprintSchema.Add($"/Game/Pal/Blueprint/MapObject/Spawner/{area.FileNameWithoutExtension}.{area.FileNameWithoutExtension}_C",
+                    EggSchema.Add($"/Game/Pal/Blueprint/MapObject/Spawner/{area.FileNameWithoutExtension}.{area.FileNameWithoutExtension}_C",
                         new PalMapObject.SpawnerPalEgg
                         {
                             SpawnPalEggLotteryDataArray = [.. area.SpawnEntries.Select(entry =>
@@ -3186,7 +3187,7 @@ namespace PalworldRandomizer
                 }
                 else
                 {
-                    blueprintSchema.Add($"/Game/Pal/Blueprint/Spawner/SheetsVariant/{area.FileNameWithoutExtension}.{area.FileNameWithoutExtension}_C",
+                    PalSpawnSchema.Add($"/Game/Pal/Blueprint/Spawner/SheetsVariant/{area.FileNameWithoutExtension}.{area.FileNameWithoutExtension}_C",
                         new PalSpawner
                         {
                             SpawnGroupList = [.. area.SpawnEntries.Select(entry =>
@@ -3213,10 +3214,14 @@ namespace PalworldRandomizer
 
             List<PalSchemaJson> schemas = [];
 
-            if (blueprintSchema.Count != 0)
+            if (PalSpawnSchema.Count != 0)
             {
-                string filename = areaList.Exists(x => !x.isEgg && !x.isCage) ? (areaList.Exists(x => x.isEgg) ? "PalSpawnsAndEggs" : "PalSpawns") : "Eggs";
-                schemas.Add(new() { FilePath = $"blueprints/{filename}.json", JsonData = JsonConvert.SerializeObject(blueprintSchema, Formatting.Indented) });
+                schemas.Add(new() { FilePath = $"blueprints/PalSpawns.json", JsonData = JsonConvert.SerializeObject(PalSpawnSchema, Formatting.Indented) });
+            }
+
+            if (EggSchema.Count != 0)
+            {
+                schemas.Add(new() { FilePath = $"blueprints/EggSpawns.json", JsonData = JsonConvert.SerializeObject(EggSchema, Formatting.Indented) });
             }
 
             IEnumerable<AreaData> cages = areaList.Where(x => x.isCage);
