@@ -3160,8 +3160,8 @@ namespace PalworldRandomizer
                 {
                     foreach (PalSchemaJson schema in schemaList)
                     {
-                        ZipArchiveEntry entry = zipArchive.CreateEntry($"CustomPalSpawns/" + schema.FilePath);
-                        using StreamWriter streamWriter = new(entry.Open(), Encoding.UTF8);
+                        using Stream entryStream = zipArchive.CreateEntry($"CustomPalSpawns/" + schema.FilePath).Open();
+                        using StreamWriter streamWriter = new(entryStream, Encoding.UTF8);
                         streamWriter.Write(schema.JsonData);
                     }
                 }
@@ -3185,7 +3185,7 @@ namespace PalworldRandomizer
                             SpawnPalEggLotteryDataArray = [.. area.SpawnEntries.Select(entry =>
                                 new PalEggLotteryData
                                 {
-                                    PalEggData = new PalEggData { PalMonsterId = new() { Key = entry.SpawnList[0].Name } },
+                                    PalEggData = new() { PalMonsterId = new() { Key = entry.SpawnList[0].Name } },
                                     Weight = entry.Weight / 40.0f
                                 }
                             )],
