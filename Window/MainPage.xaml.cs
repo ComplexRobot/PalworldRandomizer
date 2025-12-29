@@ -1,16 +1,16 @@
-﻿using System.IO;
-using System.Reflection;
+﻿using Microsoft.Win32;
+using Newtonsoft.Json;
 using System.Diagnostics;
+using System.IO;
+using System.Numerics;
+using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using System.Runtime.ExceptionServices;
-using Newtonsoft.Json;
-using Microsoft.Win32;
-using System.Numerics;
 
 namespace PalworldRandomizer
 {
@@ -396,7 +396,7 @@ namespace PalworldRandomizer
         }
 
         private bool generating = false;
-        private void SavePak_Click(object sender, RoutedEventArgs e)
+        private void Randomize_Click(object sender, RoutedEventArgs e)
         {
             if (generating)
             {
@@ -404,6 +404,8 @@ namespace PalworldRandomizer
             }
             statusBar.Text = "⏱️ Generating...";
             generating = true;
+            generateButton.IsEnabled = false;
+            savePalSchema.IsEnabled = false;
             savePak.IsEnabled = false;
             int seed = 0;
             if (methodNone.IsChecked != true)
@@ -421,10 +423,8 @@ namespace PalworldRandomizer
             {
                 try
                 {
-                    if (!Randomize.GeneratePalSpawns((FormData) formData!))
-                    {
-                        Dispatcher.Invoke(() => MessageBox.Show(GetWindow(), "Error: No area changes to save.", "Failed To Save Pak", MessageBoxButton.OK, MessageBoxImage.Error));
-                    }
+                    Randomize.GeneratePalSpawns((FormData)formData!);
+                    
                 }
                 catch (Exception e)
                 {
@@ -432,8 +432,23 @@ namespace PalworldRandomizer
                 }
                 Dispatcher.Invoke(() => statusBar.Text = "✔️ Generation complete.");
                 generating = false;
-                Dispatcher.Invoke(() => savePak.IsEnabled = true);
+                Dispatcher.Invoke(() =>
+                {
+                    generateButton.IsEnabled = true;
+                    savePalSchema.IsEnabled = true;
+                    savePak.IsEnabled = true;
+                });
             }).Start(new FormData(this));
+        }
+
+        private void SavePalSchema_Click(object sender, RoutedEventArgs e)
+        {
+            PalSpawnPage.Instance.SavePalSchema();
+        }
+
+        private void SavePak_Click(object sender, RoutedEventArgs e)
+        {
+            PalSpawnPage.Instance.SavePak();
         }
 
         private void ViewSpawns_Click(object sender, RoutedEventArgs e)

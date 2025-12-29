@@ -27,9 +27,8 @@ namespace PalworldRandomizer
             }
         }
 
-        private void SavePalSchema_Click(object sender, RoutedEventArgs e)
+        public void SavePalSchema()
         {
-            UpdateSourceFocusedElement();
             List<AreaData> modifiedAreas = ((List<AreaData>)areaList.ItemsSource).FindAll(x => x.modified);
             if (modifiedAreas.Count == 0)
             {
@@ -39,13 +38,24 @@ namespace PalworldRandomizer
             FileModify.SavePalSchema(modifiedAreas);
         }
 
-        private void SavePak_Click(object sender, RoutedEventArgs e)
+        public void SavePak(bool saveAreaList = false)
         {
-            UpdateSourceFocusedElement();
-            if (!FileModify.SaveAreaList((List<AreaData>) areaList.ItemsSource) || !FileModify.GenerateAndSavePak())
+            if (saveAreaList && !FileModify.SaveAreaList((List<AreaData>)areaList.ItemsSource) || !FileModify.GenerateAndSavePak())
             {
                 MessageBox.Show(GetWindow(), "Error: No spawn group changes detected.", "Failed To Save Pak", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void SavePalSchema_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateSourceFocusedElement();
+            SavePalSchema();
+        }
+
+        private void SavePak_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateSourceFocusedElement();
+            SavePak(true);
         }
 
         private void Reset_Click(object sender, RoutedEventArgs e)
@@ -56,6 +66,8 @@ namespace PalworldRandomizer
                 Randomize.SaveBackup();
                 areaList.ItemsSource = Data.AreaDataCopy();
                 Randomize.AreaListChanged = true;
+                MainPage.Instance.savePalSchema.IsEnabled = false;
+                MainPage.Instance.savePak.IsEnabled = false;
             }
         }
 
@@ -196,6 +208,8 @@ namespace PalworldRandomizer
                 }
                 Randomize.AreaListChanged = true;
             }
+            MainPage.Instance.savePalSchema.IsEnabled = false;
+            MainPage.Instance.savePak.IsEnabled = false;
         }
 
         // TODO: Change to object-oriented design? Very unreadable with this functional design

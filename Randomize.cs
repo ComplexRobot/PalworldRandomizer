@@ -2608,12 +2608,11 @@ namespace PalworldRandomizer
             }
         }
         
-        public static bool GeneratePalSpawns(FormData formData)
+        public static void GeneratePalSpawns(FormData formData)
         {
             GenerateSpawnLists(formData);
             RandomizeAndSaveAssets(formData);
             MainPage.Instance.Dispatcher.Invoke(() => MainPage.Instance.statusBar.Text = "💾 Creating PAK...");
-            return FileModify.GenerateAndSavePak();
         }
         public static string GetRandomPal() => ((string[])[.. Data.PalList, .. Data.TerrariaMonsters])[new Random().Next(Data.PalList.Count + Data.TerrariaMonsters.Count)];
 

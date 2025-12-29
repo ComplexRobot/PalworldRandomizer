@@ -21,7 +21,7 @@
             </MenuItem.Header>
             <MenuItem Name="savePalSchema" Click="SavePalSchema_Click">
                 <MenuItem.Header>
-                    <TextBlock Text="Save ZIP (PalSchema)..." Margin="0"/>
+                    <TextBlock Text="Save PalSchema..." Margin="0"/>
                 </MenuItem.Header>
                 <MenuItem.Icon>
                     <emoji:TextBlock Text="💾" Margin="0" HorizontalAlignment="Center"/>
