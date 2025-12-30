@@ -456,7 +456,7 @@ namespace PalworldRandomizer
                             {
                                 for (int j = 0; j < baseList.Count; ++j)
                                 {
-                                    if (baseList[j].Name != newList[j].Name
+                                    if (!string.Equals(baseList[j].Name, newList[j].Name, StringComparison.OrdinalIgnoreCase)
                                         || baseList[j].IsPal != newList[j].IsPal
                                         || baseList[j].MinLevel != newList[j].MinLevel
                                         || baseList[j].MaxLevel != newList[j].MaxLevel
