@@ -3,6 +3,7 @@ using CUE4Parse.UE4.Assets.Objects.Properties;
 using CUE4Parse.Utils;
 using Microsoft.Win32;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Stfu.Linq;
 using System.Diagnostics;
 using System.IO;
@@ -494,7 +495,22 @@ namespace PalworldRandomizer
         private static int maxBossLevel = 8;
         private static int minAddLevel = 2;
         private static int maxAddLevel = 6;
-        public static bool AreaListChanged { get; set; } = false;
+        private static bool _areaListChanged = false;
+        public static bool AreaListChanged
+        { 
+            get => _areaListChanged;
+
+            set
+            {
+                _areaListChanged = value;
+
+                if (value)
+                {
+                    MainPage.Instance.savePalSchema.IsEnabled = false;
+                    MainPage.Instance.savePak.IsEnabled = false;
+                }
+            }
+        }
         public static bool AutoSaveRestoreBackups { get; set; } = true;
         public static bool AutoSaveGenerationData { get; set; } = true;
 
@@ -2660,7 +2676,7 @@ namespace PalworldRandomizer
         }
     }
 
-    public static class FileModify
+    public static partial class FileModify
     {
         public static int AreaSortFunc(AreaData x, AreaData y)
         {
@@ -3264,6 +3280,180 @@ namespace PalworldRandomizer
             }
 
             return schemas;
+        }
+        public static string? LoadPalSchema()
+        {
+            OpenFileDialog openDialog = new()
+            {
+                DefaultExt = ".zip",
+                Filter = "Zip Archive|*.zip|JSON file|*.json|All files|*.*"
+            };
+            if (openDialog.ShowDialog() == true && openDialog.FileName != string.Empty)
+            {
+                try
+                {
+                    List<AreaData> areaList = Data.AreaDataCopy();
+
+                    if (string.Equals(Path.GetExtension(openDialog.FileName), ".zip", StringComparison.OrdinalIgnoreCase))
+                    {
+                        ConvertPalSchemaZIP(areaList, openDialog.FileName);
+                    }
+                    else
+                    {
+                        ConvertPalSchemaJSON(areaList, File.ReadAllText(openDialog.FileName, Encoding.UTF8));
+                    }
+
+                    Data.AreaForEachIfDiff(areaList, x => x.modified = true);
+
+                    Randomize.SaveBackup();
+                    PalSpawnPage.Instance.areaList.ItemsSource = areaList;
+                    Randomize.AreaListChanged = true;
+                }
+                catch (Exception e)
+                {
+                    return e.Message;
+                }
+            }
+            else
+                return "Cancel";
+            return null;
+        }
+
+        public static void ConvertPalSchemaZIP(List<AreaData> areaList, string filename)
+        {
+            using ZipArchive zipArchive = ZipFile.OpenRead(filename);
+            foreach (ZipArchiveEntry entry in zipArchive.Entries)
+            {
+                if (!string.Equals(Path.GetExtension(entry.Name), ".json", StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                using Stream entryStream = entry.Open();
+                using StreamReader streamReader = new(entryStream, Encoding.UTF8);
+                ConvertPalSchemaJSON(areaList, streamReader.ReadToEnd());
+            }
+        }
+
+        [GeneratedRegex("^/Game/Pal/Blueprint/(?<folder>Spawner/SheetsVariant|MapObject/Spawner)/(?<package>[^.]+)\\.(?<class>[^.]+?)_C$", RegexOptions.ExplicitCapture)]
+        private static partial Regex schemaPathRegex();
+
+        public static void ConvertPalSchemaJSON(List<AreaData> areaList, string jsonData)
+        {
+            Dictionary<string, JObject>? areaDict = JsonConvert.DeserializeObject<Dictionary<string, JObject>>(jsonData);
+
+            if (areaDict == null)
+            {
+                return;
+            }
+
+            foreach ((string key, JObject value) in areaDict)
+            {
+                if (key == "DT_CapturedCagePal")
+                {
+                    Dictionary<string, PalCapturedCageInfoDatabaseRow?>? rows = value.ToObject<Dictionary<string, PalCapturedCageInfoDatabaseRow?>>();
+                    if (rows == null)
+                    {
+                        continue;
+                    }
+
+                    Dictionary<string, AreaData> cageDictionary = areaList.Where(x => x.isCage).ToDictionary(x => x.filename, x => x);
+                    foreach ((_, AreaData area) in cageDictionary)
+                    {
+                        area.SpawnEntries.Clear();
+                    }
+
+                    foreach ((_, PalCapturedCageInfoDatabaseRow? row) in rows)
+                    {
+                        if (row == null)
+                        {
+                            continue;
+                        }
+
+                        cageDictionary[row.FieldName].SpawnEntries.Add(new SpawnEntry
+                        {
+                            Weight = Convert.ToInt32(row.Weight * 10),
+                            SpawnList =
+                            [
+                                new SpawnData
+                                {
+                                    IsPal = Data.PalData[row.PalId].IsPal,
+                                    Name = row.PalId,
+                                    MinLevel = row.MinLevel,
+                                    MaxLevel = row.MaxLevel
+                                }
+                            ]
+                        });
+                    }
+                }
+                else
+                {
+                    Match regexMatch = schemaPathRegex().Match(key);
+                    if (!regexMatch.Success || regexMatch.Groups["package"].Value != regexMatch.Groups["class"].Value)
+                    {
+                        continue;
+                    }
+
+                    AreaData? area = areaList.Find(x => x.FileNameWithoutExtension == regexMatch.Groups["package"].Value);
+                    if (area == null)
+                    {
+                        continue;
+                    }
+
+                    if (regexMatch.Groups["folder"].Value == "Spawner/SheetsVariant")
+                    {
+
+                        PalSpawner? spawner = value.ToObject<PalSpawner>();
+                        if (spawner == null)
+                        {
+                            continue;
+                        }
+
+                        area.SpawnEntries = [.. spawner.SpawnGroupList.Select(entry =>
+                            new SpawnEntry
+                            {
+                                Weight = entry.Weight,
+                                NightOnly = entry.OnlyTime == "Night" || entry.OnlyTime == "EPalOneDayTimeType::Night",
+                                SpawnList = [.. entry.PalList.Select(spawn =>
+                                    new SpawnData
+                                    {
+                                        IsPal = Data.PalData[spawn.PalId.Key].IsPal,
+                                        Name = spawn.PalId.Key,
+                                        MinLevel = spawn.Level,
+                                        MaxLevel = spawn.Level_Max,
+                                        MinCount = spawn.Num,
+                                        MaxCount = spawn.Num_Max
+                                    }
+                                )]
+                            }
+                        )];
+
+                    }
+                    else if (regexMatch.Groups["folder"].Value == "MapObject/Spawner")
+                    {
+                        PalMapObject.SpawnerPalEgg? spawner = value.ToObject<PalMapObject.SpawnerPalEgg>();
+                        if (spawner == null)
+                        {
+                            continue;
+                        }
+
+                        area.SpawnEntries = [.. spawner.SpawnPalEggLotteryDataArray.Select(entry =>
+                            new SpawnEntry
+                            {
+                                Weight = Convert.ToInt32(entry.Weight * 40),
+                                SpawnList =
+                                [
+                                    new SpawnData
+                                    {
+                                        IsPal = Data.PalData[entry.PalEggData.PalMonsterId.Key].IsPal,
+                                        Name = entry.PalEggData.PalMonsterId.Key
+                                    }
+                                ]
+                            }
+                        )];
+                    }
+                }
+            }
         }
     }
 }

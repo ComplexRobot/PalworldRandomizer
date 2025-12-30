@@ -52,6 +52,19 @@ namespace PalworldRandomizer
             SavePalSchema();
         }
 
+        private void LoadPalSchema_Click(object sender, RoutedEventArgs e)
+        {
+            string? status = FileModify.LoadPalSchema();
+            if (status == null)
+            {
+                MessageBox.Show(GetWindow(), "Successfully loaded PalSchema.", "PalSchema Loaded", MessageBoxButton.OK, MessageBoxImage.None);
+            }
+            else if (status != "Cancel")
+            {
+                MessageBox.Show(GetWindow(), "Error: " + status, "Failed To Load PalSchema", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         private void SavePak_Click(object sender, RoutedEventArgs e)
         {
             UpdateSourceFocusedElement();
@@ -66,8 +79,6 @@ namespace PalworldRandomizer
                 Randomize.SaveBackup();
                 areaList.ItemsSource = Data.AreaDataCopy();
                 Randomize.AreaListChanged = true;
-                MainPage.Instance.savePalSchema.IsEnabled = false;
-                MainPage.Instance.savePak.IsEnabled = false;
             }
         }
 
@@ -208,8 +219,6 @@ namespace PalworldRandomizer
                 }
                 Randomize.AreaListChanged = true;
             }
-            MainPage.Instance.savePalSchema.IsEnabled = false;
-            MainPage.Instance.savePak.IsEnabled = false;
         }
 
         // TODO: Change to object-oriented design? Very unreadable with this functional design
