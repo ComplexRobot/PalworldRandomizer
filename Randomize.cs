@@ -3288,34 +3288,36 @@ namespace PalworldRandomizer
                 DefaultExt = ".zip",
                 Filter = "Zip Archive|*.zip|JSON file|*.json|All files|*.*"
             };
-            if (openDialog.ShowDialog() == true && openDialog.FileName != string.Empty)
+
+            if (openDialog.ShowDialog() != true || openDialog.FileName.Length == 0)
             {
-                try
-                {
-                    List<AreaData> areaList = Data.AreaDataCopy();
-
-                    if (string.Equals(Path.GetExtension(openDialog.FileName), ".zip", StringComparison.OrdinalIgnoreCase))
-                    {
-                        ConvertPalSchemaZIP(areaList, openDialog.FileName);
-                    }
-                    else
-                    {
-                        ConvertPalSchemaJSON(areaList, File.ReadAllText(openDialog.FileName, Encoding.UTF8));
-                    }
-
-                    Data.AreaForEachIfDiff(areaList, x => x.modified = true);
-
-                    Randomize.SaveBackup();
-                    PalSpawnPage.Instance.areaList.ItemsSource = areaList;
-                    Randomize.AreaListChanged = true;
-                }
-                catch (Exception e)
-                {
-                    return e.Message;
-                }
-            }
-            else
                 return "Cancel";
+            }
+
+            try
+            {
+                List<AreaData> areaList = Data.AreaDataCopy();
+
+                if (string.Equals(Path.GetExtension(openDialog.FileName), ".zip", StringComparison.OrdinalIgnoreCase))
+                {
+                    ConvertPalSchemaZIP(areaList, openDialog.FileName);
+                }
+                else
+                {
+                    ConvertPalSchemaJSON(areaList, File.ReadAllText(openDialog.FileName, Encoding.UTF8));
+                }
+
+                Data.AreaForEachIfDiff(areaList, x => x.modified = true);
+
+                Randomize.SaveBackup();
+                PalSpawnPage.Instance.areaList.ItemsSource = areaList;
+                Randomize.AreaListChanged = true;
+            }
+            catch (Exception e)
+            {
+                return e.Message;
+            }
+
             return null;
         }
 
