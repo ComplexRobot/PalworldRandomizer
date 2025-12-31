@@ -3237,7 +3237,13 @@ namespace PalworldRandomizer
 
             if (EggSchema.Count != 0)
             {
-                schemas.Add(new() { FilePath = $"blueprints/EggSpawns.json", JsonData = JsonConvert.SerializeObject(EggSchema, Formatting.Indented) });
+                MessageBoxResult result = MessageBox.Show(
+                    "Overworld egg spawn editing is currently unsupported by PalSchema!\n\nSave the egg spawns anyway? (May cause a crash.)",
+                    "Overworld Eggs Unsupported", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.Yes)
+                {
+                    schemas.Add(new() { FilePath = $"blueprints/EggSpawns.json", JsonData = JsonConvert.SerializeObject(EggSchema, Formatting.Indented) });
+                }
             }
 
             IEnumerable<AreaData> cages = areaList.Where(x => x.isCage);
