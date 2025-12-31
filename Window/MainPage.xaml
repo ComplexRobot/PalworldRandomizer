@@ -883,10 +883,10 @@
                         <TextBlock Margin="5,2,5,2" Text="Randomize"/>
                     </Button>
                     <Button Name="savePalSchema" Click="SavePalSchema_Click" Margin="10,0,0,0" IsEnabled="False">
-                        <TextBlock Margin="5,2,5,2" Text="Save PalSchema..."/>
+                        <TextBlock Margin="5,2,5,2" Text="Save PalSchema..." FontWeight="Bold"/>
                     </Button>
                     <Button Name="savePak" Click="SavePak_Click" Margin="10,0,0,0" IsEnabled="False">
-                        <TextBlock Margin="5,2,5,2" Text="Save PAK..."/>
+                        <TextBlock Margin="5,2,5,2" Text="Save PAK..." FontWeight="Bold"/>
                     </Button>
                     <Button Click="ViewSpawns_Click" Margin="10,0,10,0">
                         <TextBlock Margin="5,2,5,2">Open Spawn Editor</TextBlock>
