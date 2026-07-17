@@ -1,7 +1,7 @@
 ﻿using CUE4Parse.Compression;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.FileProvider.Vfs;
-using CUE4Parse.MappingsProvider;
+using CUE4Parse.MappingsProvider.Usmap;
 using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Texture;
@@ -220,7 +220,7 @@ namespace PalworldRandomizer
                         {
                             if (export is UTexture texture)
                             {
-                                File.WriteAllBytes(filename, texture.Decode()!.Encode(ETextureFormat.Png, 100).ToArray());
+                                File.WriteAllBytes(filename, [.. texture.Decode()!.Encode(ETextureFormat.Png, false, out _)]);
                                 break;
                             }
                         }
