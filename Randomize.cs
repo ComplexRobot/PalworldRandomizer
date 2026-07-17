@@ -1,4 +1,4 @@
-﻿using CUE4Parse.UE4.Assets.Objects;
+using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Assets.Objects.Properties;
 using CUE4Parse.Utils;
 using Microsoft.Win32;
@@ -123,7 +123,7 @@ namespace PalworldRandomizer
             UAsset humanNames = UAssetData.LoadAsset(@"Data\DT_HumanNameText_Common.uasset");
             UAsset bossNPCIcons = UAssetData.LoadAsset(@"Data\DT_PalBossNPCIcon.uasset");
             Dictionary<CUE4Parse.UE4.Objects.UObject.FName, FStructFallback> palIcons
-                = UAssetData.FileProvider.LoadDataTable("Pal/Content/Pal/DataTable/Character/DT_PalCharacterIconDataTable.uasset");
+                = UAssetData.FileProvider.LoadDataTable("DT_PalCharacterIconDataTable.uasset");
             Dictionary<string, string> weapons = new()
             {
                 { "AssaultRifle", UAssetData.AppDataPath(@"Images\InventoryItemIcon\T_itemicon_Weapon_AssaultRifle_Default1.png") },
@@ -181,13 +181,15 @@ namespace PalworldRandomizer
                     bool isBoss = keyPair.Key.StartsWith("BOSS_", StringComparison.OrdinalIgnoreCase) || isTowerBoss || isRaidBoss || isPredator;
                     bool isSummon = keyPair.Key.StartsWith("SUMMON_", StringComparison.OrdinalIgnoreCase);
                     bool isOilrig = keyPair.Key.EndsWith("_Oilrig", StringComparison.OrdinalIgnoreCase);
-                    bool isQuest = keyPair.Key.StartsWith("Quest_", StringComparison.OrdinalIgnoreCase);
+                    bool isQuest = keyPair.Key.StartsWith("Quest_", StringComparison.OrdinalIgnoreCase) || keyPair.Key.EndsWith("_Quest", StringComparison.OrdinalIgnoreCase)
+                         || keyPair.Key.EndsWith("_Quest_Friend", StringComparison.OrdinalIgnoreCase) || keyPair.Key.EndsWith("_Quest_Enemy", StringComparison.OrdinalIgnoreCase);
+                    bool isTower = keyPair.Key.EndsWith("_Tower", StringComparison.OrdinalIgnoreCase);
                     StructPropertyData? nameData = ((DataTableExport) palNames.Exports[0]).Table.Data.Find(property =>
                         (PalData[keyPair.Key].OverrideNameTextID != null &&
                         string.Compare(((TextPropertyData) property.Value[0]).Value.Value, $"{PalData[keyPair.Key].OverrideNameTextID}_TextData", true) == 0)
                         || string.Compare(((TextPropertyData) property.Value[0]).Value.Value, $"PAL_NAME_{keyPair.Key}_TextData", true) == 0);
                     string nameString = nameData != null ? ((TextPropertyData) nameData.Value[0]).CultureInvariantString.Value.Trim() : "en_text";
-                    if (nameString == "-")
+                    if (nameString is "-" or "Unidentified Pal")
                     {
                         nameString = "en_text";
                     }
@@ -196,7 +198,7 @@ namespace PalworldRandomizer
                         nameString = nameString.Replace("  ", " ");
                     }
                     PalName.Add(keyPair.Key, nameString == "en_text" ? (isBoss ? keyPair.Key[(keyPair.Key.IndexOf('_') + 1)..] : keyPair.Key) : nameString);
-                    if (keyPair.Value.ZukanIndex > 0 && !isSummon && !isOilrig && !isQuest)
+                    if (keyPair.Value.ZukanIndex > 0 && !isSummon && !isOilrig && !isQuest && !isTower)
                     {
                         PalList.Add(keyPair.Key);
                     }
@@ -217,36 +219,39 @@ namespace PalworldRandomizer
                     }
                     if (!isBoss || isTowerBoss || isRaidBoss || isPredator)
                     {
-                        if (!isBoss)
-                        {
-                            try
+                        if (!isQuest) {
+                            if (!isBoss)
                             {
-                                BossName.Add(keyPair.Key, PalData.Keys.First(key => string.Compare(key, $"BOSS_{keyPair.Key}", true) == 0));
+                                try
+                                {
+                                    BossName.Add(keyPair.Key, PalData.Keys.First(key => string.Compare(key, $"BOSS_{keyPair.Key}", true) == 0));
+                                }
+                                catch
+                                {
+                                }
                             }
-                            catch
+                            else if (isTowerBoss)
                             {
+                                // TODO: Change to regex
+                                if (!keyPair.Key.EndsWith("_2") && !keyPair.Key.EndsWith("_2_Avatar") && !keyPair.Key.EndsWith("_2_Servant") && !keyPair.Key.EndsWith("_Otomo"))
+                                {
+                                    TowerBossNames.Add(keyPair.Key);
+                                }
+                            }
+                            else if (isPredator)
+                            {
+                                PredatorNames.Add(keyPair.Key);
+                            }
+                            else
+                            {
+                                // Moon Lord and True Eye of Cthulhu do not work
+                                if (!keyPair.Key.EndsWith("_2") && !keyPair.Key.StartsWith("RAID_YakushimaBoss002") && keyPair.Key != "RAID_YakushimaBoss001_Green")
+                                {
+                                    RaidBossNames.Add(keyPair.Key);
+                                }
                             }
                         }
-                        else if (isTowerBoss)
-                        {
-                            // TODO: Change to regex
-                            if (!keyPair.Key.EndsWith("_2") && !keyPair.Key.EndsWith("_2_Avatar") && !keyPair.Key.EndsWith("_2_Servant") && !keyPair.Key.EndsWith("_Otomo"))
-                            {
-                                TowerBossNames.Add(keyPair.Key);
-                            }
-                        }
-                        else if (isPredator)
-                        {
-                            PredatorNames.Add(keyPair.Key);
-                        }
-                        else
-                        {
-                            // Moon Lord and True Eye of Cthulhu do not work
-                            if (!keyPair.Key.EndsWith("_2") && !keyPair.Key.StartsWith("RAID_YakushimaBoss002") && keyPair.Key != "RAID_YakushimaBoss001_Green")
-                            {
-                                RaidBossNames.Add(keyPair.Key);
-                            }
-                        }
+
                         SimpleName.Add(new SpawnData(keyPair.Key).SimpleName, keyPair.Key);
                     }
                     PalIconCheck((isBoss || isSummon) && !keyPair.Key.EndsWith("_Otomo"));

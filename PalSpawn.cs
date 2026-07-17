@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using System.IO;
 using UAssetAPI;
 using UAssetAPI.ExportTypes;
@@ -297,7 +297,7 @@ namespace PalworldRandomizer
             MaxLevel = 4;
         }
 
-        [GeneratedRegex("^(?<prefix>(RAID|PREDATOR|SUMMON|Quest(_[^_]+)?)_)?.+?(_(?<suffix>([0-9]+(_.+)?|MAX|Oilrig|Otomo|Hand_(Left|Right)|Head)(_[0-9]+)?))?$",
+        [GeneratedRegex("^(?<prefix>(RAID|PREDATOR|SUMMON|Quest(_[^_]+)?)_)?.+?(_(?<suffix>([0-9]+(_.+)?|MAX|Oilrig|Otomo|Hand_(Left|Right)|Head|Tower|Quest(_(Friend|Enemy))?)(_[0-9]+)?))?$",
             RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture)]
         private static partial Regex nameSuffixRegex();
         
@@ -307,8 +307,14 @@ namespace PalworldRandomizer
             {
                 if (Data.PalData[Name].IsPal)
                 {
-                    if (Name.EndsWith("_Flower"))
+                    if (Name.EndsWith("_Flower")) {
                         return $"{Data.PalName[Name]}🌺";
+                    }
+
+                    if (Name.StartsWith("POLICE_", StringComparison.OrdinalIgnoreCase)) {
+                        return $"{Data.PalName[Name]} ({Data.PalName[Name["POLICE_".Length..]]})";
+                    }
+
                     Match match = nameSuffixRegex().Match(Name);
                     if (match.Groups["prefix"].Value.Length != 0 || match.Groups["suffix"].Value.Length != 0)
                     {
