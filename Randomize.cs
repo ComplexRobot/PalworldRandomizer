@@ -3184,7 +3184,7 @@ namespace PalworldRandomizer
             {
                 if (area.isEgg)
                 {
-                    EggSchema.Add($"/Game/Pal/Blueprint/MapObject/Spawner/{area.FileNameWithoutExtension}.{area.FileNameWithoutExtension}_C",
+                    EggSchema.Add($"{area.FileNameWithoutExtension}_C",
                         new PalMapObject.SpawnerPalEgg
                         {
                             SpawnPalEggLotteryDataArray = [.. area.SpawnEntries.Select(entry =>
@@ -3200,7 +3200,7 @@ namespace PalworldRandomizer
                 }
                 else
                 {
-                    PalSpawnSchema.Add($"/Game/Pal/Blueprint/Spawner/SheetsVariant/{area.FileNameWithoutExtension}.{area.FileNameWithoutExtension}_C",
+                    PalSpawnSchema.Add($"{area.FileNameWithoutExtension}_C",
                         new PalSpawner
                         {
                             SpawnGroupList = [.. area.SpawnEntries.Select(entry =>
@@ -3234,27 +3234,23 @@ namespace PalworldRandomizer
 
             if (EggSchema.Count != 0)
             {
-                MessageBoxResult result = MessageBox.Show(
-                    "Overworld egg spawn editing is currently unsupported by PalSchema!\n\nSave the egg spawns anyway? (May cause a crash.)",
-                    "Overworld Eggs Unsupported", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                if (result == MessageBoxResult.Yes)
-                {
-                    schemas.Add(new() { FilePath = $"blueprints/EggSpawns.json", JsonData = JsonConvert.SerializeObject(EggSchema, Formatting.Indented) });
-                }
+                schemas.Add(new() { FilePath = $"blueprints/EggSpawns.json", JsonData = JsonConvert.SerializeObject(EggSchema, Formatting.Indented) });
             }
 
             IEnumerable<AreaData> cages = areaList.Where(x => x.isCage);
             if (cages.Any())
             {
                 Dictionary<string, Dictionary<string, PalCapturedCageInfoDatabaseRow?>> cageSchema = new() { ["DT_CapturedCagePal"] = [] };
-                
+
                 IEnumerable<AreaData> originalCageList = Data.AreaDataCopy().Where(x => x.isCage);
-                // TODO: Update when new PalSchema releases
-                int originalCount = 107;// originalAreaList.Where(x => x.isCage).SelectMany(x => x.SpawnEntries).Count();
+
+                // Save the changed cages - unmodified cages remain vanilla
                 foreach (AreaData area in cages)
                 {
                     originalCageList.First(x => x.SimpleName == area.SimpleName).SpawnEntries = area.SpawnEntries;
                 }
+
+                cageSchema["DT_CapturedCagePal"].Add("*", null);
 
                 int i = 0;
                 foreach (AreaData area in originalCageList)
@@ -3272,11 +3268,6 @@ namespace PalworldRandomizer
                             }
                         );
                     }
-                }
-
-                for (int j = i + 1; j <= originalCount; ++j)
-                {
-                    cageSchema["DT_CapturedCagePal"].Add($"{j}", null);
                 }
 
                 schemas.Add(new() { FilePath = "raw/Cages.json", JsonData = JsonConvert.SerializeObject(cageSchema, Formatting.Indented) });
@@ -3340,7 +3331,7 @@ namespace PalworldRandomizer
             }
         }
 
-        [GeneratedRegex("^/Game/Pal/Blueprint/(?<folder>Spawner/SheetsVariant|MapObject/Spawner)/(?<package>[^.]+)\\.(?<class>[^.]+?)_C$", RegexOptions.ExplicitCapture)]
+        [GeneratedRegex("^(/Game/Pal/Blueprint/(?<folder>.+?)/(?<package>[^./]+)\\.)?(?<class>[^./]+?)_C$", RegexOptions.ExplicitCapture)]
         private static partial Regex schemaPathRegex();
 
         public static void ConvertPalSchemaJSON(List<AreaData> areaList, string jsonData)
@@ -3394,20 +3385,19 @@ namespace PalworldRandomizer
                 else
                 {
                     Match regexMatch = schemaPathRegex().Match(key);
-                    if (!regexMatch.Success || regexMatch.Groups["package"].Value != regexMatch.Groups["class"].Value)
+                    if (!regexMatch.Success)
                     {
                         continue;
                     }
 
-                    AreaData? area = areaList.Find(x => x.FileNameWithoutExtension == regexMatch.Groups["package"].Value);
+                    AreaData? area = areaList.Find(x => x.FileNameWithoutExtension.Equals(regexMatch.Groups["class"].Value, StringComparison.OrdinalIgnoreCase));
                     if (area == null)
                     {
                         continue;
                     }
 
-                    if (regexMatch.Groups["folder"].Value == "Spawner/SheetsVariant")
+                    if (regexMatch.Groups["class"].Value.StartsWith("BP_PalSpawner_Sheets_", StringComparison.OrdinalIgnoreCase))
                     {
-
                         PalSpawner? spawner = value.ToObject<PalSpawner>();
                         if (spawner == null)
                         {
@@ -3434,7 +3424,7 @@ namespace PalworldRandomizer
                         )];
 
                     }
-                    else if (regexMatch.Groups["folder"].Value == "MapObject/Spawner")
+                    else if (regexMatch.Groups["class"].Value.StartsWith("bp_palmapobjectspawner_", StringComparison.OrdinalIgnoreCase))
                     {
                         PalMapObject.SpawnerPalEgg? spawner = value.ToObject<PalMapObject.SpawnerPalEgg>();
                         if (spawner == null)
