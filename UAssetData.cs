@@ -1,4 +1,4 @@
-﻿using CUE4Parse.Compression;
+using CUE4Parse.Compression;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.FileProvider.Vfs;
 using CUE4Parse.MappingsProvider.Usmap;
@@ -306,8 +306,8 @@ namespace PalworldRandomizer
 
         public static Dictionary<string, CharacterData> CreatePalData()
         {
-            Dictionary<CUE4Parse.UE4.Objects.UObject.FName, FStructFallback> palDataAsset = FileProvider.LoadDataTable("Pal/Content/Pal/DataTable/Character/DT_PalMonsterParameter.uasset");
-            Dictionary<CUE4Parse.UE4.Objects.UObject.FName, FStructFallback> humanDataAsset = FileProvider.LoadDataTable("Pal/Content/Pal/DataTable/Character/DT_PalHumanParameter.uasset");
+            Dictionary<CUE4Parse.UE4.Objects.UObject.FName, FStructFallback> palDataAsset = FileProvider.LoadDataTable("DT_PalMonsterParameter.uasset");
+            Dictionary<CUE4Parse.UE4.Objects.UObject.FName, FStructFallback> humanDataAsset = FileProvider.LoadDataTable("DT_PalHumanParameter.uasset");
             Dictionary<string, CharacterData> palData = ((IEnumerable<KeyValuePair<string, CharacterData>>)
                 [.. CreateReferencePairs(palDataAsset), .. CreateReferencePairs(humanDataAsset)]).ToDictionary(StringComparer.OrdinalIgnoreCase);
             palData["RowName"] = new CharacterData(palDataAsset.First().Value.Properties)
@@ -323,7 +323,7 @@ namespace PalworldRandomizer
         }
 
 #if DEBUG
-        // Example: PrintClassDefinition("CharacterData", "Pal/Content/Pal/DataTable/Character/DT_PalMonsterParameter.uasset");
+        // Example: PrintClassDefinition("CharacterData", "DT_PalMonsterParameter.uasset");
         public static void PrintClassDefinition(string name, string path)
         {
             Console.WriteLine("// Auto-generated with function PrintClassDefinition");
@@ -350,6 +350,9 @@ namespace PalworldRandomizer
                     case "FloatProperty":
                         Console.Write("    public float");
                         break;
+                    // Skipping structs
+                    case "StructProperty":
+                        continue;
                     default:
                         throw new Exception($"Unknown data type '{propertyData.PropertyType.Text}'.");
                     }
@@ -399,7 +402,8 @@ namespace PalworldRandomizer
     {
         public string? OverrideNameTextID { get; set; } = NullCheck(((NameProperty)FindProp(properties, "OverrideNameTextID").Tag!).Value);
         public string? NamePrefixID { get; set; } = NullCheck(((NameProperty)FindProp(properties, "NamePrefixID").Tag!).Value);
-        public string? OverridePartnerSkillTextID { get; set; } = NullCheck(((NameProperty)FindProp(properties, "OverridePartnerSkillTextID").Tag!).Value);
+        public string? OverridePartnerSkillNameTextID { get; set; } = NullCheck(((NameProperty)FindProp(properties, "OverridePartnerSkillNameTextID").Tag!).Value);
+        public string? OverridePartnerSkillDescTextID { get; set; } = NullCheck(((NameProperty)FindProp(properties, "OverridePartnerSkillDescTextID").Tag!).Value);
         public bool IsPal { get; set; } = ((BoolProperty)FindProp(properties, "IsPal").Tag!).Value;
         public string? Tribe { get; set; } = NullCheck(((EnumProperty)FindProp(properties, "Tribe").Tag!).Value)?.SubstringAfterLast(':');
         public string? BPClass { get; set; } = NullCheck(((NameProperty)FindProp(properties, "BPClass").Tag!).Value);
@@ -419,9 +423,14 @@ namespace PalworldRandomizer
         public int Defense { get; set; } = ((IntProperty)FindProp(properties, "Defense").Tag!).Value;
         public int Support { get; set; } = ((IntProperty)FindProp(properties, "Support").Tag!).Value;
         public int CraftSpeed { get; set; } = ((IntProperty)FindProp(properties, "CraftSpeed").Tag!).Value;
+        public float Friendship_HP { get; set; } = ((FloatProperty)FindProp(properties, "Friendship_HP").Tag!).Value;
+        public float Friendship_ShotAttack { get; set; } = ((FloatProperty)FindProp(properties, "Friendship_ShotAttack").Tag!).Value;
+        public float Friendship_Defense { get; set; } = ((FloatProperty)FindProp(properties, "Friendship_Defense").Tag!).Value;
+        public float Friendship_CraftSpeed { get; set; } = ((FloatProperty)FindProp(properties, "Friendship_CraftSpeed").Tag!).Value;
         public float EnemyMaxHPRate { get; set; } = ((FloatProperty)FindProp(properties, "EnemyMaxHPRate").Tag!).Value;
         public float EnemyReceiveDamageRate { get; set; } = ((FloatProperty)FindProp(properties, "EnemyReceiveDamageRate").Tag!).Value;
         public float EnemyInflictDamageRate { get; set; } = ((FloatProperty)FindProp(properties, "EnemyInflictDamageRate").Tag!).Value;
+        public float EnemyWazaCoolTimeRate { get; set; } = ((FloatProperty)FindProp(properties, "EnemyWazaCoolTimeRate").Tag!).Value;
         public float CaptureRateCorrect { get; set; } = ((FloatProperty)FindProp(properties, "CaptureRateCorrect").Tag!).Value;
         public float ExpRatio { get; set; } = ((FloatProperty)FindProp(properties, "ExpRatio").Tag!).Value;
         public float Price { get; set; } = ((FloatProperty)FindProp(properties, "Price").Tag!).Value;
@@ -433,6 +442,8 @@ namespace PalworldRandomizer
         public int RunSpeed { get; set; } = ((IntProperty)FindProp(properties, "RunSpeed").Tag!).Value;
         public int RideSprintSpeed { get; set; } = ((IntProperty)FindProp(properties, "RideSprintSpeed").Tag!).Value;
         public int TransportSpeed { get; set; } = ((IntProperty)FindProp(properties, "TransportSpeed").Tag!).Value;
+        public int SwimSpeed { get; set; } = ((IntProperty)FindProp(properties, "SwimSpeed").Tag!).Value;
+        public int SwimDashSpeed { get; set; } = ((IntProperty)FindProp(properties, "SwimDashSpeed").Tag!).Value;
         public bool IsBoss { get; set; } = ((BoolProperty)FindProp(properties, "IsBoss").Tag!).Value;
         public bool IsTowerBoss { get; set; } = ((BoolProperty)FindProp(properties, "IsTowerBoss").Tag!).Value;
         public bool IsRaidBoss { get; set; } = ((BoolProperty)FindProp(properties, "IsRaidBoss").Tag!).Value;
@@ -455,7 +466,11 @@ namespace PalworldRandomizer
         public int Stamina { get; set; } = ((IntProperty)FindProp(properties, "Stamina").Tag!).Value;
         public int MaleProbability { get; set; } = ((IntProperty)FindProp(properties, "MaleProbability").Tag!).Value;
         public int CombiRank { get; set; } = ((IntProperty)FindProp(properties, "CombiRank").Tag!).Value;
+        public int CombiDuplicatePriority { get; set; } = ((IntProperty)FindProp(properties, "CombiDuplicatePriority").Tag!).Value;
         public bool IgnoreCombi { get; set; } = ((BoolProperty)FindProp(properties, "IgnoreCombi").Tag!).Value;
+        public float MeshCapsuleHalfHeight { get; set; } = ((FloatProperty)FindProp(properties, "MeshCapsuleHalfHeight").Tag!).Value;
+        public float MeshCapsuleRadius { get; set; } = ((FloatProperty)FindProp(properties, "MeshCapsuleRadius").Tag!).Value;
+        public string? BestWorkSuitability { get; set; } = NullCheck(((EnumProperty)FindProp(properties, "BestWorkSuitability").Tag!).Value)?.SubstringAfterLast(':');
         public int WorkSuitability_EmitFlame { get; set; } = ((IntProperty)FindProp(properties, "WorkSuitability_EmitFlame").Tag!).Value;
         public int WorkSuitability_Watering { get; set; } = ((IntProperty)FindProp(properties, "WorkSuitability_Watering").Tag!).Value;
         public int WorkSuitability_Seeding { get; set; } = ((IntProperty)FindProp(properties, "WorkSuitability_Seeding").Tag!).Value;
@@ -474,7 +489,6 @@ namespace PalworldRandomizer
         public string? PassiveSkill3 { get; set; } = NullCheck(((NameProperty)FindProp(properties, "PassiveSkill3").Tag!).Value);
         public string? PassiveSkill4 { get; set; } = NullCheck(((NameProperty)FindProp(properties, "PassiveSkill4").Tag!).Value);
         public string? FirstDefeatRewardItemID { get; set; } = NullCheck(((NameProperty)FindProp(properties, "FirstDefeatRewardItemID").Tag!).Value);
-        // More properties not added...
     }
 
     public class CagePalData(UAsset asset, StructPropertyData dataTable)
