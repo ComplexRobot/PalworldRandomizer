@@ -1,5 +1,18 @@
 <Project>
-  <PropertyGroup Condition=" '$(MSBuildProjectName)' == 'Palworld Randomizer' ">
-    <BaseIntermediateOutputPath>Build</BaseIntermediateOutputPath>
+  <PropertyGroup>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <IsAotCompatible>true</IsAotCompatible>
+    <IsTrimmable>true</IsTrimmable>
+    <OutputPath>$(MSBuildThisFileDirectory)\.build\$(Configuration)</OutputPath>
+    <BaseIntermediateOutputPath>$(OutputPath)\obj</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <PathMap>$(MSBuildThisFileDirectory)=.</PathMap>
   </PropertyGroup>
 </Project>

@@ -1,4 +1,0 @@
-[submodule "UAssetAPI"]
-	path = UAssetAPI
-	url = https://github.com/atenfyr/UAssetAPI
-	branch = master
