@@ -4,6 +4,7 @@ using CUE4Parse.FileProvider.Vfs;
 using CUE4Parse.MappingsProvider.Usmap;
 using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Exports;
+using CUE4Parse.UE4.Assets.Exports.Engine;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Assets.Objects.Properties;
@@ -43,7 +44,7 @@ namespace PalworldRandomizer
 
         public Dictionary<CUE4Parse.UE4.Objects.UObject.FName, FStructFallback> LoadDataTable(string path)
         {
-            if (LoadAsset(path).First() is CUE4Parse.UE4.Assets.Exports.Engine.UDataTable dataTable)
+            if (LoadAsset(path).First() is UDataTable dataTable)
             {
                 return dataTable.RowMap;
             }
@@ -297,8 +298,8 @@ namespace PalworldRandomizer
 
         public static Dictionary<string, CharacterData> CreatePalData()
         {
-            Dictionary<CUE4Parse.UE4.Objects.UObject.FName, FStructFallback> palDataAsset = FileProvider.LoadDataTable("DT_PalMonsterParameter.uasset");
-            Dictionary<CUE4Parse.UE4.Objects.UObject.FName, FStructFallback> humanDataAsset = FileProvider.LoadDataTable("DT_PalHumanParameter.uasset");
+            Dictionary<FName, FStructFallback> palDataAsset = FileProvider.LoadDataTable("DT_PalMonsterParameter.uasset");
+            Dictionary<FName, FStructFallback> humanDataAsset = FileProvider.LoadDataTable("DT_PalHumanParameter.uasset");
             Dictionary<string, CharacterData> palData = ((IEnumerable<KeyValuePair<string, CharacterData>>)
                 [.. CreateReferencePairs(palDataAsset), .. CreateReferencePairs(humanDataAsset)]).ToDictionary(StringComparer.OrdinalIgnoreCase);
             palData["RowName"] = new CharacterData(palDataAsset.First().Value.Properties)
@@ -309,7 +310,7 @@ namespace PalworldRandomizer
                 IsBoss = false
             };
             return palData;
-            static IEnumerable<KeyValuePair<string, CharacterData>> CreateReferencePairs(Dictionary<CUE4Parse.UE4.Objects.UObject.FName, FStructFallback> rowMap) =>
+            static IEnumerable<KeyValuePair<string, CharacterData>> CreateReferencePairs(Dictionary<FName, FStructFallback> rowMap) =>
                 rowMap.Select(keyValuePair => new KeyValuePair<string, CharacterData>($"{keyValuePair.Key.Text}", new(keyValuePair.Value.Properties)));
         }
 
@@ -319,7 +320,7 @@ namespace PalworldRandomizer
         {
             Console.WriteLine("// Auto-generated with function PrintClassDefinition");
             Console.WriteLine($"public class {name}(List<FPropertyTag> properties) : StructData\n{{");
-            Dictionary<CUE4Parse.UE4.Objects.UObject.FName, FStructFallback> rowMap = FileProvider.LoadDataTable(path);
+            Dictionary<FName, FStructFallback> rowMap = FileProvider.LoadDataTable(path);
             foreach (FStructFallback structData in rowMap.Values)
             {
                 for (int i = 0; i < structData.Properties.Count; ++i)
@@ -385,7 +386,7 @@ namespace PalworldRandomizer
     {
         protected static FPropertyTag FindProp(List<FPropertyTag> properties, string name) => properties.Find(p => string.Equals(p.Name.Text, name, StringComparison.OrdinalIgnoreCase))!;
 
-        protected static string? NullCheck(CUE4Parse.UE4.Objects.UObject.FName fName) => fName.IsNone ? null : fName.Text;
+        protected static string? NullCheck(FName fName) => fName.IsNone ? null : fName.Text;
     }
 
     // Auto-generated with function PrintClassDefinition
