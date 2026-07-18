@@ -19,7 +19,7 @@ namespace PalworldRandomizer.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resource {
@@ -141,16 +141,6 @@ namespace PalworldRandomizer.Resources {
         internal static byte[] T_ElecLion_icon_normal {
             get {
                 object obj = ResourceManager.GetObject("T_ElecLion_icon_normal", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] UnrealPak {
-            get {
-                object obj = ResourceManager.GetObject("UnrealPak", resourceCulture);
                 return ((byte[])(obj));
             }
         }

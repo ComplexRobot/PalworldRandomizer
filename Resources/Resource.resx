@@ -139,9 +139,6 @@
   <data name="T_ElecLion_icon_normal" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Images\PalIcon\T_ElecLion_icon_normal.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="UnrealPak" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>UnrealPak.exe;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="zlib_ng2" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>zlib-ng2.dll;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
