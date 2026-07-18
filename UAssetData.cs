@@ -19,11 +19,6 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
-using UAssetAPI;
-using UAssetAPI.PropertyTypes.Objects;
-using UAssetAPI.PropertyTypes.Structs;
-using UAssetAPI.UnrealTypes;
-using UAssetAPI.Unversioned;
 
 namespace PalworldRandomizer
 {
@@ -72,7 +67,6 @@ namespace PalworldRandomizer
         public static string ArchivePath { set; get; } = @"C:\Program Files (x86)\Steam\steamapps\common\Palworld\Pal\Content\Paks\Pal-Windows.pak";
         public static string GameVersion { set; get; } = "0.0.0.0";
         private static string? appDataPath;
-        private static Usmap? usmap;
         public static VfsFileProvider FileProvider { get; private set; } = null!;
 
         [GeneratedRegex(@"^Pal/Content/Pal/Blueprint/Spawner/SheetsVariant/(?!C_Dummy).+$")]
@@ -137,7 +131,6 @@ namespace PalworldRandomizer
                     File.WriteAllBytes(filename, (byte[]) Resource.ResourceManager.GetObject(name)!);
                 }
             }
-            usmap = new Usmap(AppDataPath("Mappings.usmap"));
             OodleHelper.Initialize(AppDataPath("oo2core_9_win64.dll"));
             ZlibHelper.Initialize(AppDataPath("zlib-ng2.dll"));
             VfsFileProvider fileProvider = new() { MappingsContainer = new FileUsmapTypeMappingsProvider(AppDataPath("Mappings.usmap")) };
@@ -301,8 +294,6 @@ namespace PalworldRandomizer
         public static string NpcIconPath(string path = "") => ImagesPath(@"NPC" + PathSeparator(path));
         public static string WeaponIconPath(string path = "") => ImagesPath(@"InventoryItemIcon" + PathSeparator(path));
         public static string ImportsPath(string path = "") => AppDataPath(@"Imports" + PathSeparator(path));
-        public static UAsset LoadAsset(string filepath) => new(AppDataPath(filepath), EngineVersion.VER_UE5_1, usmap);
-        public static UAsset LoadAssetLocal(string filepath) => new(filepath, EngineVersion.VER_UE5_1, usmap);
 
         public static Dictionary<string, CharacterData> CreatePalData()
         {
@@ -491,34 +482,34 @@ namespace PalworldRandomizer
         public string? FirstDefeatRewardItemID { get; set; } = NullCheck(((NameProperty)FindProp(properties, "FirstDefeatRewardItemID").Tag!).Value);
     }
 
-    public class CagePalData(UAsset asset, StructPropertyData dataTable)
-    {
-        private readonly UAsset uAsset = asset;
-        private readonly StructPropertyData structPropertyData = dataTable;
-        public string? FieldName
-        {
-            get => ((NamePropertyData)structPropertyData.Value[0]).Value?.ToString();
-            set => ((NamePropertyData)structPropertyData.Value[0]).Value = value == null ? null : new UAssetAPI.UnrealTypes.FName(uAsset, value);
-        }
-        public string? PalID
-        {
-            get => ((NamePropertyData)structPropertyData.Value[1]).Value?.ToString();
-            set => ((NamePropertyData)structPropertyData.Value[1]).Value = value == null ? null : new UAssetAPI.UnrealTypes.FName(uAsset, value);
-        }
-        public float Weight
-        {
-            get => ((FloatPropertyData)structPropertyData.Value[2]).Value;
-            set => ((FloatPropertyData)structPropertyData.Value[2]).Value = value;
-        }
-        public int MinLevel
-        {
-            get => ((IntPropertyData)structPropertyData.Value[3]).Value;
-            set => ((IntPropertyData)structPropertyData.Value[3]).Value = value;
-        }
-        public int MaxLevel
-        {
-            get => ((IntPropertyData)structPropertyData.Value[4]).Value;
-            set => ((IntPropertyData)structPropertyData.Value[4]).Value = value;
-        }
-    }
+    //public class CagePalData(UAsset asset, StructPropertyData dataTable)
+    //{
+    //    private readonly UAsset uAsset = asset;
+    //    private readonly StructPropertyData structPropertyData = dataTable;
+    //    public string? FieldName
+    //    {
+    //        get => ((NamePropertyData)structPropertyData.Value[0]).Value?.ToString();
+    //        set => ((NamePropertyData)structPropertyData.Value[0]).Value = value == null ? null : new UAssetAPI.UnrealTypes.FName(uAsset, value);
+    //    }
+    //    public string? PalID
+    //    {
+    //        get => ((NamePropertyData)structPropertyData.Value[1]).Value?.ToString();
+    //        set => ((NamePropertyData)structPropertyData.Value[1]).Value = value == null ? null : new UAssetAPI.UnrealTypes.FName(uAsset, value);
+    //    }
+    //    public float Weight
+    //    {
+    //        get => ((FloatPropertyData)structPropertyData.Value[2]).Value;
+    //        set => ((FloatPropertyData)structPropertyData.Value[2]).Value = value;
+    //    }
+    //    public int MinLevel
+    //    {
+    //        get => ((IntPropertyData)structPropertyData.Value[3]).Value;
+    //        set => ((IntPropertyData)structPropertyData.Value[3]).Value = value;
+    //    }
+    //    public int MaxLevel
+    //    {
+    //        get => ((IntPropertyData)structPropertyData.Value[4]).Value;
+    //        set => ((IntPropertyData)structPropertyData.Value[4]).Value = value;
+    //    }
+    //}
 }
