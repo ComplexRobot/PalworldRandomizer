@@ -1,0 +1,7 @@
+/.vs/
+/.build/
+*.user
+/*.exe
+/*.pdb
+/*.txt
+/*.zip
