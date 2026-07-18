@@ -6,7 +6,6 @@
     <UseWPF>True</UseWPF>
     <StartupObject>PalworldRandomizer.App</StartupObject>
     <RootNamespace>$(MSBuildProjectName.Replace(" ", ""))</RootNamespace>
-    <PathMap>$(MSBuildProjectDirectory)=.</PathMap>
     <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
 	<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 	<NoWarn>NU1701</NoWarn>
