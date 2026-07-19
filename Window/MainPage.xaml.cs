@@ -1,4 +1,4 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using System.IO;
@@ -406,7 +406,6 @@ namespace PalworldRandomizer
             generating = true;
             generateButton.IsEnabled = false;
             savePalSchema.IsEnabled = false;
-            savePak.IsEnabled = false;
             int seed = 0;
             if (methodNone.IsChecked != true)
             {
@@ -436,7 +435,6 @@ namespace PalworldRandomizer
                 {
                     generateButton.IsEnabled = true;
                     savePalSchema.IsEnabled = true;
-                    savePak.IsEnabled = true;
                 });
             }).Start(new FormData(this));
         }
@@ -444,11 +442,6 @@ namespace PalworldRandomizer
         private void SavePalSchema_Click(object sender, RoutedEventArgs e)
         {
             PalSpawnPage.Instance.SavePalSchema();
-        }
-
-        private void SavePak_Click(object sender, RoutedEventArgs e)
-        {
-            PalSpawnPage.Instance.SavePak();
         }
 
         private void ViewSpawns_Click(object sender, RoutedEventArgs e)

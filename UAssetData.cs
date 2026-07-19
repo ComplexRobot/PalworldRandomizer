@@ -1,6 +1,13 @@
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Xml;
 using CUE4Parse.Compression;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.FileProvider.Vfs;
+using CUE4Parse.MappingsProvider;
 using CUE4Parse.MappingsProvider.Usmap;
 using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Exports;
@@ -14,12 +21,9 @@ using CUE4Parse.Utils;
 using CUE4Parse_Conversion.Textures;
 using IniParser.Model;
 using IniParser.Parser;
+using Newtonsoft.Json;
 using PalworldRandomizer.Resources;
-using System.Collections.Concurrent;
-using System.IO;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Xml;
+using static PalworldRandomizer.FileModify;
 
 namespace PalworldRandomizer
 {
@@ -42,13 +46,166 @@ namespace PalworldRandomizer
             throw new Exception($"Failed to load package '{path}'.");
         }
 
-        public Dictionary<CUE4Parse.UE4.Objects.UObject.FName, FStructFallback> LoadDataTable(string path)
+        public Dictionary<FName, FStructFallback> LoadDataTable(string path)
         {
             if (LoadAsset(path).First() is UDataTable dataTable)
             {
                 return dataTable.RowMap;
             }
             throw new Exception($"'{path}' is not a data table.");
+        }
+
+        /// <summary>
+        /// Loads a data table asset containing SoftObject data.<br/>
+        /// i.e., name to asset path mappings.
+        /// </summary>
+        public Dictionary<string, string?> LoadDataTableSoftObject(string path) {
+            if (LoadAsset(path).First() is not UDataTable dataTable) {
+                throw new Exception($"'{path}' is not a data table.");
+            }
+
+            if (!dataTable.RowMap.First().Value.Properties.Exists(x => x.PropertyType.Text == "SoftObjectProperty")) {
+                throw new Exception($"'{path}' is not a SoftObject data table.");
+            }
+
+            return dataTable.RowMap.Select(kvp =>
+                new KeyValuePair<string, string?>(
+                    kvp.Key.Text,
+                    NoneCheck(((SoftObjectProperty)kvp.Value.Properties.First(x => x.PropertyType.Text == "SoftObjectProperty")
+                        .Tag!).Value.AssetPathName)
+                )
+            ).ToDictionary(StringComparer.OrdinalIgnoreCase);
+
+            static string? NoneCheck(FName fName) => fName.IsNone ? null : fName.Text;
+        }
+
+        /// <summary>
+        /// Loads a data table asset containing text data.
+        /// </summary>
+        public Dictionary<string, string?> LoadDataTableText(string path) {
+            if (LoadAsset(path).First() is not UDataTable dataTable) {
+                throw new Exception($"'{path}' is not a data table.");
+            }
+
+            if (dataTable.RowMap.First().Value.Properties[0].PropertyType.Text != "TextProperty") {
+                throw new Exception($"'{path}' is not a Text data table.");
+            }
+
+            return dataTable.RowMap.Select(kvp =>
+                new KeyValuePair<string, string?>(
+                    kvp.Key.Text,
+                    ((TextProperty)kvp.Value.Properties[0].Tag!).Value?.Text
+                )
+            ).ToDictionary(StringComparer.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// Loads a data table asset containing cage pal data.
+        /// </summary>
+        public IEnumerable<CagePalData> LoadDataTableCagePal(string path) {
+            if (LoadAsset(path).First() is not UDataTable dataTable) {
+                throw new Exception($"'{path}' is not a data table.");
+            }
+
+            return  dataTable.RowMap.Select(kvp => {
+                    var properties = kvp.Value.Properties.Select(x =>
+                        new KeyValuePair<string, FPropertyTagType?>(x.Name.Text, x.Tag))
+                        .ToDictionary(StringComparer.OrdinalIgnoreCase);
+
+                    return new CagePalData {
+                        FieldName = ((NameProperty)properties["FieldName"]!).Value.Text,
+                        PalID = ((NameProperty)properties["PalID"]!).Value.Text,
+                        Weight = ((FloatProperty)properties["Weight"]!).Value,
+                        MinLevel = ((IntProperty)properties["MinLevel"]!).Value,
+                        MaxLevel = ((IntProperty)properties["MaxLevel"]!).Value
+                    };
+                }
+            );
+        }
+
+        /// <summary>
+        /// Loads a blueprint asset containing a pal spawner.
+        /// </summary>
+        public PalSpawner LoadBlueprintPalSpawner(string path) {
+            var spawnClass = LoadAsset(path).FirstOrDefault(x => {
+                string? className = x.Class is null || x.Class.Name.IsNone ? null : x.Class.Name.Text;
+                return className is not null && className.StartsWith("BP_PalSpawner_") && className.EndsWith("_C");
+            });
+
+            if (spawnClass is null) {
+                throw new Exception($"'{path}' does not contain a Pal Spawner Blueprint.");
+            }
+
+            var spawnData = ((ArrayProperty)spawnClass.Properties.First(x => {
+                string? propertyName = x.Name.IsNone ? null : x.Name.Text;
+                return propertyName == "SpawnGroupList";
+            }).Tag!).Value!.Properties.Select(y => ((AbstractPropertyHolder)((StructProperty)y).Value!.StructType).Properties
+                .Select(x => new KeyValuePair<string, FPropertyTagType?>(x.Name.Text, x.Tag))
+                .ToDictionary(StringComparer.OrdinalIgnoreCase));
+
+            return new PalSpawner {
+                SpawnGroupList = [.. spawnData.Select(group =>
+                    new PalSpawnerGroupInfo {
+                        Weight = ((IntProperty)group["Weight"]!).Value,
+                        OnlyTime = ((EnumProperty)group["OnlyTime"]!).Value.Text,
+                        PalList = [.. ((ArrayProperty)group["PalList"]!).Value!.Properties.Select(palList => {
+                                var properties = ((AbstractPropertyHolder)((StructProperty)palList).Value!.StructType).Properties.Select(x =>
+                                new KeyValuePair<string, FPropertyTagType?>(x.Name.Text, x.Tag)).ToDictionary(StringComparer.OrdinalIgnoreCase);
+
+                                var palId = ((NameProperty)((AbstractPropertyHolder)((StructProperty)properties["PalId"]!)
+                                        .Value!.StructType).Properties[0].Tag!).Value;
+                                var npcId = ((NameProperty)((AbstractPropertyHolder)((StructProperty)properties["NPCID"]!)
+                                        .Value!.StructType).Properties[0].Tag!).Value;
+
+                                return new PalSpawnerOneTribeInfo
+                                {
+                                    PalId = new() { Key = palId.IsNone ? null : palId.Text },
+                                    NPCID = new() { Key = npcId.IsNone ? null : npcId.Text },
+                                    Level = ((IntProperty)properties["Level"]!).Value,
+                                    Level_Max = ((IntProperty)properties["Level_Max"]!).Value,
+                                    Num = ((IntProperty)properties["Num"]!).Value,
+                                    Num_Max = ((IntProperty)properties["Num_Max"]!).Value
+                                };
+                            }
+                        )]
+                    }
+                )]
+            };
+        }
+
+        /// <summary>
+        /// Loads a blueprint asset containing a pal egg spawner.
+        /// </summary>
+        public PalMapObject.SpawnerPalEgg LoadBlueprintPalEggSpawner(string path) {
+            var spawnClass = LoadAsset(path).FirstOrDefault(x => {
+                string? className = x.Class is null || x.Class.Name.IsNone ? null : x.Class.Name.Text;
+                return className is not null && className.StartsWith("bp_palmapobjectspawner_palegg_") && className.EndsWith("_C");
+            });
+
+            if (spawnClass is null) {
+                throw new Exception($"'{path}' does not contain a Pal Egg Spawner Blueprint.");
+            }
+
+            var spawnData = ((ArrayProperty)spawnClass.Properties.First(x => x.Name.Text == "SpawnPalEggLotteryDataArray")
+                .Tag!).Value!.Properties.Select(y => ((AbstractPropertyHolder)((StructProperty)y).Value!.StructType).Properties
+                .Select(x => new KeyValuePair<string, FPropertyTagType?>(x.Name.Text, x.Tag))
+                .ToDictionary(StringComparer.OrdinalIgnoreCase));
+
+            float respawnTime = ((FloatProperty)spawnClass.Properties.First(x => x.Name.Text == "RespawnTimeMinutesObtained")
+                .Tag!).Value;
+
+            return new PalMapObject.SpawnerPalEgg {
+                SpawnPalEggLotteryDataArray = [.. spawnData.Select(group =>
+                    new PalMapObject.PickupItem.PalEggLotteryData {
+                        PalEggData = new() { PalMonsterId = new() {
+                            Key = ((NameProperty)((AbstractPropertyHolder)((StructProperty)((AbstractPropertyHolder)((StructProperty)group["PalEggData"]!)
+                            .Value!.StructType).Properties[0].Tag!).Value!.StructType).Properties[0].Tag!).Value.Text }
+                        },
+                        Weight = ((FloatProperty)group["Weight"]!).Value,
+                    }
+                )],
+                RespawnTimeMinutesObtained = respawnTime
+            };
         }
 
         public string GetOsFileName(string path)
@@ -68,17 +225,6 @@ namespace PalworldRandomizer
         public static string ArchivePath { set; get; } = @"C:\Program Files (x86)\Steam\steamapps\common\Palworld\Pal\Content\Paks\Pal-Windows.pak";
         public static string GameVersion { set; get; } = "0.0.0.0";
         private static string? appDataPath;
-        public static VfsFileProvider FileProvider { get; private set; } = null!;
-
-        [GeneratedRegex(@"^Pal/Content/Pal/Blueprint/Spawner/SheetsVariant/(?!C_Dummy).+$")]
-        private static partial Regex PalSpawnerRegex();
-
-        [GeneratedRegex(@"^Pal/Content/Pal/Blueprint/MapObject/Spawner/bp_palmapobjectspawner_palegg_.+$")]
-        private static partial Regex PalEggSpawnSheetsRegex();
-
-        [GeneratedRegex(@"^Pal/Content/(Pal/DataTable/Character/DT_(CapturedCagePal|PalBossNPCIcon|PalHumanParameter|PalMonsterParameter|PalCharacterIconDataTable)"
-            + @"|L10N/en/Pal/DataTable/Text/DT_(HumanNameText|PalNameText)_Common)\..+$", RegexOptions.ExplicitCapture)]
-        private static partial Regex DataTableRegex();
 
         [GeneratedRegex(@"^Pal/Content/Pal/Texture/(PalIcon/Normal/(?!T_dummy_icon).+|UI/Main_Menu/T_icon_unknown)\.uasset$", RegexOptions.ExplicitCapture)]
         private static partial Regex PalIconRegex();
@@ -89,6 +235,12 @@ namespace PalworldRandomizer
         [GeneratedRegex(@"^Pal/Content/Others/InventoryItemIcon/Texture/T_itemicon_Weapon_(AssaultRifle_Default1|HandGun_Default|PumpActionShotgun|Launcher_Default|Bat|FragGrenade"
             + @"|FlameThrower_Default|GatlingGun|BowGun|LaserRifle|GuidedMissileLauncher|GrenadeLauncher|Katana)\.uasset$", RegexOptions.ExplicitCapture)]
         private static partial Regex WeaponIconRegex();
+
+        [GeneratedRegex("skyisland")]
+        private static partial Regex TestRegex();
+
+        [GeneratedRegex(@"^Pal/Content/Pal/(Blueprint|DataTable)/.+?\.uasset$", RegexOptions.ExplicitCapture)]
+        private static partial Regex TestBlueprintRegex();
 
         public static bool VerifyInstallationFolder(AppWindow settingsWindow)
         {
@@ -110,7 +262,7 @@ namespace PalworldRandomizer
             return true;
         }
 
-        public static void Initialize()
+        public static VfsFileProvider Initialize()
         {
             ConfigData config = SharedWindow.GetConfig();
             SettingsPage.Instance.installationFolderTextbox.Text = InstallationDirectory = config.InstallationDirectory;
@@ -138,7 +290,6 @@ namespace PalworldRandomizer
             fileProvider.RegisterVfs(ArchivePath);
             fileProvider.Initialize();
             fileProvider.Mount();
-            //IPackage spawnExports = fileProvider.LoadPackage("Pal/Content/Pal/Blueprint/Spawner/SheetsVariant/BP_PalSpawner_Sheets_1_1_plain_begginer.uasset");
             string gameVersion = GameVersion;
             if (fileProvider.TrySaveAsset("Pal/Config/DefaultGame.ini", out byte[]? gameIni))
             {
@@ -147,12 +298,7 @@ namespace PalworldRandomizer
             }
             bool gameUpdated = gameVersion != GameVersion;
             config.GameVersion = GameVersion = gameVersion;
-            string palSpawnerFolder = PalSpawnerPath();
-            Directory.CreateDirectory(palSpawnerFolder);
-            string palEggFolder = PalEggPath();
-            Directory.CreateDirectory(palEggFolder);
-            string dataFolder = DataPath();
-            Directory.CreateDirectory(dataFolder);
+
             string palIconFolder = PalIconPath();
             Directory.CreateDirectory(palIconFolder);
             string npcIconFolder = NpcIconPath();
@@ -160,24 +306,10 @@ namespace PalworldRandomizer
             string weaponIconFolder = WeaponIconPath();
             Directory.CreateDirectory(weaponIconFolder);
             string importsFolder = ImportsPath();
-            ConcurrentDictionary<string, string> savedFilePaths = new();
-            ConcurrentDictionary<string, byte> addedFiles = new();
-            ConcurrentDictionary<string, byte> imports = new();
-            Parallel.ForEach(fileProvider.Files, (KeyValuePair<string, GameFile> keyValuePair) =>
-            {
-                if (PalSpawnerRegex().IsMatch(keyValuePair.Key))
-                {
-                    SaveAsset(palSpawnerFolder);
-                }
-                else if (PalEggSpawnSheetsRegex().IsMatch(keyValuePair.Key))
-                {
-                    SaveAsset(palEggFolder);
-                }
-                else if (DataTableRegex().IsMatch(keyValuePair.Key))
-                {
-                    SaveAsset(dataFolder);
-                }
-                else if (PalIconRegex().IsMatch(keyValuePair.Key))
+
+            //ConcurrentDictionary<string, byte> palEggSpawnsReferenced = new();
+            Parallel.ForEach(fileProvider.Files, keyValuePair => {
+                if (PalIconRegex().IsMatch(keyValuePair.Key))
                 {
                     SaveImage(palIconFolder);
                 }
@@ -189,21 +321,10 @@ namespace PalworldRandomizer
                 {
                     SaveImage(weaponIconFolder);
                 }
-
-                void SaveAsset(string folder)
-                {
-                    string filename = folder + '\\' + keyValuePair.Value.Name;
-                    if (gameUpdated || !File.Exists(filename))
-                    {
-                        File.WriteAllBytes(filename, keyValuePair.Value.Read());
-                    }
-                    if (fileProvider.TryLoadPackage(keyValuePair.Value, out IPackage? package))
-                    {
-                        ReadImports((Package)package);
-                        addedFiles.TryAdd(keyValuePair.Value.Path, 0);
-                    }
-                    savedFilePaths.TryAdd(filename, keyValuePair.Value.Path[..(keyValuePair.Value.Path.LastIndexOf('/') + 1)]);
-                }
+                //else if (TestBlueprintRegex().IsMatch(keyValuePair.Key)
+                //    && TestRegex().IsMatch(JsonConvert.SerializeObject(fileProvider.LoadAsset(keyValuePair.Key)))) {
+                //    palEggSpawnsReferenced.TryAdd(keyValuePair.Key, 0);
+                //}
 
                 void SaveImage(string folder)
                 {
@@ -219,68 +340,16 @@ namespace PalworldRandomizer
                             }
                         }
                     }
-                    addedFiles.TryAdd(keyValuePair.Value.Path, 0);
-                    savedFilePaths.TryAdd(filename, keyValuePair.Value.Path[..(keyValuePair.Value.Path.LastIndexOf('/') + 1)]);
                 }
 
-                void ReadImports(Package package)
-                {
-                    foreach (FObjectImport import in package.ImportMap)
-                    {
-                        imports.TryAdd(import.OuterIndex!.Name, 0);
-                    }
-                }
             });
 
-            Parallel.ForEach(imports, (KeyValuePair<string, byte> keyValuePair) =>
-            {
-                if (keyValuePair.Key.StartsWith("/Game/"))
-                {
-                    string importPath = "Pal/Content" + keyValuePair.Key["/Game".Length..] + ".uasset";
-                    if (fileProvider.Files.TryGetValue(importPath, out GameFile? gameFile) && !addedFiles.ContainsKey(gameFile.Path))
-                    {
-                        string filename = importsFolder + '\\' + gameFile.PathWithoutExtension["Pal/Content/".Length..].Replace('/', '\\');
-                        string filenameUasset = filename + ".uasset";
-                        string filenameUexp = filename + ".uexp";
-                        Directory.CreateDirectory(filename[..filename.LastIndexOf('\\')]);
-                        Parallel.Invoke(
-                        [
-                            () =>
-                            {
-                                if (gameUpdated || !File.Exists(filenameUasset))
-                                {
-                                    File.WriteAllBytes(filenameUasset, gameFile.Read());
-                                }
-                            },
-                            () =>
-                            {
-                                if (gameUpdated || !File.Exists(filenameUexp))
-                                {
-                                    GameFile uexp = fileProvider.Files[gameFile.PathWithoutExtension + ".uexp"];
-                                    File.WriteAllBytes(filenameUexp, uexp.Read());
-                                }
-                            }
-                        ]);
-
-                        string mountPoint = gameFile.Path[..(gameFile.Path.LastIndexOf('/') + 1)];
-                        savedFilePaths.TryAdd(filenameUasset, mountPoint);
-                        savedFilePaths.TryAdd(filenameUexp, mountPoint);
-                    }
-                }
-            });
-
-            FileProvider = new() { MappingsContainer = new FileUsmapTypeMappingsProvider(AppDataPath("Mappings.usmap")) };
-            FileProvider.Initialize();
-            foreach (KeyValuePair<string, string> keyValuePair in savedFilePaths)
-            {
-                if (File.Exists(keyValuePair.Key))
-                {
-                    FileProvider.AddFile(keyValuePair.Key, keyValuePair.Value);
-                }
-            }
-            fileProvider.PostMount();
-            fileProvider.Dispose();
+            //foreach ((string found, _) in palEggSpawnsReferenced) {
+            //    Console.WriteLine(found);
+            //}
+            
             SharedWindow.SaveConfig(config);
+            return fileProvider;
         }
 
         public static string AppDataPath(string path = null!) => appDataPath + path;
@@ -296,31 +365,13 @@ namespace PalworldRandomizer
         public static string WeaponIconPath(string path = "") => ImagesPath(@"InventoryItemIcon" + PathSeparator(path));
         public static string ImportsPath(string path = "") => AppDataPath(@"Imports" + PathSeparator(path));
 
-        public static Dictionary<string, CharacterData> CreatePalData()
-        {
-            Dictionary<FName, FStructFallback> palDataAsset = FileProvider.LoadDataTable("DT_PalMonsterParameter.uasset");
-            Dictionary<FName, FStructFallback> humanDataAsset = FileProvider.LoadDataTable("DT_PalHumanParameter.uasset");
-            Dictionary<string, CharacterData> palData = ((IEnumerable<KeyValuePair<string, CharacterData>>)
-                [.. CreateReferencePairs(palDataAsset), .. CreateReferencePairs(humanDataAsset)]).ToDictionary(StringComparer.OrdinalIgnoreCase);
-            palData["RowName"] = new CharacterData(palDataAsset.First().Value.Properties)
-            {
-                IsPal = true,
-                ZukanIndex = -1,
-                OverrideNameTextID = null,
-                IsBoss = false
-            };
-            return palData;
-            static IEnumerable<KeyValuePair<string, CharacterData>> CreateReferencePairs(Dictionary<FName, FStructFallback> rowMap) =>
-                rowMap.Select(keyValuePair => new KeyValuePair<string, CharacterData>($"{keyValuePair.Key.Text}", new(keyValuePair.Value.Properties)));
-        }
-
 #if DEBUG
         // Example: PrintClassDefinition("CharacterData", "DT_PalMonsterParameter.uasset");
-        public static void PrintClassDefinition(string name, string path)
+        public static void PrintClassDefinition(string name, string path, VfsFileProvider fileProvider)
         {
             Console.WriteLine("// Auto-generated with function PrintClassDefinition");
             Console.WriteLine($"public class {name}(List<FPropertyTag> properties) : StructData\n{{");
-            Dictionary<FName, FStructFallback> rowMap = FileProvider.LoadDataTable(path);
+            Dictionary<FName, FStructFallback> rowMap = fileProvider.LoadDataTable(path);
             foreach (FStructFallback structData in rowMap.Values)
             {
                 for (int i = 0; i < structData.Properties.Count; ++i)
@@ -483,34 +534,11 @@ namespace PalworldRandomizer
         public string? FirstDefeatRewardItemID { get; set; } = NullCheck(((NameProperty)FindProp(properties, "FirstDefeatRewardItemID").Tag!).Value);
     }
 
-    //public class CagePalData(UAsset asset, StructPropertyData dataTable)
-    //{
-    //    private readonly UAsset uAsset = asset;
-    //    private readonly StructPropertyData structPropertyData = dataTable;
-    //    public string? FieldName
-    //    {
-    //        get => ((NamePropertyData)structPropertyData.Value[0]).Value?.ToString();
-    //        set => ((NamePropertyData)structPropertyData.Value[0]).Value = value == null ? null : new UAssetAPI.UnrealTypes.FName(uAsset, value);
-    //    }
-    //    public string? PalID
-    //    {
-    //        get => ((NamePropertyData)structPropertyData.Value[1]).Value?.ToString();
-    //        set => ((NamePropertyData)structPropertyData.Value[1]).Value = value == null ? null : new UAssetAPI.UnrealTypes.FName(uAsset, value);
-    //    }
-    //    public float Weight
-    //    {
-    //        get => ((FloatPropertyData)structPropertyData.Value[2]).Value;
-    //        set => ((FloatPropertyData)structPropertyData.Value[2]).Value = value;
-    //    }
-    //    public int MinLevel
-    //    {
-    //        get => ((IntPropertyData)structPropertyData.Value[3]).Value;
-    //        set => ((IntPropertyData)structPropertyData.Value[3]).Value = value;
-    //    }
-    //    public int MaxLevel
-    //    {
-    //        get => ((IntPropertyData)structPropertyData.Value[4]).Value;
-    //        set => ((IntPropertyData)structPropertyData.Value[4]).Value = value;
-    //    }
-    //}
+    public class CagePalData {
+        public string? FieldName { get; set; } = default;
+        public string? PalID { get; set; } = default;
+        public float Weight { get; set; } = default;
+        public int MinLevel { get; set; } = default;
+        public int MaxLevel { get; set; } = default;
+    }
 }

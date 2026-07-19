@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
@@ -70,9 +70,13 @@ namespace PalworldRandomizer
         {
             DispatcherOperation dataOperation = Dispatcher.BeginInvoke(DispatcherPriority.Background, () =>
             {
-                UAssetData.Initialize();
-                Data.Initialize();
+                var fileProvider = UAssetData.Initialize();
+                Data.Initialize(fileProvider);
                 Randomize.Initialize();
+
+                fileProvider.PostMount();
+                fileProvider.Dispose();
+
                 Randomize.RestoreBackup();
                 PalSpawnPage palSpawnpage = new();
                 AppWindow palSpawnWindow = new(() => palSpawnpage) { Title = "Pal Spawn Editor" };

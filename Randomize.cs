@@ -1,10 +1,3 @@
-using CUE4Parse.UE4.Assets.Objects;
-using CUE4Parse.UE4.Assets.Objects.Properties;
-using CUE4Parse.Utils;
-using Microsoft.Win32;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Stfu.Linq;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -13,11 +6,15 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
-using UAssetAPI;
-using UAssetAPI.ExportTypes;
-using UAssetAPI.PropertyTypes.Objects;
-using UAssetAPI.PropertyTypes.Structs;
-using UAssetAPI.UnrealTypes;
+using CUE4Parse.FileProvider;
+using CUE4Parse.UE4.Assets.Objects;
+using CUE4Parse.UE4.Assets.Objects.Properties;
+using CUE4Parse.UE4.Objects.UObject;
+using CUE4Parse.Utils;
+using Microsoft.Win32;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Stfu.Linq;
 
 namespace PalworldRandomizer
 {
@@ -116,14 +113,33 @@ namespace PalworldRandomizer
         [GeneratedRegex("^(Quest(_[^_]+)?_)?(?<name>.+?)(_[0-9]+(_.+)?|_Flower|_MAX|_Oilrig)?$", RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture)]
         private static partial Regex resourceKeyRegex();
 
-        public static void Initialize()
+        [GeneratedRegex(@"^Pal/Content/Pal/Blueprint/MapObject/Spawner/bp_palmapobjectspawner_palegg_.+?\.uasset$")]
+        private static partial Regex PalEggSpawnSheetsRegex();
+
+        public static void Initialize(VfsFileProvider fileProvider)
         {
-            PalData = UAssetData.CreatePalData();
-            UAsset palNames = UAssetData.LoadAsset(@"Data\DT_PalNameText_Common.uasset");
-            UAsset humanNames = UAssetData.LoadAsset(@"Data\DT_HumanNameText_Common.uasset");
-            UAsset bossNPCIcons = UAssetData.LoadAsset(@"Data\DT_PalBossNPCIcon.uasset");
-            Dictionary<CUE4Parse.UE4.Objects.UObject.FName, FStructFallback> palIcons
-                = UAssetData.FileProvider.LoadDataTable("DT_PalCharacterIconDataTable.uasset");
+            var palDataAsset = fileProvider.LoadDataTable("Pal/Content/Pal/DataTable/Character/DT_PalMonsterParameter.uasset");
+            var humanDataAsset = fileProvider.LoadDataTable("Pal/Content/Pal/DataTable/Character/DT_PalHumanParameter.uasset");
+
+            PalData = ((IEnumerable<KeyValuePair<string, CharacterData>>)
+                [.. CreateReferencePairs(palDataAsset), .. CreateReferencePairs(humanDataAsset)]).ToDictionary(StringComparer.OrdinalIgnoreCase);
+
+            PalData["RowName"] = new CharacterData(palDataAsset.First().Value.Properties)
+            {
+                IsPal = true,
+                ZukanIndex = -1,
+                OverrideNameTextID = null,
+                IsBoss = false
+            };
+
+            static IEnumerable<KeyValuePair<string, CharacterData>> CreateReferencePairs(Dictionary<FName, FStructFallback> rowMap) =>
+                rowMap.Select(keyValuePair => new KeyValuePair<string, CharacterData>($"{keyValuePair.Key.Text}", new(keyValuePair.Value.Properties)));
+
+            var palNames = fileProvider.LoadDataTableText("Pal/Content/L10N/en/Pal/DataTable/Text/DT_PalNameText_Common.uasset");
+            var humanNames = fileProvider.LoadDataTableText("Pal/Content/L10N/en/Pal/DataTable/Text/DT_HumanNameText_Common.uasset");
+            var bossNPCIcons = fileProvider.LoadDataTableSoftObject("Pal/Content/Pal/DataTable/Character/DT_PalBossNPCIcon.uasset");
+            var palIcons = fileProvider.LoadDataTableSoftObject("Pal/Content/Pal/DataTable/Character/DT_PalCharacterIconDataTable.uasset");
+
             Dictionary<string, string> weapons = new()
             {
                 { "AssaultRifle", UAssetData.AppDataPath(@"Images\InventoryItemIcon\T_itemicon_Weapon_AssaultRifle_Default1.png") },
@@ -184,11 +200,17 @@ namespace PalworldRandomizer
                     bool isQuest = keyPair.Key.StartsWith("Quest_", StringComparison.OrdinalIgnoreCase) || keyPair.Key.EndsWith("_Quest", StringComparison.OrdinalIgnoreCase)
                          || keyPair.Key.EndsWith("_Quest_Friend", StringComparison.OrdinalIgnoreCase) || keyPair.Key.EndsWith("_Quest_Enemy", StringComparison.OrdinalIgnoreCase);
                     bool isTower = keyPair.Key.EndsWith("_Tower", StringComparison.OrdinalIgnoreCase);
-                    StructPropertyData? nameData = ((DataTableExport) palNames.Exports[0]).Table.Data.Find(property =>
-                        (PalData[keyPair.Key].OverrideNameTextID != null &&
-                        string.Compare(((TextPropertyData) property.Value[0]).Value.Value, $"{PalData[keyPair.Key].OverrideNameTextID}_TextData", true) == 0)
-                        || string.Compare(((TextPropertyData) property.Value[0]).Value.Value, $"PAL_NAME_{keyPair.Key}_TextData", true) == 0);
-                    string nameString = nameData != null ? ((TextPropertyData) nameData.Value[0]).CultureInvariantString.Value.Trim() : "en_text";
+
+                    string nameString;
+
+                    if (keyPair.Value.OverrideNameTextID is string textId && palNames.TryGetValue(textId, out string? name) && name is not null) {
+                        nameString = name;
+                    } else if (palNames.TryGetValue($"PAL_NAME_{keyPair.Key}", out string? nameFallback) && nameFallback is not null) {
+                        nameString = nameFallback;
+                    } else {
+                        nameString = "en_text";
+                    }
+
                     if (nameString is "-" or "Unidentified Pal")
                     {
                         nameString = "en_text";
@@ -262,12 +284,11 @@ namespace PalworldRandomizer
                 }
                 else
                 {
-                    StructPropertyData? property = ((DataTableExport) humanNames.Exports[0]).Table.Data.Find(property =>
-                        ((TextPropertyData) property.Value[0]).Value.Value == $"{PalData[keyPair.Key].OverrideNameTextID}_TextData");
                     SimpleName.Add(keyPair.Key, keyPair.Key);
-                    if (property != null)
+
+                    if (keyPair.Value.OverrideNameTextID is string textId && humanNames.TryGetValue(textId, out string? name) && name is not null)
                     {
-                        PalName.Add(keyPair.Key, ((TextPropertyData)property.Value[0]).CultureInvariantString.Value.Trim());
+                        PalName.Add(keyPair.Key, name.Trim());
                     }
                     else
                     {
@@ -283,12 +304,9 @@ namespace PalworldRandomizer
                     if (keyPair.Key.StartsWith("BOSS_", StringComparison.OrdinalIgnoreCase))
                     {
                         HumanBossNames.Add(keyPair.Key);
-                        StructPropertyData? bossProperty = ((DataTableExport)bossNPCIcons.Exports[0]).Table.Data.Find(property => property.Name.Value.Value == keyPair.Key);
-                        if (bossProperty != null)
-                        {
-                            string resourceKey = ((SoftObjectPropertyData)bossProperty.Value[0]).Value.AssetPath.PackageName.Value.Value;
-                            // null string check?
-                            resourceKey = resourceKey[(resourceKey.LastIndexOf('/') + 1)..];
+
+                        if (bossNPCIcons.TryGetValue(keyPair.Key, out string? resourceKey) && resourceKey != null) {
+                            resourceKey = resourceKey[(resourceKey.LastIndexOf('/') + 1)..resourceKey.LastIndexOf('.')];
                             PalIcon.Add(keyPair.Key, UAssetData.AppDataPath($@"Images\NPC\{resourceKey}.png"));
                         }
                     }
@@ -316,16 +334,11 @@ namespace PalworldRandomizer
                 {
                     string resourceKey = resourceKeyRegex().Match(keyPair.Key).Groups[1].Value;
                     resourceKey = skipPrefix ? resourceKey[(resourceKey.IndexOf('_') + 1)..] : resourceKey;
-                    FStructFallback resourceFound = palIcons.FirstOrDefault(kvp => string.Equals(kvp.Key.Text, resourceKey, StringComparison.OrdinalIgnoreCase)).Value;
-                    CUE4Parse.UE4.Objects.UObject.FName? fName = ((SoftObjectProperty)resourceFound?.Properties[0].Tag!)?.Value.AssetPathName;
-                    if (resourceFound != null && !((CUE4Parse.UE4.Objects.UObject.FName)fName!).IsNone)
-                    {
-                        string foundName = ((CUE4Parse.UE4.Objects.UObject.FName)fName).Text;
+
+                    if (palIcons.TryGetValue(resourceKey, out string? foundName) && foundName != null) {
                         string resourceName = UAssetData.AppDataPath($@"Images\PalIcon\{foundName[(foundName.LastIndexOf('/') + 1)..foundName.LastIndexOf('.')]}.png");
                         PalIcon.Add(keyPair.Key, resourceName);
-                    }
-                    else if (keyPair.Value.IsPal)
-                    {
+                    } else if (keyPair.Value.IsPal) {
                         PalIcon.Add(keyPair.Key, UAssetData.AppDataPath(@"Images\PalIcon\T_icon_unknown.png"));
                     }
                 }
@@ -335,12 +348,30 @@ namespace PalworldRandomizer
             SimpleName.Remove("RowName");
             SimpleNameValues = [.. SimpleName.Keys];
             SimpleNameValues.Sort();
-            string[] files = Directory.GetFiles(UAssetData.AppDataPath("Assets"), "*.uasset").Select(Path.GetFileName).ToArray()!;
-            Array.Sort(files);
-            foreach (string filename in files)
+
+            var spawnerList = ((IEnumerable<string?>)
+                [.. fileProvider.LoadDataTableSoftObject("Pal/Content/Pal/DataTable/Spawner/DT_PalSpawnerPlacement.uasset").Values,
+                .. fileProvider.LoadDataTableSoftObject("Pal/Content/Pal/DataTable/Dungeon/DT_DungeonEnemySpawnDataTable.uasset").Values])
+                .Distinct()
+                .Select(value => value is string path ? $"Pal/Content{path["/Game".Length..path.LastIndexOf('.')]}.uasset" : null)
+                .Order();
+
+            foreach (string? path in spawnerList)
             {
-                UAsset uAsset = UAssetData.LoadAsset($"Assets\\{filename}");
-                SpawnExportData spawnExportData = PalSpawn.ReadAsset(uAsset);
+                if (path is null) {
+                    continue;
+                }
+
+                string filename = Path.GetFileName(path);
+
+                if (!filename.StartsWith("BP_PalSpawner_")) {
+                    continue;
+                }
+
+                var spawnExportData = new SpawnExportData {
+                    spawnEntries = [.. fileProvider.LoadBlueprintPalSpawner(path).ToSpawnEntries()]
+                };
+
                 float averageLevel = 0;
                 float levelRange = 0;
                 float weightSum = 0;
@@ -391,7 +422,7 @@ namespace PalworldRandomizer
                         weightSum += spawnEntry.Weight;
                     }
                 }
-                AreaData.Add(filename, new(uAsset, spawnExportData, filename));
+                AreaData.Add(filename, new(spawnExportData, filename));
                 if (weightSum == 0)
                 {
                     averageLevel = nightAverageLevel;
@@ -416,21 +447,27 @@ namespace PalworldRandomizer
                 AreaData[filename].isField = !AreaData[filename].isBoss && !AreaData[filename].isInDungeon;
                 AreaData[filename].isQuest = AreaData[filename].SimpleName.StartsWith("Quest_", StringComparison.OrdinalIgnoreCase);
             }
-            string firstAreaName = "BP_PalSpawner_Sheets_1_1_plain_begginer.uasset";
-            AreaData[firstAreaName].minLevel = AreaData[firstAreaName].SpawnEntries[0].SpawnList[0].MinLevel;
-            AreaData[firstAreaName].maxLevel = AreaData[firstAreaName].SpawnEntries[0].SpawnList[0].MaxLevel;
-            Dictionary<string, AreaData> cageData = FileModify.ReadCageData(UAssetData.AppDataPath(@"Data\DT_CapturedCagePal.uasset"));
+            //string firstAreaName = "BP_PalSpawner_Sheets_1_1_plain_begginer.uasset";
+            //AreaData[firstAreaName].minLevel = AreaData[firstAreaName].SpawnEntries[0].SpawnList[0].MinLevel;
+            //AreaData[firstAreaName].maxLevel = AreaData[firstAreaName].SpawnEntries[0].SpawnList[0].MaxLevel;
+
+            var cageData = FileModify.ReadCageData(fileProvider.LoadDataTableCagePal("Pal/Content/Pal/DataTable/Character/DT_CapturedCagePal.uasset"));
             FirstCage = cageData.Values.Select(x => x.filename).Min()!;
-            foreach (KeyValuePair<string, AreaData> keyPair in cageData)
+            foreach (var keyPair in cageData)
             {
                 AreaData.Add(keyPair.Key, keyPair.Value);
             }
-            string[] eggFiles = Directory.GetFiles(UAssetData.AppDataPath(@"Assets\PalEgg"), "*.uasset").Select(Path.GetFileName).ToArray()!;
-            Array.Sort(eggFiles);
-            FirstEgg = $"PalEgg\\{eggFiles.First()}";
-            foreach (string filename in eggFiles)
+
+            var eggSpawnerList = fileProvider.Files.Keys.Where(x => PalEggSpawnSheetsRegex().IsMatch(x)).Order();
+
+            FirstEgg = $"PalEgg\\{Path.GetFileName(eggSpawnerList.First())}";
+            foreach (string path in eggSpawnerList)
             {
-                AreaData.Add($"PalEgg\\{filename}", FileModify.ReadEggData(UAssetData.AppDataPath($"Assets\\PalEgg\\{filename}")));
+                string filename = Path.GetFileName(path);
+
+                var spawnData = fileProvider.LoadBlueprintPalEggSpawner(path);
+
+                AreaData.Add($"PalEgg\\{filename}", FileModify.ReadEggData(filename, spawnData));
             }
         }
         public static List<AreaData> AreaDataCopy()
@@ -509,7 +546,6 @@ namespace PalworldRandomizer
                 if (value)
                 {
                     MainPage.Instance.savePalSchema.IsEnabled = false;
-                    MainPage.Instance.savePak.IsEnabled = false;
                 }
             }
         }
@@ -1834,18 +1870,6 @@ namespace PalworldRandomizer
                 if (saveData)
                 {
                     area.modified = true;
-                    if (!area.isCage)
-                    {
-                        if (area.isEgg)
-                        {
-                            FileModify.WriteEggData(area, $"{eggOutputPath}\\{Path.GetFileName(area.filename)}");
-                        }
-                        else
-                        {
-                            PalSpawn.MutateAsset(area.uAsset, area.spawnExportData);
-                            area.uAsset.Write($"{outputPath}\\{area.filename}");
-                        }
-                    }
                 }
             }
             if (equalizeAreaRarity)
@@ -2585,10 +2609,6 @@ namespace PalworldRandomizer
                 }
             }
 
-            if (formData.RandomizeCages)
-            {
-                FileModify.WriteCageData(subList.FindAll(x => x.isCage), basePath + @"\Pal\Content\Pal\DataTable\Character");
-            }
             MainPage.Instance.Dispatcher.Invoke(() => MainPage.Instance.progressBar.Visibility = Visibility.Collapsed);
             areaList.Sort(FileModify.AreaSortFunc);
             GeneratedAreaList = areaList;
@@ -2630,7 +2650,7 @@ namespace PalworldRandomizer
         {
             GenerateSpawnLists(formData);
             RandomizeAndSaveAssets(formData);
-            MainPage.Instance.Dispatcher.Invoke(() => MainPage.Instance.statusBar.Text = "💾 Creating PAK...");
+            MainPage.Instance.Dispatcher.Invoke(() => MainPage.Instance.statusBar.Text = "💾 Creating...");
         }
         public static string GetRandomPal() => ((string[])[.. Data.PalList, .. Data.TerrariaMonsters])[new Random().Next(Data.PalList.Count + Data.TerrariaMonsters.Count)];
 
@@ -2691,61 +2711,14 @@ namespace PalworldRandomizer
             return string.Compare(x.filename, y.filename);
         }
 
-        public static bool SaveAreaList(List<AreaData> areaList)
+        public static Dictionary<string, AreaData> ReadCageData(IEnumerable<CagePalData> cagePalDataList)
         {
-            MainPage.Instance.ValidateFormData();
-            FormData formData = new();
-            float eggRespawnTime = Math.Max(0, formData.EggRespawnHours) * 60 + Math.Max(0, formData.EggRespawnMinutes) + Math.Max(0, formData.EggRespawnSeconds) / 60.0f;
-            string basePath = UAssetData.AppDataPath(@"Create-Pak");
-            string outputPath = basePath + @"\Pal\Content\Pal\Blueprint\Spawner\SheetsVariant";
-            string eggOutputPath = basePath + @"\Pal\Content\Pal\Blueprint\MapObject\Spawner";
-            if (Directory.Exists(basePath))
-            {
-                Directory.GetFiles(basePath).ForAll(File.Delete);
-                Directory.GetDirectories(basePath).ForAll(x => Directory.Delete(x, true));
-            }
-            Directory.CreateDirectory(outputPath);
-            Directory.CreateDirectory(eggOutputPath);
-            bool changesDetected = false;
-            bool cageChanges = false;
-            Data.AreaForEachIfDiff(areaList, area =>
-            {
-                changesDetected = true;
-                if (area.isCage)
-                {
-                    cageChanges = true;
-                    return;
-                }
-                if (area.isEgg)
-                {
-                    area.eggRespawnTime = eggRespawnTime;
-                    WriteEggData(area, $"{eggOutputPath}\\{Path.GetFileName(area.filename)}");
-                }
-                else
-                {
-                    PalSpawn.MutateAsset(area.uAsset, area.spawnExportData);
-                    area.uAsset.Write($"{outputPath}\\{area.filename}");
-                }
-            });
-            if (cageChanges)
-            {
-                string dataPath = UAssetData.AppDataPath(@"Create-Pak\Pal\Content\Pal\DataTable\Character");
-                Directory.CreateDirectory(dataPath);
-                WriteCageData(areaList.FindAll(x => x.isCage), dataPath);
-            }
-            return changesDetected;
-        }
-
-        public static Dictionary<string, AreaData> ReadCageData(string filepath)
-        {
-            UAsset uAsset = UAssetData.LoadAssetLocal(filepath);
-            List<CagePalData> cagePalDataList = ((DataTableExport)uAsset.Exports[0]).Table.Data.ConvertAll(x => new CagePalData(uAsset, x));
             Dictionary<string, AreaData> cageList = [];
             foreach (CagePalData cagePalData in cagePalDataList)
             {
                 if (!cageList.TryGetValue($"Cage:{cagePalData.FieldName}", out AreaData? areaData))
                 {
-                    areaData = new(new(), new(), cagePalData.FieldName!)
+                    areaData = new(new(), cagePalData.FieldName!)
                     {
                         isCage = true,
                         minLevel = cagePalData.MinLevel,
@@ -2767,196 +2740,15 @@ namespace PalworldRandomizer
             return cageList;
         }
 
-        public static void WriteCageData(List<AreaData> areaList, string savePath)
-        {
-            if (areaList.Count == 0)
-            {
-                return;
-            }
-            bool changes = false;
-            Data.AreaForEachIfDiff(areaList, area =>
-            {
-                changes = true;
-            });
-            if (changes == false)
-            {
-                return;
-            }
-            Directory.CreateDirectory(savePath);
-            UAsset uAsset = UAssetData.LoadAsset(@"Data\DT_CapturedCagePal.uasset");
-            List<StructPropertyData> spawnList = ((DataTableExport)uAsset.Exports[0]).Table.Data;
-            StructPropertyData baseStruct = spawnList[0];
-            spawnList.Clear();
-            int i = 0;
-            foreach (AreaData area in areaList)
-            {
-                foreach (SpawnEntry spawnEntry in area.SpawnEntries)
-                {
-                    StructPropertyData newData = (StructPropertyData)baseStruct.Clone();
-                    CagePalData cagePalData = new(uAsset, newData)
-                    {
-                        FieldName = area.filename,
-                        PalID = spawnEntry.SpawnList[0].Name,
-                        Weight = spawnEntry.Weight / 10.0f,
-                        MinLevel = spawnEntry.SpawnList[0].MinLevel,
-                        MaxLevel = spawnEntry.SpawnList[0].MaxLevel
-                    };
-                    newData.Name = new FName(uAsset, $"{++i}");
-                    spawnList.Add(newData);
-                }
-            }
-            uAsset.Write($"{savePath}\\DT_CapturedCagePal.uasset");
-        }
-
-        public static AreaData ReadEggData(string filename)
-        {
-            UAsset uAsset = UAssetData.LoadAssetLocal(filename);
-            NormalExport export = (NormalExport)uAsset.Exports.Find(export => export.ObjectFlags.HasFlag(EObjectFlags.RF_ClassDefaultObject))!;
-            List<StructPropertyData> spawnList = [.. Array.ConvertAll(((ArrayPropertyData)export.Data[0]).Value, x => (StructPropertyData)x)];
-            return new(uAsset, new(), $"PalEgg\\{Path.GetFileName(filename)}")
-            {
-                isEgg = true,
-                minLevel = 1,
-                maxLevel = 1,
-                SpawnEntries = spawnList.ConvertAll(x => new SpawnEntry
-                {
-                    SpawnList = [new() { Name = ((NamePropertyData)((StructPropertyData)((StructPropertyData)x.Value[0]).Value[0]).Value[0]).Value.Value.Value }],
-                    Weight = Convert.ToInt32(((FloatPropertyData)x.Value[1]).Value * 40)
-                }),
-                eggRespawnTime = ((FloatPropertyData)export.Data[1]).Value,
-                eggLotteryCooldown = ((FloatPropertyData)export.Data[2]).Value
-            };
-        }
-
-        public static void WriteEggData(AreaData areaData, string filepath)
-        {
-            UAsset uAsset = UAssetData.LoadAsset($"Assets\\{areaData.filename}");
-            NormalExport export = (NormalExport)uAsset.Exports.Find(export => export.ObjectFlags.HasFlag(EObjectFlags.RF_ClassDefaultObject))!;
-            StructPropertyData baseStruct = (StructPropertyData)((ArrayPropertyData)export.Data[0]).Value[0];
-            List<StructPropertyData> spawnList = [];
-            foreach (SpawnEntry spawnEntry in areaData.SpawnEntries)
-            {
-                StructPropertyData newData = (StructPropertyData)baseStruct.Clone();
-                ((NamePropertyData)((StructPropertyData)((StructPropertyData)newData.Value[0]).Value[0]).Value[0]).Value = new FName(uAsset, spawnEntry.SpawnList[0].Name);
-                ((FloatPropertyData)newData.Value[1]).Value = spawnEntry.Weight / 40.0f;
-                spawnList.Add(newData);
-            }
-            ((ArrayPropertyData)export.Data[0]).Value = [.. spawnList];
-            ((FloatPropertyData)export.Data[1]).Value = areaData.eggRespawnTime;
-            ((FloatPropertyData)export.Data[2]).Value = areaData.eggLotteryCooldown;
-            uAsset.Write(filepath);
-        }
-
-        public static bool GenerateAndSavePak()
-        {
-            if (Directory.GetFiles(UAssetData.AppDataPath("Create-Pak"), "*.*", SearchOption.AllDirectories).Length == 0)
-            {
-                return false;
-            }
-            File.WriteAllText(UAssetData.AppDataPath("create-pak.txt"), $"\"{UAssetData.AppDataPath("Create-Pak\\*.*")}\" \"..\\..\\..\\*.*\" \n");
-            Process unrealPak = Process.Start(new ProcessStartInfo(UAssetData.AppDataPath("UnrealPak.exe"),
-                [UAssetData.AppDataPath("SpawnRandomizer_P.pak"), $"-create={UAssetData.AppDataPath("create-pak.txt")}", "-compress"]) { CreateNoWindow = true })!;
-            SaveFileDialog saveDialog = new()
-            {
-                FileName = "SpawnRandomizer_P",
-                DefaultExt = ".pak",
-                Filter = "PAK File|*.pak"
-            };
-            if (saveDialog.ShowDialog() == true)
-            {
-                unrealPak.WaitForExit();
-                File.Move(UAssetData.AppDataPath("SpawnRandomizer_P.pak"), saveDialog.FileName, true);
-            }
-            return true;
-        }
-
-        public static string? LoadPak()
-        {
-            OpenFileDialog openDialog = new()
-            {
-                DefaultExt = ".pak",
-                Filter = "PAK File|*.pak|All files|*.*"
-            };
-            if (openDialog.ShowDialog() == true && openDialog.FileName != string.Empty)
-            {
-                string outputPath = UAssetData.AppDataPath("Extract-Pak");
-                Directory.CreateDirectory(outputPath);
-                Directory.GetFiles(outputPath).ForAll(File.Delete);
-                Directory.GetDirectories(outputPath).ForAll(x => Directory.Delete(x, true));
-                Process unrealPak = Process.Start(new ProcessStartInfo(UAssetData.AppDataPath("UnrealPak.exe"),
-                    [openDialog.FileName, "-extract", outputPath]) { CreateNoWindow = true })!;
-                unrealPak.WaitForExit();
-                if (unrealPak.ExitCode != 0)
-                    return "UnrealPak failed to extract the file.";
-                string[] files = [.. Directory.GetFiles(outputPath, "BP_PalSpawner_Sheets_*.uasset", SearchOption.AllDirectories),
-                    .. Directory.GetFiles(outputPath, "bp_palmapobjectspawner_palegg_*.uasset", SearchOption.AllDirectories)];
-                string? cagePath;
-                try
-                {
-                    cagePath = Directory.GetFiles(outputPath, "DT_CapturedCagePal.uasset", SearchOption.AllDirectories).First();
-                }
-                catch
-                {
-                    cagePath = null;
-                }
-                if (files.Length == 0 && cagePath == null)
-                    return "No valid uasset files were found.";
-                List<AreaData> areaList = Data.AreaDataCopy();
-                List<AreaData> cages = [];
-                if (cagePath != null)
-                {
-                    cages = [.. ReadCageData(cagePath).Values];
-                }
-                Data.AreaForEachIfDiff(cages, area =>
-                {
-                    AreaData found = areaList.Find(x => x.SimpleName == area.SimpleName)!;
-                    found.SpawnEntries = area.SpawnEntries;
-                    found.modified = true;
-                });
-                foreach (AreaData area in areaList)
-                {
-                    if (area.isCage)
-                    {
-                        continue;
-                    }
-                    string? path;
-                    try
-                    {
-                        path = files.First(x => Path.GetFileName(x) == Path.GetFileName(area.filename));
-                    }
-                    catch
-                    {
-                        path = null;
-                    }
-                    if (path != null)
-                    {
-                        if (area.isEgg)
-                        {
-                            AreaData newData = ReadEggData(path);
-                            area.uAsset = newData.uAsset;
-                            area.SpawnEntries = newData.SpawnEntries;
-                            area.eggRespawnTime = newData.eggRespawnTime;
-                            area.eggLotteryCooldown = newData.eggLotteryCooldown;
-                        }
-                        else
-                        {
-                            area.uAsset = UAssetData.LoadAssetLocal(path);
-                            area.spawnExportData = PalSpawn.ReadAsset(area.uAsset, Data.AreaData[area.filename].spawnExportData.header.Length);
-                        }
-                        area.modified = true;
-                    }
-                }
-                areaList.Sort(AreaSortFunc);
-                Randomize.SaveBackup();
-                PalSpawnPage.Instance.areaList.ItemsSource = areaList;
-                Randomize.AreaListChanged = true;
-            }
-            else
-            {
-                return "Cancel";
-            }
-            return null;
-        }
+        public static AreaData ReadEggData(string filename, PalMapObject.SpawnerPalEgg spawner) =>
+            new(new(), $"PalEgg\\{filename}") {
+            isEgg = true,
+            minLevel = 1,
+            maxLevel = 1,
+            SpawnEntries = [.. spawner.ToSpawnEntries()],
+            eggRespawnTime = spawner.RespawnTimeMinutesObtained,
+            eggLotteryCooldown = 180
+        };
 
         public static void SaveCSV(List<AreaData> areaList)
         {
@@ -3095,12 +2887,13 @@ namespace PalworldRandomizer
 
         public class PalMonsterData
         {
-            public string Key { get; set; } = string.Empty;
+            public string? Key { get; set; } = null;
         }
 
         public class PalSpawnerOneTribeInfo
         {
             public PalMonsterData PalId { get; set; } = new();
+            public PalMonsterData NPCID { get; set; } = new();
             public int Level { get; set; } = 1;
             public int Level_Max { get; set; } = 1;
             public int Num { get; set; } = 1;
@@ -3117,6 +2910,27 @@ namespace PalworldRandomizer
         public class PalSpawner
         {
             public PalSpawnerGroupInfo[] SpawnGroupList { get; set; } = [];
+
+            public IEnumerable<SpawnEntry> ToSpawnEntries() => SpawnGroupList.Select(entry =>
+                new SpawnEntry {
+                    Weight = entry.Weight,
+                    NightOnly = entry.OnlyTime == "Night" || entry.OnlyTime == "EPalOneDayTimeType::Night",
+                    SpawnList = [.. entry.PalList.Select(spawn => {
+                            string characterId = spawn.PalId.Key ?? spawn.NPCID.Key ?? "RowName";
+
+                            return new SpawnData
+                            {
+                                IsPal = Data.PalData[characterId].IsPal,
+                                Name = characterId,
+                                MinLevel = spawn.Level,
+                                MaxLevel = spawn.Level_Max,
+                                MinCount = spawn.Num,
+                                MaxCount = spawn.Num_Max
+                            };
+                        }
+                    )]
+                }
+            );
         }
 
         public static class PalMapObject
@@ -3139,6 +2953,20 @@ namespace PalworldRandomizer
             {
                 public PickupItem.PalEggLotteryData[] SpawnPalEggLotteryDataArray { get; set; } = [];
                 public float RespawnTimeMinutesObtained { get; set; } = 180.0f;
+
+                public IEnumerable<SpawnEntry> ToSpawnEntries() => SpawnPalEggLotteryDataArray.Select(entry =>
+                    new SpawnEntry {
+                        Weight = Convert.ToInt32(entry.Weight * 40),
+                        SpawnList =
+                        [
+                            new SpawnData
+                            {
+                                IsPal = Data.PalData[entry.PalEggData.PalMonsterId.Key!].IsPal,
+                                Name = entry.PalEggData.PalMonsterId.Key!
+                            }
+                        ]
+                    }
+                );
             }
         }
 
@@ -3216,7 +3044,8 @@ namespace PalworldRandomizer
                                     PalList = [.. entry.SpawnList.Select(spawn =>
                                         new PalSpawnerOneTribeInfo
                                         {
-                                            PalId = new() { Key = spawn.Name },
+                                            PalId = new() { Key = Data.PalData[spawn.Name].IsPal ? spawn.Name : null },
+                                            NPCID = new() { Key = !Data.PalData[spawn.Name].IsPal ? spawn.Name : null },
                                             Level = spawn.MinLevel,
                                             Level_Max = spawn.MaxLevel,
                                             Num = spawn.MinCount,
@@ -3409,24 +3238,7 @@ namespace PalworldRandomizer
                             continue;
                         }
 
-                        area.SpawnEntries = [.. spawner.SpawnGroupList.Select(entry =>
-                            new SpawnEntry
-                            {
-                                Weight = entry.Weight,
-                                NightOnly = entry.OnlyTime == "Night" || entry.OnlyTime == "EPalOneDayTimeType::Night",
-                                SpawnList = [.. entry.PalList.Select(spawn =>
-                                    new SpawnData
-                                    {
-                                        IsPal = Data.PalData[spawn.PalId.Key].IsPal,
-                                        Name = spawn.PalId.Key,
-                                        MinLevel = spawn.Level,
-                                        MaxLevel = spawn.Level_Max,
-                                        MinCount = spawn.Num,
-                                        MaxCount = spawn.Num_Max
-                                    }
-                                )]
-                            }
-                        )];
+                        area.SpawnEntries = [.. spawner.ToSpawnEntries()];
 
                     }
                     else if (regexMatch.Groups["class"].Value.StartsWith("bp_palmapobjectspawner_", StringComparison.OrdinalIgnoreCase))
@@ -3437,20 +3249,7 @@ namespace PalworldRandomizer
                             continue;
                         }
 
-                        area.SpawnEntries = [.. spawner.SpawnPalEggLotteryDataArray.Select(entry =>
-                            new SpawnEntry
-                            {
-                                Weight = Convert.ToInt32(entry.Weight * 40),
-                                SpawnList =
-                                [
-                                    new SpawnData
-                                    {
-                                        IsPal = Data.PalData[entry.PalEggData.PalMonsterId.Key].IsPal,
-                                        Name = entry.PalEggData.PalMonsterId.Key
-                                    }
-                                ]
-                            }
-                        )];
+                        area.SpawnEntries = [.. spawner.ToSpawnEntries()];
                     }
                 }
             }

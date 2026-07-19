@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -38,14 +38,6 @@ namespace PalworldRandomizer
             FileModify.SavePalSchema(modifiedAreas);
         }
 
-        public void SavePak(bool saveAreaList = false)
-        {
-            if (saveAreaList && !FileModify.SaveAreaList((List<AreaData>)areaList.ItemsSource) || !FileModify.GenerateAndSavePak())
-            {
-                MessageBox.Show(GetWindow(), "Error: No spawn group changes detected.", "Failed To Save Pak", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
         private void SavePalSchema_Click(object sender, RoutedEventArgs e)
         {
             UpdateSourceFocusedElement();
@@ -65,12 +57,6 @@ namespace PalworldRandomizer
             }
         }
 
-        private void SavePak_Click(object sender, RoutedEventArgs e)
-        {
-            UpdateSourceFocusedElement();
-            SavePak(true);
-        }
-
         private void Reset_Click(object sender, RoutedEventArgs e)
         {
             if (MessageBox.Show(GetWindow(), "Are you sure you want to revert back to vanilla spawns?", "Revert All Spawns", MessageBoxButton.OKCancel, MessageBoxImage.Warning)
@@ -79,19 +65,6 @@ namespace PalworldRandomizer
                 Randomize.SaveBackup();
                 areaList.ItemsSource = Data.AreaDataCopy();
                 Randomize.AreaListChanged = true;
-            }
-        }
-
-        private void LoadPak_Click(object sender, RoutedEventArgs e)
-        {
-            string? status = FileModify.LoadPak();
-            if (status == null)
-            {
-                MessageBox.Show(GetWindow(), "Successfully loaded PAK file.", "Pak Loaded", MessageBoxButton.OK, MessageBoxImage.None);
-            }
-            else if (status != "Cancel")
-            {
-                MessageBox.Show(GetWindow(), "Error: Invalid or incorrect PAK file.\n\n" + status, "Failed To Load Pak", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
