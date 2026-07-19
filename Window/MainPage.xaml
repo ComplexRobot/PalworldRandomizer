@@ -52,7 +52,7 @@
                     <CheckBox Name="randomizeCages" IsChecked="True">Cages</CheckBox>
                     <CheckBox Name="randomizeEggs" IsChecked="True">Overworld Eggs</CheckBox>
                     <CheckBox Name="randomizeQuests" IsChecked="False">Quest Areas</CheckBox>
-                    <CheckBox Name="randomizeMimics" IsChecked="False">Mimics</CheckBox>
+                    <CheckBox Name="randomizeMimics" IsChecked="False" Visibility="Collapsed">Mimics</CheckBox>
                     <WrapPanel Margin="10,0,0,0">
                         <WrapPanel.Style>
                             <Style TargetType="WrapPanel">
