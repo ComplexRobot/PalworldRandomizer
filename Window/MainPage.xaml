@@ -32,7 +32,7 @@
                     <CheckBox Name="randomizeDungeons" IsChecked="True">Dungeon Pals</CheckBox>
                     <CheckBox Name="randomizeDungeonBosses" IsChecked="True">Dungeon Bosses</CheckBox>
                     <CheckBox Name="randomizeFieldBosses" IsChecked="True">Overworld Bosses</CheckBox>
-                    <CheckBox Name="randomizePredators" IsChecked="True">Predators</CheckBox>
+                    <CheckBox Name="randomizePredators" IsChecked="True" Visibility="Collapsed">Predators</CheckBox>
                     <WrapPanel Margin="0,0,0,0">
                         <WrapPanel.Style>
                             <Style TargetType="WrapPanel">
@@ -44,14 +44,14 @@
                                 </Style.Triggers>
                             </Style>
                         </WrapPanel.Style>
-                        <TextBlock Margin="0,0,5,0" VerticalAlignment="Top">Predator Spawn Rate:</TextBlock>
-                        <TextBox Name="predatorChance" VerticalAlignment="Center"
+                        <TextBlock Margin="0,0,5,0" VerticalAlignment="Top" Visibility="Collapsed">Predator Spawn Rate:</TextBlock>
+                        <TextBox Name="predatorChance" VerticalAlignment="Center" Visibility="Collapsed"
                                  PreviewTextInput="NonNegIntPercent_PreviewTextInput" DataObject.Pasting="NonNegIntPercent_Pasting">30</TextBox>
-                        <TextBlock Margin="0,0,0,0" VerticalAlignment="Center">%</TextBlock>
+                        <TextBlock Margin="0,0,0,0" VerticalAlignment="Center" Visibility="Collapsed">%</TextBlock>
                     </WrapPanel>
                     <CheckBox Name="randomizeCages" IsChecked="True">Cages</CheckBox>
                     <CheckBox Name="randomizeEggs" IsChecked="True">Overworld Eggs</CheckBox>
-                    <CheckBox Name="randomizeQuests" IsChecked="False">Quest Areas</CheckBox>
+                    <CheckBox Name="randomizeQuests" IsChecked="False" Visibility="Collapsed">Quest Areas</CheckBox>
                     <CheckBox Name="randomizeMimics" IsChecked="False" Visibility="Collapsed">Mimics</CheckBox>
                     <WrapPanel Margin="10,0,0,0">
                         <WrapPanel.Style>
