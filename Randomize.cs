@@ -2916,7 +2916,9 @@ namespace PalworldRandomizer
                     Weight = entry.Weight,
                     NightOnly = entry.OnlyTime == "Night" || entry.OnlyTime == "EPalOneDayTimeType::Night",
                     SpawnList = [.. entry.PalList.Select(spawn => {
-                            string characterId = spawn.PalId.Key ?? spawn.NPCID.Key ?? "RowName";
+                            string characterId = (spawn.PalId.Key == "None" ? null : spawn.PalId.Key)
+                                ?? (spawn.NPCID.Key == "None" ? null : spawn.NPCID.Key)
+                                ?? "RowName";
 
                             return new SpawnData
                             {
@@ -3044,8 +3046,8 @@ namespace PalworldRandomizer
                                     PalList = [.. entry.SpawnList.Select(spawn =>
                                         new PalSpawnerOneTribeInfo
                                         {
-                                            PalId = new() { Key = Data.PalData[spawn.Name].IsPal ? spawn.Name : null },
-                                            NPCID = new() { Key = !Data.PalData[spawn.Name].IsPal ? spawn.Name : null },
+                                            PalId = new() { Key = Data.PalData[spawn.Name].IsPal ? spawn.Name : "None" },
+                                            NPCID = new() { Key = !Data.PalData[spawn.Name].IsPal ? spawn.Name : "None" },
                                             Level = spawn.MinLevel,
                                             Level_Max = spawn.MaxLevel,
                                             Num = spawn.MinCount,
