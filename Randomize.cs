@@ -447,9 +447,9 @@ namespace PalworldRandomizer
                 AreaData[filename].isField = !AreaData[filename].isBoss && !AreaData[filename].isInDungeon;
                 AreaData[filename].isQuest = AreaData[filename].SimpleName.StartsWith("Quest_", StringComparison.OrdinalIgnoreCase);
             }
-            //string firstAreaName = "BP_PalSpawner_Sheets_1_1_plain_begginer.uasset";
-            //AreaData[firstAreaName].minLevel = AreaData[firstAreaName].SpawnEntries[0].SpawnList[0].MinLevel;
-            //AreaData[firstAreaName].maxLevel = AreaData[firstAreaName].SpawnEntries[0].SpawnList[0].MaxLevel;
+            string firstAreaName = "BP_PalSpawner_Sheets_green_A.uasset";
+            AreaData[firstAreaName].minLevel = AreaData[firstAreaName].SpawnEntries[0].SpawnList[0].MinLevel;
+            AreaData[firstAreaName].maxLevel = AreaData[firstAreaName].SpawnEntries[0].SpawnList[0].MaxLevel;
 
             var cageData = FileModify.ReadCageData(fileProvider.LoadDataTableCagePal("Pal/Content/Pal/DataTable/Character/DT_CapturedCagePal.uasset"));
             FirstCage = cageData.Values.Select(x => x.filename).Min()!;
