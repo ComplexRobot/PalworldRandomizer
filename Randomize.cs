@@ -235,7 +235,7 @@ namespace PalworldRandomizer
                             TerrariaMonsters.Add(keyPair.Key);
                         }
                     }
-                    else if (keyPair.Key.EndsWith("_Otomo", StringComparison.OrdinalIgnoreCase))
+                    else if (keyPair.Key.EndsWith("_Otomo", StringComparison.OrdinalIgnoreCase) && !isBoss)
                     {
                         TowerNonBossNames.Add(keyPair.Key);
                     }
@@ -1076,7 +1076,7 @@ namespace PalworldRandomizer
                     }
                     return rarity;
                 }
-                return Data.PalData[spawnData.Name["BOSS_".Length..]].Rarity;
+                return Data.PalData.TryGetValue(spawnData.Name["BOSS_".Length..], out var data) ? data.Rarity : Data.PalData[spawnData.Name].Rarity;
             }
             int RarityEx(SpawnData spawnData, bool customHumanRarity = true) =>
                 !Data.PalData[spawnData.Name].IsPal && !customHumanRarity ? Data.PalData[spawnData.Name].Rarity : Rarity(spawnData);
