@@ -311,7 +311,7 @@ namespace PalworldRandomizer
             ValidateNumericText(dungeonBossLevel, 0, 100);
             ValidateNumericText(predatorLevel, 0, 100);
             ValidateNumericText(cageLevel, 0, 100);
-            ValidateNumericText(levelCap, 1, 65);
+            ValidateNumericText(levelCap, 1, 80);
             ValidateNumericText(bossAddLevel, 0, 85);
             ValidateNumericText(randomLevelMin, 1, 1, int.Parse(levelCap.Text));
             ValidateNumericText(randomLevelMax, Math.Max(1, int.Parse(randomLevelMin.Text)), int.Parse(levelCap.Text), int.Parse(levelCap.Text));
