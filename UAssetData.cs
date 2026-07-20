@@ -1,5 +1,3 @@
-using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -7,7 +5,6 @@ using System.Xml;
 using CUE4Parse.Compression;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.FileProvider.Vfs;
-using CUE4Parse.MappingsProvider;
 using CUE4Parse.MappingsProvider.Usmap;
 using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Exports;
@@ -21,14 +18,20 @@ using CUE4Parse.Utils;
 using CUE4Parse_Conversion.Textures;
 using IniParser.Model;
 using IniParser.Parser;
-using Newtonsoft.Json;
 using PalworldRandomizer.Resources;
 using static PalworldRandomizer.FileModify;
 
 namespace PalworldRandomizer
 {
-    public class VfsFileProvider() : AbstractVfsFileProvider(new VersionContainer(EGame.GAME_UE5_1), StringComparer.OrdinalIgnoreCase) 
+    public class VfsFileProvider() : AbstractVfsFileProvider(new VersionContainer(EGame.GAME_UE5_1), StringComparer.OrdinalIgnoreCase),
+        IAsyncDisposable
     {
+        /// <summary><see langword="true"/> if a game version change was detected during initial load.</summary>
+        public bool GameVersionUpdated { get; set; } = false;
+
+        private readonly HashSet<string> _savedImagePaths = [];
+        private readonly List<Task> _fileSaveTasks = [];
+
         public override void Initialize() { }
 
         public void AddFile(string file, string mountPoint)
@@ -36,6 +39,53 @@ namespace PalworldRandomizer
             OsGameFile gameFile = new(new(Path.GetDirectoryName(file)!), new(file), mountPoint, new VersionContainer(EGame.GAME_UE5_1));
             Files.AddFiles(new Dictionary<string, GameFile> { { gameFile.Path, gameFile } });
         }
+
+        /// <summary>
+        /// Changes a soft resource path into a hard path.<br/>
+        /// I.e., '/Game/...' -> 'Pal/Content/...uasset'
+        /// </summary>
+        public static string SoftPathToHardPath(string path) =>
+            $"Pal/Content{path["/Game".Length..path.LastIndexOf('.')]}.uasset";
+
+        /// <summary>
+        /// Save a uasset file containing texture data to the user's disk as a .png.
+        /// </summary>
+        /// <param name="path">Path to the uasset data.</param>
+        /// <param name="saveFolder">Folder on the disk to save the file.</param>
+        /// <param name="forceOverwrite">
+        /// If <see langword="true"/>, force the file to be overwritten instead of skipping it when it already exists.
+        /// </param>
+        /// <returns>The path of the saved .png file.</returns>
+        public string SaveTexturePng(string path, string saveFolder, bool forceOverwrite) {
+            var gameFile = this[path];
+
+            string filename = saveFolder + '\\' + gameFile.NameWithoutExtension + ".png";
+
+            // Prevent saving the same file multiple times
+            if (!_savedImagePaths.Add(filename)) {
+                return filename;
+            }
+
+            if ((forceOverwrite || !File.Exists(filename)) && TryLoadPackage(gameFile, out var package)) {
+                foreach (var export in package.GetExports()) {
+                    if (export is UTexture texture) {
+                        _fileSaveTasks.Add(Task.Run(() =>
+                            File.WriteAllBytes(filename,
+                                [.. texture.Decode()!.Encode(ETextureFormat.Png, false, out _)])));
+                        return filename;
+                    }
+                }
+
+                throw new Exception($"'{path}' does not contain texture data.");
+            }
+
+            return filename;
+        }
+
+        /// <summary>
+        /// Waits for any pending asynchronous file save tasks to complete.
+        /// </summary>
+        public async ValueTask DisposeAsync() => await Task.WhenAll(_fileSaveTasks);
 
         public IEnumerable<UObject> LoadAsset(string path)
         {
@@ -226,12 +276,6 @@ namespace PalworldRandomizer
         public static string GameVersion { set; get; } = "0.0.0.0";
         private static string? appDataPath;
 
-        [GeneratedRegex(@"^Pal/Content/Pal/Texture/(PalIcon/Normal/(?!T_dummy_icon).+|UI/Main_Menu/T_icon_unknown)\.uasset$", RegexOptions.ExplicitCapture)]
-        private static partial Regex PalIconRegex();
-
-        [GeneratedRegex(@"^Pal/Content/Pal/Texture/PalIcon/NPC/.+\.uasset$")]
-        private static partial Regex NPCIconRegex();
-
         [GeneratedRegex(@"^Pal/Content/Others/InventoryItemIcon/Texture/T_itemicon_Weapon_(AssaultRifle_Default1|HandGun_Default|PumpActionShotgun|Launcher_Default|Bat|FragGrenade"
             + @"|FlameThrower_Default|GatlingGun|BowGun|LaserRifle|GuidedMissileLauncher|GrenadeLauncher|Katana)\.uasset$", RegexOptions.ExplicitCapture)]
         private static partial Regex WeaponIconRegex();
@@ -296,51 +340,28 @@ namespace PalworldRandomizer
                 IniData iniData = new IniDataParser(new() { AllowDuplicateKeys = true }).Parse(Encoding.ASCII.GetString(gameIni));
                 gameVersion = iniData["/Script/EngineSettings.GeneralProjectSettings"]["ProjectVersion"];
             }
-            bool gameUpdated = gameVersion != GameVersion;
+            bool gameUpdated = fileProvider.GameVersionUpdated = gameVersion != GameVersion;
             config.GameVersion = GameVersion = gameVersion;
 
-            string palIconFolder = PalIconPath();
-            Directory.CreateDirectory(palIconFolder);
-            string npcIconFolder = NpcIconPath();
-            Directory.CreateDirectory(npcIconFolder);
-            string weaponIconFolder = WeaponIconPath();
-            Directory.CreateDirectory(weaponIconFolder);
-            string importsFolder = ImportsPath();
+            Directory.CreateDirectory(PalIconPath());
+            Directory.CreateDirectory(NpcIconPath());
+            Directory.CreateDirectory(WeaponIconPath());
+
+            var threadLock = new Lock();
 
             //ConcurrentDictionary<string, byte> palEggSpawnsReferenced = new();
             Parallel.ForEach(fileProvider.Files, keyValuePair => {
-                if (PalIconRegex().IsMatch(keyValuePair.Key))
-                {
-                    SaveImage(palIconFolder);
-                }
-                else if (NPCIconRegex().IsMatch(keyValuePair.Key))
-                {
-                    SaveImage(npcIconFolder);
-                }
-                else if (WeaponIconRegex().IsMatch(keyValuePair.Key))
-                {
-                    SaveImage(weaponIconFolder);
-                }
-                //else if (TestBlueprintRegex().IsMatch(keyValuePair.Key)
-                //    && TestRegex().IsMatch(JsonConvert.SerializeObject(fileProvider.LoadAsset(keyValuePair.Key)))) {
-                //    palEggSpawnsReferenced.TryAdd(keyValuePair.Key, 0);
-                //}
+                (string key, var value) = keyValuePair;
 
-                void SaveImage(string folder)
-                {
-                    string filename = folder + '\\' + keyValuePair.Value.NameWithoutExtension + ".png";
-                    if ((gameUpdated || !File.Exists(filename)) && fileProvider.TryLoadPackage(keyValuePair.Value, out IPackage? package))
-                    {
-                        foreach (UObject export in package.GetExports())
-                        {
-                            if (export is UTexture texture)
-                            {
-                                File.WriteAllBytes(filename, [.. texture.Decode()!.Encode(ETextureFormat.Png, false, out _)]);
-                                break;
-                            }
-                        }
+                if (WeaponIconRegex().IsMatch(key)) {
+                    lock (threadLock) {
+                        fileProvider.SaveTexturePng(key, WeaponIconPath(), gameUpdated);
                     }
                 }
+                //else if (TestBlueprintRegex().IsMatch(key)
+                //    && TestRegex().IsMatch(JsonConvert.SerializeObject(fileProvider.LoadAsset(key)))) {
+                //    palEggSpawnsReferenced.TryAdd(key, 0);
+                //}
 
             });
 

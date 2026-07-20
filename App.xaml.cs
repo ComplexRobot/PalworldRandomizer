@@ -68,14 +68,13 @@ namespace PalworldRandomizer
 
         private void Initialize()
         {
-            DispatcherOperation dataOperation = Dispatcher.BeginInvoke(DispatcherPriority.Background, () =>
+            DispatcherOperation dataOperation = Dispatcher.BeginInvoke(DispatcherPriority.Background, async () =>
             {
-                var fileProvider = UAssetData.Initialize();
+                await using var fileProvider = UAssetData.Initialize();
                 Data.Initialize(fileProvider);
                 Randomize.Initialize();
 
                 fileProvider.PostMount();
-                fileProvider.Dispose();
 
                 Randomize.RestoreBackup();
                 PalSpawnPage palSpawnpage = new();

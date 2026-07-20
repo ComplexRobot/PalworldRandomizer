@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Runtime.ExceptionServices;
@@ -6,9 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
-using CUE4Parse.FileProvider;
 using CUE4Parse.UE4.Assets.Objects;
-using CUE4Parse.UE4.Assets.Objects.Properties;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.Utils;
 using Microsoft.Win32;
@@ -139,6 +136,14 @@ namespace PalworldRandomizer
             var humanNames = fileProvider.LoadDataTableText("Pal/Content/L10N/en/Pal/DataTable/Text/DT_HumanNameText_Common.uasset");
             var bossNPCIcons = fileProvider.LoadDataTableSoftObject("Pal/Content/Pal/DataTable/Character/DT_PalBossNPCIcon.uasset");
             var palIcons = fileProvider.LoadDataTableSoftObject("Pal/Content/Pal/DataTable/Character/DT_PalCharacterIconDataTable.uasset");
+
+            string unknownIconPath = fileProvider.SaveTexturePng(
+                "Pal/Content/Pal/Texture/UI/Main_Menu/T_icon_unknown.uasset", UAssetData.PalIconPath(),
+                fileProvider.GameVersionUpdated);
+
+            string commonHumanIconPath = fileProvider.SaveTexturePng(
+                "Pal/Content/Pal/Texture/PalIcon/Normal/T_CommonHuman_icon_normal.uasset", UAssetData.PalIconPath(),
+                fileProvider.GameVersionUpdated);
 
             Dictionary<string, string> weapons = new()
             {
@@ -305,9 +310,11 @@ namespace PalworldRandomizer
                     {
                         HumanBossNames.Add(keyPair.Key);
 
-                        if (bossNPCIcons.TryGetValue(keyPair.Key, out string? resourceKey) && resourceKey != null) {
-                            resourceKey = resourceKey[(resourceKey.LastIndexOf('/') + 1)..resourceKey.LastIndexOf('.')];
-                            PalIcon.Add(keyPair.Key, UAssetData.AppDataPath($@"Images\NPC\{resourceKey}.png"));
+                        if (bossNPCIcons.TryGetValue(keyPair.Key, out string? foundPath) && foundPath != null) {
+                            string resourcePath = fileProvider.SaveTexturePng(
+                                VfsFileProvider.SoftPathToHardPath(foundPath), UAssetData.NpcIconPath(),
+                                fileProvider.GameVersionUpdated);
+                            PalIcon.Add(keyPair.Key, resourcePath);
                         }
                     }
                     else
@@ -322,7 +329,7 @@ namespace PalworldRandomizer
                         }
                         else
                         {
-                            PalIcon.Add(keyPair.Key, UAssetData.AppDataPath(@"Images\PalIcon\T_CommonHuman_icon_normal.png"));
+                            PalIcon.Add(keyPair.Key, commonHumanIconPath);
                         }
                     }
                     if (keyPair.Key.EndsWith("Boss"))
@@ -335,11 +342,25 @@ namespace PalworldRandomizer
                     string resourceKey = resourceKeyRegex().Match(keyPair.Key).Groups[1].Value;
                     resourceKey = skipPrefix ? resourceKey[(resourceKey.IndexOf('_') + 1)..] : resourceKey;
 
-                    if (palIcons.TryGetValue(resourceKey, out string? foundName) && foundName != null) {
-                        string resourceName = UAssetData.AppDataPath($@"Images\PalIcon\{foundName[(foundName.LastIndexOf('/') + 1)..foundName.LastIndexOf('.')]}.png");
-                        PalIcon.Add(keyPair.Key, resourceName);
+                    if (palIcons.TryGetValue(resourceKey, out string? foundPath) && foundPath != null
+                        && foundPath != "/Game/Pal/Texture/PalIcon/Normal/T_dummy_icon.T_dummy_icon") {
+                        string hardPath = VfsFileProvider.SoftPathToHardPath(foundPath);
+
+                        if (fileProvider.Files.ContainsKey(hardPath)) {
+                            string resourcePath = fileProvider.SaveTexturePng(hardPath, UAssetData.PalIconPath(),
+                                fileProvider.GameVersionUpdated);
+                            PalIcon.Add(keyPair.Key, resourcePath);
+                        } else {
+                            string resourcePath = UAssetData.PalIconPath(Path.GetFileName(hardPath));
+
+                            if (File.Exists(resourcePath)) {
+                                PalIcon.Add(keyPair.Key, resourcePath);
+                            } else {
+                                PalIcon.Add(keyPair.Key, unknownIconPath);
+                            }
+                        }
                     } else if (keyPair.Value.IsPal) {
-                        PalIcon.Add(keyPair.Key, UAssetData.AppDataPath(@"Images\PalIcon\T_icon_unknown.png"));
+                        PalIcon.Add(keyPair.Key, unknownIconPath);
                     }
                 }
             }
@@ -353,7 +374,7 @@ namespace PalworldRandomizer
                 [.. fileProvider.LoadDataTableSoftObject("Pal/Content/Pal/DataTable/Spawner/DT_PalSpawnerPlacement.uasset").Values,
                 .. fileProvider.LoadDataTableSoftObject("Pal/Content/Pal/DataTable/Dungeon/DT_DungeonEnemySpawnDataTable.uasset").Values])
                 .Distinct()
-                .Select(value => value is string path ? $"Pal/Content{path["/Game".Length..path.LastIndexOf('.')]}.uasset" : null)
+                .Select(value => value is string path ? VfsFileProvider.SoftPathToHardPath(path) : null)
                 .Order();
 
             foreach (string? path in spawnerList)
