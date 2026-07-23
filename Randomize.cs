@@ -113,6 +113,11 @@ namespace PalworldRandomizer
         [GeneratedRegex(@"^Pal/Content/Pal/Blueprint/MapObject/Spawner/bp_palmapobjectspawner_palegg_.+?\.uasset$")]
         private static partial Regex PalEggSpawnSheetsRegex();
 
+        [GeneratedRegex("^(.+?_)?(HawkBird|Eagle|BirdDragon|ThunderBird|RedArmorBird|HadesBird|Suzaku|Horus|"
+            + "YakushimaMonster002|YakushimaMonster003|YakushimaBoss001|GhostDragon|BlueSkyDragon)(_[^_]+)?$",
+            RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture)]
+        private static partial Regex FlyingPalNameRegex();
+
         public static void Initialize(VfsFileProvider fileProvider)
         {
             var palDataAsset = fileProvider.LoadDataTable("Pal/Content/Pal/DataTable/Character/DT_PalMonsterParameter.uasset");
@@ -162,26 +167,7 @@ namespace PalworldRandomizer
                 { "Katana", UAssetData.AppDataPath(@"Images\InventoryItemIcon\T_itemicon_Weapon_Katana.png") },
                 { "GiantClub", UAssetData.AppDataPath(@"Images\InventoryItemIcon\T_itemicon_Weapon_Bat.png") },
             };
-            string[] flyingSuffixes =
-            [
-                "HawkBird",
-                "Eagle",
-                "BirdDragon",
-                "BirdDragon_Ice",
-                "ThunderBird",
-                "RedArmorBird",
-                "HadesBird",
-                "HadesBird_Electric",
-                "Suzaku",
-                "Suzaku_Water",
-                "Horus",
-                "Horus_Water",
-                "YakushimaMonster002",
-                "YakushimaMonster003",
-                "YakushimaMonster003_Purple",
-                "YakushimaBoss001",
-                "YakushimaBoss001_Small",
-            ];
+
             Dictionary<string, string> humanNameFixes = new()
             {
                 //{ "GrassBoss", "Zoe" },
@@ -282,7 +268,7 @@ namespace PalworldRandomizer
                         SimpleName.Add(new SpawnData(keyPair.Key).SimpleName, keyPair.Key);
                     }
                     PalIconCheck((isBoss || isSummon) && !keyPair.Key.EndsWith("_Otomo"));
-                    if (Array.Exists(flyingSuffixes, keyPair.Key.EndsWith))
+                    if (FlyingPalNameRegex().IsMatch(keyPair.Key))
                     {
                         FlyingNames.Add(keyPair.Key);
                     }
