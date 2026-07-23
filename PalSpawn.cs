@@ -85,7 +85,7 @@ namespace PalworldRandomizer
             MaxLevel = 4;
         }
 
-        [GeneratedRegex("^(?<prefix>(RAID|PREDATOR|SUMMON|Quest(_[^_]+)?)_)?.+?(_(?<suffix>([0-9]+(_.+)?|MAX|Oilrig|Otomo|Hand_(Left|Right)|Head|Tower|Quest(_(Friend|Enemy))?)(_[0-9]+)?))?$",
+        [GeneratedRegex("^(?<prefix>(RAID|PREDATOR|SUMMON|Quest(_[^_]+)?)_)?.+?(_(?<suffix>([0-9]+(_.+)?|MAX|Oilrig|Otomo|Hand_(Left|Right)|Head|Tower|Quest(_(Friend|Enemy))?|BossRush)(_[0-9]+)?))?$",
             RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture)]
         private static partial Regex nameSuffixRegex();
         
