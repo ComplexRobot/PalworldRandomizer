@@ -180,26 +180,26 @@ namespace PalworldRandomizer
                 { "SakurajimaBoss", "Saya" },
                 { "VikingBoss", "Bjorn" },
             };
-            foreach (KeyValuePair<string, CharacterData> keyPair in PalData)
+            foreach ((string key, var value) in PalData)
             {
-                if (keyPair.Value.IsPal)
+                if (value.IsPal)
                 {
-                    bool isTowerBoss = keyPair.Key.StartsWith("GYM_", StringComparison.OrdinalIgnoreCase);
-                    bool isRaidBoss = keyPair.Key.StartsWith("RAID_", StringComparison.OrdinalIgnoreCase);
-                    bool isPredator = keyPair.Key.StartsWith("PREDATOR_", StringComparison.OrdinalIgnoreCase);
-                    bool isBoss = keyPair.Key.StartsWith("BOSS_", StringComparison.OrdinalIgnoreCase) || isTowerBoss || isRaidBoss || isPredator;
-                    bool isSummon = keyPair.Key.StartsWith("SUMMON_", StringComparison.OrdinalIgnoreCase);
-                    bool isOilrig = keyPair.Key.EndsWith("_Oilrig", StringComparison.OrdinalIgnoreCase);
-                    bool isQuest = keyPair.Key.StartsWith("Quest_", StringComparison.OrdinalIgnoreCase) || keyPair.Key.EndsWith("_Quest", StringComparison.OrdinalIgnoreCase)
-                         || keyPair.Key.EndsWith("_Quest_Friend", StringComparison.OrdinalIgnoreCase) || keyPair.Key.EndsWith("_Quest_Enemy", StringComparison.OrdinalIgnoreCase);
-                    bool isTower = keyPair.Key.EndsWith("_Tower", StringComparison.OrdinalIgnoreCase);
-                    bool isPolice = keyPair.Key.StartsWith("POLICE_", StringComparison.OrdinalIgnoreCase);
+                    bool isTowerBoss = key.StartsWith("GYM_", StringComparison.OrdinalIgnoreCase);
+                    bool isRaidBoss = key.StartsWith("RAID_", StringComparison.OrdinalIgnoreCase);
+                    bool isPredator = key.StartsWith("PREDATOR_", StringComparison.OrdinalIgnoreCase);
+                    bool isBoss = key.StartsWith("BOSS_", StringComparison.OrdinalIgnoreCase) || isTowerBoss || isRaidBoss || isPredator;
+                    bool isSummon = key.StartsWith("SUMMON_", StringComparison.OrdinalIgnoreCase);
+                    bool isOilrig = key.EndsWith("_Oilrig", StringComparison.OrdinalIgnoreCase);
+                    bool isQuest = key.StartsWith("Quest_", StringComparison.OrdinalIgnoreCase) || key.EndsWith("_Quest", StringComparison.OrdinalIgnoreCase)
+                         || key.EndsWith("_Quest_Friend", StringComparison.OrdinalIgnoreCase) || key.EndsWith("_Quest_Enemy", StringComparison.OrdinalIgnoreCase);
+                    bool isTower = key.EndsWith("_Tower", StringComparison.OrdinalIgnoreCase);
+                    bool isPolice = key.StartsWith("POLICE_", StringComparison.OrdinalIgnoreCase);
 
                     string nameString;
 
-                    if (keyPair.Value.OverrideNameTextID is string textId && palNames.TryGetValue(textId, out string? name) && name is not null) {
+                    if (value.OverrideNameTextID is string textId && palNames.TryGetValue(textId, out string? name) && name is not null) {
                         nameString = name;
-                    } else if (palNames.TryGetValue($"PAL_NAME_{keyPair.Key}", out string? nameFallback) && nameFallback is not null) {
+                    } else if (palNames.TryGetValue($"PAL_NAME_{key}", out string? nameFallback) && nameFallback is not null) {
                         nameString = nameFallback;
                     } else {
                         nameString = "en_text";
@@ -213,27 +213,27 @@ namespace PalworldRandomizer
                     {
                         nameString = nameString.Replace("  ", " ");
                     }
-                    PalName.Add(keyPair.Key, nameString == "en_text" ? (isBoss ? keyPair.Key[(keyPair.Key.IndexOf('_') + 1)..] : keyPair.Key) : nameString);
-                    if (keyPair.Value.ZukanIndex > 0 && !isSummon && !isOilrig && !isQuest && !isTower)
+                    PalName.Add(key, nameString == "en_text" ? (isBoss ? key[(key.IndexOf('_') + 1)..] : key) : nameString);
+                    if (value.ZukanIndex > 0 && !isSummon && !isOilrig && !isQuest && !isTower)
                     {
-                        PalList.Add(keyPair.Key);
+                        PalList.Add(key);
                     }
-                    else if (!isRaidBoss && keyPair.Key.Contains("Yakushima"))
+                    else if (!isRaidBoss && key.Contains("Yakushima"))
                     {
                         if (isBoss)
                         {
-                            TerrariaMonstersBosses.Add(keyPair.Key);
+                            TerrariaMonstersBosses.Add(key);
                         }
                         else
                         {
-                            TerrariaMonsters.Add(keyPair.Key);
+                            TerrariaMonsters.Add(key);
                         }
                     }
-                    else if (keyPair.Key.EndsWith("_Otomo", StringComparison.OrdinalIgnoreCase) && !isBoss)
+                    else if (key.EndsWith("_Otomo", StringComparison.OrdinalIgnoreCase) && !isBoss)
                     {
-                        TowerNonBossNames.Add(keyPair.Key);
+                        TowerNonBossNames.Add(key);
                     } else if (isPolice) {
-                        PolicePalNames.Add(keyPair.Key);
+                        PolicePalNames.Add(key);
                     }
 
                     if (!isBoss || isTowerBoss || isRaidBoss || isPredator)
@@ -243,7 +243,7 @@ namespace PalworldRandomizer
                             {
                                 try
                                 {
-                                    BossName.Add(keyPair.Key, PalData.Keys.First(key => string.Compare(key, $"BOSS_{keyPair.Key}", true) == 0));
+                                    BossName.Add(key, PalData.Keys.First(k => k.Equals($"BOSS_{key}", StringComparison.OrdinalIgnoreCase)));
                                 }
                                 catch
                                 {
@@ -252,86 +252,86 @@ namespace PalworldRandomizer
                             else if (isTowerBoss)
                             {
                                 // TODO: Change to regex
-                                if (!keyPair.Key.EndsWith("_2") && !keyPair.Key.EndsWith("_2_Avatar") && !keyPair.Key.EndsWith("_2_Servant") && !keyPair.Key.EndsWith("_Otomo"))
+                                if (!key.EndsWith("_2") && !key.EndsWith("_2_Avatar") && !key.EndsWith("_2_Servant") && !key.EndsWith("_Otomo"))
                                 {
-                                    TowerBossNames.Add(keyPair.Key);
+                                    TowerBossNames.Add(key);
                                 }
                             }
                             else if (isPredator)
                             {
-                                PredatorNames.Add(keyPair.Key);
+                                PredatorNames.Add(key);
                             }
                             else
                             {
                                 // Moon Lord and True Eye of Cthulhu do not work
-                                if (!keyPair.Key.EndsWith("_2") && !keyPair.Key.StartsWith("RAID_YakushimaBoss002") && keyPair.Key != "RAID_YakushimaBoss001_Green")
+                                if (!key.EndsWith("_2") && !key.StartsWith("RAID_YakushimaBoss002") && key != "RAID_YakushimaBoss001_Green")
                                 {
-                                    RaidBossNames.Add(keyPair.Key);
+                                    RaidBossNames.Add(key);
                                 }
                             }
                         }
 
-                        SimpleName.Add(new SpawnData(keyPair.Key).SimpleName, keyPair.Key);
+                        SimpleName.Add(new SpawnData(key).SimpleName, key);
                     }
-                    PalIconCheck((isBoss || isSummon) && !keyPair.Key.EndsWith("_Otomo"));
-                    if (FlyingPalNameRegex().IsMatch(keyPair.Key))
+                    PalIconCheck((isBoss || isSummon) && !key.EndsWith("_Otomo"));
+                    if (FlyingPalNameRegex().IsMatch(key))
                     {
-                        FlyingNames.Add(keyPair.Key);
+                        FlyingNames.Add(key);
                     }
                 }
                 else
                 {
-                    SimpleName.Add(keyPair.Key, keyPair.Key);
+                    SimpleName.Add(key, key);
 
-                    if (keyPair.Value.OverrideNameTextID is string textId && humanNames.TryGetValue(textId, out string? name) && name is not null)
+                    if (value.OverrideNameTextID is string textId && humanNames.TryGetValue(textId, out string? name) && name is not null)
                     {
-                        PalName.Add(keyPair.Key, name.Trim());
+                        PalName.Add(key, name.Trim());
                     }
                     else
                     {
-                        if (humanNameFixes.TryGetValue(keyPair.Key, out string? value))
+                        if (humanNameFixes.TryGetValue(key, out string? nameFix))
                         {
-                            PalName.Add(keyPair.Key, value);
+                            PalName.Add(key, nameFix);
                         }
                         else
                         {
-                            PalName.Add(keyPair.Key, "-");
+                            PalName.Add(key, "-");
                         }
                     }
-                    if (keyPair.Key.StartsWith("BOSS_", StringComparison.OrdinalIgnoreCase))
+                    if (key.StartsWith("BOSS_", StringComparison.OrdinalIgnoreCase))
                     {
-                        HumanBossNames.Add(keyPair.Key);
+                        HumanBossNames.Add(key);
 
-                        if (bossNPCIcons.TryGetValue(keyPair.Key, out string? foundPath) && foundPath != null) {
+                        if (bossNPCIcons.TryGetValue(key, out string? foundPath) && foundPath != null) {
                             string resourcePath = fileProvider.SaveTexturePng(
                                 VfsFileProvider.SoftPathToHardPath(foundPath), UAssetData.NpcIconPath(),
                                 fileProvider.GameVersionUpdated);
-                            PalIcon.Add(keyPair.Key, resourcePath);
+                            PalIcon.Add(key, resourcePath);
                         }
                     }
                     else
                     {
                         PalIconCheck();
                     }
-                    if (!PalIcon.ContainsKey(keyPair.Key))
+                    if (!PalIcon.ContainsKey(key))
                     {
-                        if (PalData[keyPair.Key].Weapon != null && weapons.TryGetValue(PalData[keyPair.Key].Weapon!, out string? value))
+                        if (PalData[key].Weapon != null && weapons.TryGetValue(PalData[key].Weapon!, out string? weaponName))
                         {
-                            PalIcon.Add(keyPair.Key, value);
+                            PalIcon.Add(key, weaponName);
                         }
                         else
                         {
-                            PalIcon.Add(keyPair.Key, commonHumanIconPath);
+                            PalIcon.Add(key, commonHumanIconPath);
                         }
                     }
-                    if (keyPair.Key.EndsWith("Boss"))
+                    if (key.EndsWith("Boss"))
                     {
-                        TowerHumanNames.Add(keyPair.Key);
+                        TowerHumanNames.Add(key);
                     }
                 }
                 void PalIconCheck(bool skipPrefix = false)
                 {
-                    string resourceKey = resourceKeyRegex().Match(keyPair.Key).Groups[1].Value;
+                    string resourceKey = resourceKeyRegex().Match(key).Groups[1].Value;
                     resourceKey = skipPrefix ? resourceKey[(resourceKey.IndexOf('_') + 1)..] : resourceKey;
 
                     if (palIcons.TryGetValue(resourceKey, out string? foundPath) && foundPath != null
@@ -341,18 +341,18 @@ namespace PalworldRandomizer
                         if (fileProvider.Files.ContainsKey(hardPath)) {
                             string resourcePath = fileProvider.SaveTexturePng(hardPath, UAssetData.PalIconPath(),
                                 fileProvider.GameVersionUpdated);
-                            PalIcon.Add(keyPair.Key, resourcePath);
+                            PalIcon.Add(key, resourcePath);
                         } else {
                             string resourcePath = UAssetData.PalIconPath(Path.GetFileName(hardPath));
 
                             if (File.Exists(resourcePath)) {
-                                PalIcon.Add(keyPair.Key, resourcePath);
+                                PalIcon.Add(key, resourcePath);
                             } else {
-                                PalIcon.Add(keyPair.Key, unknownIconPath);
+                                PalIcon.Add(key, unknownIconPath);
                             }
                         }
-                    } else if (keyPair.Value.IsPal) {
-                        PalIcon.Add(keyPair.Key, unknownIconPath);
+                    } else if (value.IsPal) {
+                        PalIcon.Add(key, unknownIconPath);
                     }
                 }
             }
