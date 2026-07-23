@@ -30,6 +30,8 @@ namespace PalworldRandomizer
         public static List<string> PredatorNames { get; private set; } = [];
         public static List<string> HumanBossNames { get; private set; } = [];
         public static HashSet<string> FlyingNames { get; private set; } = [];
+        /// <summary>List of PIDF Rider pals.</summary>
+        public static List<string> PolicePalNames { get; private set; } = [];
         public static Dictionary<string, List<SpawnEntry>> SoloEntries { get; private set; } = new(StringComparer.OrdinalIgnoreCase);
         public static Dictionary<string, List<SpawnEntry>> BossEntries { get; private set; } = new(StringComparer.OrdinalIgnoreCase);
         public static List<SpawnEntry> GroupEntries { get; private set; } = [];
@@ -191,6 +193,7 @@ namespace PalworldRandomizer
                     bool isQuest = keyPair.Key.StartsWith("Quest_", StringComparison.OrdinalIgnoreCase) || keyPair.Key.EndsWith("_Quest", StringComparison.OrdinalIgnoreCase)
                          || keyPair.Key.EndsWith("_Quest_Friend", StringComparison.OrdinalIgnoreCase) || keyPair.Key.EndsWith("_Quest_Enemy", StringComparison.OrdinalIgnoreCase);
                     bool isTower = keyPair.Key.EndsWith("_Tower", StringComparison.OrdinalIgnoreCase);
+                    bool isPolice = keyPair.Key.StartsWith("POLICE_", StringComparison.OrdinalIgnoreCase);
 
                     string nameString;
 
@@ -229,7 +232,10 @@ namespace PalworldRandomizer
                     else if (keyPair.Key.EndsWith("_Otomo", StringComparison.OrdinalIgnoreCase) && !isBoss)
                     {
                         TowerNonBossNames.Add(keyPair.Key);
+                    } else if (isPolice) {
+                        PolicePalNames.Add(keyPair.Key);
                     }
+
                     if (!isBoss || isTowerBoss || isRaidBoss || isPredator)
                     {
                         if (!isQuest) {
