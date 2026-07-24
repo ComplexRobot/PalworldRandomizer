@@ -73,8 +73,8 @@ namespace PalworldRandomizer
             "Male_Soldier02_Invader",
             "Female_Soldier03_Invader",
             "Female_Soldier04_Invader",
-            "Ninja_NoEquip",
-            "NinjaElite_NoEquip",
+            "Male_Ninja01",
+            "Male_NinjaElite01",
             "Ninja_Grenade",
             "NinjaElite_Grenade",
             "Ninja_Bowgun",
@@ -588,7 +588,7 @@ namespace PalworldRandomizer
                     AreaData[filename].minLevelNight = Convert.ToInt32(nightAverageLevel / nightWeightSum - nightLevelRange / 2.0f / nightWeightSum);
                     AreaData[filename].maxLevelNight = Convert.ToInt32(nightAverageLevel / nightWeightSum + nightLevelRange / 2.0f / nightWeightSum);
                 }
-                AreaData[filename].isBoss = filename.Contains("boss", StringComparison.OrdinalIgnoreCase);
+                AreaData[filename].isBoss = filename.Contains("boss", StringComparison.OrdinalIgnoreCase) || AreaData[filename].SpawnEntries[0].SpawnList[0].IsBoss;
                 AreaData[filename].isInDungeon = filename.Contains("dungeon", StringComparison.OrdinalIgnoreCase);
                 AreaData[filename].isPredator = filename.Contains("PreBOSS", StringComparison.OrdinalIgnoreCase);
                 AreaData[filename].isMimic = Path.GetFileNameWithoutExtension(filename).EndsWith("_mimic", StringComparison.OrdinalIgnoreCase);
@@ -1231,7 +1231,13 @@ namespace PalworldRandomizer
                     || (formData.NightOnlyDungeonBosses == condition && area.isDungeonBoss)
                     || (formData.NightOnlyBosses == condition && area.isFieldBoss)
                     || (formData.NightOnlyPredators == condition && area.isPredator);
-            bool BossesEverywhere(AreaData area) => area.isEgg ? formData.BossEggs : (area.isInDungeon ? formData.BossesEverywhereDungeons : formData.BossesEverywhere);
+
+            bool BossesEverywhere(AreaData area) => (area.isEgg ? formData.BossEggs
+                : (area.isInDungeon ? formData.BossesEverywhereDungeons : formData.BossesEverywhere))
+                && (!formData.VanillaRestrict || area.isEgg || area.isCage
+                || Data.AreaData[area.filename.StartsWith('~') ? area.filename[1..] : area.filename].SpawnEntries
+                .Exists(x => x.SpawnList.Exists(y => Data.PalData[y.Name].IsPal && y.Name != "RowName")));
+
             double BossesEverywhereChance(AreaData area) => area.isEgg ? bossEggsChance : (area.isInDungeon ? bossesEverywhereDungeonsChance : bossesEverywhereChance);
             int Rarity(SpawnData spawnData)
             {
