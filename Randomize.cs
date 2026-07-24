@@ -95,6 +95,7 @@ namespace PalworldRandomizer
             "Police_Invader_Shotgun",
             "Police_Invader_Rifle",
             "Female_Kunoichi01",
+            "Female_SurveyGirl04",
         ];
 
         public static readonly string[] policeNames = [
@@ -201,7 +202,6 @@ namespace PalworldRandomizer
             "Female_SurveyGirl01",
             "Female_SurveyGirl02",
             "Female_SurveyGirl03",
-            "Female_SurveyGirl04",
             "Female_SurveyWoman01",
             "Female_SurveyWoman02",
             "Male_SurveyMan01",
