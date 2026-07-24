@@ -911,7 +911,8 @@ namespace PalworldRandomizer
                         Data.PalData[name].Weapon switch {
                             "FlameThrower" or "RocketLauncher" or "MissileLauncher" or "GrenadeLauncher"
                                 => new SpawnEntry { SpawnList = [new(name, 1, 2)] },
-                            "GatlingGun" => new SpawnEntry { SpawnList = [new(name)] },
+                            string n when n is "GatlingGun" || name.Contains("Fat")
+                                => new SpawnEntry { SpawnList = [new(name)] },
                             _ => new SpawnEntry { SpawnList = [new(name, 2, 3)] },
                         }
                     ));
