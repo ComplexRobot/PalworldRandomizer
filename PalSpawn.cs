@@ -196,6 +196,8 @@ namespace PalworldRandomizer
         public bool isMonsterOnly = false;
         /// <summary>Named "allarea" - contains spawn points all over the map.</summary>
         public bool IsAllArea { get; set; } = false;
+        /// <summary>The spawn list contains only humans.</summary>
+        public bool IsOnlyHumans { get; set; } = false;
         public float eggRespawnTime = 0;
         public float eggLotteryCooldown = 0;
         private readonly ObservableList<SpawnEntry> virtualEntries = [];
@@ -222,6 +224,7 @@ namespace PalworldRandomizer
                 isMimic = isMimic,
                 isMonsterOnly = isMonsterOnly,
                 IsAllArea = IsAllArea,
+                IsOnlyHumans = IsOnlyHumans,
                 eggRespawnTime = eggRespawnTime,
                 eggLotteryCooldown = eggLotteryCooldown,
                 spawnExportData =

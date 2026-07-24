@@ -602,6 +602,8 @@ namespace PalworldRandomizer
                 AreaData[filename].isField = !AreaData[filename].isBoss && !AreaData[filename].isInDungeon;
                 AreaData[filename].isQuest = AreaData[filename].SimpleName.StartsWith("Quest_", StringComparison.OrdinalIgnoreCase);
                 AreaData[filename].IsAllArea = filename.Contains("allarea", StringComparison.OrdinalIgnoreCase);
+                AreaData[filename].IsOnlyHumans = !AreaData[filename].SpawnEntries
+                    .Exists(x => x.SpawnList.Exists(y => Data.PalData[y.Name].IsPal && y.Name != "RowName"));
             }
             string firstAreaName = "BP_PalSpawner_Sheets_green_A.uasset";
             AreaData[firstAreaName].minLevel = AreaData[firstAreaName].SpawnEntries[0].SpawnList[0].MinLevel;
@@ -1256,9 +1258,7 @@ namespace PalworldRandomizer
 
             bool BossesEverywhere(AreaData area) => (area.isEgg ? formData.BossEggs
                 : (area.isInDungeon ? formData.BossesEverywhereDungeons : formData.BossesEverywhere))
-                && (!formData.VanillaRestrict || area.isEgg || area.isCage
-                || Data.AreaData[area.filename.StartsWith('~') ? area.filename[1..] : area.filename].SpawnEntries
-                .Exists(x => x.SpawnList.Exists(y => Data.PalData[y.Name].IsPal && y.Name != "RowName")));
+                && (!formData.VanillaRestrict || area.isEgg || area.isCage || !area.IsOnlyHumans);
 
             double BossesEverywhereChance(AreaData area) => area.isEgg ? bossEggsChance : (area.isInDungeon ? bossesEverywhereDungeonsChance : bossesEverywhereChance);
             int Rarity(SpawnData spawnData)
