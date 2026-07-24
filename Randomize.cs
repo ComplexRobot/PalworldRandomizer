@@ -783,10 +783,12 @@ namespace PalworldRandomizer
                     if (formData.SpawnAlphas && !isTerraria || formData.SpawnTerrariaBosses && isTerraria)
                     {
                         // TODO: Make this dynamic
-                        if (key == "BlackCentaur") // Skip Necromus since it is included with Paladius
-                        {
+                        // Skip Necromus since it is included with Paladius
+                        // + Celesdir is included with Celesdir Noct
+                        if (key is "BlackCentaur" or "WhiteDeer") {
                             continue;
                         }
+
                         // Problem here if there are ever vanilla bosses with no non-boss counterpart
                         if (Data.BossName.TryGetValue(key, out string? bossKey))
                         {
