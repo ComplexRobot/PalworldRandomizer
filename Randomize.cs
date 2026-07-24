@@ -234,6 +234,7 @@ namespace PalworldRandomizer
             "Female_People03",
             "Male_People03",
             "Female_SakurajimaPeople01",
+            "Male_SakurajimaPeople01",
             "Female_SnowPeople01",
             "Male_SnowPeople01",
             "Female_SorajimaPeople01",
