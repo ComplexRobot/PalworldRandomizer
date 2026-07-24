@@ -1644,8 +1644,9 @@ namespace PalworldRandomizer
                     // NOT All Species Everywhere
                     else
                     {
-                        if (formData.MethodGlobalSwap)
-                        {
+                        if (formData.MethodGlobalSwap) {
+                            spawnEntriesOriginal = spawnEntriesOriginal.FindAll(x => x.SpawnList[0].Name != "RowName");
+
                             if (area.isEgg)
                             {
                                 spawnEntriesOriginal = spawnEntriesOriginal.FindAll(x => !x.SpawnList[0].IsBoss);
@@ -1669,8 +1670,9 @@ namespace PalworldRandomizer
                             if (formData.MethodGlobalSwap)
                             {
                                 SpawnEntry spawnEntry = spawnEntriesOriginal[i];
-                                if (area.isEgg && swapMap.TryGetValue(spawnEntry.SpawnList[0].Name, out SpawnEntry? value) && !Data.PalData[value.SpawnList[0].Name].IsPal)
-                                {
+                                if ((area.isEgg || area.isCage && !formData.AllowCagedHumans)
+                                    && swapMap.TryGetValue(spawnEntry.SpawnList[0].Name, out SpawnEntry? value)
+                                    && !Data.PalData[value.SpawnList[0].Name].IsPal) {
                                     swapMap.Remove(spawnEntry.SpawnList[0].Name);
                                 }
                                 if (!swapMap.ContainsKey(spawnEntry.SpawnList[0].Name))
