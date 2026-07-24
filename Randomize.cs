@@ -290,22 +290,21 @@ namespace PalworldRandomizer
                 "Pal/Content/Pal/Texture/PalIcon/Normal/T_CommonHuman_icon_normal.uasset", UAssetData.PalIconPath("Human"),
                 fileProvider.GameVersionUpdated);
 
-            Dictionary<string, string> weapons = new()
-            {
-                { "AssaultRifle", UAssetData.AppDataPath(@"Images\InventoryItemIcon\T_itemicon_Weapon_AssaultRifle_Default1.png") },
-                { "Handgun", UAssetData.AppDataPath(@"Images\InventoryItemIcon\T_itemicon_Weapon_HandGun_Default.png") },
-                { "Shotgun", UAssetData.AppDataPath(@"Images\InventoryItemIcon\T_itemicon_Weapon_PumpActionShotgun.png") },
-                { "RocketLauncher", UAssetData.AppDataPath(@"Images\InventoryItemIcon\T_itemicon_Weapon_Launcher_Default.png") },
-                { "MeleeWeapon", UAssetData.AppDataPath(@"Images\InventoryItemIcon\T_itemicon_Weapon_Bat.png") },
-                { "ThrowObject", UAssetData.AppDataPath(@"Images\InventoryItemIcon\T_itemicon_Weapon_FragGrenade.png") },
-                { "FlameThrower", UAssetData.AppDataPath(@"Images\InventoryItemIcon\T_itemicon_Weapon_FlameThrower_Default.png") },
-                { "GatlingGun", UAssetData.AppDataPath(@"Images\InventoryItemIcon\T_itemicon_Weapon_GatlingGun.png") },
-                { "BowGun", UAssetData.AppDataPath(@"Images\InventoryItemIcon\T_itemicon_Weapon_BowGun.png") },
-                { "LaserRifle", UAssetData.AppDataPath(@"Images\InventoryItemIcon\T_itemicon_Weapon_LaserRifle.png") },
-                { "MissileLauncher", UAssetData.AppDataPath(@"Images\InventoryItemIcon\T_itemicon_Weapon_GuidedMissileLauncher.png") },
-                { "GrenadeLauncher", UAssetData.AppDataPath(@"Images\InventoryItemIcon\T_itemicon_Weapon_GrenadeLauncher.png") },
-                { "Katana", UAssetData.AppDataPath(@"Images\InventoryItemIcon\T_itemicon_Weapon_Katana.png") },
-                { "GiantClub", UAssetData.AppDataPath(@"Images\InventoryItemIcon\T_itemicon_Weapon_Bat.png") },
+            var weapons = new Dictionary<string, string> {
+                { "AssaultRifle", UAssetData.WeaponIconPath("T_itemicon_Weapon_AssaultRifle_Default1.png") },
+                { "Handgun", UAssetData.WeaponIconPath("T_itemicon_Weapon_HandGun_Default.png") },
+                { "Shotgun", UAssetData.WeaponIconPath("T_itemicon_Weapon_PumpActionShotgun.png") },
+                { "RocketLauncher", UAssetData.WeaponIconPath("T_itemicon_Weapon_Launcher_Default.png") },
+                { "MeleeWeapon", UAssetData.WeaponIconPath("T_itemicon_Weapon_Bat.png") },
+                { "ThrowObject", UAssetData.WeaponIconPath("T_itemicon_Weapon_FragGrenade.png") },
+                { "FlameThrower", UAssetData.WeaponIconPath("T_itemicon_Weapon_FlameThrower_Default.png") },
+                { "GatlingGun", UAssetData.WeaponIconPath("T_itemicon_Weapon_GatlingGun.png") },
+                { "BowGun", UAssetData.WeaponIconPath("T_itemicon_Weapon_BowGun.png") },
+                { "LaserRifle", UAssetData.WeaponIconPath("T_itemicon_Weapon_LaserRifle.png") },
+                { "MissileLauncher", UAssetData.WeaponIconPath("T_itemicon_Weapon_GuidedMissileLauncher.png") },
+                { "GrenadeLauncher", UAssetData.WeaponIconPath("T_itemicon_Weapon_GrenadeLauncher.png") },
+                { "Katana", UAssetData.WeaponIconPath("T_itemicon_Weapon_Katana.png") },
+                { "GiantClub", UAssetData.WeaponIconPath("T_itemicon_Weapon_Bat.png") },
             };
 
             Dictionary<string, string> humanNameFixes = new()
