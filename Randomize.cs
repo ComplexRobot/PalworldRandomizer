@@ -599,6 +599,7 @@ namespace PalworldRandomizer
                 AreaData[filename].isDungeon = !AreaData[filename].isBoss && AreaData[filename].isInDungeon && !AreaData[filename].isMimic;
                 AreaData[filename].isField = !AreaData[filename].isBoss && !AreaData[filename].isInDungeon;
                 AreaData[filename].isQuest = AreaData[filename].SimpleName.StartsWith("Quest_", StringComparison.OrdinalIgnoreCase);
+                AreaData[filename].IsAllArea = filename.Contains("allarea", StringComparison.OrdinalIgnoreCase);
             }
             string firstAreaName = "BP_PalSpawner_Sheets_green_A.uasset";
             AreaData[firstAreaName].minLevel = AreaData[firstAreaName].SpawnEntries[0].SpawnList[0].MinLevel;
@@ -1195,7 +1196,8 @@ namespace PalworldRandomizer
                 && (formData.RandomizeCages || !area.isCage)
                 && (formData.RandomizeEggs || !area.isEgg)
                 && (formData.RandomizeQuests || !area.isQuest)
-                && (formData.RandomizeMimics || !area.isMimic));
+                && (formData.RandomizeMimics || !area.isMimic)
+                && (formData.RandomizeAllArea || !area.IsAllArea));
             if (!formData.MethodNone)
             {
                 List<AreaData> addedBosses = subList.FindAll(area => !area.isBoss && !area.isCage && !area.isMonsterOnly && BossesEverywhere(area)).ConvertAll(x => x.Clone());

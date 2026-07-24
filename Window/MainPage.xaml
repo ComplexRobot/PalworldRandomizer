@@ -53,6 +53,7 @@
                     <CheckBox Name="randomizeEggs" IsChecked="True">Overworld Eggs</CheckBox>
                     <CheckBox Name="randomizeQuests" IsChecked="False" Visibility="Collapsed">Quest Areas</CheckBox>
                     <CheckBox Name="randomizeMimics" IsChecked="False" Visibility="Collapsed">Mimics</CheckBox>
+                    <CheckBox Name="randomizeAllArea" IsChecked="True">Global Spawns</CheckBox>
                     <WrapPanel Margin="10,0,0,0">
                         <WrapPanel.Style>
                             <Style TargetType="WrapPanel">

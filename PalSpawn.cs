@@ -194,6 +194,8 @@ namespace PalworldRandomizer
         public bool isQuest = false;
         public bool isMimic = false;
         public bool isMonsterOnly = false;
+        /// <summary>Named "allarea" - contains spawn points all over the map.</summary>
+        public bool IsAllArea { get; set; } = false;
         public float eggRespawnTime = 0;
         public float eggLotteryCooldown = 0;
         private readonly ObservableList<SpawnEntry> virtualEntries = [];
