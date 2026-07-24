@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Xml.Linq;
 using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.Utils;
@@ -907,7 +908,9 @@ namespace PalworldRandomizer
                 }
 
                 static void AddSimpleHumanSpawns(IEnumerable<string> names) =>
-                    humanSpawns.AddRange(names.Select(name =>
+                    humanSpawns.AddRange(names
+                        .Where(name => !humanSpawns.Exists(x => x.SpawnList.Exists(y => y.Name == name)))
+                        .Select(name =>
                         Data.PalData[name].Weapon switch {
                             "FlameThrower" or "RocketLauncher" or "MissileLauncher" or "GrenadeLauncher"
                                 => new SpawnEntry { SpawnList = [new(name, 1, 2)] },
