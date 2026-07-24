@@ -42,6 +42,8 @@ namespace PalworldRandomizer
         public static List<string> TowerHumanNames { get; private set; } = [];
         public static string FirstCage { get; private set; } = null!;
         public static string FirstEgg { get; private set; } = null!;
+        /// <summary>Filename of the first boss spawn table.</summary>
+        public static string FirstBoss { get; private set; } = null!;
 
         public static readonly string[] humanNames = [
             "Believer_Bat",
@@ -604,6 +606,8 @@ namespace PalworldRandomizer
             string firstAreaName = "BP_PalSpawner_Sheets_green_A.uasset";
             AreaData[firstAreaName].minLevel = AreaData[firstAreaName].SpawnEntries[0].SpawnList[0].MinLevel;
             AreaData[firstAreaName].maxLevel = AreaData[firstAreaName].SpawnEntries[0].SpawnList[0].MaxLevel;
+
+            FirstBoss = AreaData.Values.Where(x => x.isBoss).MinBy(x => x.filename)!.filename;
 
             var cageData = FileModify.ReadCageData(fileProvider.LoadDataTableCagePal("Pal/Content/Pal/DataTable/Character/DT_CapturedCagePal.uasset"));
             FirstCage = cageData.Values.Select(x => x.filename).Min()!;
@@ -1578,7 +1582,7 @@ namespace PalworldRandomizer
                     if (formData.MethodFull)
                     {
                         // area.filename check for first boss area to reset the lists when changing from non-boss to bosses
-                        if (!area.isFieldBoss || formData.FieldBossExtended || area.filename == "BP_PalSpawner_Sheets_1_10_plain_F_Boss_BlueDragon.uasset")
+                        if (!area.isFieldBoss || formData.FieldBossExtended || area.filename == Data.FirstBoss)
                         {
                             basicSpawnsCurrent = [.. basicSpawnsOriginal];
                             bossSpawnsCurrent = [.. bossSpawnsOriginal];
