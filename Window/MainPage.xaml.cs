@@ -177,6 +177,10 @@ namespace PalworldRandomizer
         public int EggRespawnMinutes = int.Parse(window.eggRespawnMinutes.Text);
         public int EggRespawnSeconds = int.Parse(window.eggRespawnSeconds.Text);
 
+        /// <summary>The egg respawn time in minutes.</summary>
+        public float EggRespawnTime() =>
+            Math.Max(0, EggRespawnHours) * 60 + Math.Max(0, EggRespawnMinutes) + Math.Max(0, EggRespawnSeconds) / 60.0f;
+
         public void RestoreToWindow(MainPage window)
         {
             foreach (FieldInfo fieldInfo in GetType().GetFields(BindingFlags.Public | BindingFlags.Instance))

@@ -1096,7 +1096,7 @@ namespace PalworldRandomizer
             int countClampMax = Math.Max(Math.Max(1, countClampMin), formData.CountClampMax);
             int countClampFirstMin = Math.Max(0, formData.CountClampFirstMin);
             int countClampFirstMax = Math.Max(Math.Max(1, countClampFirstMin), formData.CountClampFirstMax);
-            float eggRespawnTime = Math.Max(0, formData.EggRespawnHours) * 60 + Math.Max(0, formData.EggRespawnMinutes) + Math.Max(0, formData.EggRespawnSeconds) / 60.0f;
+            float eggRespawnTime = formData.EggRespawnTime();
             int totalSpeciesCount = 0;
             string basePath = UAssetData.AppDataPath(@"Create-Pak");
             string outputPath = basePath + @"\Pal\Content\Pal\Blueprint\Spawner\SheetsVariant";
@@ -3218,6 +3218,8 @@ namespace PalworldRandomizer
         {
             Dictionary<string, PalSpawner> PalSpawnSchema = [];
             Dictionary<string, PalMapObject.SpawnerPalEgg> EggSchema = [];
+            float eggRespawnTime = new FormData().EggRespawnTime();
+
             foreach (AreaData area in areaList.Where(x => !x.isCage))
             {
                 if (area.isEgg)
@@ -3232,7 +3234,7 @@ namespace PalworldRandomizer
                                     Weight = entry.Weight / 40.0f
                                 }
                             )],
-                            RespawnTimeMinutesObtained = area.eggRespawnTime
+                            RespawnTimeMinutesObtained = eggRespawnTime
                         }
                     );
                 }
