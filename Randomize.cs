@@ -903,31 +903,29 @@ namespace PalworldRandomizer
                         }
                     }
                 }
-                if (formData.SpawnPolice)
-                {
-                    humanSpawns.Add(new() { SpawnList = [new("Police_Handgun", 1, 2)] });
+
+                static void AddSimpleHumanSpawns(IEnumerable<string> names) =>
+                    humanSpawns.AddRange(names.Select(name =>
+                        Data.PalData[name].Weapon switch {
+                            "FlameThrower" or "RocketLauncher" or "MissileLauncher" or "GrenadeLauncher"
+                                => new SpawnEntry { SpawnList = [new(name, 1, 2)] },
+                            "GatlingGun" => new SpawnEntry { SpawnList = [new(name)] },
+                            _ => new SpawnEntry { SpawnList = [new(name, 2, 3)] },
+                        }
+                    ));
+
+                if (formData.SpawnPolice) {
+                    AddSimpleHumanSpawns(Data.policeNames);
                 }
-                if (formData.SpawnGuards)
-                {
-                    humanSpawns.Add(new() { SpawnList = [new("Guard_Rifle", 1, 2), new("Guard_Shotgun", 1, 2)] });
-                    humanSpawns.Add(new() { SpawnList = [new("Male_DarkTrader01")] });
-                    humanSpawns.Add(new() { SpawnList = [new("Male_DarkTrader02")] });
-                    humanSpawns.Add(new() { SpawnList = [new("Yamishima_guide5", 2, 3)] });
-                    humanSpawns.Add(new() { SpawnList = [new("Escort_PalTamer01", 1, 2), new("Escort_Warrior01", 1, 2)] });
+
+                if (formData.SpawnGuards) {
+                    AddSimpleHumanSpawns(Data.guardNames);
                 }
-                if (formData.SpawnHumans)
-                {
-                    humanSpawns.Add(new() { SpawnList = [new("Hunter_FlameThrower", 1, 2)] });
-                    humanSpawns.Add(new() { SpawnList = [new("Scientist_FlameThrower", 1, 2)] });
-                    humanSpawns.Add(new() { SpawnList = [new("Hunter_MissileLauncher", 1, 2)] });
-                    humanSpawns.Add(new() { SpawnList = [new("Hunter_GrenadeLauncher", 1, 2)] });
-                    humanSpawns.Add(new() { SpawnList = [new("Hunter_BowGun_Oilrig", 2, 3)] });
-                    humanSpawns.Add(new() { SpawnList = [new("Hunter_Katana_Oilrig", 2, 3)] });
-                    humanSpawns.Add(new() { SpawnList = [new("Hunter_LaserRifle_Oilrig", 2, 3)] });
-                    humanSpawns.Add(new() { SpawnList = [new("Male_Soldier01_EnemyGroup", 1, 2), new("Male_Soldier02_EnemyGroup", 1, 2)] });
-                    humanSpawns.Add(new() { SpawnList = [new("Male_Soldier02_Invader", 1, 2)] });
-                    humanSpawns.Add(new() { SpawnList = [new("Female_Soldier03_Invader", 1, 2), new("Female_Soldier04_Invader", 1, 2)] });
+
+                if (formData.SpawnHumans) {
+                    AddSimpleHumanSpawns(Data.humanNames);
                 }
+
                 if (formData.SpawnTraders)
                 {
                     humanSpawns.AddRange(Data.traderNames.Select(name => new SpawnEntry { SpawnList = [new(name)] }));
@@ -943,6 +941,10 @@ namespace PalworldRandomizer
                 if (formData.SpawnTowerHumans)
                 {
                     humanSpawns.AddRange(Data.TowerHumanNames.Select(name => new SpawnEntry { SpawnList = [new(name)] }));
+                }
+
+                if (formData.SpawnPolicePals) {
+                    Data.PolicePalNames.ForEach(name => basicSpawns.Add(name, new() { SpawnList = [new(name, 1, 3)] }));
                 }
             }
             else if (formData.GroupRandom)
@@ -974,6 +976,10 @@ namespace PalworldRandomizer
                     .. formData.SpawnSpecial ? Data.specialNames : [],
                     .. formData.SpawnTowerHumans ? Data.TowerHumanNames : [],
                 ]).Select(name => new SpawnEntry { SpawnList = [new(name)] }));
+
+                if (formData.SpawnPolicePals) {
+                    Data.PolicePalNames.ForEach(name => basicSpawns.Add(name, new() { SpawnList = [new(name)] }));
+                }
             }
             if (formData.SpawnTowerBosses)
             {
@@ -991,6 +997,14 @@ namespace PalworldRandomizer
             if (formData.SpawnHumanBosses)
             {
                 Data.HumanBossNames.ForEach(name => bossSpawns.Add(name, new() { SpawnList = [new(name)] }));
+            }
+
+            if (formData.SpawnUselessHumans) {
+                humanSpawns.AddRange(Data.UselessHumanNames.Select(name => new SpawnEntry { SpawnList = [new(name)] }));
+            }
+
+            if (formData.SpawnVillagers) {
+                humanSpawns.AddRange(Data.VillagerNames.Select(name => new SpawnEntry { SpawnList = [new(name)] }));
             }
         }
         private static ICollection<string> GetAllowedNames(FormData formData)

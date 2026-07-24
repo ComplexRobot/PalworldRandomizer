@@ -648,6 +648,45 @@
                         </WrapPanel.Style>
                         <CheckBox Name="spawnTowerHumans" IsChecked="True">Tower Humans</CheckBox>
                     </WrapPanel>
+                    <WrapPanel>
+                        <WrapPanel.Style>
+                            <Style TargetType="WrapPanel">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ElementName=methodNone, Path=IsChecked}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </WrapPanel.Style>
+                        <CheckBox Name="spawnPolicePals" IsChecked="True">Police Pals</CheckBox>
+                    </WrapPanel>
+                    <WrapPanel>
+                        <WrapPanel.Style>
+                            <Style TargetType="WrapPanel">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ElementName=methodNone, Path=IsChecked}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </WrapPanel.Style>
+                        <CheckBox Name="spawnUselessHumans" IsChecked="False">Extra Humans</CheckBox>
+                    </WrapPanel>
+                    <WrapPanel>
+                        <WrapPanel.Style>
+                            <Style TargetType="WrapPanel">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ElementName=methodNone, Path=IsChecked}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </WrapPanel.Style>
+                        <CheckBox Name="spawnVillagers" IsChecked="False">Villagers</CheckBox>
+                    </WrapPanel>
                 </WrapPanel>
             </GroupBox>
             <GroupBox Margin="5">

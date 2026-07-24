@@ -140,6 +140,9 @@ namespace PalworldRandomizer
         public bool SpawnTerraria = window.spawnTerraria.IsChecked == true;
         public bool SpawnTerrariaBosses = window.spawnTerrariaBosses.IsChecked == true;
         public bool SpawnTowerHumans = window.spawnTowerHumans.IsChecked == true;
+        public bool SpawnPolicePals = window.spawnPolicePals.IsChecked == true;
+        public bool SpawnUselessHumans = window.spawnUselessHumans.IsChecked == true;
+        public bool SpawnVillagers = window.spawnVillagers.IsChecked == true;
         public int FieldLevel = int.Parse(window.fieldLevel.Text);
         public int DungeonLevel = int.Parse(window.dungeonLevel.Text);
         public int FieldBossLevel = int.Parse(window.fieldBossLevel.Text);
