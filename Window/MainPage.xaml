@@ -383,6 +383,7 @@
                                 <TextBox Name="maxCageRarity" Height="20" Margin="0,5,0,0"
                                          PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">9</TextBox>
                             </WrapPanel>
+                            <CheckBox Name="startSheepBall" IsChecked="True" Margin="5,5,0,5">Lamball At Start</CheckBox>
                         </WrapPanel>
                     </WrapPanel>
                 </GroupBox>

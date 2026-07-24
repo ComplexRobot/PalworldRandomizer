@@ -1197,7 +1197,8 @@ namespace PalworldRandomizer
                 && (formData.RandomizeEggs || !area.isEgg)
                 && (formData.RandomizeQuests || !area.isQuest)
                 && (formData.RandomizeMimics || !area.isMimic)
-                && (formData.RandomizeAllArea || !area.IsAllArea));
+                && (formData.RandomizeAllArea || !area.IsAllArea)
+                && (!formData.StartSheepBall || area.filename != "BP_PalSpawner_Sheets_green_A_SheepBall.uasset"));
             if (!formData.MethodNone)
             {
                 List<AreaData> addedBosses = subList.FindAll(area => !area.isBoss && !area.isCage && !area.isMonsterOnly && BossesEverywhere(area)).ConvertAll(x => x.Clone());
