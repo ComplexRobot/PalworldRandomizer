@@ -344,6 +344,7 @@ namespace PalworldRandomizer
             config.GameVersion = GameVersion = gameVersion;
 
             Directory.CreateDirectory(PalIconPath());
+            Directory.CreateDirectory(PalIconPath("Human"));
             Directory.CreateDirectory(NpcIconPath());
             Directory.CreateDirectory(WeaponIconPath());
 

@@ -41,12 +41,17 @@ namespace PalworldRandomizer
         public static List<string> TowerHumanNames { get; private set; } = [];
         public static string FirstCage { get; private set; } = null!;
         public static string FirstEgg { get; private set; } = null!;
-        public static readonly string[] humanNames =
-        [
+
+        public static readonly string[] humanNames = [
             "Believer_Bat",
             "Believer_CrossBow",
+            "Believer_Fat_Cane",
+            "Believer_Fat_GatlingGun",
             "FireCult_FlameThrower",
             "FireCult_Rifle",
+            "FireCult_GrenadeLauncher",
+            "FireCult_RocketLauncher",
+            "FireCult_MissileLauncher",
             "Hunter_Bat",
             "Hunter_Fat_GatlingGun",
             "Hunter_FlameThrower",
@@ -57,36 +62,65 @@ namespace PalworldRandomizer
             "Hunter_Shotgun",
             "Hunter_MissileLauncher",
             "Hunter_GrenadeLauncher",
+            "Hunter_LaserRifle",
+            "Hunter_Katana",
             "Male_Scientist01_LaserRifle",
             "Scientist_FlameThrower",
+            "Scientist_GrenadeLauncher",
+            "Scientist_MissileLauncher",
             "Male_Soldier01_EnemyGroup",
             "Male_Soldier02_EnemyGroup",
             "Male_Soldier02_Invader",
             "Female_Soldier03_Invader",
             "Female_Soldier04_Invader",
-            "Male_Ninja01",
-            "Male_NinjaElite01",
+            "Ninja_NoEquip",
+            "NinjaElite_NoEquip",
+            "Ninja_Grenade",
+            "NinjaElite_Grenade",
+            "Ninja_Bowgun",
+            "NinjaElite_Bowgun",
             "Viking",
-            "Viking_Elite"
+            "Viking_Elite",
+            "Viking_Melee",
+            "Viking_GrenadeLauncher",
+            "Viking_RocketLauncher",
+            "Police_Invader_Katana",
+            "Police_Invader_LaserRifle",
+            "Police_Invader_GrenadeLauncher",
+            "Police_Invader_FlameThrower",
+            "Police_Invader_RocketLauncher",
+            "Police_Invader_MissileLauncher",
+            "Police_Invader_CrossBow",
+            "Police_Invader_Handgun",
+            "Police_Invader_Shotgun",
+            "Police_Invader_Rifle",
+            "Female_Kunoichi01",
         ];
-        public static readonly string[] policeNames =
-        [
+
+        public static readonly string[] policeNames = [
             "Police_Handgun",
             "Police_Rifle",
-            "Police_Shotgun"
+            "Police_Shotgun",
+            "Police_BowGun",
         ];
-        public static readonly string[] guardNames =
-        [
+
+        public static readonly string[] guardNames = [
             "Guard_Rifle",
             "Guard_Shotgun",
             "Male_DarkTrader01",
             "Male_DarkTrader02",
             "Yamishima_guide5",
             "Escort_PalTamer01",
-            "Escort_Warrior01"
+            "Escort_Warrior01",
+            "Reward_BossDefeat",
+            "Reward_Paldex",
+            "Reward_Paldex_v02",
+            "Reward_PalCaptureCount",
+            "Reward_PalCaptureCount_v02",
+            "Reward_Food",
         ];
-        public static readonly string[] traderNames =
-        [
+
+        public static readonly string[] traderNames = [
             "SalesPerson",
             "SalesPerson_Desert",
             "SalesPerson_Desert2",
@@ -95,18 +129,122 @@ namespace PalworldRandomizer
             "SalesPerson_Wander",
             "CaravanLeader01",
             "CaravanLeader02",
-            "CaravanLeader03"
+            "CaravanLeader03",
+            "Male_Trader01_v04",
+            "Male_Trader01_v05",
+            "Male_Trader01_v06",
+            "Male_Trader01_v07",
+            "Male_Trader01_v08",
+            "Male_Trader01_v09",
+            "Male_Trader01_v10",
+            "Male_Trader01_v11",
+            "Male_Trader01_v12",
+            "Male_Trader01_v13",
+            "Male_Trader01_v14",
+            "Male_Trader01_v15",
+            "Male_Trader01_v16",
+            "Male_Trader01_v17",
+            "Male_Trader01_v18",
+            "Male_Trader01_v19",
+            "Male_Trader01_v20",
+            "Male_Trader01_v21",
+            "Male_Trader01_v22",
+            "Male_Trader01_v23",
+            "Male_Trader01_v24",
+            "Male_Trader01_v25",
+            "NPC_Dungeon_Shop",
         ];
-        public static readonly string[] palTraderNames =
-        [
+
+        public static readonly string[] palTraderNames = [
             "PalDealer",
             "PalDealer_Desert",
             "PalDealer_Volcano",
             "RandomEventShop",
         ];
-        public static readonly string[] specialNames =
-        [
-            "PalPassive_Doctor"
+
+        public static readonly string[] specialNames = [
+            "PalPassive_Doctor",
+            //"Visitor_Recruiter", // broken
+        ];
+
+        /// <summary>Names of various humans that don't do anything special.</summary>
+        public static readonly string[] UselessHumanNames = [
+            "Male_Kigurumi01_v01",
+            "Male_Police_old",
+            "Female_Presenter01",
+            "Visitor_Hunter_Rifle",
+            "Female_Nomad01_v01",
+            "Female_Nomad01_v02",
+            "Female_Nomad01_v03",
+            "Female_Nomad01_v04",
+            "Female_Nomad01_v05",
+            "Female_Farmer01_v01",
+            "Female_Farmer01_v02",
+            "Female_Farmer01_v03",
+            "Female_Farmer01_v04",
+            "Female_Farmer01_v05",
+            "Female_Ranger01_v01",
+            "Female_Ranger01_v02",
+            "Female_Ranger01_v03",
+            "Female_Ranger01_v04",
+            "Female_Ranger01_v05",
+            "Male_Scholar01_v01",
+            "Male_Scholar01_v02",
+            "Male_Scholar01_v03",
+            "Male_Scholar01_v04",
+            "Male_Scholar01_v05",
+            "Male_Breeder01_v01",
+            "Male_Breeder01_v02",
+            "Male_Breeder01_v03",
+            "Male_Breeder01_v04",
+            "Male_Breeder01_v05",
+            "Female_SurveyGirl01",
+            "Female_SurveyGirl02",
+            "Female_SurveyGirl03",
+            "Female_SurveyGirl04",
+            "Female_SurveyWoman01",
+            "Female_SurveyWoman02",
+            "Male_SurveyMan01",
+            "Male_SurveyMan02",
+            "Male_SurveyMan03",
+            "Male_StrongOldMan01",
+            "Male_StrongOldMan02",
+            "Help01",
+            "Help02",
+            "Help03",
+            "Help04",
+            "Female_Soldier01",
+            "Female_Soldier02",
+            "Female_Soldier03",
+            "Female_Soldier04",
+            "Male_Soldier01",
+            "Male_Soldier02",
+            "Male_Soldier03",
+            "Male_Soldier04",
+        ];
+
+        /// <summary>Names of generic villager NPCs.</summary>
+        public static readonly string[] VillagerNames = [
+            "Female_DesertPeople02",
+            "Male_DesertPeople01",
+            "Female_DTairikuPeople01_v01",
+            "Male_DTairikuPeople01_v01",
+            "Female_People02",
+            "Male_People02",
+            "Female_People03",
+            "Male_People03",
+            "Female_SakurajimaPeople01",
+            "Female_SnowPeople01",
+            "Male_SnowPeople01",
+            "Female_SorajimaPeople01",
+            "Male_SorajimaPeople01",
+            "Female_TenrakuPeople01",
+            "Male_TenrakuPeople01",
+            "Female_WorldTreePeople01",
+            "Male_WorldTreePeople01",
+            "MobuCitizen",
+            "MobuCitizen_Male",
+            "MobuVillager",
         ];
 
         [GeneratedRegex("^(Quest(_[^_]+)?_)?(?<name>.+?)(_[0-9]+(_.+)?|_Flower|_MAX|_Oilrig)?$", RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture)]
@@ -149,7 +287,7 @@ namespace PalworldRandomizer
                 fileProvider.GameVersionUpdated);
 
             string commonHumanIconPath = fileProvider.SaveTexturePng(
-                "Pal/Content/Pal/Texture/PalIcon/Normal/T_CommonHuman_icon_normal.uasset", UAssetData.PalIconPath(),
+                "Pal/Content/Pal/Texture/PalIcon/Normal/T_CommonHuman_icon_normal.uasset", UAssetData.PalIconPath("Human"),
                 fileProvider.GameVersionUpdated);
 
             Dictionary<string, string> weapons = new()
@@ -339,7 +477,8 @@ namespace PalworldRandomizer
                         string hardPath = VfsFileProvider.SoftPathToHardPath(foundPath);
 
                         if (fileProvider.Files.ContainsKey(hardPath)) {
-                            string resourcePath = fileProvider.SaveTexturePng(hardPath, UAssetData.PalIconPath(),
+                            string resourcePath = fileProvider.SaveTexturePng(hardPath,
+                                UAssetData.PalIconPath(value.IsPal ? "" : "Human"),
                                 fileProvider.GameVersionUpdated);
                             PalIcon.Add(key, resourcePath);
                         } else {
