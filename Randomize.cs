@@ -1746,7 +1746,7 @@ namespace PalworldRandomizer
                         {
                             weight = Convert.ToInt64(weight * spawnEntry.SpawnList.Sum(WeightScale) / spawnEntry.SpawnList.Count);
                         }
-                        if (Data.PalData[spawnEntry.SpawnList[0].Name].Nocturnal && nightOnly)
+                        if (Data.PalData[spawnEntry.SpawnList[0].Name].Nocturnal && Data.PalData[spawnEntry.SpawnList[0].Name].IsPal && nightOnly)
                         {
                             spawnEntry.NightOnly = true;
                             if ((!formData.WeightTypeCustom || !formData.WeightAdjustProbability) && !formData.VanillaPlus && (!BossesEverywhere(area) || area.isBoss))
@@ -1851,7 +1851,7 @@ namespace PalworldRandomizer
                                 List<SpawnEntry> originalsUsed = original;
                                 if (nightOnly)
                                 {
-                                    SeparateGroupsByCondition(entry => Data.PalData[entry.SpawnList[0].Name].Nocturnal);
+                                    SeparateGroupsByCondition(entry => Data.PalData[entry.SpawnList[0].Name].Nocturnal && Data.PalData[entry.SpawnList[0].Name].IsPal);
                                 }
                                 if (!formData.MixHumanAndPal)
                                 {
