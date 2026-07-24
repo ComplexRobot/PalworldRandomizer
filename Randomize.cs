@@ -948,6 +948,10 @@ namespace PalworldRandomizer
                 if (formData.SpawnPolicePals) {
                     Data.PolicePalNames.ForEach(name => basicSpawns.Add(name, new() { SpawnList = [new(name, 1, 3)] }));
                 }
+
+                if (formData.SpawnVillagers) {
+                    humanSpawns.AddRange(Data.VillagerNames.Select(name => new SpawnEntry { SpawnList = [new(name, 1, 3)] }));
+                }
             }
             else if (formData.GroupRandom)
             {
@@ -982,6 +986,10 @@ namespace PalworldRandomizer
                 if (formData.SpawnPolicePals) {
                     Data.PolicePalNames.ForEach(name => basicSpawns.Add(name, new() { SpawnList = [new(name)] }));
                 }
+
+                if (formData.SpawnVillagers) {
+                    humanSpawns.AddRange(Data.VillagerNames.Select(name => new SpawnEntry { SpawnList = [new(name)] }));
+                }
             }
             if (formData.SpawnTowerBosses)
             {
@@ -1005,9 +1013,6 @@ namespace PalworldRandomizer
                 humanSpawns.AddRange(Data.UselessHumanNames.Select(name => new SpawnEntry { SpawnList = [new(name)] }));
             }
 
-            if (formData.SpawnVillagers) {
-                humanSpawns.AddRange(Data.VillagerNames.Select(name => new SpawnEntry { SpawnList = [new(name)] }));
-            }
         }
         private static ICollection<string> GetAllowedNames(FormData formData)
         {
