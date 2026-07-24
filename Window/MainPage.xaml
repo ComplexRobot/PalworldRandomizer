@@ -673,7 +673,7 @@
                                 </Style.Triggers>
                             </Style>
                         </WrapPanel.Style>
-                        <CheckBox Name="spawnUselessHumans" IsChecked="False">Extra Humans</CheckBox>
+                        <CheckBox Name="spawnUselessHumans" IsChecked="True">Extra Humans</CheckBox>
                     </WrapPanel>
                     <WrapPanel>
                         <WrapPanel.Style>
@@ -686,7 +686,7 @@
                                 </Style.Triggers>
                             </Style>
                         </WrapPanel.Style>
-                        <CheckBox Name="spawnVillagers" IsChecked="False">Villagers</CheckBox>
+                        <CheckBox Name="spawnVillagers" IsChecked="True">Villagers</CheckBox>
                     </WrapPanel>
                 </WrapPanel>
             </GroupBox>
