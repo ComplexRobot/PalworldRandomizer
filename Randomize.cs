@@ -1221,12 +1221,24 @@ namespace PalworldRandomizer
                     return (x.isCage ? 1 : 0) - (y.isCage ? 1 : 0);
                 if (x.isPredator != y.isPredator)
                     return (x.isPredator ? 1 : 0) - (y.isPredator ? 1 : 0);
+
+                bool bossesEverywhereX = x.filename.StartsWith('~');
+                bool bossesEverywhereY = y.filename.StartsWith('~');
+                if (bossesEverywhereX != bossesEverywhereY) {
+                    return (bossesEverywhereX ? 1 : 0) - (bossesEverywhereY ? 1 : 0);
+                }
+
                 if (x.isBoss != y.isBoss)
                     return (x.isBoss ? 1 : 0) - (y.isBoss ? 1 : 0);
                 if (x.isInDungeon != y.isInDungeon)
                     return (x.isInDungeon ? 1 : 0) - (y.isInDungeon ? 1 : 0);
                 if (x.isMimic != y.isMimic)
                     return (x.isMimic ? 1 : 0) - (y.isMimic ? 1 : 0);
+
+                if (x.IsAllArea != y.IsAllArea) {
+                    return (y.IsAllArea ? 1 : 0) - (x.IsAllArea ? 1 : 0);
+                }
+
                 bool nightOnlyX = NightOnly(x);
                 bool nightOnlyY = NightOnly(y);
                 if (nightOnlyX != nightOnlyY)
