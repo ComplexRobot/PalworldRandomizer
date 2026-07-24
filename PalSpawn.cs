@@ -221,6 +221,7 @@ namespace PalworldRandomizer
                 isQuest = isQuest,
                 isMimic = isMimic,
                 isMonsterOnly = isMonsterOnly,
+                IsAllArea = IsAllArea,
                 eggRespawnTime = eggRespawnTime,
                 eggLotteryCooldown = eggLotteryCooldown,
                 spawnExportData =
