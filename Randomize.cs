@@ -1015,28 +1015,27 @@ namespace PalworldRandomizer
             }
 
         }
-        private static ICollection<string> GetAllowedNames(FormData formData)
-        {
-            return
-            [
-                .. formData.SpawnPals ? Data.PalList : [],
-                .. formData.SpawnAlphas ? Data.PalList.FindAll(Data.BossName.ContainsKey).ConvertAll(name => Data.BossName[name]) : [],
-                .. formData.SpawnTowerBosses ? Data.TowerBossNames : [],
-                .. formData.SpawnRaidBosses ? Data.RaidBossNames : [],
-                .. formData.SpawnPredators ? Data.PredatorNames : [],
-                .. formData.SpawnHumanBosses ? Data.HumanBossNames : [],
-                .. formData.SpawnHumans ? Data.humanNames : [],
-                .. formData.SpawnPolice ? Data.policeNames : [],
-                .. formData.SpawnGuards ? Data.guardNames : [],
-                .. formData.SpawnTraders ? Data.traderNames : [],
-                .. formData.SpawnPalTraders ? Data.palTraderNames : [],
-                .. formData.SpawnSpecial ? Data.specialNames : [],
-                .. formData.SpawnTerraria ? Data.TerrariaMonsters : [],
-                .. formData.SpawnTerrariaBosses ? Data.TerrariaMonstersBosses : [],
-                .. formData.SpawnTowerHumans ? Data.TowerHumanNames : [],
-                "RowName"
-            ];
-        }
+        private static ICollection<string> GetAllowedNames(FormData formData) => [
+            .. formData.SpawnPals ? Data.PalList : [],
+            .. formData.SpawnAlphas ? Data.PalList.FindAll(Data.BossName.ContainsKey).ConvertAll(name => Data.BossName[name]) : [],
+            .. formData.SpawnTowerBosses ? Data.TowerBossNames : [],
+            .. formData.SpawnRaidBosses ? Data.RaidBossNames : [],
+            .. formData.SpawnPredators ? Data.PredatorNames : [],
+            .. formData.SpawnHumanBosses ? Data.HumanBossNames : [],
+            .. formData.SpawnHumans ? Data.humanNames : [],
+            .. formData.SpawnPolice ? Data.policeNames : [],
+            .. formData.SpawnGuards ? Data.guardNames : [],
+            .. formData.SpawnTraders ? Data.traderNames : [],
+            .. formData.SpawnPalTraders ? Data.palTraderNames : [],
+            .. formData.SpawnSpecial ? Data.specialNames : [],
+            .. formData.SpawnTerraria ? Data.TerrariaMonsters : [],
+            .. formData.SpawnTerrariaBosses ? Data.TerrariaMonstersBosses : [],
+            .. formData.SpawnTowerHumans ? Data.TowerHumanNames : [],
+            .. formData.SpawnPolicePals ? Data.PolicePalNames : [],
+            .. formData.SpawnUselessHumans ? Data.UselessHumanNames : [],
+            .. formData.SpawnVillagers ? Data.VillagerNames : [],
+            "RowName"
+        ];
 
         [GeneratedRegex("^(?<prefix>Quest(_[^_]+)?_)?(?<name>.+)$", RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture)]
         private static partial Regex questNameRegex();
