@@ -578,40 +578,41 @@ namespace PalworldRandomizer
                         weightSum += spawnEntry.Weight;
                     }
                 }
-                AreaData.Add(filename, new(spawnExportData, filename));
-                if (weightSum == 0)
-                {
+
+                var area = new AreaData(spawnExportData, filename);
+
+                AreaData.Add(filename, area);
+
+                if (weightSum == 0) {
                     averageLevel = nightAverageLevel;
                     levelRange = nightLevelRange;
                     weightSum = nightWeightSum;
                 }
-                AreaData[filename].minLevel = Convert.ToInt32(averageLevel / weightSum - levelRange / 2.0f / weightSum);
-                AreaData[filename].maxLevel = Convert.ToInt32(averageLevel / weightSum + levelRange / 2.0f / weightSum);
-                if (nightWeightSum != 0)
-                {
-                    AreaData[filename].minLevelNight = Convert.ToInt32(nightAverageLevel / nightWeightSum - nightLevelRange / 2.0f / nightWeightSum);
-                    AreaData[filename].maxLevelNight = Convert.ToInt32(nightAverageLevel / nightWeightSum + nightLevelRange / 2.0f / nightWeightSum);
+
+                area.minLevel = Convert.ToInt32(averageLevel / weightSum - levelRange / 2.0f / weightSum);
+                area.maxLevel = Convert.ToInt32(averageLevel / weightSum + levelRange / 2.0f / weightSum);
+
+                if (nightWeightSum != 0) {
+                    area.minLevelNight = Convert.ToInt32(nightAverageLevel / nightWeightSum - nightLevelRange / 2.0f / nightWeightSum);
+                    area.maxLevelNight = Convert.ToInt32(nightAverageLevel / nightWeightSum + nightLevelRange / 2.0f / nightWeightSum);
                 }
-                AreaData[filename].isBoss = filename.Contains("boss", StringComparison.OrdinalIgnoreCase) || AreaData[filename].SpawnEntries[0].SpawnList[0].IsBoss;
-                AreaData[filename].isInDungeon = filename.Contains("dungeon", StringComparison.OrdinalIgnoreCase);
-                AreaData[filename].isPredator = filename.Contains("PreBOSS", StringComparison.OrdinalIgnoreCase);
-                AreaData[filename].isMimic = Path.GetFileNameWithoutExtension(filename).EndsWith("_mimic", StringComparison.OrdinalIgnoreCase);
-                //AreaData[filename].isMonsterOnly = Path.GetFileNameWithoutExtension(filename).EndsWith("_monsteronly", StringComparison.OrdinalIgnoreCase);
-                AreaData[filename].isFieldBoss = AreaData[filename].isBoss && !AreaData[filename].isInDungeon && !AreaData[filename].isPredator;
-                AreaData[filename].isDungeonBoss = AreaData[filename].isBoss && AreaData[filename].isInDungeon;
-                AreaData[filename].isDungeon = !AreaData[filename].isBoss && AreaData[filename].isInDungeon && !AreaData[filename].isMimic;
-                AreaData[filename].isField = !AreaData[filename].isBoss && !AreaData[filename].isInDungeon;
-                AreaData[filename].isQuest = AreaData[filename].SimpleName.StartsWith("Quest_", StringComparison.OrdinalIgnoreCase);
-                AreaData[filename].IsAllArea = filename.Contains("allarea", StringComparison.OrdinalIgnoreCase);
-                AreaData[filename].IsOnlyHumans = !AreaData[filename].SpawnEntries
+
+                area.isBoss = filename.Contains("boss", StringComparison.OrdinalIgnoreCase) || area.SpawnEntries[0].SpawnList[0].IsBoss;
+                area.isInDungeon = filename.Contains("dungeon", StringComparison.OrdinalIgnoreCase);
+                area.isPredator = filename.Contains("PreBOSS", StringComparison.OrdinalIgnoreCase);
+                area.isMimic = Path.GetFileNameWithoutExtension(filename).EndsWith("_mimic", StringComparison.OrdinalIgnoreCase);
+                //area.isMonsterOnly = Path.GetFileNameWithoutExtension(filename).EndsWith("_monsteronly", StringComparison.OrdinalIgnoreCase);
+                area.isFieldBoss = area.isBoss && !area.isInDungeon && !area.isPredator;
+                area.isDungeonBoss = area.isBoss && area.isInDungeon;
+                area.isDungeon = !area.isBoss && area.isInDungeon && !area.isMimic;
+                area.isField = !area.isBoss && !area.isInDungeon;
+                area.isQuest = area.SimpleName.StartsWith("Quest_", StringComparison.OrdinalIgnoreCase);
+                area.IsAllArea = filename.Contains("allarea", StringComparison.OrdinalIgnoreCase);
+                area.IsOnlyHumans = !area.SpawnEntries
                     .Exists(x => x.SpawnList.Exists(y => PalData[y.Name].IsPal && y.Name != "RowName"));
-                AreaData[filename].IsSingleSpawn = AreaData[filename].SpawnEntries
-                    .Count(x => x.SpawnList[0].Name != "RowName") == 1
-                    || AreaData[filename].SpawnEntries
-                    .SelectMany(x =>
-                        x.SpawnList
-                        .Select(y => y.Name)
-                        .Where(z => z != "RowName"))
+                area.IsSingleSpawn = area.SpawnEntries.Count(x => x.SpawnList[0].Name != "RowName") == 1
+                    || area.SpawnEntries
+                    .SelectMany(x => x.SpawnList.Select(y => y.Name).Where(z => z != "RowName"))
                     .Distinct()
                     .Count() == 1;
             }
