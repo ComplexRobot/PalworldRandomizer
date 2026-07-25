@@ -355,7 +355,8 @@ namespace PalworldRandomizer
                         nameString = nameString.Replace("  ", " ");
                     }
                     PalName.Add(key, nameString == "en_text" ? (isBoss ? key[(key.IndexOf('_') + 1)..] : key) : nameString);
-                    if (value.ZukanIndex > 0 && !isSummon && !isOilrig && !isQuest && !isTower)
+                    if (value.ZukanIndex > 0 && !isSummon && !isOilrig && !isQuest && !isTower
+                        && key != "WorldTreeDragon")
                     {
                         PalList.Add(key);
                     }
@@ -380,7 +381,7 @@ namespace PalworldRandomizer
                     if (!isBoss || isTowerBoss || isRaidBoss || isPredator)
                     {
                         if (!isQuest) {
-                            if (!isBoss)
+                            if (!isBoss && key != "WorldTreeDragon")
                             {
                                 try
                                 {
@@ -1586,6 +1587,12 @@ namespace PalworldRandomizer
                         basicSpawnsCurrent = [.. basicSpawnsOriginal];
                         bossSpawnsCurrent = [.. bossSpawnsOriginal];
                     }
+
+                    if (area.isEgg && area.filename == Data.FirstEgg) {
+                        bossSpawnsOriginal =
+                            bossSpawnsOriginal.FindAll(x => x.SpawnList[0].Name != "GYM_WorldTreeDragon");
+                    }
+
                     if (BossesEverywhere(area) && !area.isBoss && BossesEverywhereChance(area) == 1 && !area.isCage)
                     {
                         continue;
