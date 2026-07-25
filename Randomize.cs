@@ -596,7 +596,7 @@ namespace PalworldRandomizer
                 AreaData[filename].isInDungeon = filename.Contains("dungeon", StringComparison.OrdinalIgnoreCase);
                 AreaData[filename].isPredator = filename.Contains("PreBOSS", StringComparison.OrdinalIgnoreCase);
                 AreaData[filename].isMimic = Path.GetFileNameWithoutExtension(filename).EndsWith("_mimic", StringComparison.OrdinalIgnoreCase);
-                AreaData[filename].isMonsterOnly = Path.GetFileNameWithoutExtension(filename).EndsWith("_monsteronly", StringComparison.OrdinalIgnoreCase);
+                //AreaData[filename].isMonsterOnly = Path.GetFileNameWithoutExtension(filename).EndsWith("_monsteronly", StringComparison.OrdinalIgnoreCase);
                 AreaData[filename].isFieldBoss = AreaData[filename].isBoss && !AreaData[filename].isInDungeon && !AreaData[filename].isPredator;
                 AreaData[filename].isDungeonBoss = AreaData[filename].isBoss && AreaData[filename].isInDungeon;
                 AreaData[filename].isDungeon = !AreaData[filename].isBoss && AreaData[filename].isInDungeon && !AreaData[filename].isMimic;
@@ -2805,18 +2805,18 @@ namespace PalworldRandomizer
                     WriteAreaAsset(area);
                 }
 
-                foreach (AreaData area in subList.FindAll(area => !area.filename.StartsWith('~') && !area.isCage && !area.isEgg && !area.isMonsterOnly))
-                {
-                    AreaData? monsterOnly = subList.Find(a => string.Equals(Path.GetFileNameWithoutExtension(a.filename),
-                        Path.GetFileNameWithoutExtension(area.filename) + "_monsteronly", StringComparison.OrdinalIgnoreCase));
-                    if (monsterOnly != null)
-                    {
-                        monsterOnly.SpawnEntries = area.SpawnEntries.ConvertAll(x => x.Clone());
-                        monsterOnly.SpawnEntries.ForEach(entry => entry.SpawnList.RemoveAll(x => !Data.PalData[x.Name].IsPal));
-                        monsterOnly.SpawnEntries.RemoveAll(x => x.SpawnList.Count == 0);
-                        WriteAreaAsset(monsterOnly);
-                    }
-                }
+                //foreach (AreaData area in subList.FindAll(area => !area.filename.StartsWith('~') && !area.isCage && !area.isEgg && !area.isMonsterOnly))
+                //{
+                //    AreaData? monsterOnly = subList.Find(a => string.Equals(Path.GetFileNameWithoutExtension(a.filename),
+                //        Path.GetFileNameWithoutExtension(area.filename) + "_monsteronly", StringComparison.OrdinalIgnoreCase));
+                //    if (monsterOnly != null)
+                //    {
+                //        monsterOnly.SpawnEntries = area.SpawnEntries.ConvertAll(x => x.Clone());
+                //        monsterOnly.SpawnEntries.ForEach(entry => entry.SpawnList.RemoveAll(x => !Data.PalData[x.Name].IsPal));
+                //        monsterOnly.SpawnEntries.RemoveAll(x => x.SpawnList.Count == 0);
+                //        WriteAreaAsset(monsterOnly);
+                //    }
+                //}
             }
 
             MainPage.Instance.Dispatcher.Invoke(() => MainPage.Instance.progressBar.Visibility = Visibility.Collapsed);
