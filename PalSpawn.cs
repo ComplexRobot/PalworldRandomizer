@@ -198,6 +198,8 @@ namespace PalworldRandomizer
         public bool IsAllArea { get; set; } = false;
         /// <summary>The spawn list contains only humans.</summary>
         public bool IsOnlyHumans { get; set; } = false;
+        /// <summary>Contains only a single spawn group or species.</summary>
+        public bool IsSingleSpawn { get; set; } = false;
         public float eggRespawnTime = 0;
         public float eggLotteryCooldown = 0;
         private readonly ObservableList<SpawnEntry> virtualEntries = [];

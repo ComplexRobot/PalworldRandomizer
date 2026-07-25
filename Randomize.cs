@@ -605,6 +605,15 @@ namespace PalworldRandomizer
                 AreaData[filename].IsAllArea = filename.Contains("allarea", StringComparison.OrdinalIgnoreCase);
                 AreaData[filename].IsOnlyHumans = !AreaData[filename].SpawnEntries
                     .Exists(x => x.SpawnList.Exists(y => Data.PalData[y.Name].IsPal && y.Name != "RowName"));
+                AreaData[filename].IsSingleSpawn = AreaData[filename].SpawnEntries
+                    .Count(x => x.SpawnList[0].Name != "RowName") == 1
+                    || AreaData[filename].SpawnEntries
+                    .SelectMany(x =>
+                        x.SpawnList
+                        .Select(y => y.Name)
+                        .Where(z => z != "RowName"))
+                    .Distinct()
+                    .Count() == 1;
             }
             string firstAreaName = "BP_PalSpawner_Sheets_green_A.uasset";
             AreaData[firstAreaName].minLevel = AreaData[firstAreaName].SpawnEntries[0].SpawnList[0].MinLevel;
