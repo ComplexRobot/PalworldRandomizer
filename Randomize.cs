@@ -354,7 +354,7 @@ namespace PalworldRandomizer
                     {
                         nameString = nameString.Replace("  ", " ");
                     }
-                    PalName.Add(key, nameString == "en_text" ? (isBoss ? key[(key.IndexOf('_') + 1)..] : key) : nameString);
+                    PalName.Add(key, (nameString == "en_text" ? (isBoss ? key[(key.IndexOf('_') + 1)..] : key) : nameString).Trim());
                     if (value.ZukanIndex > 0 && !isSummon && !isOilrig && !isQuest && !isTower
                         && key != "WorldTreeDragon")
                     {
