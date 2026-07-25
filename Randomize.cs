@@ -604,7 +604,7 @@ namespace PalworldRandomizer
                 AreaData[filename].isQuest = AreaData[filename].SimpleName.StartsWith("Quest_", StringComparison.OrdinalIgnoreCase);
                 AreaData[filename].IsAllArea = filename.Contains("allarea", StringComparison.OrdinalIgnoreCase);
                 AreaData[filename].IsOnlyHumans = !AreaData[filename].SpawnEntries
-                    .Exists(x => x.SpawnList.Exists(y => Data.PalData[y.Name].IsPal && y.Name != "RowName"));
+                    .Exists(x => x.SpawnList.Exists(y => PalData[y.Name].IsPal && y.Name != "RowName"));
                 AreaData[filename].IsSingleSpawn = AreaData[filename].SpawnEntries
                     .Count(x => x.SpawnList[0].Name != "RowName") == 1
                     || AreaData[filename].SpawnEntries
@@ -619,10 +619,10 @@ namespace PalworldRandomizer
             AreaData[firstAreaName].minLevel = AreaData[firstAreaName].SpawnEntries[0].SpawnList[0].MinLevel;
             AreaData[firstAreaName].maxLevel = AreaData[firstAreaName].SpawnEntries[0].SpawnList[0].MaxLevel;
 
-            FirstBoss = AreaData.Values.Where(x => x.isBoss).MinBy(x => x.filename)!.filename;
+            FirstBoss = AreaData.Values.Where(x => x.isBoss).Min(x => x.filename)!;
 
             var cageData = FileModify.ReadCageData(fileProvider.LoadDataTableCagePal("Pal/Content/Pal/DataTable/Character/DT_CapturedCagePal.uasset"));
-            FirstCage = cageData.Values.Select(x => x.filename).Min()!;
+            FirstCage = cageData.Values.Min(x => x.filename)!;
             foreach (var keyPair in cageData)
             {
                 AreaData.Add(keyPair.Key, keyPair.Value);
