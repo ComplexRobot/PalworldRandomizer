@@ -313,6 +313,12 @@
                                             <DataTrigger Binding="{Binding ElementName=randomizeField, Path=IsChecked}" Value="True">
                                                 <Setter Property="Visibility" Value="Visible"/>
                                             </DataTrigger>
+                                            <DataTrigger Binding="{Binding ElementName=randomizeAllArea, Path=IsChecked}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding ElementName=randomizeSingleSpawns, Path=IsChecked}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </WrapPanel.Style>
@@ -329,9 +335,12 @@
                                             <DataTrigger Binding="{Binding ElementName=randomizeDungeons, Path=IsChecked}" Value="True">
                                                 <Setter Property="Visibility" Value="Visible"/>
                                             </DataTrigger>
-                                            <DataTrigger Binding="{Binding ElementName=randomizeMimics, Path=IsChecked}" Value="True">
+                                            <DataTrigger Binding="{Binding ElementName=randomizeSingleSpawns, Path=IsChecked}" Value="True">
                                                 <Setter Property="Visibility" Value="Visible"/>
                                             </DataTrigger>
+                                            <!--<DataTrigger Binding="{Binding ElementName=randomizeMimics, Path=IsChecked}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>-->
                                         </Style.Triggers>
                                     </Style>
                                 </WrapPanel.Style>
