@@ -610,11 +610,12 @@ namespace PalworldRandomizer
                 area.IsAllArea = filename.Contains("allarea", StringComparison.OrdinalIgnoreCase);
                 area.IsOnlyHumans = !area.SpawnEntries
                     .Exists(x => x.SpawnList.Exists(y => PalData[y.Name].IsPal && y.Name != "RowName"));
-                area.IsSingleSpawn = area.SpawnEntries.Count(x => x.SpawnList[0].Name != "RowName") == 1
+                area.IsSingleSpawn = !area.isBoss
+                    && (area.SpawnEntries.Count(x => x.SpawnList[0].Name != "RowName") == 1
                     || area.SpawnEntries
                     .SelectMany(x => x.SpawnList.Select(y => y.Name).Where(z => z != "RowName"))
                     .Distinct()
-                    .Count() == 1;
+                    .Count() == 1);
             }
             string firstAreaName = "BP_PalSpawner_Sheets_green_A.uasset";
             AreaData[firstAreaName].minLevel = AreaData[firstAreaName].SpawnEntries[0].SpawnList[0].MinLevel;
@@ -1205,17 +1206,26 @@ namespace PalworldRandomizer
             Random random = new(formData.RandomSeed);
             List<AreaData> areaList = Data.AreaDataCopy();
             List<AreaData> subList = areaList.FindAll(area =>
-                (formData.RandomizeField || !area.isField)
-                && (formData.RandomizeDungeons || !area.isDungeon)
-                && (formData.RandomizeDungeonBosses || !area.isDungeonBoss)
-                && (formData.RandomizeFieldBosses || !area.isFieldBoss)
-                && (formData.RandomizePredators || !area.isPredator)
-                && (formData.RandomizeCages || !area.isCage)
-                && (formData.RandomizeEggs || !area.isEgg)
-                && (formData.RandomizeQuests || !area.isQuest)
-                && (formData.RandomizeMimics || !area.isMimic)
-                && (formData.RandomizeAllArea || !area.IsAllArea)
+                (
+                    (formData.RandomizeField || !area.isField)
+                    && (formData.RandomizeDungeons || !area.isDungeon)
+                    && (formData.RandomizeDungeonBosses || !area.isDungeonBoss)
+                    && (formData.RandomizeFieldBosses || !area.isFieldBoss)
+                    && (formData.RandomizePredators || !area.isPredator)
+                    && (formData.RandomizeCages || !area.isCage)
+                    && (formData.RandomizeEggs || !area.isEgg)
+                    && (formData.RandomizeQuests || !area.isQuest)
+                    && (formData.RandomizeMimics || !area.isMimic)
+                    && (formData.RandomizeAllArea || !area.IsAllArea)
+                    && (formData.RandomizeSingleSpawns || !area.IsSingleSpawn)
+                    // Make global spawn setting take priority
+                    || (formData.RandomizeAllArea || !area.IsAllArea)
+                    &&
+                        (formData.RandomizeAllArea && area.IsAllArea
+                        || formData.RandomizeSingleSpawns && area.IsSingleSpawn)
+                )
                 && (!formData.StartSheepBall || area.filename != "BP_PalSpawner_Sheets_green_A_SheepBall.uasset"));
+
             if (!formData.MethodNone)
             {
                 List<AreaData> addedBosses = subList.FindAll(area => !area.isBoss && !area.isCage && !area.isMonsterOnly && BossesEverywhere(area)).ConvertAll(x => x.Clone());

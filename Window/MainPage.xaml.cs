@@ -60,6 +60,7 @@ namespace PalworldRandomizer
         public bool RandomizeQuests = window.randomizeQuests.IsChecked == true;
         public bool RandomizeMimics = window.randomizeMimics.IsChecked == true;
         public bool RandomizeAllArea = window.randomizeAllArea.IsChecked == true;
+        public bool RandomizeSingleSpawns = window.randomizeSingleSpawns.IsChecked == true;
         public bool EqualizeAreaRarity = window.equalizeAreaRarity.IsChecked == true;
         public bool MethodFull = window.methodFull.IsChecked == true;
         public bool MethodCustomSize = window.methodCustomSize.IsChecked == true;
