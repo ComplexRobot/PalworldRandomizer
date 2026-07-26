@@ -1921,8 +1921,9 @@ namespace PalworldRandomizer
                         if (original.Count != 0 && !(formData.Rarity8UpSolo && Rarity8Up(spawnEntry.SpawnList[0])))
                         {
                             int groupSize = area.isBoss ? random.Next(minGroupBoss, maxGroupBoss + 1) : random.Next(minGroup, maxGroup + 1);
-                            if (nightOnly || !formData.MixHumanAndPal || formData.Rarity8UpSolo || formData.SeparateAggroHumans || formData.SeparateFlying)
-                            {
+                            if (nightOnly || !formData.MixHumanAndPal || formData.Rarity8UpSolo
+                                || formData.Rarity8UpSanity || formData.SeparateAggroHumans || formData.SeparateFlying
+                                ) {
                                 List<SpawnEntry> spawnsUsed = spawns;
                                 List<SpawnEntry> originalsUsed = original;
                                 if (nightOnly)
@@ -1963,10 +1964,24 @@ namespace PalworldRandomizer
                                         separateAggroHumansApplied = true;
                                     }
                                 }
+
+                                bool rarity8UpFilterApplied = false;
+
+                                void Rarity8UpFilter() {
+                                    if (Rarity8Up(spawnEntry.SpawnList[^1])) {
+                                        FilterGroupsByCondition(entry => !entry.SpawnList.Exists(x => Rarity8Up(x)));
+                                        rarity8UpFilterApplied = true;
+                                    }
+                                }
+
                                 if (formData.Rarity8UpSolo)
                                 {
                                     FilterGroupsByCondition(entry => !entry.SpawnList.Exists(x => Rarity8Up(x)));
+                                    rarity8UpFilterApplied = true;
+                                } else if (formData.Rarity8UpSanity) {
+                                    Rarity8UpFilter();
                                 }
+
                                 void FilterGroupsByCondition(Func<SpawnEntry, bool> condition)
                                 {
                                     spawnsUsed = spawnsUsed.FindAll(entry => condition(entry));
@@ -1991,6 +2006,10 @@ namespace PalworldRandomizer
                                         if (formData.SeparateAggroHumans && !separateAggroHumansApplied)
                                         {
                                             SeparateAggroHumanFilter();
+                                        }
+
+                                        if (formData.Rarity8UpSanity && !rarity8UpFilterApplied) {
+                                            Rarity8UpFilter();
                                         }
                                     }
                                     if (spawns.Count == 0)
