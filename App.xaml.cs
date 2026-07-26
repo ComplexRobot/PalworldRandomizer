@@ -70,7 +70,7 @@ namespace PalworldRandomizer
         {
             DispatcherOperation dataOperation = Dispatcher.BeginInvoke(DispatcherPriority.Background, async () =>
             {
-                await using var fileProvider = UAssetData.Initialize();
+                await using var fileProvider = await UAssetData.Initialize();
                 Data.Initialize(fileProvider);
                 Randomize.Initialize();
 

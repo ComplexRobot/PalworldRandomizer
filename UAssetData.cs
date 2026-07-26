@@ -306,8 +306,11 @@ namespace PalworldRandomizer
             return true;
         }
 
-        public static VfsFileProvider Initialize()
-        {
+        /// <summary>
+        /// Updates and copies resources from the Pal-Windows.pak and Resource.resx to the user's system.
+        /// </summary>
+        /// <returns>A <see cref="VfsFileProvider"/> with files created from Pal-Windows.pak.</returns>
+        public static async Task<VfsFileProvider> Initialize() {
             ConfigData config = SharedWindow.GetConfig();
             SettingsPage.Instance.installationFolderTextbox.Text = InstallationDirectory = config.InstallationDirectory;
             GameVersion = config.GameVersion;
@@ -330,7 +333,9 @@ namespace PalworldRandomizer
             }
             OodleHelper.Initialize(AppDataPath("oo2core_9_win64.dll"));
             ZlibHelper.Initialize(AppDataPath("zlib-ng2.dll"));
-            VfsFileProvider fileProvider = new() { MappingsContainer = new FileUsmapTypeMappingsProvider(AppDataPath("Mappings.usmap")) };
+
+            await using VfsFileProvider fileProvider = new() { MappingsContainer = new FileUsmapTypeMappingsProvider(AppDataPath("Mappings.usmap")) };
+
             fileProvider.RegisterVfs(ArchivePath);
             fileProvider.Initialize();
             fileProvider.Mount();
