@@ -37,6 +37,8 @@ namespace PalworldRandomizer
         {
             SpawnList.ForEach(spawnData => spawnData.Print(stringBuilder));
         }
+
+        public override string? ToString() => string.Join(",", SpawnList);
     }
 
     public partial class SpawnData : INotifyPropertyChanged
@@ -159,6 +161,8 @@ namespace PalworldRandomizer
         private static partial Regex baseNameRegex();
 
         public string BaseName => Name.EndsWith("_Otomo", StringComparison.OrdinalIgnoreCase) ? Name : baseNameRegex().Match(Name).Groups[3].Value;
+
+        public override string ToString() => SimpleName;
     }
 
     public class SpawnExportData
