@@ -1,7 +1,5 @@
 /.vs/
 /.build/
+/.publish/
 *.user
-/*.exe
-/*.pdb
 /*.txt
-/*.zip
