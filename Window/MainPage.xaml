@@ -497,6 +497,7 @@
                                                  PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">5</TextBox>
                                     </WrapPanel>
                                     <CheckBox Name="weightAdjustProbability" IsChecked="True">Convert Weights To Percentages</CheckBox>
+                                    <CheckBox Name="weightPrioritizeBoss" IsChecked="True">Prioritize Boss Rarity</CheckBox>
                                 </WrapPanel>
                             </WrapPanel>
                         </Border>

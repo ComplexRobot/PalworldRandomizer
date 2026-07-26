@@ -1770,41 +1770,38 @@ namespace PalworldRandomizer
                         long weight = spawnEntry.Weight;
                         if (formData.WeightTypeCustom)
                         {
-                            if (formData.WeightCustomMode == GroupWeightMode.WeightSum)
-                            {
-                                weight = spawnEntry.SpawnList.Sum(spawnData => Convert.ToInt64(CustomWeight(Rarity(spawnData), false, WeightScale(spawnData))));
+                            var spawnList = spawnEntry.SpawnList;
+
+                            if (formData.WeightPrioritizeBoss) {
+                                var bossList = spawnList.Where(x => x.IsBoss);
+                                if (bossList.Any()) {
+                                    spawnList = [.. bossList];
+                                }
                             }
-                            else if (formData.WeightCustomMode == GroupWeightMode.WeightAverage)
-                            {
-                                weight = Convert.ToInt64(spawnEntry.SpawnList.Sum(spawnData => Convert.ToInt64(
-                                    CustomWeight(Rarity(spawnData), false, WeightScale(spawnData)))) / (float)spawnEntry.SpawnList.Count);
-                            }
-                            else if (formData.WeightCustomMode == GroupWeightMode.WeightMinimum)
-                            {
-                                weight = spawnEntry.SpawnList.Min(spawnData => Convert.ToInt64(CustomWeight(Rarity(spawnData), false, WeightScale(spawnData))));
-                            }
-                            else if (formData.WeightCustomMode == GroupWeightMode.WeightMaximum)
-                            {
-                                weight = spawnEntry.SpawnList.Max(spawnData => Convert.ToInt64(CustomWeight(Rarity(spawnData), false, WeightScale(spawnData))));
-                            }
-                            else if (formData.WeightCustomMode == GroupWeightMode.RarityAverageRounded)
-                            {
-                                weight = Convert.ToInt64(CustomWeight(
-                                    spawnEntry.SpawnList.Sum(Rarity) / (float)spawnEntry.SpawnList.Count, false,
-                                    spawnEntry.SpawnList.Sum(WeightScale) / spawnEntry.SpawnList.Count));
-                            }
-                            else if (formData.WeightCustomMode == GroupWeightMode.RarityAverageBlend)
-                            {
-                                weight = Convert.ToInt64(CustomWeight(
-                                    spawnEntry.SpawnList.Sum(Rarity) / (float)spawnEntry.SpawnList.Count, true,
-                                    spawnEntry.SpawnList.Sum(WeightScale) / spawnEntry.SpawnList.Count));
-                            }
-                            else if (formData.WeightCustomMode == GroupWeightMode.RarityAverageBlend10To20)
-                            {
-                                float rarity = spawnEntry.SpawnList.Sum(Rarity) / (float) spawnEntry.SpawnList.Count;
-                                weight = Convert.ToInt64(CustomWeight(rarity, rarity >= 10,
-                                    spawnEntry.SpawnList.Sum(WeightScale) / spawnEntry.SpawnList.Count));
-                            }
+
+                            float averageRarity = spawnList.Sum(Rarity) / (float)spawnList.Count;
+
+                            weight = formData.WeightCustomMode switch {
+                                string x when x == GroupWeightMode.WeightSum =>
+                                    spawnList.Sum(spawnData => Convert.ToInt64(CustomWeight(Rarity(spawnData), false, WeightScale(spawnData)))),
+                                string x when x == GroupWeightMode.WeightAverage =>
+                                    Convert.ToInt64(spawnList.Sum(spawnData => Convert.ToInt64(
+                                    CustomWeight(Rarity(spawnData), false, WeightScale(spawnData)))) / (float)spawnList.Count),
+                                string x when x == GroupWeightMode.WeightMinimum =>
+                                    spawnList.Min(spawnData => Convert.ToInt64(CustomWeight(Rarity(spawnData), false, WeightScale(spawnData)))),
+                                string x when x == GroupWeightMode.WeightMaximum =>
+                                    spawnList.Max(spawnData => Convert.ToInt64(CustomWeight(Rarity(spawnData), false, WeightScale(spawnData)))),
+                                string x when x == GroupWeightMode.RarityAverageRounded => Convert.ToInt64(CustomWeight(
+                                    spawnList.Sum(Rarity) / (float)spawnList.Count, false,
+                                    spawnList.Sum(WeightScale) / spawnList.Count)),
+                                string x when x == GroupWeightMode.RarityAverageBlend => Convert.ToInt64(CustomWeight(
+                                    spawnList.Sum(Rarity) / (float)spawnList.Count, true,
+                                    spawnList.Sum(WeightScale) / spawnList.Count)),
+                                string x when x == GroupWeightMode.RarityAverageBlend10To20 =>
+                                    Convert.ToInt64(CustomWeight(averageRarity, averageRarity >= 10,
+                                    spawnList.Sum(WeightScale) / spawnList.Count)),
+                                _ => throw new Exception($"Unsupported Group Weight Mode '{formData.WeightCustomMode}'"),
+                            };
                         }
                         else
                         {

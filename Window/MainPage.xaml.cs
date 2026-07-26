@@ -124,6 +124,7 @@ namespace PalworldRandomizer
         public int HumanBossRarity = int.Parse(window.humanBossRarity.Text);
         public int MaxCageRarity = int.Parse(window.maxCageRarity.Text);
         public bool WeightAdjustProbability = window.weightAdjustProbability.IsChecked == true;
+        public bool WeightPrioritizeBoss = window.weightPrioritizeBoss.IsChecked == true;
         public int HumanWeight = int.Parse(window.humanWeight.Text);
         public int HumanWeightAggro = int.Parse(window.humanWeightAggro.Text);
         public decimal WeightNightOnly = decimal.Parse(window.weightNightOnly.Text);
