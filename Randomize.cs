@@ -1791,6 +1791,14 @@ namespace PalworldRandomizer
                                     spawnList.Min(spawnData => Convert.ToInt64(CustomWeight(Rarity(spawnData), false, WeightScale(spawnData)))),
                                 string x when x == GroupWeightMode.WeightMaximum =>
                                     spawnList.Max(spawnData => Convert.ToInt64(CustomWeight(Rarity(spawnData), false, WeightScale(spawnData)))),
+                                string x when x == GroupWeightMode.RarityMinimum =>
+                                    spawnList.MinBy(Rarity) is SpawnData spawnData
+                                    ? Convert.ToInt64(CustomWeight(Rarity(spawnData), false, WeightScale(spawnData)))
+                                    : throw new Exception("Group Weight Mode: 'Rarity Minimum' failed."),
+                                string x when x == GroupWeightMode.RarityMaximum =>
+                                    spawnList.MaxBy(Rarity) is SpawnData spawnData
+                                    ? Convert.ToInt64(CustomWeight(Rarity(spawnData), false, WeightScale(spawnData)))
+                                    : throw new Exception("Group Weight Mode: 'Rarity Maximum' failed."),
                                 string x when x == GroupWeightMode.RarityAverageRounded => Convert.ToInt64(CustomWeight(
                                     spawnList.Sum(Rarity) / (float)spawnList.Count, false,
                                     spawnList.Sum(WeightScale) / spawnList.Count)),

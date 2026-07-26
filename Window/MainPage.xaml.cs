@@ -21,6 +21,8 @@ namespace PalworldRandomizer
         public static readonly string RarityAverageRounded = "Rarity Average (Rounded)";
         public static readonly string RarityAverageBlend = "Rarity Average (Blend Fractions)";
         public static readonly string RarityAverageBlend10To20 = "Rarity Average (Blend 10 to 20)";
+        public static readonly string RarityMinimum = "Rarity Minimum";
+        public static readonly string RarityMaximum = "Rarity Maximum";
         public static readonly string WeightMinimum = "Weight Minimum";
         public static readonly string WeightMaximum = "Weight Maximum";
     }
