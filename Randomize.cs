@@ -1072,7 +1072,7 @@ namespace PalworldRandomizer
             int minGroup = Math.Max(1, formData.GroupMin);
             int maxGroup = Math.Max(minGroup, formData.GroupMax);
             int minGroupBoss = Math.Max(1, formData.GroupMinBoss);
-            int maxGroupBoss = Math.Max(minGroup, formData.GroupMaxBoss);
+            int maxGroupBoss = Math.Max(minGroupBoss, formData.GroupMaxBoss);
             int spawnListSize = Math.Max(1, formData.SpawnListSize);
             double vanillaPlusChance = Math.Clamp(formData.VanillaPlusChance, 1, 99) / 100.0;
             float fieldLevel = Math.Max(0, formData.FieldLevel) / 100.0f;
