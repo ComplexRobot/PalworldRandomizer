@@ -1904,10 +1904,11 @@ namespace PalworldRandomizer
                                     currentSpawns = null;
 
                                     if (!indexedSpawns.Any()) {
-                                        spawns = [.. original];
+                                        spawns.AddRange(original);
                                     }
                                 } else {
-                                    spawns = [.. original];
+                                    spawns.Clear();
+                                    spawns.AddRange(original);
                                 }
 
                                 indexedSpawns = IndexedSpawns();
@@ -1948,8 +1949,8 @@ namespace PalworldRandomizer
                             if (nightOnly || !formData.MixHumanAndPal || formData.Rarity8UpSolo
                                 || formData.Rarity8UpSanity || formData.SeparateAggroHumans || formData.SeparateFlying
                                 ) {
-                                List<SpawnEntry> spawnsUsed = spawns;
-                                List<SpawnEntry> originalsUsed = original;
+                                List<SpawnEntry> spawnsUsed = [.. spawns];
+                                List<SpawnEntry> originalsUsed = [.. original];
                                 if (nightOnly)
                                 {
                                     SeparateGroupsByCondition(entry => Data.PalData[entry.SpawnList[0].Name].Nocturnal && Data.PalData[entry.SpawnList[0].Name].IsPal);
@@ -2038,7 +2039,7 @@ namespace PalworldRandomizer
                                     }
                                     if (spawns.Count == 0)
                                         spawns.AddRange(original);
-                                    spawns.RemoveAll(entry => spawnEntry.SpawnList.Exists(spawnData => entry.SpawnList[0].Name == spawnData.Name));
+                                    spawns.RemoveAll(entry => spawnEntry.SpawnList[1..].Exists(spawnData => entry.SpawnList[0].Name == spawnData.Name));
                                 }
                             }
                             else
