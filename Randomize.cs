@@ -1108,6 +1108,10 @@ namespace PalworldRandomizer
             int countClampMax = Math.Max(Math.Max(1, countClampMin), formData.CountClampMax);
             int countClampFirstMin = Math.Max(0, formData.CountClampFirstMin);
             int countClampFirstMax = Math.Max(Math.Max(1, countClampFirstMin), formData.CountClampFirstMax);
+            int countClampBossMin = Math.Max(0, formData.CountClampBossMin);
+            int countClampBossMax = Math.Max(Math.Max(1, countClampBossMin), formData.CountClampBossMax);
+            int countClampFirstBossMin = Math.Max(0, formData.CountClampFirstBossMin);
+            int countClampFirstBossMax = Math.Max(Math.Max(1, countClampFirstBossMin), formData.CountClampFirstBossMax);
             float eggRespawnTime = formData.EggRespawnTime();
             int totalSpeciesCount = 0;
             string basePath = UAssetData.AppDataPath(@"Create-Pak");
@@ -1860,16 +1864,19 @@ namespace PalworldRandomizer
                                 spawnData.MinCount = baseCountMin;
                                 spawnData.MaxCount = baseCountMax;
                             }
+
                             float countMultiplier = CountMultiplier(spawnData);
-                            if (i == 0)
-                            {
-                                spawnData.MinCount = Math.Clamp(Convert.ToInt32(spawnData.MinCount * countMultiplier), countClampFirstMin, countClampFirstMax);
-                                spawnData.MaxCount = Math.Clamp(Convert.ToInt32(spawnData.MaxCount * countMultiplier), countClampFirstMin, countClampFirstMax);
-                            }
-                            else
-                            {
-                                spawnData.MinCount = Math.Clamp(Convert.ToInt32(spawnData.MinCount * countMultiplier), countClampMin, countClampMax);
-                                spawnData.MaxCount = Math.Clamp(Convert.ToInt32(spawnData.MaxCount * countMultiplier), countClampMin, countClampMax);
+                            int min = spawnData.IsBoss ? countClampBossMin : countClampMin;
+                            int max = spawnData.IsBoss ? countClampBossMax : countClampMax;
+                            int firstMin = spawnData.IsBoss ? countClampFirstBossMin : countClampFirstMin;
+                            int firstMax = spawnData.IsBoss ? countClampFirstBossMax : countClampFirstMax;
+
+                            if (i == 0) {
+                                spawnData.MinCount = Math.Clamp(Convert.ToInt32(spawnData.MinCount * countMultiplier), firstMin, firstMax);
+                                spawnData.MaxCount = Math.Clamp(Convert.ToInt32(spawnData.MaxCount * countMultiplier), firstMin, firstMax);
+                            } else {
+                                spawnData.MinCount = Math.Clamp(Convert.ToInt32(spawnData.MinCount * countMultiplier), min, max);
+                                spawnData.MaxCount = Math.Clamp(Convert.ToInt32(spawnData.MaxCount * countMultiplier), min, max);
                             }
                         }
                     }

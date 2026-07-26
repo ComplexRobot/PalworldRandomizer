@@ -898,6 +898,22 @@
                         <TextBox Name="countClampFirstMax" VerticalAlignment="Center" Margin="0"
                                  PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">5</TextBox>
                     </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Boss Min/Max:"/>
+                        <TextBox Name="countClampBossMin" VerticalAlignment="Center" Margin="0"
+                                 PreviewTextInput="NonNegIntSize2_PreviewTextInput" DataObject.Pasting="NonNegIntSize2_Pasting">0</TextBox>
+                        <TextBlock Text="-" Margin="0" VerticalAlignment="Center"/>
+                        <TextBox Name="countClampBossMax" VerticalAlignment="Center" Margin="0"
+                                 PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">5</TextBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="First Boss Min/Max:"/>
+                        <TextBox Name="countClampFirstBossMin" VerticalAlignment="Center" Margin="0"
+                                 PreviewTextInput="NonNegIntSize2_PreviewTextInput" DataObject.Pasting="NonNegIntSize2_Pasting">1</TextBox>
+                        <TextBlock Text="-" Margin="0" VerticalAlignment="Center"/>
+                        <TextBox Name="countClampFirstBossMax" VerticalAlignment="Center" Margin="0"
+                                 PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">5</TextBox>
+                    </StackPanel>
                 </WrapPanel>
             </GroupBox>
             <WrapPanel Margin="0,0,0,5">

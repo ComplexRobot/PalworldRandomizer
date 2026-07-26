@@ -172,6 +172,10 @@ namespace PalworldRandomizer
         public int CountClampMax = int.Parse(window.countClampMax.Text);
         public int CountClampFirstMin = int.Parse(window.countClampFirstMin.Text);
         public int CountClampFirstMax = int.Parse(window.countClampFirstMax.Text);
+        public int CountClampBossMin = int.Parse(window.countClampBossMin.Text);
+        public int CountClampBossMax = int.Parse(window.countClampBossMax.Text);
+        public int CountClampFirstBossMin = int.Parse(window.countClampFirstBossMin.Text);
+        public int CountClampFirstBossMax = int.Parse(window.countClampFirstBossMax.Text);
         public bool NightOnly = window.nightOnly.IsChecked == true;
         public bool NightOnlyDungeons = window.nightOnlyDungeons.IsChecked == true;
         public bool NightOnlyDungeonBosses = window.nightOnlyDungeonBosses.IsChecked == true;
@@ -363,6 +367,10 @@ namespace PalworldRandomizer
             ValidateNumericText(countClampMax, Math.Max(1, int.Parse(countClampMin.Text)));
             ValidateNumericText(countClampFirstMin, 0, 0);
             ValidateNumericText(countClampFirstMax, Math.Max(1, int.Parse(countClampFirstMin.Text)));
+            ValidateNumericText(countClampBossMin, 0, 0);
+            ValidateNumericText(countClampBossMax, Math.Max(1, int.Parse(countClampBossMin.Text)));
+            ValidateNumericText(countClampFirstBossMin, 0, 0);
+            ValidateNumericText(countClampFirstBossMax, Math.Max(1, int.Parse(countClampFirstBossMin.Text)));
             ValidateNumericText(eggRespawnHours, 0, 3);
             ValidateNumericText(eggRespawnMinutes, 0, 0);
             ValidateNumericText(eggRespawnSeconds, 0, 0);
