@@ -1883,21 +1883,45 @@ namespace PalworldRandomizer
                     // Generate a random group. Not used with Vanilla-Based mode
                     SpawnEntry GetRandomGroup()
                     {
-                        SpawnData NextSpecies(List<SpawnEntry> spawns, List<SpawnEntry> original, List<SpawnData>? currentSpawns = null)
-                        {
-                            if (spawns.Count == 0)
-                            {
-                                spawns.AddRange(original);
-                                if (currentSpawns != null && currentSpawns.Count < spawns.Count)
-                                {
-                                    spawns.RemoveAll(entry => currentSpawns.Exists(spawnData => entry.SpawnList[0].Name == spawnData.Name));
+                        SpawnData NextSpecies(List<SpawnEntry> spawns, List<SpawnEntry> original,
+                            List<SpawnData>? currentSpawns = null) {
+                            IEnumerable<KeyValuePair<int, string>> IndexedSpawns() =>
+                                spawns.Select((x, i) => new KeyValuePair<int, string>(i, x.SpawnList[0].Name));
+
+                            var indexedSpawns = IndexedSpawns();
+
+                            IEnumerable<KeyValuePair<int, string>> SpawnsUsed() =>
+                                currentSpawns != null
+                                ? indexedSpawns.Where(entry =>
+                                    !currentSpawns.Exists(spawnData => entry.Value == spawnData.Name))
+                                : indexedSpawns;
+
+                            var spawnsUsed = SpawnsUsed();
+
+                            if (!spawnsUsed.Any()) {
+                                if (currentSpawns != null && !original.Exists(entry =>
+                                    !currentSpawns.Exists(spawnData => entry.SpawnList[0].Name == spawnData.Name))) {
+                                    currentSpawns = null;
+
+                                    if (!indexedSpawns.Any()) {
+                                        spawns = [.. original];
+                                    }
+                                } else {
+                                    spawns = [.. original];
                                 }
+
+                                indexedSpawns = IndexedSpawns();
+                                spawnsUsed = SpawnsUsed();
                             }
-                            int i = random.Next(0, spawns.Count);
-                            string name = spawns[i].SpawnList[0].Name;
-                            spawns.RemoveAt(i);
+
+                            var spawnsUsedList = spawnsUsed.ToList();
+                            var nextElement = spawnsUsedList[random.Next(spawnsUsedList.Count)];
+                            string name = nextElement.Value;
+                            spawns.RemoveAt(nextElement.Key);
+
                             return new(name) { IsPal = Data.PalData[name].IsPal };
                         }
+
                         SpawnEntry spawnEntry = new();
                         List<SpawnEntry> spawns = basicSpawnsCurrent;
                         List<SpawnEntry> original = basicSpawnsOriginal;
