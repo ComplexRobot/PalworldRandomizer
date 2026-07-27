@@ -410,7 +410,7 @@
                                          PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">9</TextBox>
                             </WrapPanel>
                             <CheckBox Name="startSheepBall" IsChecked="True" Margin="5,5,0,5">Lamball At Start</CheckBox>
-                            <CheckBox Name="minOneCountSolo" IsChecked="True" Margin="5,5,0,5">Min 1 Count Solo Pals</CheckBox>
+                            <CheckBox Name="minOneCountSolo" IsChecked="True" Margin="5,5,0,5" Visibility="Collapsed">Min 1 Count Solo Pals</CheckBox>
                         </WrapPanel>
                     </WrapPanel>
                 </GroupBox>
