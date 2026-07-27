@@ -2190,16 +2190,22 @@ namespace PalworldRandomizer
                         }
                         ApplyLevelRange(spawnData, LevelMultiplierEx(spawnData, area.isInDungeon, area.isCage, area.isEgg), average, range, false);
                         float countMultiplier = CountMultiplierEx(spawnData, area.isInDungeon, area.isCage || area.isEgg);
+
+                        int min = spawnData.IsBoss ? countClampBossMin : countClampMin;
+                        int max = spawnData.IsBoss ? countClampBossMax : countClampMax;
+                        int firstMin = spawnData.IsBoss ? countClampFirstBossMin : countClampFirstMin;
+                        int firstMax = spawnData.IsBoss ? countClampFirstBossMax : countClampFirstMax;
+
                         if (i == 0)
                         {
                             firstAverage = average;
-                            spawnData.MinCount = Math.Clamp(Convert.ToInt32(spawnData.MinCount * countMultiplier), countClampFirstMin, countClampFirstMax);
-                            spawnData.MaxCount = Math.Clamp(Convert.ToInt32(spawnData.MaxCount * countMultiplier), countClampFirstMin, countClampFirstMax);
+                            spawnData.MinCount = Math.Clamp(Convert.ToInt32(spawnData.MinCount * countMultiplier), firstMin, firstMax);
+                            spawnData.MaxCount = Math.Clamp(Convert.ToInt32(spawnData.MaxCount * countMultiplier), firstMin, firstMax);
                         }
                         else
                         {
-                            spawnData.MinCount = Math.Clamp(Convert.ToInt32(spawnData.MinCount * countMultiplier), countClampMin, countClampMax);
-                            spawnData.MaxCount = Math.Clamp(Convert.ToInt32(spawnData.MaxCount * countMultiplier), countClampMin, countClampMax);
+                            spawnData.MinCount = Math.Clamp(Convert.ToInt32(spawnData.MinCount * countMultiplier), min, max);
+                            spawnData.MaxCount = Math.Clamp(Convert.ToInt32(spawnData.MaxCount * countMultiplier), min, max);
                         }
                         changes += (spawnData.MinLevel != originalMin ? 1 : 0) + (spawnData.MaxLevel != originalMax ? 1 : 0)
                             + (spawnData.MinCount != originalCountMin ? 1 : 0) + (spawnData.MaxCount != originalCountMax ? 1 : 0);
