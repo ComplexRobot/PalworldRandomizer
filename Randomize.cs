@@ -1275,6 +1275,22 @@ namespace PalworldRandomizer
             bool equalizeAreaRarity = formData.EqualizeAreaRarity && !formData.MethodNone && !formData.MethodFull && !formData.MethodGlobalSwap && !formData.VanillaRestrict;
             int progress = 0;
             int progressTotal = subList.Count;
+
+            (int palsAdded, int pals8UpAdded) = (0, 0);
+            (int bossesAdded, int bosses8UpAdded) = (0, 0);
+
+            bool ShouldAdd8UpPal(List<SpawnEntry> original, int groupSize, bool isBoss) {
+                if (formData.Rarity8UpSolo || !formData.Rarity8UpSanity || groupSize == 1) {
+                    return false;
+                }
+
+                int pals8UpCount = original.Count(x => Rarity8Up(x.SpawnList[0]));
+
+                return isBoss
+                    ? (bosses8UpAdded + 1) * original.Count <= (bossesAdded + groupSize) * pals8UpCount
+                    : (pals8UpAdded + 1) * original.Count <= (palsAdded + groupSize) * pals8UpCount;
+            }
+
             bool NightOnly(AreaData area, bool condition = true) => (formData.NightOnly == condition && area.isField)
                     || (formData.NightOnlyDungeons == condition && area.isDungeon)
                     || (formData.NightOnlyDungeonBosses == condition && area.isDungeonBoss)
@@ -1652,6 +1668,8 @@ namespace PalworldRandomizer
                         }
                         else if (formData.GroupRandom)
                         {
+                            palsAdded = pals8UpAdded = bossesAdded = bosses8UpAdded = 0;
+
                             if (area.isBoss && !formData.MultiBoss)
                             {
                                 while (speciesCount < maxSpecies)
@@ -1923,12 +1941,31 @@ namespace PalworldRandomizer
                             return new(name) { IsPal = Data.PalData[name].IsPal };
                         }
 
+                        List<SpawnEntry> FilterRarity8Up(List<SpawnEntry> spawns) =>
+                            spawns.FindAll(x => Rarity8Up(x.SpawnList[0]));
+
                         SpawnEntry spawnEntry = new();
+
+                        void Rarity8UpSanityCheck(List<SpawnEntry> spawns, List<SpawnEntry> original, int maxGroup,
+                            bool isBoss) {
+                            if (!area.isCage && !area.isEgg && ShouldAdd8UpPal(original, maxGroup, isBoss)) {
+                                var filteredSpawns = FilterRarity8Up(spawns);
+                                var filteredOriginal = FilterRarity8Up(original);
+
+                                spawnEntry.SpawnList.Add(NextSpecies(filteredSpawns, filteredOriginal));
+                                spawns.Remove(spawns.Find(x => x.SpawnList[0].Name == spawnEntry.SpawnList[0].Name)!);
+                            } else {
+                                spawnEntry.SpawnList.Add(NextSpecies(spawns, original));
+                            }
+                        }
+
                         List<SpawnEntry> spawns = basicSpawnsCurrent;
                         List<SpawnEntry> original = basicSpawnsOriginal;
                         if (area.isBoss)
                         {
-                            spawnEntry.SpawnList.Add(NextSpecies(bossSpawnsCurrent, bossSpawnsOriginal));
+                            Rarity8UpSanityCheck(bossSpawnsCurrent, bossSpawnsOriginal,
+                                formData.MultiBoss ? maxGroupBoss : 1, true);
+
                             if (formData.MultiBoss)
                             {
                                 spawns = bossSpawnsCurrent;
@@ -1937,7 +1974,7 @@ namespace PalworldRandomizer
                         }
                         else
                         {
-                            spawnEntry.SpawnList.Add(NextSpecies(basicSpawnsCurrent, basicSpawnsOriginal));
+                            Rarity8UpSanityCheck(basicSpawnsCurrent, basicSpawnsOriginal, maxGroup, false);
                         }
                         if (area.isCage || area.isEgg)
                         {
@@ -2039,6 +2076,14 @@ namespace PalworldRandomizer
                                     }
                                     if (spawns.Count == 0)
                                         spawns.AddRange(original);
+
+                                    if (!formData.Rarity8UpSolo && formData.Rarity8UpSanity
+                                        && !spawnEntry.SpawnList[1..].All(x =>
+                                            spawns.Exists(y => y.SpawnList[0].Name == x.Name))) {
+                                        spawns.AddRange(original.Where(x => !Rarity8Up(x.SpawnList[0])
+                                            && !spawns.Exists(y => y.SpawnList[0].Name == x.SpawnList[0].Name)));
+                                    }
+
                                     spawns.RemoveAll(entry => spawnEntry.SpawnList[1..].Exists(spawnData => entry.SpawnList[0].Name == spawnData.Name));
                                 }
                             }
@@ -2056,6 +2101,23 @@ namespace PalworldRandomizer
                             spawnEntry.SpawnList[0].MaxLevel = maxBossLevel;
                             spawnEntry.SpawnList[1..].ForEach(spawnData => { spawnData.MinLevel = minAddLevel; spawnData.MaxLevel = maxAddLevel; });
                         }
+
+                        foreach (var spawnData in spawnEntry.SpawnList) {
+                            if (Rarity8Up(spawnData)) {
+                                if (spawnData.IsBoss) {
+                                    ++bosses8UpAdded;
+                                } else {
+                                    ++pals8UpAdded;
+                                }
+                            } else {
+                                if (spawnData.IsBoss) {
+                                    ++bossesAdded;
+                                } else {
+                                    ++palsAdded;
+                                }
+                            }
+                        }
+
                         return spawnEntry;
                     }
                 }
