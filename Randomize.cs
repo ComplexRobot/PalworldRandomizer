@@ -1081,7 +1081,7 @@ namespace PalworldRandomizer
             float dungeonBossLevel = Math.Max(0, formData.DungeonBossLevel) / 100.0f;
             float predatorLevel = Math.Max(0, formData.PredatorLevel) / 100.0f;
             float cageLevel = Math.Max(0, formData.CageLevel) / 100.0f;
-            int levelCap = Math.Max(1, formData.LevelCap);
+            int levelCap = formData.EnableLevelCap ? Math.Max(1, formData.LevelCap) : 80;
             int randomLevelMin = Math.Clamp(formData.RandomLevelMin, 1, levelCap);
             int randomLevelMax = Math.Clamp(formData.RandomLevelMax, randomLevelMin, levelCap);
             int rarity67MinLevel = Math.Clamp(formData.Rarity67MinLevel, 1, levelCap);

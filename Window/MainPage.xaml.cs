@@ -157,6 +157,7 @@ namespace PalworldRandomizer
         public int DungeonBossLevel = int.Parse(window.dungeonBossLevel.Text);
         public int PredatorLevel = int.Parse(window.predatorLevel.Text);
         public int CageLevel = int.Parse(window.cageLevel.Text);
+        public bool EnableLevelCap = window.enableLevelCap.IsChecked == true;
         public int LevelCap = int.Parse(window.levelCap.Text);
         public int BossAddLevel = int.Parse(window.bossAddLevel.Text);
         public bool ForceAddLevel = window.forceAddLevel.IsChecked == true;
