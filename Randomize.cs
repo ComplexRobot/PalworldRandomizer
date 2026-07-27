@@ -1889,6 +1889,10 @@ namespace PalworldRandomizer
                             int firstMin = spawnData.IsBoss ? countClampFirstBossMin : countClampFirstMin;
                             int firstMax = spawnData.IsBoss ? countClampFirstBossMax : countClampFirstMax;
 
+                            if (formData.MinOneCountSolo && spawnEntry.SpawnList.Count == 1) {
+                                firstMin = Math.Max(1, firstMin);
+                            }
+
                             if (i == 0) {
                                 spawnData.MinCount = Math.Clamp(Convert.ToInt32(spawnData.MinCount * countMultiplier), firstMin, firstMax);
                                 spawnData.MaxCount = Math.Clamp(Convert.ToInt32(spawnData.MaxCount * countMultiplier), firstMin, firstMax);

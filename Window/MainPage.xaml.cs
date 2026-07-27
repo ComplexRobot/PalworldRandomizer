@@ -102,6 +102,7 @@ namespace PalworldRandomizer
         public bool PredatorConstraint = window.predatorConstraint.IsChecked == true;
         public bool AllowCagedHumans = window.allowCagedHumans.IsChecked == true;
         public bool StartSheepBall = window.startSheepBall.IsChecked == true;
+        public bool MinOneCountSolo = window.minOneCountSolo.IsChecked == true;
         public bool WeightTypeUniform = window.weightTypeUniform.IsChecked == true;
         public bool WeightTypeCustom = window.weightTypeCustom.IsChecked == true;
         public int WeightUniformMin = int.Parse(window.weightUniformMin.Text);
