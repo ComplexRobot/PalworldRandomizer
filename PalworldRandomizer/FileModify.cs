@@ -7,6 +7,7 @@ using Microsoft.Win32;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PalworldRandomizer.PalSpawn;
+using PalworldRandomizer.Window;
 
 namespace PalworldRandomizer;
 

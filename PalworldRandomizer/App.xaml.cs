@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
+using PalworldRandomizer.Window;
 
 namespace PalworldRandomizer
 {
