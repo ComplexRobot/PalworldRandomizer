@@ -5,7 +5,6 @@
     <TargetFramework>net10.0-windows</TargetFramework>
     <UseWPF>True</UseWPF>
     <StartupObject>PalworldRandomizer.App</StartupObject>
-    <RootNamespace>$(MSBuildProjectName.Replace(" ", ""))</RootNamespace>
     <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
 	<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 	<NoWarn>NU1701</NoWarn>
