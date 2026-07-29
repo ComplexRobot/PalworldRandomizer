@@ -3,7 +3,7 @@
     "Palworld Randomizer": {
       "commandName": "Project",
       "commandLineArgs": "> out.txt",
-      "workingDirectory": "$(ProjectDir)",
+      "workingDirectory": "$(SolutionDir)",
       "hotReloadEnabled": false
     }
   }
