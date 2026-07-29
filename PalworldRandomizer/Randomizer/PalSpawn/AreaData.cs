@@ -2,7 +2,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace PalworldRandomizer.PalSpawn;
+namespace PalworldRandomizer.Randomizer.PalSpawn;
 
 public class AreaData(List<SpawnEntry> spawnEntries, string name) {
     public List<SpawnEntry> SpawnEntries { get; set; } = spawnEntries;

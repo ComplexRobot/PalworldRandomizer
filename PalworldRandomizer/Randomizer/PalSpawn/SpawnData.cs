@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace PalworldRandomizer.PalSpawn;
+namespace PalworldRandomizer.Randomizer.PalSpawn;
 
 public partial class SpawnData : INotifyPropertyChanged {
     public bool IsPal => Data.PalData[Name].IsPal;

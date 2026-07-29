@@ -10,9 +10,9 @@ using CUE4Parse.UE4.Assets.Objects.Properties;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Textures;
-using static PalworldRandomizer.FileModify;
+using static PalworldRandomizer.Serializer.FileModify;
 
-namespace PalworldRandomizer;
+namespace PalworldRandomizer.Serializer;
 
 public class VfsFileProvider()
     : AbstractVfsFileProvider(new VersionContainer(EGame.GAME_UE5_1), StringComparer.OrdinalIgnoreCase),

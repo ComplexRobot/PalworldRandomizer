@@ -5,7 +5,7 @@ using CUE4Parse.UE4.Assets.Objects.Properties;
 using CUE4Parse.Utils;
 using Newtonsoft.Json;
 
-namespace PalworldRandomizer;
+namespace PalworldRandomizer.Serializer;
 
 /// <summary>
 /// Contains game data originating from a uasset resource.<br/>

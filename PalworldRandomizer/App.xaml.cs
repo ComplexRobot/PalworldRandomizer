@@ -3,6 +3,8 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
+using PalworldRandomizer.Randomizer;
+using PalworldRandomizer.Serializer;
 using PalworldRandomizer.Window;
 
 namespace PalworldRandomizer;

@@ -13,7 +13,7 @@ using IniParser.Parser;
 using PalworldRandomizer.Resources;
 using PalworldRandomizer.Window;
 
-namespace PalworldRandomizer;
+namespace PalworldRandomizer.Serializer;
 
 public static partial class UAssetData
 {

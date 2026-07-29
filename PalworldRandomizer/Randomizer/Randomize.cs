@@ -5,11 +5,12 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using CUE4Parse.Utils;
 using Newtonsoft.Json;
-using PalworldRandomizer.PalSpawn;
+using PalworldRandomizer.Randomizer.PalSpawn;
+using PalworldRandomizer.Serializer;
 using PalworldRandomizer.Window;
 using Stfu.Linq;
 
-namespace PalworldRandomizer;
+namespace PalworldRandomizer.Randomizer;
 
 public static partial class Randomize
 {

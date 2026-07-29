@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace PalworldRandomizer.PalSpawn;
+namespace PalworldRandomizer.Randomizer.PalSpawn;
 
 /// <summary>
 /// A spawn group containing meta data and a list of character spawn data
