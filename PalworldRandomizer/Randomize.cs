@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using CUE4Parse.Utils;
 using Newtonsoft.Json;
+using PalworldRandomizer.PalSpawn;
 using Stfu.Linq;
 
 namespace PalworldRandomizer

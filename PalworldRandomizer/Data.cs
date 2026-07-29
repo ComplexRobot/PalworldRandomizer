@@ -2,6 +2,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Objects.UObject;
+using PalworldRandomizer.PalSpawn;
 
 namespace PalworldRandomizer;
 
@@ -513,9 +514,7 @@ public static partial class Data
                 continue;
             }
 
-            var spawnExportData = new SpawnExportData {
-                spawnEntries = [.. fileProvider.LoadBlueprintPalSpawner(path).ToSpawnEntries()]
-            };
+            var spawnEntries = fileProvider.LoadBlueprintPalSpawner(path).ToSpawnEntries();
 
             float averageLevel = 0;
             float levelRange = 0;
@@ -523,7 +522,7 @@ public static partial class Data
             float nightAverageLevel = 0;
             float nightLevelRange = 0;
             float nightWeightSum = 0;
-            foreach (SpawnEntry spawnEntry in spawnExportData.spawnEntries)
+            foreach (SpawnEntry spawnEntry in spawnEntries)
             {
                 if (spawnEntry.SpawnList[0].Name == "RowName")
                 {
@@ -568,7 +567,7 @@ public static partial class Data
                 }
             }
 
-            var area = new AreaData(spawnExportData, filename);
+            var area = new AreaData([.. spawnEntries], filename);
 
             AreaData.Add(filename, area);
 

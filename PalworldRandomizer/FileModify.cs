@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PalworldRandomizer.PalSpawn;
 
 namespace PalworldRandomizer;
 
