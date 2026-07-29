@@ -863,7 +863,7 @@ namespace PalworldRandomizer
                         || (formData.SpawnPolice && Data.policeNames.Contains(keyPair.Key)))
                         )
                     {
-                        SpawnData spawnData = new() { Name = keyPair.Key, IsPal = false };
+                        SpawnData spawnData = new() { Name = keyPair.Key };
                         humanSpawns.Add(new() { SpawnList = [spawnData] });
                         int minCount = 1;
                         int maxCount = 1;
@@ -1779,7 +1779,6 @@ namespace PalworldRandomizer
                             SpawnList = value.SpawnList.ConvertAll(spawnData =>
                                 new SpawnData(spawnData.Name, area.isCage || area.isEgg ? 1 : spawnData.MinCount, area.isCage || area.isEgg ? 1 : spawnData.MaxCount)
                                 {
-                                    IsPal = Data.PalData[spawnData.Name].IsPal,
                                     MinLevel = spawnData.MinLevel,
                                     MaxLevel = spawnData.MaxLevel
                                 })
@@ -1942,7 +1941,7 @@ namespace PalworldRandomizer
                             string name = nextElement.Value;
                             spawns.RemoveAt(nextElement.Key);
 
-                            return new(name) { IsPal = Data.PalData[name].IsPal };
+                            return new(name);
                         }
 
                         List<SpawnEntry> FilterRarity8Up(List<SpawnEntry> spawns) =>
@@ -3228,7 +3227,6 @@ namespace PalworldRandomizer
                 spawnEntry.SpawnList.Add(new()
                 {
                     Name = palName,
-                    IsPal = Data.PalData[palName].IsPal,
                     IsBoss = bool.Parse(list[5]),
                     MinLevel = (int) uint.Parse(list[6]),
                     MaxLevel = (int) uint.Parse(list[7]),
@@ -3280,7 +3278,6 @@ namespace PalworldRandomizer
 
                             return new SpawnData
                             {
-                                IsPal = Data.PalData[characterId].IsPal,
                                 Name = characterId,
                                 MinLevel = spawn.Level,
                                 MaxLevel = spawn.Level_Max,
@@ -3321,7 +3318,6 @@ namespace PalworldRandomizer
                         [
                             new SpawnData
                             {
-                                IsPal = Data.PalData[entry.PalEggData.PalMonsterId.Key!].IsPal,
                                 Name = entry.PalEggData.PalMonsterId.Key!
                             }
                         ]
@@ -3569,7 +3565,6 @@ namespace PalworldRandomizer
                             [
                                 new SpawnData
                                 {
-                                    IsPal = Data.PalData[row.PalId].IsPal,
                                     Name = row.PalId,
                                     MinLevel = row.MinLevel,
                                     MaxLevel = row.MaxLevel

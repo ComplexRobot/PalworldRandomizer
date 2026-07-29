@@ -43,7 +43,7 @@ namespace PalworldRandomizer
 
     public partial class SpawnData : INotifyPropertyChanged
     {
-        public bool IsPal { get; set; } = true;
+        public bool IsPal => Data.PalData[Name].IsPal;
         public string Name { get; set; } = string.Empty;
         public int MinLevel { get; set; } = 1;
         public int MaxLevel { get; set; } = 1;
@@ -66,7 +66,6 @@ namespace PalworldRandomizer
             return new()
             {
                 Name = Name,
-                IsPal = IsPal,
                 MinLevel = MinLevel,
                 MaxLevel = MaxLevel,
                 MinCount = MinCount,
@@ -126,7 +125,6 @@ namespace PalworldRandomizer
                     return;
                 bool wasBoss = IsBoss;
                 Name = Data.SimpleName[value];
-                IsPal = Data.PalData[Name].IsPal;
                 IsBoss = (IsBoss || wasBoss) && IsPal;
                 if (IsBoss != wasBoss)
                     NotifyPropertyChanged(nameof(IsBoss));
