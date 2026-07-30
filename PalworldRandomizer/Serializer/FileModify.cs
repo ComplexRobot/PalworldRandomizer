@@ -340,7 +340,7 @@ public static partial class FileModify
                         SpawnPalEggLotteryDataArray = [.. area.SpawnEntries.Select(entry =>
                             new GameStruct {
                                 PalEggData = new() { PalMonsterId = new() { Key = entry.SpawnList[0].Name } },
-                                WeightF = entry.Weight / 40.0f,
+                                Weight_F = entry.Weight / 40.0f,
                             }
                         )],
                         RespawnTimeMinutesObtained = eggRespawnTime,
@@ -388,7 +388,7 @@ public static partial class FileModify
             schemas.Add(new() {
                 FilePath = $"blueprints/PalSpawns.json",
                 JsonData = JsonConvert.SerializeObject(palSpawnSchema, Formatting.Indented,
-                    new JsonSerializerSettings{ Converters = [new JsonConverterBlueprint()] }),
+                    new JsonSerializerSettings{ Converters = [new JsonConverterGameStruct()] }),
             });
         }
 
@@ -396,7 +396,7 @@ public static partial class FileModify
             schemas.Add(new() {
                 FilePath = $"blueprints/EggSpawns.json",
                 JsonData = JsonConvert.SerializeObject(eggSchema, Formatting.Indented,
-                    new JsonSerializerSettings{ Converters = [new JsonConverterBlueprint()] }),
+                    new JsonSerializerSettings{ Converters = [new JsonConverterGameStruct()] }),
             });
         }
 
@@ -419,8 +419,8 @@ public static partial class FileModify
                     cageSchema["DT_CapturedCagePal"].Add($"{++i}",
                         new GameStruct {
                             FieldName = area.filename,
-                            PalIdS = entry.SpawnList[0].Name,
-                            WeightF = entry.Weight / 10.0f,
+                            PalId_S = entry.SpawnList[0].Name,
+                            Weight_F = entry.Weight / 10.0f,
                             MinLevel = entry.SpawnList[0].MinLevel,
                             MaxLevel = entry.SpawnList[0].MaxLevel,
                         }
@@ -431,7 +431,7 @@ public static partial class FileModify
             schemas.Add(new() {
                 FilePath = "raw/Cages.json",
                 JsonData = JsonConvert.SerializeObject(cageSchema, Formatting.Indented,
-                    new JsonSerializerSettings{ Converters = [new JsonConverterBlueprint()] }),
+                    new JsonSerializerSettings{ Converters = [new JsonConverterGameStruct()] }),
             });
         }
 
@@ -493,91 +493,81 @@ public static partial class FileModify
         }
     }
 
+    /// <summary>JSON serializer with a custom <see cref="GameStruct"/> converter for data tables.</summary>
+    public static JsonSerializer JsonSerializer { get; private set; } =
+        JsonSerializer.CreateDefault(new() { Converters = [new JsonConverterGameStruct()] });
+
     [GeneratedRegex("^(/Game/Pal/Blueprint/(?<folder>.+?)/(?<package>[^./]+)\\.)?(?<class>[^./]+?)_C$", RegexOptions.ExplicitCapture)]
     private static partial Regex schemaPathRegex();
 
-    public static void ConvertPalSchemaJSON(List<AreaData> areaList, string jsonData)
-    {
-        Dictionary<string, JObject>? areaDict = JsonConvert.DeserializeObject<Dictionary<string, JObject>>(jsonData);
+    /// <summary>
+    /// Replaces the data in the area list with that of a PalSchema json file.
+    /// </summary>
+    /// <param name="areaList">List of areas to mutate.</param>
+    /// <param name="jsonData">Json-formatted string in PalSchema format.</param>
+    public static void ConvertPalSchemaJSON(List<AreaData> areaList, string jsonData) {
+        var areaDict = JsonConvert.DeserializeObject<Dictionary<string, JObject>>(jsonData);
 
-        if (areaDict == null)
-        {
+        if (areaDict == null) {
             return;
         }
 
-        foreach ((string key, JObject value) in areaDict)
-        {
-            if (key == "DT_CapturedCagePal")
-            {
-                Dictionary<string, PalCapturedCageInfoDatabaseRow?>? rows = value.ToObject<Dictionary<string, PalCapturedCageInfoDatabaseRow?>>();
-                if (rows == null)
-                {
+        foreach (var (key, value) in areaDict) {
+            if (key == "DT_CapturedCagePal") {
+                var dataTable = value.ToObject<Dictionary<string, GameStruct>>(JsonSerializer);
+
+                if (dataTable == null) {
                     continue;
                 }
 
-                Dictionary<string, AreaData> cageDictionary = areaList.Where(x => x.isCage).ToDictionary(x => x.filename, x => x);
-                foreach ((_, AreaData area) in cageDictionary)
-                {
+                var cageDictionary = areaList.Where(x => x.isCage).ToDictionary(x => x.filename, x => x);
+                foreach (var (_, area) in cageDictionary) {
                     area.SpawnEntries.Clear();
                 }
 
-                foreach ((_, PalCapturedCageInfoDatabaseRow? row) in rows)
-                {
-                    if (row == null)
-                    {
+                foreach (var (_, entry) in dataTable) {
+                    if (entry == null) {
                         continue;
                     }
 
-                    cageDictionary[row.FieldName].SpawnEntries.Add(new SpawnEntry
-                    {
-                        Weight = Convert.ToInt32(row.Weight * 10),
-                        SpawnList =
-                        [
-                            new SpawnData
-                            {
-                                Name = row.PalId,
-                                MinLevel = row.MinLevel,
-                                MaxLevel = row.MaxLevel
+                    cageDictionary[entry.FieldName].SpawnEntries.Add(new SpawnEntry {
+                        Weight = Convert.ToInt32(entry.Weight_F * 10),
+                        SpawnList = [
+                            new SpawnData {
+                                Name = entry.PalId_S,
+                                MinLevel = entry.MinLevel,
+                                MaxLevel = entry.MaxLevel
                             }
                         ]
                     });
                 }
-            }
-            else
-            {
+            } else {
                 Match regexMatch = schemaPathRegex().Match(key);
-                if (!regexMatch.Success)
-                {
+
+                if (!regexMatch.Success) {
                     continue;
                 }
 
-                AreaData? area = areaList.Find(x => x.FileNameWithoutExtension.Equals(regexMatch.Groups["class"].Value, StringComparison.OrdinalIgnoreCase));
-                if (area == null)
-                {
+                var area = areaList.Find(x => x.FileNameWithoutExtension.Equals(regexMatch.Groups["class"].Value,
+                    StringComparison.OrdinalIgnoreCase));
+
+                if (area == null) {
                     continue;
                 }
 
-                if (regexMatch.Groups["class"].Value.StartsWith("BP_PalSpawner_Sheets_", StringComparison.OrdinalIgnoreCase))
-                {
-                    PalSpawner? spawner = value.ToObject<PalSpawner>();
-                    if (spawner == null)
-                    {
-                        continue;
-                    }
+                var spawner = value.ToObject<GameStruct>(JsonSerializer);
 
-                    area.SpawnEntries = [.. spawner.ToSpawnEntries()];
-
+                if (spawner == null) {
+                    continue;
                 }
-                else if (regexMatch.Groups["class"].Value.StartsWith("bp_palmapobjectspawner_", StringComparison.OrdinalIgnoreCase))
-                {
-                    PalMapObject.SpawnerPalEgg? spawner = value.ToObject<PalMapObject.SpawnerPalEgg>();
-                    if (spawner == null)
-                    {
-                        continue;
-                    }
 
-                    area.SpawnEntries = [.. spawner.ToSpawnEntries()];
-                }
+                area.SpawnEntries = regexMatch.Groups["class"].Value switch {
+                    var x when x.StartsWith("BP_PalSpawner_Sheets_", StringComparison.OrdinalIgnoreCase) =>
+                        [.. spawner.PalSpawnsToSpawnEntries()],
+                    var x when x.StartsWith("bp_palmapobjectspawner_", StringComparison.OrdinalIgnoreCase) =>
+                        [.. spawner.PalEggsToSpawnEntries()],
+                    var x => throw new Exception($"Unidentified spawn type '{x}'"),
+                };
             }
         }
     }

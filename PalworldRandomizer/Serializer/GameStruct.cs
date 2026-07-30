@@ -3,7 +3,6 @@ using CUE4Parse.UE4.Assets.Exports.Engine;
 using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Assets.Objects.Properties;
 using CUE4Parse.Utils;
-using Newtonsoft.Json;
 using PalworldRandomizer.Randomizer.PalSpawn;
 
 namespace PalworldRandomizer.Serializer;
@@ -95,8 +94,7 @@ public class GameStruct {
                             : npcId.Key)
                         ?? "RowName";
 
-                    return new SpawnData
-                    {
+                    return new SpawnData {
                         Name = characterId,
                         MinLevel = spawn.Level,
                         MaxLevel = spawn.Level_Max,
@@ -113,11 +111,9 @@ public class GameStruct {
     /// </summary>
     public IEnumerable<SpawnEntry> PalEggsToSpawnEntries() => SpawnPalEggLotteryDataArray.Select(entry =>
         new SpawnEntry {
-            Weight = Convert.ToInt32(entry.WeightF * 40),
-            SpawnList =
-            [
-                new SpawnData
-                {
+            Weight = Convert.ToInt32(entry.Weight_F * 40),
+            SpawnList = [
+                new SpawnData {
                     Name = entry.PalEggData.PalMonsterId.Key!
                 }
             ]
@@ -223,12 +219,12 @@ public class GameStruct {
         set => Properties["FieldName"] = value;
     }
     /// <summary>Character ID of a pal (string).</summary>
-    public string PalIdS {
+    public string PalId_S {
         get => (string)Properties["PalId"]!;
         set => Properties["PalId"] = value;
     }
     /// <summary>Weight of a character spawn (float).</summary>
-    public float WeightF {
+    public float Weight_F {
         get => (float)Properties["Weight"]!;
         set => Properties["Weight"] = value;
     }
@@ -242,46 +238,4 @@ public class GameStruct {
         get => (int)Properties["MaxLevel"]!;
         set => Properties["MaxLevel"] = value;
     }
-}
-
-/// <summary>
-/// Converts a Blueprint <see cref="GameStruct"/> to and from json.
-/// </summary>
-public class JsonConverterBlueprint : JsonConverter<GameStruct> {
-    /// <summary>
-    /// Reads json into a <see cref="GameStruct"/>'s <see cref="GameStruct.Properties">Properties</see>.
-    /// </summary>
-    public override GameStruct? ReadJson(JsonReader reader, Type objectType, GameStruct? existingValue,
-        bool hasExistingValue, JsonSerializer serializer) {
-        var gameStruct = new GameStruct();
-        serializer.Populate(reader, gameStruct.Properties);
-        return gameStruct;
-    }
-
-    /// <summary>
-    /// Writes the <see cref="GameStruct"/>'s <see cref="GameStruct.Properties">Properties</see>.
-    /// </summary>
-    public override void WriteJson(JsonWriter writer, GameStruct? value, JsonSerializer serializer) =>
-        serializer.Serialize(writer, value?.Properties);
-}
-
-/// <summary>
-/// Converts a Data Table <see cref="GameStruct"/> to and from json.
-/// </summary>
-public class JsonConverterDataTable : JsonConverter<GameStruct> {
-    /// <summary>
-    /// Reads json into a <see cref="GameStruct"/>'s <see cref="GameStruct.DataTable">DataTable</see>.
-    /// </summary>
-    public override GameStruct? ReadJson(JsonReader reader, Type objectType, GameStruct? existingValue,
-        bool hasExistingValue, JsonSerializer serializer) {
-        var gameStruct = new GameStruct();
-        serializer.Populate(reader, gameStruct.DataTable);
-        return gameStruct;
-    }
-
-    /// <summary>
-    /// Writes the <see cref="GameStruct"/>'s <see cref="GameStruct.DataTable">DataTable</see>.
-    /// </summary>
-    public override void WriteJson(JsonWriter writer, GameStruct? value, JsonSerializer serializer) =>
-        serializer.Serialize(writer, value?.DataTable);
 }
