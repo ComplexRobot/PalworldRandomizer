@@ -4,6 +4,7 @@ using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Assets.Objects.Properties;
 using CUE4Parse.Utils;
 using Newtonsoft.Json;
+using PalworldRandomizer.Randomizer.PalSpawn;
 
 namespace PalworldRandomizer.Serializer;
 
@@ -59,6 +60,70 @@ public class GameStruct {
             };
         }
     }
+
+    /// <summary>
+    /// Try to get a value that might not exist in the properties.<br/>
+    /// Used to set default values when they don't exist.
+    /// </summary>
+    /// <typeparam name="T">The type the output will be converted to.</typeparam>
+    /// <param name="key">The property name to get.</param>
+    /// <param name="value">The resulting value if it exists, otherwise <see langword="default"/>.</param>
+    /// <returns><see langword="true"/> if the key was found, <see langword="false"/> otherwise.</returns>
+    public bool PropertyExists<T>(string key, out T value) {
+        if (!Properties.TryGetValue(key, out object? obj)) {
+            value = default!;
+            return false;
+        }
+
+        value = (T)obj!;
+        return true;
+    }
+
+    /// <summary>
+    /// Converts Pal spawn sheet data to an enumerable of <see cref="SpawnEntry"/>.
+    /// </summary>
+    public IEnumerable<SpawnEntry> PalSpawnsToSpawnEntries() => SpawnGroupList.Select(entry =>
+        new SpawnEntry {
+            Weight = entry.Weight,
+            NightOnly = entry.PropertyExists(nameof(OnlyTime), out string onlyTime)
+                && onlyTime is "Night" or "EPalOneDayTimeType::Night",
+            SpawnList = [.. entry.PalList.Select(spawn => {
+                    string characterId =
+                        (!spawn.PropertyExists(nameof(PalId), out GameStruct palId) || palId.Key == "None" ? null
+                            : palId.Key)
+                        ?? (!spawn.PropertyExists(nameof(NPCID), out GameStruct npcId) || npcId.Key == "None" ? null
+                            : npcId.Key)
+                        ?? "RowName";
+
+                    return new SpawnData
+                    {
+                        Name = characterId,
+                        MinLevel = spawn.Level,
+                        MaxLevel = spawn.Level_Max,
+                        MinCount = spawn.Num,
+                        MaxCount = spawn.Num_Max
+                    };
+                }
+            )]
+        }
+    );
+
+    /// <summary>
+    /// Converts Pal egg spawn data to an enumerable of <see cref="SpawnEntry"/>.
+    /// </summary>
+    public IEnumerable<SpawnEntry> PalEggsToSpawnEntries() => SpawnPalEggLotteryDataArray.Select(entry =>
+        new SpawnEntry {
+            Weight = Convert.ToInt32(entry.WeightF * 40),
+            SpawnList =
+            [
+                new SpawnData
+                {
+                    Name = entry.PalEggData.PalMonsterId.Key!
+                }
+            ]
+        }
+    );
+
     /// <summary>
     /// Dictionary containing all defined properties.<br/>
     /// Values can be <see cref="GameStruct"/>, primitives, List (for arrays) or <see langword="null"/>.
@@ -67,7 +132,7 @@ public class GameStruct {
     /// <summary>
     /// Dictionary containing all objects of a data table.
     /// </summary>
-    public Dictionary<string, GameStruct> DataTable { get; private set; } = null!;
+    public Dictionary<string, GameStruct> DataTable { get; set; } = null!;
     /// <summary>A Character ID.</summary>
     public string? Key {
         get => (string?)Properties["Key"];

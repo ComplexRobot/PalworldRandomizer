@@ -1,8 +1,10 @@
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using CUE4Parse.UE4.Objects.Engine;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -322,53 +324,59 @@ public static partial class FileModify
         }
     }
 
-    public static List<PalSchemaJson> GeneratePalSchema(List<AreaData> areaList)
-    {
-        Dictionary<string, PalSpawner> PalSpawnSchema = [];
-        Dictionary<string, PalMapObject.SpawnerPalEgg> EggSchema = [];
+    /// <summary>
+    /// Creates a list of <see cref="PalSchemaJson"/> containing spawn data.
+    /// </summary>
+    /// <param name="areaList">List of areas to create a PalSchema from.</param>
+    public static List<PalSchemaJson> GeneratePalSchema(List<AreaData> areaList) {
+        Dictionary<string, GameStruct> palSpawnSchema = [];
+        Dictionary<string, GameStruct> eggSchema = [];
         float eggRespawnTime = new FormData().EggRespawnTime();
 
-        foreach (AreaData area in areaList.Where(x => !x.isCage))
-        {
-            if (area.isEgg)
-            {
-                EggSchema.Add($"{area.FileNameWithoutExtension}_C",
-                    new PalMapObject.SpawnerPalEgg
-                    {
+        foreach (var area in areaList.Where(x => !x.isCage)) {
+            if (area.isEgg) {
+                eggSchema.Add($"{area.FileNameWithoutExtension}_C",
+                    new GameStruct {
                         SpawnPalEggLotteryDataArray = [.. area.SpawnEntries.Select(entry =>
-                            new PalMapObject.PickupItem.PalEggLotteryData
-                            {
+                            new GameStruct {
                                 PalEggData = new() { PalMonsterId = new() { Key = entry.SpawnList[0].Name } },
-                                Weight = entry.Weight / 40.0f
+                                WeightF = entry.Weight / 40.0f,
                             }
                         )],
-                        RespawnTimeMinutesObtained = eggRespawnTime
+                        RespawnTimeMinutesObtained = eggRespawnTime,
                     }
                 );
-            }
-            else
-            {
-                PalSpawnSchema.Add($"{area.FileNameWithoutExtension}_C",
-                    new PalSpawner
-                    {
-                        SpawnGroupList = [.. area.SpawnEntries.Select(entry =>
-                            new PalSpawnerGroupInfo
-                            {
+            } else {
+                palSpawnSchema.Add($"{area.FileNameWithoutExtension}_C",
+                    new GameStruct {
+                        SpawnGroupList = [.. area.SpawnEntries.Select(entry => {
+                            var spawnEntry = new GameStruct {
                                 Weight = entry.Weight,
-                                OnlyTime = entry.NightOnly ? "Night" : "Undefined",
-                                PalList = [.. entry.SpawnList.Select(spawn =>
-                                    new PalSpawnerOneTribeInfo
-                                    {
-                                        PalId = new() { Key = Data.PalData[spawn.Name].IsPal ? spawn.Name : "None" },
-                                        NPCID = new() { Key = !Data.PalData[spawn.Name].IsPal ? spawn.Name : "None" },
-                                        Level = spawn.MinLevel,
-                                        Level_Max = spawn.MaxLevel,
-                                        Num = spawn.MinCount,
-                                        Num_Max = spawn.MaxCount
-                                    }
-                                )]
+                            };
+
+                            if (entry.NightOnly) {
+                                spawnEntry.OnlyTime = "Night";
                             }
-                        )]
+
+                            spawnEntry.PalList = [.. entry.SpawnList.Select(spawn => {
+                                var spawnData = new GameStruct();
+
+                                if (spawn.IsPal) {
+                                    spawnData.PalId = new() { Key = spawn.Name };
+                                } else {
+                                    spawnData.NPCID = new() { Key = spawn.Name };
+                                }
+
+                                spawnData.Level = spawn.MinLevel;
+                                spawnData.Level_Max = spawn.MaxLevel;
+                                spawnData.Num = spawn.MinCount;
+                                spawnData.Num_Max = spawn.MaxCount;
+
+                                return spawnData;
+                            })];
+
+                            return spawnEntry;
+                        })]
                     }
                 );
             }
@@ -376,50 +384,55 @@ public static partial class FileModify
 
         List<PalSchemaJson> schemas = [];
 
-        if (PalSpawnSchema.Count != 0)
-        {
-            schemas.Add(new() { FilePath = $"blueprints/PalSpawns.json", JsonData = JsonConvert.SerializeObject(PalSpawnSchema, Formatting.Indented) });
+        if (palSpawnSchema.Count != 0) {
+            schemas.Add(new() {
+                FilePath = $"blueprints/PalSpawns.json",
+                JsonData = JsonConvert.SerializeObject(palSpawnSchema, Formatting.Indented,
+                    new JsonSerializerSettings{ Converters = [new JsonConverterBlueprint()] }),
+            });
         }
 
-        if (EggSchema.Count != 0)
-        {
-            schemas.Add(new() { FilePath = $"blueprints/EggSpawns.json", JsonData = JsonConvert.SerializeObject(EggSchema, Formatting.Indented) });
+        if (eggSchema.Count != 0) {
+            schemas.Add(new() {
+                FilePath = $"blueprints/EggSpawns.json",
+                JsonData = JsonConvert.SerializeObject(eggSchema, Formatting.Indented,
+                    new JsonSerializerSettings{ Converters = [new JsonConverterBlueprint()] }),
+            });
         }
 
         IEnumerable<AreaData> cages = areaList.Where(x => x.isCage);
-        if (cages.Any())
-        {
-            Dictionary<string, Dictionary<string, PalCapturedCageInfoDatabaseRow?>> cageSchema = new() { ["DT_CapturedCagePal"] = [] };
 
-            IEnumerable<AreaData> originalCageList = Data.AreaDataCopy().Where(x => x.isCage);
+        if (cages.Any()) {
+            Dictionary<string, Dictionary<string, GameStruct?>> cageSchema = new() { ["DT_CapturedCagePal"] = [] };
+            var originalCageList = Data.AreaDataCopy().Where(x => x.isCage);
 
             // Save the changed cages - unmodified cages remain vanilla
-            foreach (AreaData area in cages)
-            {
+            foreach (var area in cages) {
                 originalCageList.First(x => x.SimpleName == area.SimpleName).SpawnEntries = area.SpawnEntries;
             }
 
             cageSchema["DT_CapturedCagePal"].Add("*", null);
 
             int i = 0;
-            foreach (AreaData area in originalCageList)
-            {
-                foreach (SpawnEntry entry in area.SpawnEntries)
-                {
+            foreach (var area in originalCageList) {
+                foreach (var entry in area.SpawnEntries) {
                     cageSchema["DT_CapturedCagePal"].Add($"{++i}",
-                        new PalCapturedCageInfoDatabaseRow
-                        {
+                        new GameStruct {
                             FieldName = area.filename,
-                            PalId = entry.SpawnList[0].Name,
-                            Weight = entry.Weight / 10.0f,
+                            PalIdS = entry.SpawnList[0].Name,
+                            WeightF = entry.Weight / 10.0f,
                             MinLevel = entry.SpawnList[0].MinLevel,
-                            MaxLevel = entry.SpawnList[0].MaxLevel
+                            MaxLevel = entry.SpawnList[0].MaxLevel,
                         }
                     );
                 }
             }
 
-            schemas.Add(new() { FilePath = "raw/Cages.json", JsonData = JsonConvert.SerializeObject(cageSchema, Formatting.Indented) });
+            schemas.Add(new() {
+                FilePath = "raw/Cages.json",
+                JsonData = JsonConvert.SerializeObject(cageSchema, Formatting.Indented,
+                    new JsonSerializerSettings{ Converters = [new JsonConverterBlueprint()] }),
+            });
         }
 
         return schemas;
