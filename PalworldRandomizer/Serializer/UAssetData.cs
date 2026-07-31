@@ -307,11 +307,3 @@ public class CharacterData(List<FPropertyTag> properties) : StructData
     public string? PassiveSkill4 { get; set; } = NullCheck(((NameProperty)FindProp(properties, "PassiveSkill4").Tag!).Value);
     public string? FirstDefeatRewardItemID { get; set; } = NullCheck(((NameProperty)FindProp(properties, "FirstDefeatRewardItemID").Tag!).Value);
 }
-
-public class CagePalData {
-    public string? FieldName { get; set; } = default;
-    public string? PalID { get; set; } = default;
-    public float Weight { get; set; } = default;
-    public int MinLevel { get; set; } = default;
-    public int MaxLevel { get; set; } = default;
-}
