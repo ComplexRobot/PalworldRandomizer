@@ -1,5 +1,6 @@
 using System.IO;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -73,21 +74,26 @@ public partial class App : Application
     {
         DispatcherOperation dataOperation = Dispatcher.BeginInvoke(DispatcherPriority.Background, async () =>
         {
-            await using var fileProvider = await UAssetData.Initialize();
-            Data.Initialize(fileProvider);
-            Randomize.Initialize();
+            try {
+                await using var fileProvider = await UAssetData.Initialize();
+                Data.Initialize(fileProvider);
+                Randomize.Initialize();
 
-            fileProvider.PostMount();
+                fileProvider.PostMount();
 
-            Randomize.RestoreBackup();
-            PalSpawnPage palSpawnpage = new();
-            AppWindow palSpawnWindow = new(() => palSpawnpage) { Title = "Pal Spawn Editor" };
-            palSpawnpage.ParentWindow = palSpawnWindow;
-            palSpawnWindow.Closing += (sender, e) =>
-            {
-                palSpawnWindow.HideClean();
-                e.Cancel = true;
-            };
+                Randomize.RestoreBackup();
+                PalSpawnPage palSpawnpage = new();
+                AppWindow palSpawnWindow = new(() => palSpawnpage) { Title = "Pal Spawn Editor" };
+                palSpawnpage.ParentWindow = palSpawnWindow;
+                palSpawnWindow.Closing += (sender, e) =>
+                {
+                    palSpawnWindow.HideClean();
+                    e.Cancel = true;
+                };
+            } catch (Exception e) {
+                await Dispatcher.BeginInvoke(() => ExceptionDispatchInfo.Capture(e).Throw());
+            }
+            
         });
         Dispatcher.BeginInvoke(DispatcherPriority.Send, () =>
         {
