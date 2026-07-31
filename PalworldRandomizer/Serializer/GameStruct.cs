@@ -52,9 +52,11 @@ public class GameStruct {
                 BoolProperty p => p.Value,
                 IntProperty p => p.Value,
                 FloatProperty p => p.Value,
+                DoubleProperty p => p.Value,
                 StructProperty p => p.Value is null ? null
                     : new GameStruct(((AbstractPropertyHolder)p.Value.StructType).Properties),
                 ArrayProperty p => p.Value?.Properties.Select(PropertyTagToValue),
+                ObjectProperty p => p.Value?.Name,
                 _ => throw new Exception($"Unknown property type '{(tag is null ? "null" : tag.GetType())}'"),
             };
         }
