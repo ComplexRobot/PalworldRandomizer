@@ -1,10 +1,8 @@
-using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using CUE4Parse.UE4.Objects.Engine;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -27,10 +25,10 @@ public static partial class FileModify
         return string.Compare(x.filename, y.filename);
     }
 
-    public static Dictionary<string, AreaData> ReadCageData(IEnumerable<CagePalData> cagePalDataList)
+    public static Dictionary<string, AreaData> ReadCageData(IEnumerable<GameStruct> cagePalDataList)
     {
         Dictionary<string, AreaData> cageList = [];
-        foreach (CagePalData cagePalData in cagePalDataList)
+        foreach (var cagePalData in cagePalDataList)
         {
             if (!cageList.TryGetValue($"Cage:{cagePalData.FieldName}", out AreaData? areaData))
             {
@@ -44,10 +42,10 @@ public static partial class FileModify
             }
             areaData.SpawnEntries.Add(new()
             {
-                Weight = Convert.ToInt32(cagePalData.Weight * 10),
+                Weight = Convert.ToInt32(cagePalData.Weight_F * 10),
                 SpawnList = [new()
                 {
-                    Name = cagePalData.PalID!,
+                    Name = cagePalData.PalId_S,
                     MinLevel = cagePalData.MinLevel,
                     MaxLevel = cagePalData.MaxLevel
                 }]
@@ -56,12 +54,12 @@ public static partial class FileModify
         return cageList;
     }
 
-    public static AreaData ReadEggData(string filename, PalMapObject.SpawnerPalEgg spawner) =>
+    public static AreaData ReadEggData(string filename, GameStruct spawner) =>
         new(new(), $"PalEgg\\{filename}") {
         isEgg = true,
         minLevel = 1,
         maxLevel = 1,
-        SpawnEntries = [.. spawner.ToSpawnEntries()],
+        SpawnEntries = [.. spawner.PalEggsToSpawnEntries()],
         eggRespawnTime = spawner.RespawnTimeMinutesObtained,
         eggLotteryCooldown = 180
     };

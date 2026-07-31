@@ -515,7 +515,7 @@ public static partial class Data
                 continue;
             }
 
-            var spawnEntries = fileProvider.LoadBlueprintPalSpawner(path).ToSpawnEntries();
+            var spawnEntries = new GameStruct(fileProvider, path).PalSpawnsToSpawnEntries();
 
             float averageLevel = 0;
             float levelRange = 0;
@@ -612,7 +612,9 @@ public static partial class Data
 
         FirstBoss = AreaData.Values.Where(x => x.isBoss).Min(x => x.filename)!;
 
-        var cageData = FileModify.ReadCageData(fileProvider.LoadDataTableCagePal("Pal/Content/Pal/DataTable/Character/DT_CapturedCagePal.uasset"));
+        var cageData = FileModify.ReadCageData(
+            new GameStruct(fileProvider, "Pal/Content/Pal/DataTable/Character/DT_CapturedCagePal.uasset")
+            .DataTable.Values);
         FirstCage = cageData.Values.Min(x => x.filename)!;
         foreach (var keyPair in cageData)
         {
@@ -626,7 +628,7 @@ public static partial class Data
         {
             string filename = Path.GetFileName(path);
 
-            var spawnData = fileProvider.LoadBlueprintPalEggSpawner(path);
+            var spawnData = new GameStruct(fileProvider, path);
 
             AreaData.Add($"PalEgg\\{filename}", FileModify.ReadEggData(filename, spawnData));
         }
