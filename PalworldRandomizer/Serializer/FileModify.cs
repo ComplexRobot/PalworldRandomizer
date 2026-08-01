@@ -365,6 +365,7 @@ public static partial class FileModify
             }
 
             Data.AreaForEachIfDiff(areaList, x => x.modified = true);
+            areaList.Sort(AreaSortFunc);
 
             Randomize.SaveBackup();
             PalSpawnPage.Instance.areaList.ItemsSource = areaList;
