@@ -266,7 +266,7 @@ public static partial class FileModify
                                 var spawnData = new GameStruct();
 
                                 if (spawn.IsPal) {
-                                    spawnData.PalId = new() { Key = spawn.Name };
+                                    spawnData.PalId = new() { Key = spawn.Name is "RowName" ? "None" : spawn.Name };
                                 } else {
                                     spawnData.NPCID = new() { Key = spawn.Name };
                                 }
