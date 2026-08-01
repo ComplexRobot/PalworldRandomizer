@@ -2,6 +2,7 @@ using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Engine;
 using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Assets.Objects.Properties;
+using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.Utils;
 using PalworldRandomizer.Randomizer.PalSpawn;
 
@@ -31,8 +32,17 @@ public class GameStruct {
                 .ToDictionary(StringComparer.OrdinalIgnoreCase);
         // Blueprint
         } else {
-            var properties = exports.FirstOrDefault(x => x.Class!.Name.Text.EndsWith("_C"))!.Properties;
-            LoadFromAssetProperties(properties);
+            var mainProperties = exports.FirstOrDefault(x => x.Class!.Name.Text.EndsWith("_C")
+                && x.Name.StartsWith("Default__"))!.Properties;
+
+            LoadFromAssetProperties(mainProperties);
+
+            var components = exports.Where(x => x.Name is string s
+                && s.StartsWith("BP_") && s.EndsWith("_GEN_VARIABLE"));
+
+            foreach(var component in components) {
+                Properties.Add(component.Name[..^"_GEN_VARIABLE".Length], new GameStruct(component.Properties));
+            }
         }
     }
 
@@ -40,6 +50,12 @@ public class GameStruct {
     /// Loads the properties from an asset's property list.
     /// </summary>
     public GameStruct(List<FPropertyTag> properties) => LoadFromAssetProperties(properties);
+
+    /// <summary>
+    /// Creates the properties from a predefined enumerable of key-value pairs.
+    /// </summary>
+    public GameStruct(IEnumerable<KeyValuePair<string, object?>> properties) =>
+        Properties = properties.ToDictionary(StringComparer.OrdinalIgnoreCase);
 
     private void LoadFromAssetProperties(List<FPropertyTag> properties) {
         foreach (var property in properties) {
@@ -53,6 +69,18 @@ public class GameStruct {
                 IntProperty p => p.Value,
                 FloatProperty p => p.Value,
                 DoubleProperty p => p.Value,
+                var x when x is StructProperty p && p.Value?.StructType is FVector v =>
+                    new GameStruct(new Dictionary<string, object?> {
+                        { nameof(v.X), v.X },
+                        { nameof(v.Y), v.Y },
+                        { nameof(v.Z), v.Z }
+                    }),
+                var x when x is StructProperty p && p.Value?.StructType is FRotator r =>
+                    new GameStruct(new Dictionary<string, object?> {
+                        { nameof(r.Pitch), r.Pitch },
+                        { nameof(r.Roll), r.Roll },
+                        { nameof(r.Yaw), r.Yaw }
+                    }),
                 StructProperty p => p.Value is null ? null
                     : new GameStruct(((AbstractPropertyHolder)p.Value.StructType).Properties),
                 ArrayProperty p => p.Value?.Properties.Select(PropertyTagToValue),
@@ -239,5 +267,40 @@ public class GameStruct {
     public int MaxLevel {
         get => (int)Properties["MaxLevel"]!;
         set => Properties["MaxLevel"] = value;
+    }
+    /// <summary>Properties: { Key }<br/>Character ID of a human.</summary>
+    public GameStruct HumanName {
+        get => (GameStruct)Properties["HumanName"]!;
+        set => Properties["HumanName"] = value;
+    }
+    /// <summary>Properties: { Key }<br/>Character ID of a pal.</summary>
+    public GameStruct OtomoName {
+        get => (GameStruct)Properties["OtomoName"]!;
+        set => Properties["OtomoName"] = value;
+    }
+    /// <summary>Main spawn component for human boss groups.</summary>
+    public GameStruct BP_NPCSpawnPointComponent {
+        get => (GameStruct)Properties["BP_NPCSpawnPointComponent"]!;
+        set => Properties["BP_NPCSpawnPointComponent"] = value;
+    }
+    /// <summary>Extra spawn component for human boss groups.</summary>
+    public GameStruct BP_NPCSpawnPointComponent1 {
+        get => (GameStruct)Properties["BP_NPCSpawnPointComponent1"]!;
+        set => Properties["BP_NPCSpawnPointComponent1"] = value;
+    }
+    /// <summary>Extra spawn component for human boss groups.</summary>
+    public GameStruct BP_NPCSpawnPointComponent2 {
+        get => (GameStruct)Properties["BP_NPCSpawnPointComponent2"]!;
+        set => Properties["BP_NPCSpawnPointComponent2"] = value;
+    }
+    /// <summary>Properties: { Key }<br/>Character ID.</summary>
+    public GameStruct NPCName {
+        get => (GameStruct)Properties["NPCName"]!;
+        set => Properties["NPCName"] = value;
+    }
+    /// <summary>Level of a character spawn.</summary>
+    public int OverrideLevel {
+        get => (int)Properties["OverrideLevel"]!;
+        set => Properties["OverrideLevel"] = value;
     }
 }
