@@ -27,9 +27,9 @@ public class GameStruct {
 
         // Data Table
         if (exports.First() is UDataTable dataTable) {
-            DataTable = dataTable.RowMap.Select(x =>
-                    new KeyValuePair<string, GameStruct>(x.Key.Text, new(x.Value.Properties)))
-                .ToDictionary(StringComparer.OrdinalIgnoreCase);
+            DataTable = dataTable.RowMap.ToDictionary(x => x.Key.Text,
+                x => new GameStruct(x.Value.Properties),
+                StringComparer.OrdinalIgnoreCase);
         // Blueprint
         } else {
             var mainProperties = exports.FirstOrDefault(x => x.Class!.Name.Text.EndsWith("_C")
@@ -37,8 +37,7 @@ public class GameStruct {
 
             LoadFromAssetProperties(mainProperties);
 
-            var components = exports.Where(x => x.Name is string s
-                && s.StartsWith("BP_") && s.EndsWith("_GEN_VARIABLE"));
+            var components = exports.Where(x => x.Name.StartsWith("BP_") && x.Name.EndsWith("_GEN_VARIABLE"));
 
             foreach(var component in components) {
                 Properties.Add(component.Name[..^"_GEN_VARIABLE".Length], new GameStruct(component.Properties));
