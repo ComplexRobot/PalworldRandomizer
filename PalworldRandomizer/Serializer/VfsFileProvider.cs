@@ -10,7 +10,6 @@ using CUE4Parse.UE4.Assets.Objects.Properties;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse_Conversion.Textures;
-using static PalworldRandomizer.Serializer.FileModify;
 
 namespace PalworldRandomizer.Serializer;
 
@@ -109,13 +108,11 @@ public class VfsFileProvider()
             throw new Exception($"'{path}' is not a SoftObject data table.");
         }
 
-        return dataTable.RowMap.Select(kvp =>
-            new KeyValuePair<string, string?>(
-                kvp.Key.Text,
-                NoneCheck(((SoftObjectProperty)kvp.Value.Properties.First(x => x.PropertyType.Text == "SoftObjectProperty")
-                    .Tag!).Value.AssetPathName)
-            )
-        ).ToDictionary(StringComparer.OrdinalIgnoreCase);
+        return dataTable.RowMap.ToDictionary(kvp => kvp.Key.Text,
+            kvp => NoneCheck(((SoftObjectProperty)kvp.Value.Properties
+                .First(x => x.PropertyType.Text == "SoftObjectProperty")
+                .Tag!).Value.AssetPathName),
+            StringComparer.OrdinalIgnoreCase);
 
         static string? NoneCheck(FName fName) => fName.IsNone ? null : fName.Text;
     }
@@ -132,12 +129,9 @@ public class VfsFileProvider()
             throw new Exception($"'{path}' is not a Text data table.");
         }
 
-        return dataTable.RowMap.Select(kvp =>
-            new KeyValuePair<string, string?>(
-                kvp.Key.Text,
-                ((TextProperty)kvp.Value.Properties[0].Tag!).Value?.Text
-            )
-        ).ToDictionary(StringComparer.OrdinalIgnoreCase);
+        return dataTable.RowMap.ToDictionary(kvp => kvp.Key.Text,
+            kvp => ((TextProperty)kvp.Value.Properties[0].Tag!).Value?.Text,
+            StringComparer.OrdinalIgnoreCase);
     }
 
     public string GetOsFileName(string path)
