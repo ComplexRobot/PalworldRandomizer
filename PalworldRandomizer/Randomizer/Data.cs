@@ -392,7 +392,7 @@ public static partial class Data
                 if (!isBoss || isTowerBoss || isRaidBoss || isPredator)
                 {
                     if (!isQuest) {
-                        if (!isBoss && key != "WorldTreeDragon")
+                        if (!isBoss && key is not "WorldTreeDragon" and not "KingWhale")
                         {
                             try
                             {
