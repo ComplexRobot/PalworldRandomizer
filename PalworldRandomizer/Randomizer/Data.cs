@@ -9,34 +9,56 @@ namespace PalworldRandomizer.Randomizer;
 
 public static partial class Data
 {
+    /// <summary>Dictionary of data for all characters.</summary>
     public static Dictionary<string, CharacterData> PalData { get; private set; } = [];
+    /// <summary>Dictionary of internal name to English text name.</summary>
     public static Dictionary<string, string> PalName { get; private set; } = new(StringComparer.OrdinalIgnoreCase);
+    /// <summary>Dictionary of internal name to name used in the spawn editor UI.</summary>
     public static Dictionary<string, string> SimpleName { get; private set; } = [];
+    /// <summary>List of possible keys used in the spawn editor UI.</summary>
     public static List<string> SimpleNameValues { get; private set; } = [];
+    /// <summary>Dictionary of icon file paths.</summary>
     public static Dictionary<string, string> PalIcon { get; private set; } = new(StringComparer.OrdinalIgnoreCase);
+    /// <summary>List of valid non-boss pals.</summary>
     public static List<string> PalList { get; private set; } = [];
+    /// <summary>Dictionary of non-boss to boss names.</summary>
     public static Dictionary<string, string> BossName { get; private set; } = new(StringComparer.OrdinalIgnoreCase);
+    /// <summary>List of valid tower boss names.</summary>
     public static List<string> TowerBossNames { get; private set; } = [];
+    /// <summary>List of special non-boss tower boss variants.</summary>
     public static List<string> TowerNonBossNames { get; private set; } = [];
+    /// <summary>List of valid raid boss names.</summary>
     public static List<string> RaidBossNames { get; private set; } = [];
+    /// <summary>List of valid predator boss names.</summary>
     public static List<string> PredatorNames { get; private set; } = [];
+    /// <summary>List of valid human boss names.</summary>
     public static List<string> HumanBossNames { get; private set; } = [];
+    /// <summary>Set of flying pal names.</summary>
     public static HashSet<string> FlyingNames { get; private set; } = [];
     /// <summary>List of PIDF Rider pals.</summary>
     public static List<string> PolicePalNames { get; private set; } = [];
+    /// <summary>List of vanilla spawn groups with only one character.</summary>
     public static Dictionary<string, List<SpawnEntry>> SoloEntries { get; private set; } = new(StringComparer.OrdinalIgnoreCase);
+    /// <summary>List of vanilla boss spawn groups.</summary>
     public static Dictionary<string, List<SpawnEntry>> BossEntries { get; private set; } = new(StringComparer.OrdinalIgnoreCase);
+    /// <summary>List of vanilla spawn groups with more than one character.</summary>
     public static List<SpawnEntry> GroupEntries { get; private set; } = [];
+    /// <summary>Dictionary of filenames to spawn tables.</summary>
     public static Dictionary<string, AreaData> AreaData { get; private set; } = [];
+    /// <summary>List of valid Terraria monsters.</summary>
     public static List<string> TerrariaMonsters { get; private set; } = [];
+    /// <summary>List of valid Terraria boss monsters.</summary>
     public static List<string> TerrariaMonstersBosses { get; private set; } = [];
+    /// <summary>List of (non-boss) humans from the tower boss fights.</summary>
     public static List<string> TowerHumanNames { get; private set; } = [];
+    /// <summary>Filename of the first cage spawn in the spawn tables.</summary>
     public static string FirstCage { get; private set; } = null!;
+    /// <summary>Filename of the first egg spawn in the spawn tables.</summary>
     public static string FirstEgg { get; private set; } = null!;
     /// <summary>Filename of the first boss spawn table.</summary>
     public static string FirstBoss { get; private set; } = null!;
-
-    public static readonly string[] humanNames = [
+    /// <summary>Aggressive human names.</summary>
+    public static string[] HumanNames { get; } = [
         "Believer_Bat",
         "Believer_CrossBow",
         "Believer_Fat_Cane",
@@ -91,15 +113,15 @@ public static partial class Data
         "Female_Kunoichi01",
         "Female_SurveyGirl04",
     ];
-
-    public static readonly string[] policeNames = [
+    /// <summary>Regular police (PIDF) names.</summary>
+    public static string[] PoliceNames { get; } = [
         "Police_Handgun",
         "Police_Rifle",
         "Police_Shotgun",
         "Police_BowGun",
     ];
-
-    public static readonly string[] guardNames = [
+    /// <summary>Guard names.</summary>
+    public static string[] GuardNames { get; } = [
         "Guard_Rifle",
         "Guard_Shotgun",
         "Male_DarkTrader01",
@@ -114,8 +136,8 @@ public static partial class Data
         "Reward_PalCaptureCount_v02",
         "Reward_Food",
     ];
-
-    public static readonly string[] traderNames = [
+    /// <summary>Names of item merchants.</summary>
+    public static string[] TraderNames { get; } = [
         "SalesPerson",
         "SalesPerson_Desert",
         "SalesPerson_Desert2",
@@ -149,21 +171,20 @@ public static partial class Data
         "Male_Trader01_v25",
         "NPC_Dungeon_Shop",
     ];
-
-    public static readonly string[] palTraderNames = [
+    /// <summary>Names of Pal merchants.</summary>
+    public static string[] PalTraderNames { get; } = [
         "PalDealer",
         "PalDealer_Desert",
         "PalDealer_Volcano",
         "RandomEventShop",
     ];
-
-    public static readonly string[] specialNames = [
+    /// <summary>Names of humans with unique effects.</summary>
+    public static string[] SpecialNames { get; } = [
         "PalPassive_Doctor",
         //"Visitor_Recruiter", // broken
     ];
-
     /// <summary>Names of various humans that don't do anything special.</summary>
-    public static readonly string[] UselessHumanNames = [
+    public static string[] UselessHumanNames { get; } = [
         "Male_Kigurumi01_v01",
         "Male_Police_old",
         "Female_Presenter01",
@@ -216,9 +237,8 @@ public static partial class Data
         "Male_Soldier03",
         "Male_Soldier04",
     ];
-
     /// <summary>Names of generic villager NPCs.</summary>
-    public static readonly string[] VillagerNames = [
+    public static string[] VillagerNames { get; } = [
         "Female_DesertPeople02",
         "Male_DesertPeople01",
         "Female_DTairikuPeople01_v01",

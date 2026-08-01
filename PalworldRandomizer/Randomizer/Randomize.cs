@@ -175,8 +175,8 @@ public static partial class Randomize
             foreach (KeyValuePair<string, List<SpawnEntry>> keyPair in Data.SoloEntries)
             {
                 if (!Data.PalData[keyPair.Key].IsPal &&
-                    ((formData.SpawnHumans && Data.humanNames.Contains(keyPair.Key))
-                    || (formData.SpawnPolice && Data.policeNames.Contains(keyPair.Key)))
+                    ((formData.SpawnHumans && Data.HumanNames.Contains(keyPair.Key))
+                    || (formData.SpawnPolice && Data.PoliceNames.Contains(keyPair.Key)))
                     )
                 {
                     SpawnData spawnData = new() { Name = keyPair.Key };
@@ -195,8 +195,8 @@ public static partial class Randomize
             {
                 SpawnEntry spawnEntry = groupEntriesCopy[i];
                 if (!spawnEntry.SpawnList[0].IsPal &&
-                    ((formData.SpawnHumans && Data.humanNames.Contains(spawnEntry.SpawnList[0].Name))
-                    || (formData.SpawnPolice && Data.policeNames.Contains(spawnEntry.SpawnList[0].Name)))
+                    ((formData.SpawnHumans && Data.HumanNames.Contains(spawnEntry.SpawnList[0].Name))
+                    || (formData.SpawnPolice && Data.PoliceNames.Contains(spawnEntry.SpawnList[0].Name)))
                     )
                 {
                     humanSpawns.Add(spawnEntry); // shallow copy
@@ -256,28 +256,28 @@ public static partial class Randomize
                 ));
 
             if (formData.SpawnPolice) {
-                AddSimpleHumanSpawns(Data.policeNames);
+                AddSimpleHumanSpawns(Data.PoliceNames);
             }
 
             if (formData.SpawnGuards) {
-                AddSimpleHumanSpawns(Data.guardNames);
+                AddSimpleHumanSpawns(Data.GuardNames);
             }
 
             if (formData.SpawnHumans) {
-                AddSimpleHumanSpawns(Data.humanNames);
+                AddSimpleHumanSpawns(Data.HumanNames);
             }
 
             if (formData.SpawnTraders)
             {
-                humanSpawns.AddRange(Data.traderNames.Select(name => new SpawnEntry { SpawnList = [new(name)] }));
+                humanSpawns.AddRange(Data.TraderNames.Select(name => new SpawnEntry { SpawnList = [new(name)] }));
             }
             if (formData.SpawnPalTraders)
             {
-                humanSpawns.AddRange(Data.palTraderNames.Select(name => new SpawnEntry { SpawnList = [new(name)] }));
+                humanSpawns.AddRange(Data.PalTraderNames.Select(name => new SpawnEntry { SpawnList = [new(name)] }));
             }
             if (formData.SpawnSpecial)
             {
-                humanSpawns.AddRange(Data.specialNames.Select(name => new SpawnEntry { SpawnList = [new(name)] }));
+                humanSpawns.AddRange(Data.SpecialNames.Select(name => new SpawnEntry { SpawnList = [new(name)] }));
             }
             if (formData.SpawnTowerHumans)
             {
@@ -313,12 +313,12 @@ public static partial class Randomize
             }
             humanSpawns.AddRange(((IEnumerable<string>)
             [
-                .. formData.SpawnHumans ? Data.humanNames : [],
-                .. formData.SpawnPolice ? Data.policeNames : [],
-                .. formData.SpawnGuards ? Data.guardNames : [],
-                .. formData.SpawnTraders ? Data.traderNames : [],
-                .. formData.SpawnPalTraders ? Data.palTraderNames : [],
-                .. formData.SpawnSpecial ? Data.specialNames : [],
+                .. formData.SpawnHumans ? Data.HumanNames : [],
+                .. formData.SpawnPolice ? Data.PoliceNames : [],
+                .. formData.SpawnGuards ? Data.GuardNames : [],
+                .. formData.SpawnTraders ? Data.TraderNames : [],
+                .. formData.SpawnPalTraders ? Data.PalTraderNames : [],
+                .. formData.SpawnSpecial ? Data.SpecialNames : [],
                 .. formData.SpawnTowerHumans ? Data.TowerHumanNames : [],
             ]).Select(name => new SpawnEntry { SpawnList = [new(name)] }));
 
@@ -360,12 +360,12 @@ public static partial class Randomize
         .. formData.SpawnRaidBosses ? Data.RaidBossNames : [],
         .. formData.SpawnPredators ? Data.PredatorNames : [],
         .. formData.SpawnHumanBosses ? Data.HumanBossNames : [],
-        .. formData.SpawnHumans ? Data.humanNames : [],
-        .. formData.SpawnPolice ? Data.policeNames : [],
-        .. formData.SpawnGuards ? Data.guardNames : [],
-        .. formData.SpawnTraders ? Data.traderNames : [],
-        .. formData.SpawnPalTraders ? Data.palTraderNames : [],
-        .. formData.SpawnSpecial ? Data.specialNames : [],
+        .. formData.SpawnHumans ? Data.HumanNames : [],
+        .. formData.SpawnPolice ? Data.PoliceNames : [],
+        .. formData.SpawnGuards ? Data.GuardNames : [],
+        .. formData.SpawnTraders ? Data.TraderNames : [],
+        .. formData.SpawnPalTraders ? Data.PalTraderNames : [],
+        .. formData.SpawnSpecial ? Data.SpecialNames : [],
         .. formData.SpawnTerraria ? Data.TerrariaMonsters : [],
         .. formData.SpawnTerrariaBosses ? Data.TerrariaMonstersBosses : [],
         .. formData.SpawnTowerHumans ? Data.TowerHumanNames : [],
