@@ -578,28 +578,21 @@ public static partial class Data
                 weightSum = nightWeightSum;
             }
 
-            area.minLevel = Convert.ToInt32(averageLevel / weightSum - levelRange / 2.0f / weightSum);
-            area.maxLevel = Convert.ToInt32(averageLevel / weightSum + levelRange / 2.0f / weightSum);
+            area.MinLevel = Convert.ToInt32(averageLevel / weightSum - levelRange / 2.0f / weightSum);
+            area.MaxLevel = Convert.ToInt32(averageLevel / weightSum + levelRange / 2.0f / weightSum);
 
             if (nightWeightSum != 0) {
-                area.minLevelNight = Convert.ToInt32(nightAverageLevel / nightWeightSum - nightLevelRange / 2.0f / nightWeightSum);
-                area.maxLevelNight = Convert.ToInt32(nightAverageLevel / nightWeightSum + nightLevelRange / 2.0f / nightWeightSum);
+                area.MinLevelNight = Convert.ToInt32(nightAverageLevel / nightWeightSum - nightLevelRange / 2.0f / nightWeightSum);
+                area.MaxLevelNight = Convert.ToInt32(nightAverageLevel / nightWeightSum + nightLevelRange / 2.0f / nightWeightSum);
             }
 
-            area.isBoss = filename.Contains("boss", StringComparison.OrdinalIgnoreCase) || area.SpawnEntries[0].SpawnList[0].IsBoss;
-            area.isInDungeon = filename.Contains("dungeon", StringComparison.OrdinalIgnoreCase);
-            area.isPredator = filename.Contains("PreBOSS", StringComparison.OrdinalIgnoreCase);
-            area.isMimic = Path.GetFileNameWithoutExtension(filename).EndsWith("_mimic", StringComparison.OrdinalIgnoreCase);
-            //area.isMonsterOnly = Path.GetFileNameWithoutExtension(filename).EndsWith("_monsteronly", StringComparison.OrdinalIgnoreCase);
-            area.isFieldBoss = area.isBoss && !area.isInDungeon && !area.isPredator;
-            area.isDungeonBoss = area.isBoss && area.isInDungeon;
-            area.isDungeon = !area.isBoss && area.isInDungeon && !area.isMimic;
-            area.isField = !area.isBoss && !area.isInDungeon;
-            area.isQuest = area.SimpleName.StartsWith("Quest_", StringComparison.OrdinalIgnoreCase);
+            area.IsBoss = area.SpawnEntries[0].SpawnList[0].IsBoss;
+            area.AreaType = AreaType.Pal;
+            area.IsInDungeon = filename.Contains("dungeon", StringComparison.OrdinalIgnoreCase);
             area.IsAllArea = filename.Contains("allarea", StringComparison.OrdinalIgnoreCase);
             area.IsOnlyHumans = !area.SpawnEntries
                 .Exists(x => x.SpawnList.Exists(y => PalData[y.Name].IsPal && y.Name != "RowName"));
-            area.IsSingleSpawn = !area.isBoss
+            area.IsSingleSpawn = !area.IsBoss
                 && (area.SpawnEntries.Count(x => x.SpawnList[0].Name != "RowName") == 1
                 || area.SpawnEntries
                 .SelectMany(x => x.SpawnList.Select(y => y.Name).Where(z => z != "RowName"))
@@ -607,15 +600,15 @@ public static partial class Data
                 .Count() == 1);
         }
         string firstAreaName = "BP_PalSpawner_Sheets_green_A.uasset";
-        AreaData[firstAreaName].minLevel = AreaData[firstAreaName].SpawnEntries[0].SpawnList[0].MinLevel;
-        AreaData[firstAreaName].maxLevel = AreaData[firstAreaName].SpawnEntries[0].SpawnList[0].MaxLevel;
+        AreaData[firstAreaName].MinLevel = AreaData[firstAreaName].SpawnEntries[0].SpawnList[0].MinLevel;
+        AreaData[firstAreaName].MaxLevel = AreaData[firstAreaName].SpawnEntries[0].SpawnList[0].MaxLevel;
 
-        FirstBoss = AreaData.Values.Where(x => x.isBoss).Min(x => x.filename)!;
+        FirstBoss = AreaData.Values.Where(x => x.IsBoss).Min(x => x.Filename)!;
 
         var cageData = FileModify.ReadCageData(
             new GameStruct(fileProvider, "Pal/Content/Pal/DataTable/Character/DT_CapturedCagePal.uasset")
             .DataTable.Values);
-        FirstCage = cageData.Values.Min(x => x.filename)!;
+        FirstCage = cageData.Values.Min(x => x.Filename)!;
         foreach (var keyPair in cageData)
         {
             AreaData.Add(keyPair.Key, keyPair.Value);
@@ -641,7 +634,7 @@ public static partial class Data
     {
         foreach (AreaData area in areaList)
         {
-            List<SpawnEntry> baseEntries = AreaData[area.isCage ? $"Cage:{area.filename}" : area.filename].SpawnEntries;
+            List<SpawnEntry> baseEntries = AreaData[area.IsCage ? $"Cage:{area.Filename}" : area.Filename].SpawnEntries;
             List<SpawnEntry> newEntries = area.SpawnEntries;
             if (baseEntries.Count != newEntries.Count
                 || ((Func<bool>) (() =>

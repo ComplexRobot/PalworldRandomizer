@@ -6,82 +6,91 @@ namespace PalworldRandomizer.Randomizer.PalSpawn;
 
 public class AreaData(List<SpawnEntry> spawnEntries, string name) {
     public List<SpawnEntry> SpawnEntries { get; set; } = spawnEntries;
-    public string filename = name;
-    public int minLevel = 0;
-    public int maxLevel = 0;
-    public int minLevelNight = 0;
-    public int maxLevelNight = 0;
-    public bool modified = false;
-    public bool isFieldBoss = false;
-    public bool isDungeonBoss = false;
-    public bool isDungeon = false;
-    public bool isField = false;
-    public bool isBoss = false;
-    public bool isInDungeon = false;
-    public bool isPredator = false;
-    public bool isCage = false;
-    public bool isEgg = false;
-    public bool isQuest = false;
-    public bool isMimic = false;
-    public bool isMonsterOnly = false;
+    /// <summary>The filename used for the area. (Usually BP_&lt;...&gt;.uasset)</summary>
+    public string Filename { get; set; } = name;
+    /// <summary>The average minimum level among all spawns in the area.</summary>
+    public int MinLevel { get; set; } = 0;
+    /// <summary>The average maximum level among all spawns in the area.</summary>
+    public int MaxLevel { get; set; } = 0;
+    /// <summary>The average minimum level among all nighttime spawns in the area.</summary>
+    public int MinLevelNight { get; set; } = 0;
+    /// <summary>The average maximum level among all nighttime spawns in the area.</summary>
+    public int MaxLevelNight { get; set; } = 0;
+    /// <summary><see langword="true"/> if the area has been changed from the original vanilla area.</summary>
+    public bool Modified { get; set; } = false;
+    /// <summary>The type of area. Pal spawner, egg, cage, etc.</summary>
+    public AreaType AreaType { get; set; } = AreaType.Undefined;
+    /// <summary>The area is an overworld boss spawn.</summary>
+    public bool IsFieldBoss => IsBoss && !IsInDungeon;
+    /// <summary>The area is a dungeon boss spawn.</summary>
+    public bool IsDungeonBoss => IsBoss && IsInDungeon;
+    /// <summary>The area is a dungeon non-boss spawn.</summary>
+    public bool IsDungeon => !IsBoss && IsInDungeon;
+    /// <summary>The area is an overworld non-boss spawn.</summary>
+    public bool IsField => !IsBoss && !IsInDungeon;
+    /// <summary>The area is a boss spawn of any kind.</summary>
+    public bool IsBoss { get; set; } = false;
+    /// <summary>The area is a dungeon spawn of any kind.</summary>
+    public bool IsInDungeon { get; set; } = false;
+    /// <summary>The area is a cage spawn in an enemy camp.</summary>
+    public bool IsCage => AreaType is AreaType.Cage;
+    /// <summary>The area is an overworld egg spawn.</summary>
+    public bool IsEgg => AreaType is AreaType.Egg;
     /// <summary>Named "allarea" - contains spawn points all over the map.</summary>
     public bool IsAllArea { get; set; } = false;
     /// <summary>The spawn list contains only humans.</summary>
     public bool IsOnlyHumans { get; set; } = false;
     /// <summary>Contains only a single spawn group or species.</summary>
     public bool IsSingleSpawn { get; set; } = false;
-    public float eggRespawnTime = 0;
-    public float eggLotteryCooldown = 0;
-    private readonly ObservableList<SpawnEntry> virtualEntries = [];
+    /// <summary>The respawn time for an egg spawn in minutes.</summary>
+    public float EggRespawnTime { get; set; } = 0;
+    /// <summary>Unknown.</summary>
+    public float EggLotteryCooldown { get; set; } = 0;
 
-    public AreaData Clone() => new(new(), filename) {
-        minLevel = minLevel,
-        maxLevel = maxLevel,
-        minLevelNight = minLevelNight,
-        maxLevelNight = maxLevelNight,
-        modified = modified,
-        isFieldBoss = isFieldBoss,
-        isDungeonBoss = isDungeonBoss,
-        isDungeon = isDungeon,
-        isField = isField,
-        isBoss = isBoss,
-        isInDungeon = isInDungeon,
-        isPredator = isPredator,
-        isCage = isCage,
-        isEgg = isEgg,
-        isQuest = isQuest,
-        isMimic = isMimic,
-        isMonsterOnly = isMonsterOnly,
+    private readonly ObservableList<SpawnEntry> _virtualEntries = [];
+
+    /// <summary>
+    /// Make a deep-copy clone of the area.
+    /// </summary>
+    public AreaData Clone() => new([], Filename) {
+        MinLevel = MinLevel,
+        MaxLevel = MaxLevel,
+        MinLevelNight = MinLevelNight,
+        MaxLevelNight = MaxLevelNight,
+        Modified = Modified,
+        AreaType = AreaType,
+        IsBoss = IsBoss,
+        IsInDungeon = IsInDungeon,
         IsAllArea = IsAllArea,
         IsOnlyHumans = IsOnlyHumans,
         IsSingleSpawn = IsSingleSpawn,
-        eggRespawnTime = eggRespawnTime,
-        eggLotteryCooldown = eggLotteryCooldown,
+        EggRespawnTime = EggRespawnTime,
+        EggLotteryCooldown = EggLotteryCooldown,
         SpawnEntries = SpawnEntries.ConvertAll(entry => entry.Clone()),
     };
 
     public int EntriesToShow
     {
-        get => virtualEntries.Count;
+        get => _virtualEntries.Count;
         set
         {
             if (value == 0)
             {
-                virtualEntries.Clear();
+                _virtualEntries.Clear();
             }
-            else if (value > virtualEntries.Count)
+            else if (value > _virtualEntries.Count)
             {
                 foreach (SpawnEntry entry in CollectionsMarshal.AsSpan(SpawnEntries)
-                    .Slice(virtualEntries.Count, Math.Min(value - virtualEntries.Count, SpawnEntries.Count - virtualEntries.Count)))
+                    .Slice(_virtualEntries.Count, Math.Min(value - _virtualEntries.Count, SpawnEntries.Count - _virtualEntries.Count)))
                 {
-                    virtualEntries.Add(entry);
+                    _virtualEntries.Add(entry);
                 }
             }
-            else if (value < virtualEntries.Count)
+            else if (value < _virtualEntries.Count)
             {
-                while (virtualEntries.Count > value)
+                while (_virtualEntries.Count > value)
                 {
-                    virtualEntries.RemoveAt(virtualEntries.Count - 1);
+                    _virtualEntries.RemoveAt(_virtualEntries.Count - 1);
                 }
             }
         }
@@ -91,7 +100,7 @@ public class AreaData(List<SpawnEntry> spawnEntries, string name) {
         SpawnEntries.Insert(index, spawnEntry);
         if (EntriesToShow >= index)
         {
-            virtualEntries.Insert(index, spawnEntry);
+            _virtualEntries.Insert(index, spawnEntry);
         }
     }
     public void RemoveAt(int index)
@@ -99,30 +108,48 @@ public class AreaData(List<SpawnEntry> spawnEntries, string name) {
         SpawnEntries.RemoveAt(index);
         if (EntriesToShow > index)
         {
-            virtualEntries.RemoveAt(index);
+            _virtualEntries.RemoveAt(index);
         }
     }
     public void Clear()
     {
         SpawnEntries.Clear();
-        virtualEntries.Clear();
+        _virtualEntries.Clear();
     }
     public int VirtualCapacity
     {
-        get => virtualEntries.List.Capacity;
+        get => _virtualEntries.List.Capacity;
         set
         {
             if (VirtualCapacity < value)
-                virtualEntries.List.Capacity = value;
+                _virtualEntries.List.Capacity = value;
         }
     }
     public int Count => SpawnEntries.Count;
-    public ObservableCollection<SpawnEntry> SpawnEntriesView => virtualEntries;
-    public string Name => SimpleName + (modified ? "*" : "");
-    public string FileNameWithoutExtension => Path.GetFileNameWithoutExtension(filename);
-    public string SimpleName => isCage ? $"Cage:{filename}"
-        : (isEgg ? FileNameWithoutExtension["bp_palmapobjectspawner_".Length..] : FileNameWithoutExtension["BP_PalSpawner_Sheets_".Length..]);
+    public ObservableCollection<SpawnEntry> SpawnEntriesView => _virtualEntries;
+    public string Name => SimpleName + (Modified ? "*" : "");
+    public string FileNameWithoutExtension => Path.GetFileNameWithoutExtension(Filename);
+    public string SimpleName => IsCage ? $"Cage:{Filename}"
+        : (IsEgg ? FileNameWithoutExtension["bp_palmapobjectspawner_".Length..] : FileNameWithoutExtension["BP_PalSpawner_Sheets_".Length..]);
     public override string ToString() => Name;
+}
+
+/// <summary>
+/// The spawn type of the area.
+/// </summary>
+public enum AreaType {
+    /// <summary>Unknown type.</summary>
+    Undefined,
+    /// <summary>Pal spawner.</summary>
+    Pal,
+    /// <summary>Cage in an enemy camp.</summary>
+    Cage,
+    /// <summary>Overworld egg spawner.</summary>
+    Egg,
+    /// <summary>Overworld human boss spawn with solo human and optionally a pal.</summary>
+    HumanBossMono,
+    /// <summary>Overworld human boss spawn with 3 humans (boss + 2 adds).</summary>
+    HumanBossSquad,
 }
 
 public class ObservableList<T> : ObservableCollection<T> {

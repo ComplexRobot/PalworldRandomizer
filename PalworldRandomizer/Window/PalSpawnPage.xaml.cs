@@ -32,7 +32,7 @@ public partial class PalSpawnPage : Grid
 
     public void SavePalSchema()
     {
-        List<AreaData> modifiedAreas = ((List<AreaData>)areaList.ItemsSource).FindAll(x => x.modified);
+        List<AreaData> modifiedAreas = ((List<AreaData>)areaList.ItemsSource).FindAll(x => x.Modified);
         if (modifiedAreas.Count == 0)
         {
             MessageBox.Show(GetWindow(), "Error: No spawn group changes detected.", "Failed To Save PalSchema", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -105,9 +105,9 @@ public partial class PalSpawnPage : Grid
             spawnAddLoops = 1;
             area.VirtualCapacity = area.Count;
         }
-        if (e.RemovedItems.Count > 0 && ((AreaData) e.RemovedItems[0]!).modified == true)
+        if (e.RemovedItems.Count > 0 && ((AreaData) e.RemovedItems[0]!).Modified == true)
         {
-            Data.AreaForEachIfDiff([(AreaData) e.RemovedItems[0]!], null, area => { area.modified = false; areaList.Items.Refresh(); });
+            Data.AreaForEachIfDiff([(AreaData) e.RemovedItems[0]!], null, area => { area.Modified = false; areaList.Items.Refresh(); });
         }
     }
 
@@ -188,9 +188,9 @@ public partial class PalSpawnPage : Grid
     {
         if (areaList.SelectedItem != null)
         {
-            if (((AreaData) areaList.SelectedItem).modified == false)
+            if (((AreaData) areaList.SelectedItem).Modified == false)
             {
-                ((AreaData) areaList.SelectedItem).modified = true;
+                ((AreaData) areaList.SelectedItem).Modified = true;
                 areaList.Items.Refresh();
             }
             Randomize.AreaListChanged = true;

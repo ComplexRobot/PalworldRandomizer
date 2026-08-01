@@ -527,15 +527,12 @@ public static partial class Randomize
         List<AreaData> areaList = Data.AreaDataCopy();
         List<AreaData> subList = areaList.FindAll(area =>
             (
-                (formData.RandomizeField || !area.isField)
-                && (formData.RandomizeDungeons || !area.isDungeon)
-                && (formData.RandomizeDungeonBosses || !area.isDungeonBoss)
-                && (formData.RandomizeFieldBosses || !area.isFieldBoss)
-                && (formData.RandomizePredators || !area.isPredator)
-                && (formData.RandomizeCages || !area.isCage)
-                && (formData.RandomizeEggs || !area.isEgg)
-                && (formData.RandomizeQuests || !area.isQuest)
-                && (formData.RandomizeMimics || !area.isMimic)
+                (formData.RandomizeField || !area.IsField)
+                && (formData.RandomizeDungeons || !area.IsDungeon)
+                && (formData.RandomizeDungeonBosses || !area.IsDungeonBoss)
+                && (formData.RandomizeFieldBosses || !area.IsFieldBoss)
+                && (formData.RandomizeCages || !area.IsCage)
+                && (formData.RandomizeEggs || !area.IsEgg)
                 && (formData.RandomizeAllArea || !area.IsAllArea)
                 && (formData.RandomizeSingleSpawns || !area.IsSingleSpawn)
                 // Make global spawn setting take priority
@@ -544,39 +541,36 @@ public static partial class Randomize
                     (formData.RandomizeAllArea && area.IsAllArea
                     || formData.RandomizeSingleSpawns && area.IsSingleSpawn)
             )
-            && (!formData.StartSheepBall || area.filename != "BP_PalSpawner_Sheets_green_A_SheepBall.uasset"));
+            && (!formData.StartSheepBall || area.Filename != "BP_PalSpawner_Sheets_green_A_SheepBall.uasset"));
 
         if (!formData.MethodNone)
         {
-            List<AreaData> addedBosses = subList.FindAll(area => !area.isBoss && !area.isCage && !area.isMonsterOnly && BossesEverywhere(area)).ConvertAll(x => x.Clone());
+            List<AreaData> addedBosses = subList.FindAll(area => !area.IsBoss && !area.IsCage
+                && BossesEverywhere(area)).ConvertAll(x => x.Clone());
             foreach (AreaData area in addedBosses)
             {
-                area.isBoss = true;
-                area.filename = $"~{area.filename}";
+                area.IsBoss = true;
+                area.Filename = $"~{area.Filename}";
             }
             subList.AddRange(addedBosses);
         }
         subList.Sort((x, y) =>
         {
-            if (x.isEgg != y.isEgg)
-                return (x.isEgg ? 1 : 0) - (y.isEgg ? 1 : 0);
-            if (x.isCage != y.isCage)
-                return (x.isCage ? 1 : 0) - (y.isCage ? 1 : 0);
-            if (x.isPredator != y.isPredator)
-                return (x.isPredator ? 1 : 0) - (y.isPredator ? 1 : 0);
+            if (x.IsEgg != y.IsEgg)
+                return (x.IsEgg ? 1 : 0) - (y.IsEgg ? 1 : 0);
+            if (x.IsCage != y.IsCage)
+                return (x.IsCage ? 1 : 0) - (y.IsCage ? 1 : 0);
 
-            bool bossesEverywhereX = x.filename.StartsWith('~');
-            bool bossesEverywhereY = y.filename.StartsWith('~');
+            bool bossesEverywhereX = x.Filename.StartsWith('~');
+            bool bossesEverywhereY = y.Filename.StartsWith('~');
             if (bossesEverywhereX != bossesEverywhereY) {
                 return (bossesEverywhereX ? 1 : 0) - (bossesEverywhereY ? 1 : 0);
             }
 
-            if (x.isBoss != y.isBoss)
-                return (x.isBoss ? 1 : 0) - (y.isBoss ? 1 : 0);
-            if (x.isInDungeon != y.isInDungeon)
-                return (x.isInDungeon ? 1 : 0) - (y.isInDungeon ? 1 : 0);
-            if (x.isMimic != y.isMimic)
-                return (x.isMimic ? 1 : 0) - (y.isMimic ? 1 : 0);
+            if (x.IsBoss != y.IsBoss)
+                return (x.IsBoss ? 1 : 0) - (y.IsBoss ? 1 : 0);
+            if (x.IsInDungeon != y.IsInDungeon)
+                return (x.IsInDungeon ? 1 : 0) - (y.IsInDungeon ? 1 : 0);
 
             if (x.IsAllArea != y.IsAllArea) {
                 return (y.IsAllArea ? 1 : 0) - (x.IsAllArea ? 1 : 0);
@@ -586,7 +580,7 @@ public static partial class Randomize
             bool nightOnlyY = NightOnly(y);
             if (nightOnlyX != nightOnlyY)
                 return (nightOnlyX ? 1 : 0) - (nightOnlyY ? 1 : 0);
-            return string.Compare(x.filename, y.filename);
+            return string.Compare(x.Filename, y.Filename);
         });
         bool equalizeAreaRarity = formData.EqualizeAreaRarity && !formData.MethodNone && !formData.MethodFull && !formData.MethodGlobalSwap && !formData.VanillaRestrict;
         int progress = 0;
@@ -607,17 +601,16 @@ public static partial class Randomize
                 : (pals8UpAdded + 1) * original.Count <= (palsAdded + groupSize) * pals8UpCount;
         }
 
-        bool NightOnly(AreaData area, bool condition = true) => (formData.NightOnly == condition && area.isField)
-                || (formData.NightOnlyDungeons == condition && area.isDungeon)
-                || (formData.NightOnlyDungeonBosses == condition && area.isDungeonBoss)
-                || (formData.NightOnlyBosses == condition && area.isFieldBoss)
-                || (formData.NightOnlyPredators == condition && area.isPredator);
+        bool NightOnly(AreaData area, bool condition = true) => (formData.NightOnly == condition && area.IsField)
+                || (formData.NightOnlyDungeons == condition && area.IsDungeon)
+                || (formData.NightOnlyDungeonBosses == condition && area.IsDungeonBoss)
+                || (formData.NightOnlyBosses == condition && area.IsFieldBoss);
 
-        bool BossesEverywhere(AreaData area) => (area.isEgg ? formData.BossEggs
-            : (area.isInDungeon ? formData.BossesEverywhereDungeons : formData.BossesEverywhere))
-            && (!formData.VanillaRestrict || area.isEgg || area.isCage || !area.IsOnlyHumans);
+        bool BossesEverywhere(AreaData area) => (area.IsEgg ? formData.BossEggs
+            : (area.IsInDungeon ? formData.BossesEverywhereDungeons : formData.BossesEverywhere))
+            && (!formData.VanillaRestrict || area.IsEgg || area.IsCage || !area.IsOnlyHumans);
 
-        double BossesEverywhereChance(AreaData area) => area.isEgg ? bossEggsChance : (area.isInDungeon ? bossesEverywhereDungeonsChance : bossesEverywhereChance);
+        double BossesEverywhereChance(AreaData area) => area.IsEgg ? bossEggsChance : (area.IsInDungeon ? bossesEverywhereDungeonsChance : bossesEverywhereChance);
         int Rarity(SpawnData spawnData)
         {
             if (!Data.PalData[spawnData.Name].IsPal)
@@ -681,15 +674,15 @@ public static partial class Randomize
         void GenerateLevels(SpawnEntry spawnEntry, AreaData area, Func<SpawnData, float> LevelMultiplier)
         {
             int minLevel, maxLevel;
-            if (spawnEntry.NightOnly && area.minLevelNight != 0)
+            if (spawnEntry.NightOnly && area.MinLevelNight != 0)
             {
-                minLevel = area.minLevelNight;
-                maxLevel = area.maxLevelNight;
+                minLevel = area.MinLevelNight;
+                maxLevel = area.MaxLevelNight;
             }
             else
             {
-                minLevel = area.minLevel;
-                maxLevel = area.maxLevel;
+                minLevel = area.MinLevel;
+                maxLevel = area.MaxLevel;
             }
             float range = maxLevel - minLevel;
             float average = (maxLevel + minLevel) / 2.0f;
@@ -702,10 +695,10 @@ public static partial class Randomize
                     float currentRange = spawnEntry.SpawnList[i].MaxLevel - spawnEntry.SpawnList[i].MinLevel;
                     float currentAverage = (spawnEntry.SpawnList[i].MaxLevel + spawnEntry.SpawnList[i].MinLevel) / 2.0f;
                     float newRange = (firstRange == 0 ? currentRange : range * currentRange / firstRange);
-                    ApplyLevelRange(spawnEntry.SpawnList[i], LevelMultiplier(spawnEntry.SpawnList[i]), average * currentAverage / firstAverage, newRange, !area.isCage && !area.isEgg);
+                    ApplyLevelRange(spawnEntry.SpawnList[i], LevelMultiplier(spawnEntry.SpawnList[i]), average * currentAverage / firstAverage, newRange, !area.IsCage && !area.IsEgg);
                 }
             }
-            ApplyLevelRange(spawnEntry.SpawnList[0], LevelMultiplier(spawnEntry.SpawnList[0]), average, range, !area.isCage && !area.isEgg);
+            ApplyLevelRange(spawnEntry.SpawnList[0], LevelMultiplier(spawnEntry.SpawnList[0]), average, range, !area.IsCage && !area.IsEgg);
         }
         void ApplyLevelRange(SpawnData spawnData, float multiplier, float average, float range, bool rarityCheck = true)
         {
@@ -814,11 +807,11 @@ public static partial class Randomize
             bool nightOnly = NightOnly(area);
             float LevelMultiplier(SpawnData spawnData)
             {
-                return LevelMultiplierEx(spawnData, area.isInDungeon, area.isCage, area.isEgg);
+                return LevelMultiplierEx(spawnData, area.IsInDungeon, area.IsCage, area.IsEgg);
             }
             float CountMultiplier(SpawnData spawnData)
             {
-                return CountMultiplierEx(spawnData, area.isInDungeon, area.isCage || area.isEgg);
+                return CountMultiplierEx(spawnData, area.IsInDungeon, area.IsCage || area.IsEgg);
             }
             float CustomWeight(float rarity, bool lerp, float scale)
             {
@@ -849,23 +842,15 @@ public static partial class Randomize
             // NOT No Randomization
             if (!formData.MethodNone)
             {
-                if (area.isMonsterOnly)
-                {
-                    continue;
-                }
                 List<SpawnEntry> spawnEntries = [];
                 List<SpawnEntry> spawnEntriesOriginal = area.SpawnEntries;
                 area.SpawnEntries = spawnEntries;
-                if (area.isPredator && predatorChance == 0)
+                if (area.IsEgg)
                 {
-                    continue;
+                    area.EggRespawnTime = eggRespawnTime;
                 }
-                if (area.isEgg)
-                {
-                    area.eggRespawnTime = eggRespawnTime;
-                }
-                if (BossesEverywhere(area) && !area.isBoss && BossesEverywhereChance(area) == 1 && !area.isCage
-                    && (!area.isEgg || area.filename != Data.FirstEgg))
+                if (BossesEverywhere(area) && !area.IsBoss && BossesEverywhereChance(area) == 1 && !area.IsCage
+                    && (!area.IsEgg || area.Filename != Data.FirstEgg))
                 {
                     continue;
                 }
@@ -875,7 +860,7 @@ public static partial class Randomize
                 }
                 HashSet<string> vanillaNames = [.. spawnEntriesOriginal.FindAll(x => x.Weight != 0).ConvertAll(x => x.SpawnList.ConvertAll(y => StripQuestPrefix(y.Name)))
                     .SelectMany(x => x).Distinct()];
-                if (BossesEverywhere(area) && area.filename.StartsWith('~'))
+                if (BossesEverywhere(area) && area.Filename.StartsWith('~'))
                 {
                     vanillaNames.UnionWith(vanillaNames.ToList().FindAll(x => Data.PalData[x].IsPal && !Data.PalData[x].IsBoss)
                         .ConvertAll(x => Data.BossName.TryGetValue(x, out string? bossName) ? bossName : x));
@@ -884,10 +869,6 @@ public static partial class Randomize
                 if (formData.VanillaRestrict && !formData.MethodGlobalSwap)
                 {
                     List<SpawnEntry> bossBackupClone = bossSpawnsOriginalBackup.ConvertAll(x => x.Clone());
-                    if (area.isPredator && formData.PredatorConstraint && !formData.SpawnPredators)
-                    {
-                        bossBackupClone.AddRange(Data.PredatorNames.ConvertAll(name => new SpawnEntry { SpawnList = [new(name)] }));
-                    }
                     basicSpawnsOriginal = FilterSpawnList(basicSpawnsOriginalBackup.ConvertAll(x => x.Clone()), false);
                     bossSpawnsOriginal = FilterSpawnList(bossBackupClone, true);
                     basicSpawnsCurrent = [.. basicSpawnsOriginal];
@@ -899,20 +880,7 @@ public static partial class Randomize
                         return spawnList;
                     }
                 }
-                else if (formData.PredatorConstraint && area.isPredator)
-                {
-                    basicSpawnsOriginal = [];
-                    basicSpawnsCurrent = [];
-                    bossSpawnsOriginal = Data.PredatorNames.ConvertAll(name => new SpawnEntry { SpawnList = [new(name)] });
-                    bossSpawnsCurrent = FilterPredators(bossSpawnsCurrent.ConvertAll(x => x.Clone()));
-                    List<SpawnEntry> FilterPredators(List<SpawnEntry> spawnList)
-                    {
-                        spawnList.ForEach(x => x.SpawnList.RemoveAll(y => !y.Name.StartsWith("PREDATOR_", StringComparison.OrdinalIgnoreCase)));
-                        spawnList.RemoveAll(x => x.SpawnList.Count == 0 || !x.SpawnList.Exists(y => y.IsBoss));
-                        return spawnList;
-                    }
-                }
-                if (area.isCage && (area.filename == Data.FirstCage || (formData.VanillaRestrict && !formData.MethodGlobalSwap)))
+                if (area.IsCage && (area.Filename == Data.FirstCage || (formData.VanillaRestrict && !formData.MethodGlobalSwap)))
                 {
                     if (formData.VanillaRestrict && !formData.MethodGlobalSwap)
                     {
@@ -928,7 +896,7 @@ public static partial class Randomize
                     }
                     basicSpawnsCurrent = [.. basicSpawnsOriginal];
                 }
-                if (area.isEgg && (area.filename == Data.FirstEgg || (formData.VanillaRestrict && !formData.MethodGlobalSwap)))
+                if (area.IsEgg && (area.Filename == Data.FirstEgg || (formData.VanillaRestrict && !formData.MethodGlobalSwap)))
                 {
                     if (formData.VanillaRestrict && !formData.MethodGlobalSwap)
                     {
@@ -944,12 +912,12 @@ public static partial class Randomize
                     bossSpawnsCurrent = [.. bossSpawnsOriginal];
                 }
 
-                if (area.isEgg && area.filename == Data.FirstEgg) {
+                if (area.IsEgg && area.Filename == Data.FirstEgg) {
                     bossSpawnsOriginal =
                         bossSpawnsOriginal.FindAll(x => x.SpawnList[0].Name != "GYM_WorldTreeDragon");
                 }
 
-                if (BossesEverywhere(area) && !area.isBoss && BossesEverywhereChance(area) == 1 && !area.isCage)
+                if (BossesEverywhere(area) && !area.IsBoss && BossesEverywhereChance(area) == 1 && !area.IsCage)
                 {
                     continue;
                 }
@@ -957,19 +925,19 @@ public static partial class Randomize
                 if (formData.MethodFull)
                 {
                     // area.filename check for first boss area to reset the lists when changing from non-boss to bosses
-                    if (!area.isFieldBoss || formData.FieldBossExtended || area.filename == Data.FirstBoss)
+                    if (!area.IsFieldBoss || formData.FieldBossExtended || area.Filename == Data.FirstBoss)
                     {
                         basicSpawnsCurrent = [.. basicSpawnsOriginal];
                         bossSpawnsCurrent = [.. bossSpawnsOriginal];
                     }
                     int speciesCount = 0;
-                    int maxSpecies = (area.isFieldBoss || area.isPredator) && !formData.FieldBossExtended
+                    int maxSpecies = area.IsFieldBoss && !formData.FieldBossExtended
                         ? 1
-                        : (area.isBoss ? bossSpawnsOriginal : basicSpawnsOriginal).Sum(entry => entry.SpawnList.Count);
+                        : (area.IsBoss ? bossSpawnsOriginal : basicSpawnsOriginal).Sum(entry => entry.SpawnList.Count);
                     if (formData.GroupVanilla)
                     {
-                        List<SpawnEntry> spawns = area.isBoss ? bossSpawnsCurrent : basicSpawnsCurrent;
-                        List<SpawnEntry> original = area.isBoss ? bossSpawnsOriginal : basicSpawnsOriginal;
+                        List<SpawnEntry> spawns = area.IsBoss ? bossSpawnsCurrent : basicSpawnsCurrent;
+                        List<SpawnEntry> original = area.IsBoss ? bossSpawnsOriginal : basicSpawnsOriginal;
                         while (speciesCount < maxSpecies)
                         {
                             if (spawns.Count == 0)
@@ -986,7 +954,7 @@ public static partial class Randomize
                     {
                         palsAdded = pals8UpAdded = bossesAdded = bosses8UpAdded = 0;
 
-                        if (area.isBoss && !formData.MultiBoss)
+                        if (area.IsBoss && !formData.MultiBoss)
                         {
                             while (speciesCount < maxSpecies)
                             {
@@ -1012,11 +980,11 @@ public static partial class Randomize
                     if (formData.MethodGlobalSwap) {
                         spawnEntriesOriginal = spawnEntriesOriginal.FindAll(x => x.SpawnList[0].Name != "RowName");
 
-                        if (area.isEgg)
+                        if (area.IsEgg)
                         {
                             spawnEntriesOriginal = spawnEntriesOriginal.FindAll(x => !x.SpawnList[0].IsBoss);
                         }
-                        if (BossesEverywhere(area) && area.filename.StartsWith('~'))
+                        if (BossesEverywhere(area) && area.Filename.StartsWith('~'))
                         {
                             spawnEntriesOriginal = spawnEntriesOriginal
                                 .FindAll(x => Data.PalData[x.SpawnList[0].Name].IsPal && Data.BossName.ContainsKey(x.SpawnList[0].Name))
@@ -1027,7 +995,7 @@ public static partial class Randomize
                             });
                         }
                     }
-                    int entryCount = (area.isFieldBoss || area.isPredator) && !formData.FieldBossExtended
+                    int entryCount = area.IsFieldBoss && !formData.FieldBossExtended
                         ? 1
                         : (formData.MethodCustomSize ? spawnListSize : spawnEntriesOriginal.Count);
                     for (int i = 0; i < entryCount; ++i)
@@ -1035,7 +1003,7 @@ public static partial class Randomize
                         if (formData.MethodGlobalSwap)
                         {
                             SpawnEntry spawnEntry = spawnEntriesOriginal[i];
-                            if ((area.isEgg || area.isCage && !formData.AllowCagedHumans)
+                            if ((area.IsEgg || area.IsCage && !formData.AllowCagedHumans)
                                 && swapMap.TryGetValue(spawnEntry.SpawnList[0].Name, out SpawnEntry? value)
                                 && !Data.PalData[value.SpawnList[0].Name].IsPal) {
                                 swapMap.Remove(spawnEntry.SpawnList[0].Name);
@@ -1044,8 +1012,8 @@ public static partial class Randomize
                             {
                                 if (formData.GroupVanilla)
                                 {
-                                    List<SpawnEntry> spawns = area.isBoss ? bossSpawnsCurrent : basicSpawnsCurrent;
-                                    List<SpawnEntry> original = area.isBoss ? bossSpawnsOriginal : basicSpawnsOriginal;
+                                    List<SpawnEntry> spawns = area.IsBoss ? bossSpawnsCurrent : basicSpawnsCurrent;
+                                    List<SpawnEntry> original = area.IsBoss ? bossSpawnsOriginal : basicSpawnsOriginal;
                                     if (spawns.Count == 0)
                                     {
                                         spawns.AddRange(original);
@@ -1066,8 +1034,8 @@ public static partial class Randomize
                         {
                             if (formData.GroupVanilla)
                             {
-                                List<SpawnEntry> spawns = area.isBoss ? bossSpawnsCurrent : basicSpawnsCurrent;
-                                List<SpawnEntry> original = area.isBoss ? bossSpawnsOriginal : basicSpawnsOriginal;
+                                List<SpawnEntry> spawns = area.IsBoss ? bossSpawnsCurrent : basicSpawnsCurrent;
+                                List<SpawnEntry> original = area.IsBoss ? bossSpawnsOriginal : basicSpawnsOriginal;
                                 if (spawns.Count == 0)
                                 {
                                     spawns.AddRange(original);
@@ -1093,13 +1061,13 @@ public static partial class Randomize
                     {
                         Weight = formData.WeightTypeUniform ? random.Next(weightUniformMin, weightUniformMax + 1) : 10,
                         SpawnList = value.SpawnList.ConvertAll(spawnData =>
-                            new SpawnData(spawnData.Name, area.isCage || area.isEgg ? 1 : spawnData.MinCount, area.isCage || area.isEgg ? 1 : spawnData.MaxCount)
+                            new SpawnData(spawnData.Name, area.IsCage || area.IsEgg ? 1 : spawnData.MinCount, area.IsCage || area.IsEgg ? 1 : spawnData.MaxCount)
                             {
                                 MinLevel = spawnData.MinLevel,
                                 MaxLevel = spawnData.MaxLevel
                             })
                     };
-                    if ((area.isCage || area.isEgg) && spawnEntry.SpawnList.Count > 1)
+                    if ((area.IsCage || area.IsEgg) && spawnEntry.SpawnList.Count > 1)
                     {
                         spawnEntry.SpawnList.RemoveRange(1, spawnEntry.SpawnList.Count - 1);
                     }
@@ -1155,7 +1123,7 @@ public static partial class Randomize
                     if (Data.PalData[spawnEntry.SpawnList[0].Name].Nocturnal && Data.PalData[spawnEntry.SpawnList[0].Name].IsPal && nightOnly)
                     {
                         spawnEntry.NightOnly = true;
-                        if ((!formData.WeightTypeCustom || !formData.WeightAdjustProbability) && !formData.VanillaPlus && (!BossesEverywhere(area) || area.isBoss))
+                        if ((!formData.WeightTypeCustom || !formData.WeightAdjustProbability) && !formData.VanillaPlus && (!BossesEverywhere(area) || area.IsBoss))
                         {
                             weight = Convert.ToInt64(weight * weightNightOnly);
                         }
@@ -1174,7 +1142,7 @@ public static partial class Randomize
                     {
                         GenerateLevels(spawnEntry, area, LevelMultiplier);
                     }
-                    if (area.isCage || area.isEgg)
+                    if (area.IsCage || area.IsEgg)
                     {
                         return;
                     }
@@ -1267,7 +1235,7 @@ public static partial class Randomize
 
                     void Rarity8UpSanityCheck(List<SpawnEntry> spawns, List<SpawnEntry> original, int maxGroup,
                         bool isBoss) {
-                        if (!area.isCage && !area.isEgg && ShouldAdd8UpPal(original, maxGroup, isBoss)) {
+                        if (!area.IsCage && !area.IsEgg && ShouldAdd8UpPal(original, maxGroup, isBoss)) {
                             var filteredSpawns = FilterRarity8Up(spawns);
                             var filteredOriginal = FilterRarity8Up(original);
 
@@ -1280,7 +1248,7 @@ public static partial class Randomize
 
                     List<SpawnEntry> spawns = basicSpawnsCurrent;
                     List<SpawnEntry> original = basicSpawnsOriginal;
-                    if (area.isBoss)
+                    if (area.IsBoss)
                     {
                         Rarity8UpSanityCheck(bossSpawnsCurrent, bossSpawnsOriginal,
                             formData.MultiBoss ? maxGroupBoss : 1, true);
@@ -1295,13 +1263,13 @@ public static partial class Randomize
                     {
                         Rarity8UpSanityCheck(basicSpawnsCurrent, basicSpawnsOriginal, maxGroup, false);
                     }
-                    if (area.isCage || area.isEgg)
+                    if (area.IsCage || area.IsEgg)
                     {
                         return spawnEntry;
                     }
                     if (original.Count != 0 && !(formData.Rarity8UpSolo && Rarity8Up(spawnEntry.SpawnList[0])))
                     {
-                        int groupSize = area.isBoss ? random.Next(minGroupBoss, maxGroupBoss + 1) : random.Next(minGroup, maxGroup + 1);
+                        int groupSize = area.IsBoss ? random.Next(minGroupBoss, maxGroupBoss + 1) : random.Next(minGroup, maxGroup + 1);
                         if (nightOnly || !formData.MixHumanAndPal || formData.Rarity8UpSolo
                             || formData.Rarity8UpSanity || formData.SeparateAggroHumans || formData.SeparateFlying
                             ) {
@@ -1414,7 +1382,7 @@ public static partial class Randomize
                             }
                         }
                     }
-                    if (area.isBoss && spawnEntry.SpawnList.Count > 1 && !formData.MultiBoss)
+                    if (area.IsBoss && spawnEntry.SpawnList.Count > 1 && !formData.MultiBoss)
                     {
                         spawnEntry.SpawnList[0].MinLevel = minBossLevel;
                         spawnEntry.SpawnList[0].MaxLevel = maxBossLevel;
@@ -1448,35 +1416,17 @@ public static partial class Randomize
         }
         bool FilterVanillaSpawns(List<SpawnEntry> spawnEntries, AreaData area)
         {
-            if (area.isPredator && predatorChance == 0)
-            {
-                spawnEntries.Clear();
-                return true;
-            }
             int changes = 0;
             foreach (SpawnEntry spawnEntry in spawnEntries)
             {
                 changes += spawnEntry.SpawnList.RemoveAll(spawnData => !allowedNames.Contains(spawnData.Name)
-                    && (formData.MethodNone
-                    || !area.isPredator || !formData.PredatorConstraint || !spawnData.Name.StartsWith("PREDATOR_", StringComparison.OrdinalIgnoreCase)));
-                if (area.isPredator && predatorChance == 1)
-                {
-                    changes += spawnEntry.SpawnList.RemoveAll(spawnData => spawnData.Name == "RowName");
-                }
+                    && formData.MethodNone);
             }
             changes += spawnEntries.RemoveAll(entry => entry.SpawnList.Count == 0);
-            if (area.isPredator && predatorChance != 1 && spawnEntries.Count == 2)
-            {
-                int originalWeight0 = spawnEntries[0].Weight;
-                int originalWeight1 = spawnEntries[1].Weight;
-                spawnEntries[0].Weight = Convert.ToInt32(100 * predatorChance);
-                spawnEntries[1].Weight = 100 - spawnEntries[0].Weight;
-                changes += (spawnEntries[0].Weight != originalWeight0 ? 1 : 0) + (spawnEntries[1].Weight != originalWeight1 ? 1 : 0);
-            }
-            if (area.isEgg && area.eggRespawnTime != eggRespawnTime)
+            if (area.IsEgg && area.EggRespawnTime != eggRespawnTime)
             {
                 ++changes;
-                area.eggRespawnTime = eggRespawnTime;
+                area.EggRespawnTime = eggRespawnTime;
             }
             foreach (SpawnEntry spawnEntry in spawnEntries)
             {
@@ -1499,7 +1449,7 @@ public static partial class Randomize
                     int originalCountMax = spawnData.MaxCount;
                     float range = spawnData.MaxLevel - spawnData.MinLevel;
                     float average;
-                    if (formData.ForceAddLevel && area.isBoss && i > 0 && !spawnData.IsBoss)
+                    if (formData.ForceAddLevel && area.IsBoss && i > 0 && !spawnData.IsBoss)
                     {
                         average = firstAverage * formData.BossAddLevel / 100;
                     }
@@ -1507,8 +1457,8 @@ public static partial class Randomize
                     {
                         average = (spawnData.MaxLevel + spawnData.MinLevel) / 2.0f;
                     }
-                    ApplyLevelRange(spawnData, LevelMultiplierEx(spawnData, area.isInDungeon, area.isCage, area.isEgg), average, range, false);
-                    float countMultiplier = CountMultiplierEx(spawnData, area.isInDungeon, area.isCage || area.isEgg);
+                    ApplyLevelRange(spawnData, LevelMultiplierEx(spawnData, area.IsInDungeon, area.IsCage, area.IsEgg), average, range, false);
+                    float countMultiplier = CountMultiplierEx(spawnData, area.IsInDungeon, area.IsCage || area.IsEgg);
 
                     int min = spawnData.IsBoss ? countClampBossMin : countClampMin;
                     int max = spawnData.IsBoss ? countClampBossMax : countClampMax;
@@ -1542,7 +1492,7 @@ public static partial class Randomize
             }
             if (saveData)
             {
-                area.modified = true;
+                area.Modified = true;
             }
         }
         if (equalizeAreaRarity)
@@ -1553,23 +1503,18 @@ public static partial class Randomize
             List<AreaData> dungeonBossList = [];
             List<AreaData> fieldBossNoctSplitList = [];
             List<AreaData> dungeonBossNoctSplitList = [];
-            List<AreaData> predatorList = [];
             List<AreaData> cageList = [];
             List<AreaData> eggList = [];
             List<AreaData> eggBossList = [];
             foreach (AreaData area in subList)
             {
-                if (area.isPredator)
-                {
-                    predatorList.Add(area);
-                }
-                else if (area.isCage)
+                if (area.IsCage)
                 {
                     cageList.Add(area);
                 }
-                else if (area.isEgg)
+                else if (area.IsEgg)
                 {
-                    if (area.isBoss)
+                    if (area.IsBoss)
                     {
                         eggBossList.Add(area);
                     }
@@ -1578,12 +1523,12 @@ public static partial class Randomize
                         eggList.Add(area);
                     }
                 }
-                else if (area.isBoss)
+                else if (area.IsBoss)
                 {
                     // Fix Bosses Everywhere mixing together lists with nocturnal separation and ones without
                     if (NightOnly(area))
                     {
-                        if (area.isInDungeon)
+                        if (area.IsInDungeon)
                         {
                             dungeonBossNoctSplitList.Add(area);
                         }
@@ -1594,7 +1539,7 @@ public static partial class Randomize
                     }
                     else
                     {
-                        if (area.isInDungeon)
+                        if (area.IsInDungeon)
                         {
                             dungeonBossList.Add(area);
                         }
@@ -1606,7 +1551,7 @@ public static partial class Randomize
                 }
                 else
                 {
-                    if (area.isInDungeon)
+                    if (area.IsInDungeon)
                     {
                         dungeonList.Add(area);
                     }
@@ -1622,7 +1567,6 @@ public static partial class Randomize
             EqualizeSpawns(dungeonBossList);
             EqualizeSpawns(fieldBossNoctSplitList);
             EqualizeSpawns(dungeonBossNoctSplitList);
-            EqualizeSpawns(predatorList);
             EqualizeSpawns(cageList);
             EqualizeSpawns(eggList);
             EqualizeSpawns(eggBossList);
@@ -1856,7 +1800,7 @@ public static partial class Randomize
             {
                 foreach (SpawnEntry spawnEntry in area.SpawnEntries)
                 {
-                    GenerateLevels(spawnEntry, area, x => LevelMultiplierEx(x, area.isInDungeon, area.isCage, area.isEgg));
+                    GenerateLevels(spawnEntry, area, x => LevelMultiplierEx(x, area.IsInDungeon, area.IsCage, area.IsEgg));
                 }
                 PostProcessArea(area, area.SpawnEntries.Sum(x => (long) x.Weight), NightOnly(area));
             }
@@ -1945,17 +1889,13 @@ public static partial class Randomize
             }
             // Add To Vanilla
             List<SpawnEntry> vanillaSpawns = [];
-            if (formData.VanillaPlus && (!area.filename.StartsWith('~') || BossesEverywhereChance(area) == 1))
+            if (formData.VanillaPlus && (!area.Filename.StartsWith('~') || BossesEverywhereChance(area) == 1))
             {
-                vanillaSpawns = Data.AreaData[area.filename.StartsWith('~') ? area.filename[1..] : $"{(area.isCage ? "Cage:" : "")}{area.filename}"]
+                vanillaSpawns = Data.AreaData[area.Filename.StartsWith('~') ? area.Filename[1..] : $"{(area.IsCage ? "Cage:" : "")}{area.Filename}"]
                     .SpawnEntries.ConvertAll(entry => entry.Clone());
                 if (formData.VanillaPlusFilter)
                 {
                     FilterVanillaSpawns(vanillaSpawns, area);
-                }
-                if (area.isPredator)
-                {
-                    vanillaSpawns.RemoveAll(x => x.SpawnList.Exists(y => y.Name == "RowName"));
                 }
                 long vanillaWeightSum = vanillaSpawns.Sum(x => (long) x.Weight);
                 long vanillaNightSum = vanillaSpawns.FindAll(x => x.NightOnly).Sum(x => (long) x.Weight);
@@ -2043,16 +1983,12 @@ public static partial class Randomize
                 }
                 return string.Compare(x.SpawnList[0].Name, y.SpawnList[0].Name);
             });
-            if (formData.VanillaMerge && !area.isCage && !area.isEgg)
+            if (formData.VanillaMerge && !area.IsCage && !area.IsEgg)
             {
-                List<SpawnEntry> mergedVanillaSpawns = Data.AreaData[area.filename.StartsWith('~') ? area.filename[1..] : area.filename].SpawnEntries.ConvertAll(x => x.Clone());
+                List<SpawnEntry> mergedVanillaSpawns = Data.AreaData[area.Filename.StartsWith('~') ? area.Filename[1..] : area.Filename].SpawnEntries.ConvertAll(x => x.Clone());
                 if (formData.VanillaMergeFilter)
                 {
                     FilterVanillaSpawns(mergedVanillaSpawns, area);
-                }
-                if (area.isPredator)
-                {
-                    mergedVanillaSpawns.RemoveAll(x => x.SpawnList.Exists(y => y.Name == "RowName"));
                 }
                 List<SpawnEntry> vanillaSpawnsDay = mergedVanillaSpawns.FindAll(x => !x.NightOnly && x.Weight != 0);
                 List<SpawnEntry> vanillaSpawnsNight = mergedVanillaSpawns.FindAll(x => x.NightOnly && x.Weight != 0);
@@ -2102,35 +2038,8 @@ public static partial class Randomize
                     }
                 }
             }
-            if (area.isPredator && predatorChance != 1)
-            {
-                List<SpawnEntry> diurnalSpawns = spawnEntries.FindAll(x => !x.NightOnly);
-                int nullWeight = Convert.ToInt32(100 * (1 - predatorChance));
-                SpawnEntry? diurnalNull = null;
-                if (diurnalSpawns.Count != 0)
-                {
-                    List<SpawnEntry> nullSpawn = [new() { Weight = nullWeight, SpawnList = [new("RowName") { MaxLevel = 1 }] }];
-                    SelectiveScale(diurnalSpawns.Sum(x => (long)x.Weight), nullWeight, nullSpawn, spawnEntries, predatorChance);
-                    spawnEntries.Insert(Math.Max(spawnEntries.IndexOf(diurnalSpawns[^1]) + 1, vanillaSpawns.Count), nullSpawn[0]);
-                    diurnalNull = nullSpawn[0];
-                }
-                if (spawnEntries.Exists(x => x.NightOnly))
-                {
-                    List<SpawnEntry> nullSpawn = [new() { NightOnly = true, Weight = nullWeight, SpawnList = [new("RowName") { MaxLevel = 1 }] }];
-                    int diurnalNullWeight = diurnalNull != null ? diurnalNull.Weight : 0;
-                    SelectiveScale(spawnEntries.Sum(x => (long)x.Weight) - diurnalNullWeight, nullWeight, nullSpawn, spawnEntries, predatorChance);
-                    if (diurnalNull != null)
-                    {
-                        nullSpawn[0].Weight -= diurnalNull.Weight;
-                    }
-                    if (nullSpawn[0].Weight != 0)
-                    {
-                        spawnEntries.Add(nullSpawn[0]);
-                    }
-                }
-                IntOverflowFix(spawnEntries, spawnEntries.Sum(x => (long)x.Weight), nightOnly);
-            }
-            if (!area.filename.StartsWith('~') && (formData.MethodNone || !BossesEverywhere(area) || area.isBoss || area.isCage))
+
+            if (!area.Filename.StartsWith('~') && (formData.MethodNone || !BossesEverywhere(area) || area.IsBoss || area.IsCage))
             {
                 WriteAreaAsset(area);
             }
@@ -2223,9 +2132,9 @@ public static partial class Randomize
         }
         if (!formData.MethodNone)
         {
-            foreach (AreaData area in subList.FindAll(area => !area.isBoss && !area.isCage && !area.isMonsterOnly && BossesEverywhere(area)))
+            foreach (AreaData area in subList.FindAll(area => !area.IsBoss && !area.IsCage && BossesEverywhere(area)))
             {
-                AreaData addedBosses = subList.Find(x => x.filename == $"~{area.filename}")!;
+                AreaData addedBosses = subList.Find(x => x.Filename == $"~{area.Filename}")!;
                 if (BossesEverywhereChance(area) == 1)
                 {
                     area.SpawnEntries = addedBosses.SpawnEntries;
@@ -2267,19 +2176,6 @@ public static partial class Randomize
                 }
                 WriteAreaAsset(area);
             }
-
-            //foreach (AreaData area in subList.FindAll(area => !area.filename.StartsWith('~') && !area.isCage && !area.isEgg && !area.isMonsterOnly))
-            //{
-            //    AreaData? monsterOnly = subList.Find(a => string.Equals(Path.GetFileNameWithoutExtension(a.filename),
-            //        Path.GetFileNameWithoutExtension(area.filename) + "_monsteronly", StringComparison.OrdinalIgnoreCase));
-            //    if (monsterOnly != null)
-            //    {
-            //        monsterOnly.SpawnEntries = area.SpawnEntries.ConvertAll(x => x.Clone());
-            //        monsterOnly.SpawnEntries.ForEach(entry => entry.SpawnList.RemoveAll(x => !Data.PalData[x.Name].IsPal));
-            //        monsterOnly.SpawnEntries.RemoveAll(x => x.SpawnList.Count == 0);
-            //        WriteAreaAsset(monsterOnly);
-            //    }
-            //}
         }
 
         MainPage.Instance.Dispatcher.Invoke(() => MainPage.Instance.progressBar.Visibility = Visibility.Collapsed);

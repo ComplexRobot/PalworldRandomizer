@@ -16,13 +16,13 @@ public static partial class FileModify
 {
     public static int AreaSortFunc(AreaData x, AreaData y)
     {
-        if (x.modified != y.modified)
-            return (y.modified? 1 : 0) - (x.modified? 1 : 0);
-        if (x.isEgg != y.isEgg)
-            return (x.isEgg? 1 : 0) - (y.isEgg? 1 : 0);
-        if (x.isCage != y.isCage)
-            return (x.isCage? 1 : 0) - (y.isCage? 1 : 0);
-        return string.Compare(x.filename, y.filename);
+        if (x.Modified != y.Modified)
+            return (y.Modified? 1 : 0) - (x.Modified? 1 : 0);
+        if (x.IsEgg != y.IsEgg)
+            return (x.IsEgg? 1 : 0) - (y.IsEgg? 1 : 0);
+        if (x.IsCage != y.IsCage)
+            return (x.IsCage? 1 : 0) - (y.IsCage? 1 : 0);
+        return string.Compare(x.Filename, y.Filename);
     }
 
     public static Dictionary<string, AreaData> ReadCageData(IEnumerable<GameStruct> cagePalDataList)
@@ -32,11 +32,11 @@ public static partial class FileModify
         {
             if (!cageList.TryGetValue($"Cage:{cagePalData.FieldName}", out AreaData? areaData))
             {
-                areaData = new(new(), cagePalData.FieldName!)
+                areaData = new([], cagePalData.FieldName!)
                 {
-                    isCage = true,
-                    minLevel = cagePalData.MinLevel,
-                    maxLevel = cagePalData.MaxLevel
+                    AreaType = AreaType.Cage,
+                    MinLevel = cagePalData.MinLevel,
+                    MaxLevel = cagePalData.MaxLevel
                 };
                 cageList.Add(areaData.SimpleName, areaData);
             }
@@ -55,13 +55,13 @@ public static partial class FileModify
     }
 
     public static AreaData ReadEggData(string filename, GameStruct spawner) =>
-        new(new(), $"PalEgg\\{filename}") {
-        isEgg = true,
-        minLevel = 1,
-        maxLevel = 1,
+        new([], $"PalEgg\\{filename}") {
+        AreaType = AreaType.Egg,
+        MinLevel = 1,
+        MaxLevel = 1,
         SpawnEntries = [.. spawner.PalEggsToSpawnEntries()],
-        eggRespawnTime = spawner.RespawnTimeMinutesObtained,
-        eggLotteryCooldown = 180
+        EggRespawnTime = spawner.RespawnTimeMinutesObtained,
+        EggLotteryCooldown = 180
     };
 
     public static void SaveCSV(List<AreaData> areaList)
@@ -193,7 +193,7 @@ public static partial class FileModify
         }
         List<AreaData> areaList = [.. areaDict.Values];
         areaList.ForEach(area => area.SpawnEntries.RemoveAll(entry => entry.SpawnList.Count == 0));
-        Data.AreaForEachIfDiff(areaList, area => area.modified = true);
+        Data.AreaForEachIfDiff(areaList, area => area.Modified = true);
         areaList.Sort(AreaSortFunc);
         return areaList;
     }
@@ -237,8 +237,8 @@ public static partial class FileModify
         Dictionary<string, GameStruct> eggSchema = [];
         float eggRespawnTime = new FormData().EggRespawnTime();
 
-        foreach (var area in areaList.Where(x => !x.isCage)) {
-            if (area.isEgg) {
+        foreach (var area in areaList.Where(x => !x.IsCage)) {
+            if (area.IsEgg) {
                 eggSchema.Add($"{area.FileNameWithoutExtension}_C",
                     new GameStruct {
                         SpawnPalEggLotteryDataArray = [.. area.SpawnEntries.Select(entry =>
@@ -302,11 +302,11 @@ public static partial class FileModify
             });
         }
 
-        IEnumerable<AreaData> cages = areaList.Where(x => x.isCage);
+        IEnumerable<AreaData> cages = areaList.Where(x => x.IsCage);
 
         if (cages.Any()) {
             Dictionary<string, Dictionary<string, GameStruct?>> cageSchema = new() { ["DT_CapturedCagePal"] = [] };
-            var originalCageList = Data.AreaDataCopy().Where(x => x.isCage);
+            var originalCageList = Data.AreaDataCopy().Where(x => x.IsCage);
 
             // Save the changed cages - unmodified cages remain vanilla
             foreach (var area in cages) {
@@ -320,7 +320,7 @@ public static partial class FileModify
                 foreach (var entry in area.SpawnEntries) {
                     cageSchema["DT_CapturedCagePal"].Add($"{++i}",
                         new GameStruct {
-                            FieldName = area.filename,
+                            FieldName = area.Filename,
                             PalId_S = entry.SpawnList[0].Name,
                             Weight_F = entry.Weight / 10.0f,
                             MinLevel = entry.SpawnList[0].MinLevel,
@@ -364,7 +364,7 @@ public static partial class FileModify
                 ConvertPalSchemaJSON(areaList, File.ReadAllText(openDialog.FileName, Encoding.UTF8));
             }
 
-            Data.AreaForEachIfDiff(areaList, x => x.modified = true);
+            Data.AreaForEachIfDiff(areaList, x => x.Modified = true);
             areaList.Sort(AreaSortFunc);
 
             Randomize.SaveBackup();
@@ -424,7 +424,7 @@ public static partial class FileModify
                     continue;
                 }
 
-                var cageDictionary = areaList.Where(x => x.isCage).ToDictionary(x => x.filename, x => x);
+                var cageDictionary = areaList.Where(x => x.IsCage).ToDictionary(x => x.Filename, x => x);
                 foreach (var (_, area) in cageDictionary) {
                     area.SpawnEntries.Clear();
                 }
