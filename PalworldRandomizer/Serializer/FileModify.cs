@@ -291,16 +291,14 @@ public static partial class FileModify
         if (palSpawnSchema.Count != 0) {
             schemas.Add(new() {
                 FilePath = $"blueprints/PalSpawns.json",
-                JsonData = JsonConvert.SerializeObject(palSpawnSchema, Formatting.Indented,
-                    new JsonSerializerSettings{ Converters = [new JsonConverterGameStruct()] }),
+                JsonData = JsonConvert.SerializeObject(palSpawnSchema, Formatting.Indented, JsonSerializerSettings),
             });
         }
 
         if (eggSchema.Count != 0) {
             schemas.Add(new() {
                 FilePath = $"blueprints/EggSpawns.json",
-                JsonData = JsonConvert.SerializeObject(eggSchema, Formatting.Indented,
-                    new JsonSerializerSettings{ Converters = [new JsonConverterGameStruct()] }),
+                JsonData = JsonConvert.SerializeObject(eggSchema, Formatting.Indented, JsonSerializerSettings),
             });
         }
 
@@ -334,8 +332,7 @@ public static partial class FileModify
 
             schemas.Add(new() {
                 FilePath = "raw/Cages.json",
-                JsonData = JsonConvert.SerializeObject(cageSchema, Formatting.Indented,
-                    new JsonSerializerSettings{ Converters = [new JsonConverterGameStruct()] }),
+                JsonData = JsonConvert.SerializeObject(cageSchema, Formatting.Indented, JsonSerializerSettings),
             });
         }
 
@@ -397,9 +394,11 @@ public static partial class FileModify
         }
     }
 
-    /// <summary>JSON serializer with a custom <see cref="GameStruct"/> converter for data tables.</summary>
-    public static JsonSerializer JsonSerializer { get; private set; } =
-        JsonSerializer.CreateDefault(new() { Converters = [new JsonConverterGameStruct()] });
+    /// <summary>JSON serializer settings with a custom converter for <see cref="GameStruct"/>s.</summary>
+    public static JsonSerializerSettings JsonSerializerSettings { get; } =
+        new() { Converters = [new JsonConverterGameStruct()] };
+    /// <summary>JSON serializer with a custom <see cref="GameStruct"/> converter.</summary>
+    public static JsonSerializer JsonSerializer { get; } = JsonSerializer.CreateDefault(JsonSerializerSettings);
 
     [GeneratedRegex("^(/Game/Pal/Blueprint/(?<folder>.+?)/(?<package>[^./]+)\\.)?(?<class>[^./]+?)_C$", RegexOptions.ExplicitCapture)]
     private static partial Regex schemaPathRegex();
