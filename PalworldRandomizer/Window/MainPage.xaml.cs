@@ -51,65 +51,65 @@ public class FormData(MainPage window)
 {
     public FormData() : this(MainPage.Instance) { }
 
-    public int RandomSeed = int.Parse(window.randomSeed.Text);
-    public bool RandomSeedLocked = window.randomSeedLocked.IsChecked == true;
-    public bool RandomizeField = window.randomizeField.IsChecked == true;
-    public bool RandomizeDungeons = window.randomizeDungeons.IsChecked == true;
-    public bool RandomizeDungeonBosses = window.randomizeDungeonBosses.IsChecked == true;
-    public bool RandomizeFieldBosses = window.randomizeFieldBosses.IsChecked == true;
-    public bool RandomizePredators = window.randomizePredators.IsChecked == true;
-    public int PredatorChance = int.Parse(window.predatorChance.Text);
-    public bool RandomizeCages = window.randomizeCages.IsChecked == true;
-    public bool RandomizeEggs = window.randomizeEggs.IsChecked == true;
-    public bool RandomizeQuests = window.randomizeQuests.IsChecked == true;
-    public bool RandomizeMimics = window.randomizeMimics.IsChecked == true;
-    public bool RandomizeAllArea = window.randomizeAllArea.IsChecked == true;
-    public bool RandomizeSingleSpawns = window.randomizeSingleSpawns.IsChecked == true;
-    public bool EqualizeAreaRarity = window.equalizeAreaRarity.IsChecked == true;
-    public bool MethodFull = window.methodFull.IsChecked == true;
-    public bool MethodCustomSize = window.methodCustomSize.IsChecked == true;
-    public int SpawnListSize = int.Parse(window.spawnListSize.Text);
-    public bool MethodLocalSwap = window.methodLocalSwap.IsChecked == true;
-    public bool MethodGlobalSwap = window.methodGlobalSwap.IsChecked == true;
-    public bool MethodNone = window.methodNone.IsChecked == true;
-    public bool VanillaPlus = window.vanillaPlus.IsChecked == true;
-    public int VanillaPlusChance = int.Parse(window.vanillaPlusChance.Text);
-    public bool VanillaMerge = window.vanillaMerge.IsChecked == true;
-    public bool VanillaPlusFilter = window.vanillaPlusFilter.IsChecked == true;
-    public bool VanillaMergeFilter = window.vanillaMergeFilter.IsChecked == true;
-    public bool GroupVanilla = window.groupVanilla.IsChecked == true;
-    public bool GroupRandom = window.groupRandom.IsChecked == true;
-    public bool FieldBossExtended = window.fieldBossExtended.IsChecked == true;
-    public int GroupMin = int.Parse(window.groupMin.Text);
-    public int GroupMax = int.Parse(window.groupMax.Text);
-    public int GroupMinBoss = int.Parse(window.groupMinBoss.Text);
-    public int GroupMaxBoss = int.Parse(window.groupMaxBoss.Text);
-    public bool MultiBoss = window.multiBoss.IsChecked == true;
-    public bool VanillaRestrict = window.vanillaRestrict.IsChecked == true;
-    public bool RarityLevelBoost = window.rarityLevelBoost.IsChecked == true;
-    public int Rarity67MinLevel = int.Parse(window.rarity67MinLevel.Text);
-    public int Rarity8UpMinLevel = int.Parse(window.rarity8UpMinLevel.Text);
-    public bool Rarity9UpBossOnly = window.rarity9UpBossOnly.IsChecked == true;
-    public bool Rarity8UpSolo = window.rarity8UpSolo.IsChecked == true;
-    public bool Rarity8UpSanity = window.rarity8UpSanity.IsChecked == true;
-    public bool MixHumanAndPal = window.mixHumanAndPal.IsChecked == true;
-    public bool SeparateAggroHumans = window.separateAggroHumans.IsChecked == true;
-    public bool BossesEverywhere = window.bossesEverywhere.IsChecked == true;
-    public int BossesEverywhereChance = int.Parse(window.bossesEverywhereChance.Text);
-    public bool BossesEverywhereDungeons = window.bossesEverywhereDungeons.IsChecked == true;
-    public int BossesEverywhereDungeonsChance = int.Parse(window.bossesEverywhereDungeonsChance.Text);
-    public bool BossEggs = window.bossEggs.IsChecked == true;
-    public int BossEggsChance = int.Parse(window.bossEggsChance.Text);
-    public bool SeparateFlying = window.separateFlying.IsChecked == true;
-    public bool PredatorConstraint = window.predatorConstraint.IsChecked == true;
-    public bool AllowCagedHumans = window.allowCagedHumans.IsChecked == true;
-    public bool StartSheepBall = window.startSheepBall.IsChecked == true;
-    public bool MinOneCountSolo = window.minOneCountSolo.IsChecked == true;
-    public bool WeightTypeUniform = window.weightTypeUniform.IsChecked == true;
-    public bool WeightTypeCustom = window.weightTypeCustom.IsChecked == true;
-    public int WeightUniformMin = int.Parse(window.weightUniformMin.Text);
-    public int WeightUniformMax = int.Parse(window.weightUniformMax.Text);
-    public int[] WeightCustom = ((Func<int[]>) (() =>
+    public int RandomSeed { get; set; } = int.Parse(window.randomSeed.Text);
+    public bool RandomSeedLocked { get; set; } = window.randomSeedLocked.IsChecked == true;
+    public bool RandomizeField { get; set; } = window.randomizeField.IsChecked == true;
+    public bool RandomizeDungeons { get; set; } = window.randomizeDungeons.IsChecked == true;
+    public bool RandomizeDungeonBosses { get; set; } = window.randomizeDungeonBosses.IsChecked == true;
+    public bool RandomizeFieldBosses { get; set; } = window.randomizeFieldBosses.IsChecked == true;
+    public bool RandomizePredators { get; set; } = window.randomizePredators.IsChecked == true;
+    public int PredatorChance { get; set; } = int.Parse(window.predatorChance.Text);
+    public bool RandomizeCages { get; set; } = window.randomizeCages.IsChecked == true;
+    public bool RandomizeEggs { get; set; } = window.randomizeEggs.IsChecked == true;
+    public bool RandomizeQuests { get; set; } = window.randomizeQuests.IsChecked == true;
+    public bool RandomizeMimics { get; set; } = window.randomizeMimics.IsChecked == true;
+    public bool RandomizeAllArea { get; set; } = window.randomizeAllArea.IsChecked == true;
+    public bool RandomizeSingleSpawns { get; set; } = window.randomizeSingleSpawns.IsChecked == true;
+    public bool EqualizeAreaRarity { get; set; } = window.equalizeAreaRarity.IsChecked == true;
+    public bool MethodFull { get; set; } = window.methodFull.IsChecked == true;
+    public bool MethodCustomSize { get; set; } = window.methodCustomSize.IsChecked == true;
+    public int SpawnListSize { get; set; } = int.Parse(window.spawnListSize.Text);
+    public bool MethodLocalSwap { get; set; } = window.methodLocalSwap.IsChecked == true;
+    public bool MethodGlobalSwap { get; set; } = window.methodGlobalSwap.IsChecked == true;
+    public bool MethodNone { get; set; } = window.methodNone.IsChecked == true;
+    public bool VanillaPlus { get; set; } = window.vanillaPlus.IsChecked == true;
+    public int VanillaPlusChance { get; set; } = int.Parse(window.vanillaPlusChance.Text);
+    public bool VanillaMerge { get; set; } = window.vanillaMerge.IsChecked == true;
+    public bool VanillaPlusFilter { get; set; } = window.vanillaPlusFilter.IsChecked == true;
+    public bool VanillaMergeFilter { get; set; } = window.vanillaMergeFilter.IsChecked == true;
+    public bool GroupVanilla { get; set; } = window.groupVanilla.IsChecked == true;
+    public bool GroupRandom { get; set; } = window.groupRandom.IsChecked == true;
+    public bool FieldBossExtended { get; set; } = window.fieldBossExtended.IsChecked == true;
+    public int GroupMin { get; set; } = int.Parse(window.groupMin.Text);
+    public int GroupMax { get; set; } = int.Parse(window.groupMax.Text);
+    public int GroupMinBoss { get; set; } = int.Parse(window.groupMinBoss.Text);
+    public int GroupMaxBoss { get; set; } = int.Parse(window.groupMaxBoss.Text);
+    public bool MultiBoss { get; set; } = window.multiBoss.IsChecked == true;
+    public bool VanillaRestrict { get; set; } = window.vanillaRestrict.IsChecked == true;
+    public bool RarityLevelBoost { get; set; } = window.rarityLevelBoost.IsChecked == true;
+    public int Rarity67MinLevel { get; set; } = int.Parse(window.rarity67MinLevel.Text);
+    public int Rarity8UpMinLevel { get; set; } = int.Parse(window.rarity8UpMinLevel.Text);
+    public bool Rarity9UpBossOnly { get; set; } = window.rarity9UpBossOnly.IsChecked == true;
+    public bool Rarity8UpSolo { get; set; } = window.rarity8UpSolo.IsChecked == true;
+    public bool Rarity8UpSanity { get; set; } = window.rarity8UpSanity.IsChecked == true;
+    public bool MixHumanAndPal { get; set; } = window.mixHumanAndPal.IsChecked == true;
+    public bool SeparateAggroHumans { get; set; } = window.separateAggroHumans.IsChecked == true;
+    public bool BossesEverywhere { get; set; } = window.bossesEverywhere.IsChecked == true;
+    public int BossesEverywhereChance { get; set; } = int.Parse(window.bossesEverywhereChance.Text);
+    public bool BossesEverywhereDungeons { get; set; } = window.bossesEverywhereDungeons.IsChecked == true;
+    public int BossesEverywhereDungeonsChance { get; set; } = int.Parse(window.bossesEverywhereDungeonsChance.Text);
+    public bool BossEggs { get; set; } = window.bossEggs.IsChecked == true;
+    public int BossEggsChance { get; set; } = int.Parse(window.bossEggsChance.Text);
+    public bool SeparateFlying { get; set; } = window.separateFlying.IsChecked == true;
+    public bool PredatorConstraint { get; set; } = window.predatorConstraint.IsChecked == true;
+    public bool AllowCagedHumans { get; set; } = window.allowCagedHumans.IsChecked == true;
+    public bool StartSheepBall { get; set; } = window.startSheepBall.IsChecked == true;
+    public bool MinOneCountSolo { get; set; } = window.minOneCountSolo.IsChecked == true;
+    public bool WeightTypeUniform { get; set; } = window.weightTypeUniform.IsChecked == true;
+    public bool WeightTypeCustom { get; set; } = window.weightTypeCustom.IsChecked == true;
+    public int WeightUniformMin { get; set; } = int.Parse(window.weightUniformMin.Text);
+    public int WeightUniformMax { get; set; } = int.Parse(window.weightUniformMax.Text);
+    public int[] WeightCustom { get; set; } = ((Func<int[]>) (() =>
     {
         int[] weightCustom = new int[21];
         weightCustom[1] = int.Parse(window.weightCustom1.Text);
@@ -125,70 +125,70 @@ public class FormData(MainPage window)
         weightCustom[20] = int.Parse(window.weightCustom20.Text);
         return weightCustom;
     }))();
-    public string WeightCustomMode = window.weightCustomMode.Text;
-    public int HumanRarity = int.Parse(window.humanRarity.Text);
-    public int HumanBossRarity = int.Parse(window.humanBossRarity.Text);
-    public int MaxCageRarity = int.Parse(window.maxCageRarity.Text);
-    public bool WeightAdjustProbability = window.weightAdjustProbability.IsChecked == true;
-    public bool WeightPrioritizeBoss = window.weightPrioritizeBoss.IsChecked == true;
-    public int HumanWeight = int.Parse(window.humanWeight.Text);
-    public int HumanWeightAggro = int.Parse(window.humanWeightAggro.Text);
-    public decimal WeightNightOnly = decimal.Parse(window.weightNightOnly.Text);
-    public string OverflowFixMode = window.overflowFixMode.Text;
-    public bool SpawnPals = window.spawnPals.IsChecked == true;
-    public bool SpawnHumans = window.spawnHumans.IsChecked == true;
-    public bool SpawnPolice = window.spawnPolice.IsChecked == true;
-    public bool SpawnGuards = window.spawnGuards.IsChecked == true;
-    public bool SpawnTraders = window.spawnTraders.IsChecked == true;
-    public bool SpawnPalTraders = window.spawnPalTraders.IsChecked == true;
-    public bool SpawnTowerBosses = window.spawnTowerBosses.IsChecked == true;
-    public bool SpawnAlphas = window.spawnAlphas.IsChecked == true;
-    public bool SpawnRaidBosses = window.spawnRaidBosses.IsChecked == true;
-    public bool SpawnPredators = window.spawnPredators.IsChecked == true;
-    public bool SpawnHumanBosses = window.spawnHumanBosses.IsChecked == true;
-    public bool SpawnSpecial = window.spawnSpecial.IsChecked == true;
-    public bool SpawnTerraria = window.spawnTerraria.IsChecked == true;
-    public bool SpawnTerrariaBosses = window.spawnTerrariaBosses.IsChecked == true;
-    public bool SpawnTowerHumans = window.spawnTowerHumans.IsChecked == true;
-    public bool SpawnPolicePals = window.spawnPolicePals.IsChecked == true;
-    public bool SpawnUselessHumans = window.spawnUselessHumans.IsChecked == true;
-    public bool SpawnVillagers = window.spawnVillagers.IsChecked == true;
-    public int FieldLevel = int.Parse(window.fieldLevel.Text);
-    public int DungeonLevel = int.Parse(window.dungeonLevel.Text);
-    public int FieldBossLevel = int.Parse(window.fieldBossLevel.Text);
-    public int DungeonBossLevel = int.Parse(window.dungeonBossLevel.Text);
-    public int PredatorLevel = int.Parse(window.predatorLevel.Text);
-    public int CageLevel = int.Parse(window.cageLevel.Text);
-    public bool EnableLevelCap = window.enableLevelCap.IsChecked == true;
-    public int LevelCap = int.Parse(window.levelCap.Text);
-    public int BossAddLevel = int.Parse(window.bossAddLevel.Text);
-    public bool ForceAddLevel = window.forceAddLevel.IsChecked == true;
-    public string LevelScaleMode = window.levelScaleMode.Text;
-    public int RandomLevelMin = int.Parse(window.randomLevelMin.Text);
-    public int RandomLevelMax = int.Parse(window.randomLevelMax.Text);
-    public int BaseCountMin = int.Parse(window.baseCountMin.Text);
-    public int BaseCountMax = int.Parse(window.baseCountMax.Text);
-    public int FieldCount = int.Parse(window.fieldCount.Text);
-    public int DungeonCount = int.Parse(window.dungeonCount.Text);
-    public int FieldBossCount = int.Parse(window.fieldBossCount.Text);
-    public int DungeonBossCount = int.Parse(window.dungeonBossCount.Text);
-    public int PredatorCount = int.Parse(window.predatorCount.Text);
-    public int CountClampMin = int.Parse(window.countClampMin.Text);
-    public int CountClampMax = int.Parse(window.countClampMax.Text);
-    public int CountClampFirstMin = int.Parse(window.countClampFirstMin.Text);
-    public int CountClampFirstMax = int.Parse(window.countClampFirstMax.Text);
-    public int CountClampBossMin = int.Parse(window.countClampBossMin.Text);
-    public int CountClampBossMax = int.Parse(window.countClampBossMax.Text);
-    public int CountClampFirstBossMin = int.Parse(window.countClampFirstBossMin.Text);
-    public int CountClampFirstBossMax = int.Parse(window.countClampFirstBossMax.Text);
-    public bool NightOnly = window.nightOnly.IsChecked == true;
-    public bool NightOnlyDungeons = window.nightOnlyDungeons.IsChecked == true;
-    public bool NightOnlyDungeonBosses = window.nightOnlyDungeonBosses.IsChecked == true;
-    public bool NightOnlyBosses = window.nightOnlyBosses.IsChecked == true;
-    public bool NightOnlyPredators = window.nightOnlyPredators.IsChecked == true;
-    public int EggRespawnHours = int.Parse(window.eggRespawnHours.Text);
-    public int EggRespawnMinutes = int.Parse(window.eggRespawnMinutes.Text);
-    public int EggRespawnSeconds = int.Parse(window.eggRespawnSeconds.Text);
+    public string WeightCustomMode { get; set; } = window.weightCustomMode.Text;
+    public int HumanRarity { get; set; } = int.Parse(window.humanRarity.Text);
+    public int HumanBossRarity { get; set; } = int.Parse(window.humanBossRarity.Text);
+    public int MaxCageRarity { get; set; } = int.Parse(window.maxCageRarity.Text);
+    public bool WeightAdjustProbability { get; set; } = window.weightAdjustProbability.IsChecked == true;
+    public bool WeightPrioritizeBoss { get; set; } = window.weightPrioritizeBoss.IsChecked == true;
+    public int HumanWeight { get; set; } = int.Parse(window.humanWeight.Text);
+    public int HumanWeightAggro { get; set; } = int.Parse(window.humanWeightAggro.Text);
+    public decimal WeightNightOnly { get; set; } = decimal.Parse(window.weightNightOnly.Text);
+    public string OverflowFixMode { get; set; } = window.overflowFixMode.Text;
+    public bool SpawnPals { get; set; } = window.spawnPals.IsChecked == true;
+    public bool SpawnHumans { get; set; } = window.spawnHumans.IsChecked == true;
+    public bool SpawnPolice { get; set; } = window.spawnPolice.IsChecked == true;
+    public bool SpawnGuards { get; set; } = window.spawnGuards.IsChecked == true;
+    public bool SpawnTraders { get; set; } = window.spawnTraders.IsChecked == true;
+    public bool SpawnPalTraders { get; set; } = window.spawnPalTraders.IsChecked == true;
+    public bool SpawnTowerBosses { get; set; } = window.spawnTowerBosses.IsChecked == true;
+    public bool SpawnAlphas { get; set; } = window.spawnAlphas.IsChecked == true;
+    public bool SpawnRaidBosses { get; set; } = window.spawnRaidBosses.IsChecked == true;
+    public bool SpawnPredators { get; set; } = window.spawnPredators.IsChecked == true;
+    public bool SpawnHumanBosses { get; set; } = window.spawnHumanBosses.IsChecked == true;
+    public bool SpawnSpecial { get; set; } = window.spawnSpecial.IsChecked == true;
+    public bool SpawnTerraria { get; set; } = window.spawnTerraria.IsChecked == true;
+    public bool SpawnTerrariaBosses { get; set; } = window.spawnTerrariaBosses.IsChecked == true;
+    public bool SpawnTowerHumans { get; set; } = window.spawnTowerHumans.IsChecked == true;
+    public bool SpawnPolicePals { get; set; } = window.spawnPolicePals.IsChecked == true;
+    public bool SpawnUselessHumans { get; set; } = window.spawnUselessHumans.IsChecked == true;
+    public bool SpawnVillagers { get; set; } = window.spawnVillagers.IsChecked == true;
+    public int FieldLevel { get; set; } = int.Parse(window.fieldLevel.Text);
+    public int DungeonLevel { get; set; } = int.Parse(window.dungeonLevel.Text);
+    public int FieldBossLevel { get; set; } = int.Parse(window.fieldBossLevel.Text);
+    public int DungeonBossLevel { get; set; } = int.Parse(window.dungeonBossLevel.Text);
+    public int PredatorLevel { get; set; } = int.Parse(window.predatorLevel.Text);
+    public int CageLevel { get; set; } = int.Parse(window.cageLevel.Text);
+    public bool EnableLevelCap { get; set; } = window.enableLevelCap.IsChecked == true;
+    public int LevelCap { get; set; } = int.Parse(window.levelCap.Text);
+    public int BossAddLevel { get; set; } = int.Parse(window.bossAddLevel.Text);
+    public bool ForceAddLevel { get; set; } = window.forceAddLevel.IsChecked == true;
+    public string LevelScaleMode { get; set; } = window.levelScaleMode.Text;
+    public int RandomLevelMin { get; set; } = int.Parse(window.randomLevelMin.Text);
+    public int RandomLevelMax { get; set; } = int.Parse(window.randomLevelMax.Text);
+    public int BaseCountMin { get; set; } = int.Parse(window.baseCountMin.Text);
+    public int BaseCountMax { get; set; } = int.Parse(window.baseCountMax.Text);
+    public int FieldCount { get; set; } = int.Parse(window.fieldCount.Text);
+    public int DungeonCount { get; set; } = int.Parse(window.dungeonCount.Text);
+    public int FieldBossCount { get; set; } = int.Parse(window.fieldBossCount.Text);
+    public int DungeonBossCount { get; set; } = int.Parse(window.dungeonBossCount.Text);
+    public int PredatorCount { get; set; } = int.Parse(window.predatorCount.Text);
+    public int CountClampMin { get; set; } = int.Parse(window.countClampMin.Text);
+    public int CountClampMax { get; set; } = int.Parse(window.countClampMax.Text);
+    public int CountClampFirstMin { get; set; } = int.Parse(window.countClampFirstMin.Text);
+    public int CountClampFirstMax { get; set; } = int.Parse(window.countClampFirstMax.Text);
+    public int CountClampBossMin { get; set; } = int.Parse(window.countClampBossMin.Text);
+    public int CountClampBossMax { get; set; } = int.Parse(window.countClampBossMax.Text);
+    public int CountClampFirstBossMin { get; set; } = int.Parse(window.countClampFirstBossMin.Text);
+    public int CountClampFirstBossMax { get; set; } = int.Parse(window.countClampFirstBossMax.Text);
+    public bool NightOnly { get; set; } = window.nightOnly.IsChecked == true;
+    public bool NightOnlyDungeons { get; set; } = window.nightOnlyDungeons.IsChecked == true;
+    public bool NightOnlyDungeonBosses { get; set; } = window.nightOnlyDungeonBosses.IsChecked == true;
+    public bool NightOnlyBosses { get; set; } = window.nightOnlyBosses.IsChecked == true;
+    public bool NightOnlyPredators { get; set; } = window.nightOnlyPredators.IsChecked == true;
+    public int EggRespawnHours { get; set; } = int.Parse(window.eggRespawnHours.Text);
+    public int EggRespawnMinutes { get; set; } = int.Parse(window.eggRespawnMinutes.Text);
+    public int EggRespawnSeconds { get; set; } = int.Parse(window.eggRespawnSeconds.Text);
 
     /// <summary>The egg respawn time in minutes.</summary>
     public float EggRespawnTime() =>
@@ -196,14 +196,14 @@ public class FormData(MainPage window)
 
     public void RestoreToWindow(MainPage window)
     {
-        foreach (FieldInfo fieldInfo in GetType().GetFields(BindingFlags.Public | BindingFlags.Instance))
+        foreach (var fieldInfo in GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
         {
-            if (fieldInfo.FieldType == typeof(bool))
+            if (fieldInfo.PropertyType == typeof(bool))
             {
                 AssignIsChecked(window.GetType().GetField(fieldInfo.Name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase)
                     ?.GetValue(window), (bool) fieldInfo.GetValue(this)!);
             }
-            else if (fieldInfo.FieldType.IsArray)
+            else if (fieldInfo.PropertyType.IsArray)
             {
                 Array array = (Array) fieldInfo.GetValue(this)!;
                 for (int i = 0; i < array.Length; ++i)
