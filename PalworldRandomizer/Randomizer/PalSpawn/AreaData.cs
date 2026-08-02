@@ -32,10 +32,16 @@ public class AreaData(List<SpawnEntry> spawnEntries, string name) {
     public bool IsBoss { get; set; } = false;
     /// <summary>The area is a dungeon spawn of any kind.</summary>
     public bool IsInDungeon { get; set; } = false;
+    /// <summary>The area is a pal spawn of any kind.</summary>
+    public bool IsPal => AreaType is AreaType.Pal;
     /// <summary>The area is a cage spawn in an enemy camp.</summary>
     public bool IsCage => AreaType is AreaType.Cage;
     /// <summary>The area is an overworld egg spawn.</summary>
     public bool IsEgg => AreaType is AreaType.Egg;
+    /// <summary>The area is a human boss mono spawn.</summary>
+    public bool IsHumanBossMono => AreaType is AreaType.HumanBossMono;
+    /// <summary>The area is a human boss squad spawn.</summary>
+    public bool IsHumanBossSquad => AreaType is AreaType.HumanBossSquad;
     /// <summary>Named "allarea" - contains spawn points all over the map.</summary>
     public bool IsAllArea { get; set; } = false;
     /// <summary>The spawn list contains only humans.</summary>
@@ -129,8 +135,15 @@ public class AreaData(List<SpawnEntry> spawnEntries, string name) {
     public ObservableCollection<SpawnEntry> SpawnEntriesView => _virtualEntries;
     public string Name => SimpleName + (Modified ? "*" : "");
     public string FileNameWithoutExtension => Path.GetFileNameWithoutExtension(Filename);
-    public string SimpleName => IsCage ? $"Cage:{Filename}"
-        : (IsEgg ? FileNameWithoutExtension["bp_palmapobjectspawner_".Length..] : FileNameWithoutExtension["BP_PalSpawner_Sheets_".Length..]);
+    /// <summary>Filename simplified for the UI.</summary>
+    public string SimpleName => AreaType switch {
+        AreaType.Cage => $"Cage:{Filename}",
+        AreaType.Egg => FileNameWithoutExtension["bp_palmapobjectspawner_".Length..],
+        AreaType.Pal => FileNameWithoutExtension["BP_PalSpawner_Sheets_".Length..],
+        AreaType.HumanBossMono => $"BossMono:{FileNameWithoutExtension["BP_MonoNPCSpawnerBossBase_".Length..]}",
+        AreaType.HumanBossSquad => $"BossSquad:{FileNameWithoutExtension["BP_SquadNPCSpawnerBossBase_".Length..]}",
+        var x => throw new Exception($"Unhandled area type '{x}'"),
+    };
     public override string ToString() => Name;
 }
 

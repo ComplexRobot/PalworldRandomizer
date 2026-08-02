@@ -523,6 +523,8 @@ public static partial class Data
             .Select(value => value is string path ? VfsFileProvider.SoftPathToHardPath(path) : null)
             .Order();
 
+        List<AreaData> palAreas = [];
+
         foreach (string? path in spawnerList)
         {
             if (path is null) {
@@ -531,11 +533,19 @@ public static partial class Data
 
             string filename = Path.GetFileName(path);
 
-            if (!filename.StartsWith("BP_PalSpawner_")) {
+            var spawnEntries = filename switch {
+                var x when x.StartsWith("BP_PalSpawner_", StringComparison.OrdinalIgnoreCase) =>
+                    new GameStruct(fileProvider, path).PalSpawnsToSpawnEntries(),
+                var x when x.StartsWith("BP_MonoNPCSpawnerBossBase_", StringComparison.OrdinalIgnoreCase) =>
+                    new GameStruct(fileProvider, path).HumanBossMonoToSpawnEntries(),
+                var x when x.StartsWith("BP_SquadNPCSpawnerBossBase_", StringComparison.OrdinalIgnoreCase) =>
+                    new GameStruct(fileProvider, path).HumanBossSquadToSpawnEntries(),
+                _ => null,
+            };
+
+            if (spawnEntries is null) {
                 continue;
             }
-
-            var spawnEntries = new GameStruct(fileProvider, path).PalSpawnsToSpawnEntries();
 
             float averageLevel = 0;
             float levelRange = 0;
@@ -590,7 +600,7 @@ public static partial class Data
 
             var area = new AreaData([.. spawnEntries], filename);
 
-            AreaData.Add(filename, area);
+            palAreas.Add(area);
 
             if (weightSum == 0) {
                 averageLevel = nightAverageLevel;
@@ -607,7 +617,14 @@ public static partial class Data
             }
 
             area.IsBoss = area.SpawnEntries[0].SpawnList[0].IsBoss;
-            area.AreaType = AreaType.Pal;
+            area.AreaType = filename switch {
+                var x when x.StartsWith("BP_PalSpawner_", StringComparison.OrdinalIgnoreCase) => AreaType.Pal,
+                var x when x.StartsWith("BP_MonoNPCSpawnerBossBase_", StringComparison.OrdinalIgnoreCase) =>
+                    AreaType.HumanBossMono,
+                var x when x.StartsWith("BP_SquadNPCSpawnerBossBase_", StringComparison.OrdinalIgnoreCase) =>
+                    AreaType.HumanBossSquad,
+                var x => throw new Exception($"Unknown spawner type: '{x}'"),
+            };
             area.IsInDungeon = filename.Contains("dungeon", StringComparison.OrdinalIgnoreCase);
             area.IsAllArea = filename.Contains("allarea", StringComparison.OrdinalIgnoreCase);
             area.IsOnlyHumans = !area.SpawnEntries
@@ -619,6 +636,10 @@ public static partial class Data
                 .Distinct()
                 .Count() == 1);
         }
+
+        palAreas.Sort(FileModify.AreaSortFunc);
+        AreaData = palAreas.ToDictionary(x => x.Filename, x => x);
+
         string firstAreaName = "BP_PalSpawner_Sheets_green_A.uasset";
         AreaData[firstAreaName].MinLevel = AreaData[firstAreaName].SpawnEntries[0].SpawnList[0].MinLevel;
         AreaData[firstAreaName].MaxLevel = AreaData[firstAreaName].SpawnEntries[0].SpawnList[0].MaxLevel;
@@ -636,14 +657,14 @@ public static partial class Data
 
         var eggSpawnerList = fileProvider.Files.Keys.Where(x => PalEggSpawnSheetsRegex().IsMatch(x)).Order();
 
-        FirstEgg = $"PalEgg\\{Path.GetFileName(eggSpawnerList.First())}";
+        FirstEgg = Path.GetFileName(eggSpawnerList.First());
         foreach (string path in eggSpawnerList)
         {
             string filename = Path.GetFileName(path);
 
             var spawnData = new GameStruct(fileProvider, path);
 
-            AreaData.Add($"PalEgg\\{filename}", FileModify.ReadEggData(filename, spawnData));
+            AreaData.Add(filename, FileModify.ReadEggData(filename, spawnData));
         }
     }
     public static List<AreaData> AreaDataCopy()

@@ -22,6 +22,15 @@ public static partial class FileModify
             return (x.IsEgg? 1 : 0) - (y.IsEgg? 1 : 0);
         if (x.IsCage != y.IsCage)
             return (x.IsCage? 1 : 0) - (y.IsCage? 1 : 0);
+
+        if (x.IsHumanBossSquad != y.IsHumanBossSquad) {
+            return (x.IsHumanBossSquad ? 1 : 0) - (y.IsHumanBossSquad ? 1 : 0);
+        }
+
+        if (x.IsHumanBossMono != y.IsHumanBossMono) {
+            return (x.IsHumanBossMono ? 1 : 0) - (y.IsHumanBossMono ? 1 : 0);
+        }
+
         return string.Compare(x.Filename, y.Filename);
     }
 
@@ -55,7 +64,7 @@ public static partial class FileModify
     }
 
     public static AreaData ReadEggData(string filename, GameStruct spawner) =>
-        new([], $"PalEgg\\{filename}") {
+        new([], filename) {
         AreaType = AreaType.Egg,
         MinLevel = 1,
         MaxLevel = 1,
