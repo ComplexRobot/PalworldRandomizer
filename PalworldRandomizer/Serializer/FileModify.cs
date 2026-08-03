@@ -243,6 +243,7 @@ public static partial class FileModify
     /// <param name="areaList">List of areas to create a PalSchema from.</param>
     public static List<PalSchemaJson> GeneratePalSchema(List<AreaData> areaList) {
         Dictionary<string, GameStruct> palSpawnSchema = [];
+        Dictionary<string, GameStruct> humanBossSchema = [];
         Dictionary<string, GameStruct> eggSchema = [];
         float eggRespawnTime = new FormData().EggRespawnTime();
 
@@ -259,7 +260,7 @@ public static partial class FileModify
                         RespawnTimeMinutesObtained = eggRespawnTime,
                     }
                 );
-            } else {
+            } else if (area.IsPal) {
                 palSpawnSchema.Add($"{area.FileNameWithoutExtension}_C",
                     new GameStruct {
                         SpawnGroupList = [.. area.SpawnEntries.Select(entry => {
@@ -275,7 +276,7 @@ public static partial class FileModify
                                 var spawnData = new GameStruct();
 
                                 if (spawn.IsPal) {
-                                    spawnData.PalId = new() { Key = spawn.Name is "RowName" ? "None" : spawn.Name };
+                                    spawnData.PalId = new() { Key = PalNameNoneCheck(spawn.Name) };
                                 } else {
                                     spawnData.NPCID = new() { Key = spawn.Name };
                                 }
@@ -292,7 +293,54 @@ public static partial class FileModify
                         })]
                     }
                 );
+            } else if (area.IsHumanBossMono) {
+                var gameStruct = new GameStruct() {
+                    HumanName = new() { Key = "None" },
+                    OtomoName = new() { Key = "None" },
+                };
+
+                if (area.SpawnEntries.Count > 0) {
+                    if (area.SpawnEntries[0].SpawnList.Count > 0) {
+                        gameStruct.HumanName.Key = PalNameNoneCheck(area.SpawnEntries[0].SpawnList[0].Name);
+                        gameStruct.Level = area.SpawnEntries[0].SpawnList[0].MinLevel;
+                    }
+
+                    if (area.SpawnEntries[0].SpawnList.Count > 1) {
+                        gameStruct.OtomoName.Key = PalNameNoneCheck(area.SpawnEntries[0].SpawnList[1].Name);
+                    }
+                }
+
+                humanBossSchema.Add($"{area.FileNameWithoutExtension}_C", gameStruct);
+            } else if (area.IsHumanBossSquad) {
+                var gameStruct = new GameStruct() {
+                    BP_NPCSpawnPointComponent = new() { NPCName = new() { Key = "None" } },
+                    BP_NPCSpawnPointComponent1 = new() { NPCName = new() { Key = "None" } },
+                    BP_NPCSpawnPointComponent2 = new() { NPCName = new() { Key = "None" } },
+                };
+
+                GameStruct[] components = [
+                    gameStruct.BP_NPCSpawnPointComponent,
+                    gameStruct.BP_NPCSpawnPointComponent1,
+                    gameStruct.BP_NPCSpawnPointComponent2,
+                ];
+
+                for (int i = 0; i < area.SpawnEntries.Count && i < 3; ++i) {
+                    if (area.SpawnEntries[i].SpawnList.Count > 0) {
+                        components[i].NPCName.Key = PalNameNoneCheck(area.SpawnEntries[i].SpawnList[0].Name);
+
+                        if (area.SpawnEntries[i].SpawnList.Count > 1) {
+                            components[i].OtomoName =
+                                new() { Key = PalNameNoneCheck(area.SpawnEntries[i].SpawnList[1].Name) };
+                        }
+
+                        components[i].OverrideLevel = area.SpawnEntries[i].SpawnList[0].MinLevel;
+                    }
+                }
+
+                humanBossSchema.Add($"{area.FileNameWithoutExtension}_C", gameStruct);
             }
+
+            static string PalNameNoneCheck(string name) => name is "RowName" ? "None" : name;
         }
 
         List<PalSchemaJson> schemas = [];
@@ -301,6 +349,13 @@ public static partial class FileModify
             schemas.Add(new() {
                 FilePath = $"blueprints/PalSpawns.json",
                 JsonData = JsonConvert.SerializeObject(palSpawnSchema, Formatting.Indented, JsonSerializerSettings),
+            });
+        }
+
+        if (humanBossSchema.Count != 0) {
+            schemas.Add(new() {
+                FilePath = $"blueprints/HumanBossSpawns.json",
+                JsonData = JsonConvert.SerializeObject(humanBossSchema, Formatting.Indented, JsonSerializerSettings),
             });
         }
 
@@ -479,6 +534,10 @@ public static partial class FileModify
                         [.. spawner.PalSpawnsToSpawnEntries()],
                     var x when x.StartsWith("bp_palmapobjectspawner_", StringComparison.OrdinalIgnoreCase) =>
                         [.. spawner.PalEggsToSpawnEntries()],
+                    var x when x.StartsWith("BP_MonoNPCSpawnerBossBase_", StringComparison.OrdinalIgnoreCase) =>
+                        [.. spawner.HumanBossMonoToSpawnEntries()],
+                    var x when x.StartsWith("BP_SquadNPCSpawnerBossBase_", StringComparison.OrdinalIgnoreCase) =>
+                        [.. spawner.HumanBossSquadToSpawnEntries()],
                     var x => throw new Exception($"Unidentified spawn type '{x}'"),
                 };
             }

@@ -155,8 +155,8 @@ public class GameStruct {
     public IEnumerable<SpawnEntry> HumanBossMonoToSpawnEntries() => [new SpawnEntry {
         SpawnList = [..
             ((IEnumerable<GameStruct>)[
-                HumanName,
-                .. (IEnumerable<GameStruct>)(PropertyExists(nameof(OtomoName), out GameStruct n) ? [n] : [])
+                .. (IEnumerable<GameStruct>)(PropertyExists(nameof(HumanName), out GameStruct n) ? [n] : []),
+                .. (IEnumerable<GameStruct>)(PropertyExists(nameof(OtomoName), out GameStruct o) ? [o] : []),
             ])
             .Where(x => x.Key is not null and not "None")
             .Select(x => new SpawnData {
@@ -170,21 +170,29 @@ public class GameStruct {
     /// <summary>
     /// Converts squad human boss spawn data to an enumerable of <see cref="SpawnEntry"/>.
     /// </summary>
-    public IEnumerable<SpawnEntry> HumanBossSquadToSpawnEntries() => [new SpawnEntry {
-        SpawnList = [..
-            ((IEnumerable<GameStruct>)[
+    public IEnumerable<SpawnEntry> HumanBossSquadToSpawnEntries() => [..
+        ((IEnumerable<GameStruct>)[
                 BP_NPCSpawnPointComponent,
                 BP_NPCSpawnPointComponent1,
                 BP_NPCSpawnPointComponent2,
             ])
-            .Where(x => x.NPCName.Key is not null and not "None")
-            .Select(x => new SpawnData {
-                Name = x.NPCName.Key!,
-                MinLevel = x.OverrideLevel,
-                MaxLevel = x.OverrideLevel,
-            })
-        ]
-    }];
+        .Select(x => 
+            new SpawnEntry {
+                SpawnList = [..
+                    ((IEnumerable<GameStruct>)[
+                        .. (IEnumerable<GameStruct>)(x.PropertyExists(nameof(NPCName), out GameStruct n) ? [n] : []),
+                        .. (IEnumerable<GameStruct>)(x.PropertyExists(nameof(OtomoName), out GameStruct o) ? [o] : []),
+                    ])
+                    .Where(y => y.Key is not null and not "None")
+                    .Select(z => new SpawnData {
+                        Name = z.Key!,
+                        MinLevel = x.OverrideLevel,
+                        MaxLevel = x.OverrideLevel,
+                    })
+                ]
+            }
+        )
+    ];
 
     /// <summary>
     /// Dictionary containing all defined properties.<br/>
