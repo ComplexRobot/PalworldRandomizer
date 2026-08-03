@@ -251,7 +251,7 @@ public class GameStruct {
     /// <summary>List of { PalId, NPCID, Level, Level_Max, Num, Num_Max }.</summary>
     public List<GameStruct> PalList {
         get => Properties["PalList"]! switch {
-            var x when x is IEnumerable<object?> e => [.. e.Select(y => (GameStruct)y!)],
+            IEnumerable<object?> e => PalList = [.. e.Select(y => (GameStruct)y!)],
             var x => (List<GameStruct>)x,
         };
         set => Properties["PalList"] = value;
@@ -259,7 +259,7 @@ public class GameStruct {
     /// <summary>List of { Weight, OnlyTime, PalList }.</summary>
     public List<GameStruct> SpawnGroupList {
         get => Properties["SpawnGroupList"]! switch {
-            var x when x is IEnumerable<object?> e => [.. e.Select(y => (GameStruct)y!)],
+            IEnumerable<object?> e => SpawnGroupList = [.. e.Select(y => (GameStruct)y!)],
             var x => (List<GameStruct>)x,
         };
         set => Properties["SpawnGroupList"] = value;
@@ -277,7 +277,7 @@ public class GameStruct {
     /// <summary>List of { PalEggData, WeightF }.</summary>
     public List<GameStruct> SpawnPalEggLotteryDataArray {
         get => Properties["SpawnPalEggLotteryDataArray"]! switch {
-            var x when x is IEnumerable<object?> e => [.. e.Select(y => (GameStruct)y!)],
+            IEnumerable<object?> e => SpawnPalEggLotteryDataArray = [.. e.Select(y => (GameStruct)y!)],
             var x => (List<GameStruct>)x,
         };
         set => Properties["SpawnPalEggLotteryDataArray"] = value;
