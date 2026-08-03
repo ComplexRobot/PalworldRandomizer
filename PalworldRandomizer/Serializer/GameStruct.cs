@@ -68,23 +68,13 @@ public class GameStruct {
                 IntProperty p => p.Value,
                 FloatProperty p => p.Value,
                 DoubleProperty p => p.Value,
-                var x when x is StructProperty p && p.Value?.StructType is FVector v =>
-                    new GameStruct(new Dictionary<string, object?> {
-                        { nameof(v.X), v.X },
-                        { nameof(v.Y), v.Y },
-                        { nameof(v.Z), v.Z }
-                    }),
-                var x when x is StructProperty p && p.Value?.StructType is FRotator r =>
-                    new GameStruct(new Dictionary<string, object?> {
-                        { nameof(r.Pitch), r.Pitch },
-                        { nameof(r.Roll), r.Roll },
-                        { nameof(r.Yaw), r.Yaw }
-                    }),
-                StructProperty p => p.Value is null ? null
-                    : new GameStruct(((AbstractPropertyHolder)p.Value.StructType).Properties),
+                StructProperty p => p.Value is null ? null : p.Value.StructType switch {
+                    AbstractPropertyHolder x => new GameStruct(x.Properties),
+                    var x => x,
+                },
                 ArrayProperty p => p.Value?.Properties.Select(PropertyTagToValue),
                 ObjectProperty p => p.Value?.Name,
-                _ => throw new Exception($"Unknown property type '{(tag is null ? "null" : tag.GetType())}'"),
+                var x => throw new Exception($"Unhandled property type '{x?.GetType().Name ?? "null"}'"),
             };
         }
     }
