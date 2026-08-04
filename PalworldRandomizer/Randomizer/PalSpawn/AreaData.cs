@@ -42,6 +42,8 @@ public class AreaData(List<SpawnEntry> spawnEntries, string name) {
     public bool IsHumanBossMono => AreaType is AreaType.HumanBossMono;
     /// <summary>The area is a human boss squad spawn.</summary>
     public bool IsHumanBossSquad => AreaType is AreaType.HumanBossSquad;
+    /// <summary>The area is a human boss spawn of any kind.</summary>
+    public bool IsHumanBoss => IsHumanBossMono || IsHumanBossSquad;
     /// <summary>Named "allarea" - contains spawn points all over the map.</summary>
     public bool IsAllArea { get; set; } = false;
     /// <summary>The spawn list contains only humans.</summary>
