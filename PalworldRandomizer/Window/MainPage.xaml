@@ -229,33 +229,70 @@
                                 </WrapPanel>
                             </WrapPanel>
                             <WrapPanel MaxWidth="300">
+                                <WrapPanel.Style>
+                                    <Style TargetType="WrapPanel">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ElementName=randomizeHumanBosses, Path=IsChecked}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding ElementName=randomizeHumanBossesPals, Path=IsChecked}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </WrapPanel.Style>
                                 <Border BorderBrush="#FF404040" Background="#FF202020" BorderThickness="1" CornerRadius="5">
                                     <WrapPanel Margin="5,0,5,0">
                                         <TextBlock Margin="0,0,5,5">Human Bosses:</TextBlock>
-                                        <TextBlock Margin="5,0,5,5">Total:</TextBlock>
-                                        <TextBox Name="humanBossMin" Width="20" VerticalAlignment="Center"
-                                                 PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">3</TextBox>
-                                        <TextBlock Margin="5,0,5,0">-</TextBlock>
-                                        <TextBox Name="humanBossMax" Width="20" VerticalAlignment="Center"
-                                                 PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">3</TextBox>
-                                        <TextBlock Margin="5,0,5,5">Bosses:</TextBlock>
-                                        <TextBox Name="humanBossBossMin" Width="20" VerticalAlignment="Center"
-                                                 PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">1</TextBox>
-                                        <TextBlock Margin="5,0,5,0">-</TextBlock>
-                                        <TextBox Name="humanBossBossMax" Width="20" VerticalAlignment="Center"
-                                                 PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">1</TextBox>
-                                        <TextBlock Margin="5,0,5,5">Pal Total:</TextBlock>
-                                        <TextBox Name="humanBossPalMin" Width="20" VerticalAlignment="Center"
-                                                 PreviewTextInput="NonNegIntSize2_PreviewTextInput" DataObject.Pasting="NonNegIntSize2_Pasting">0</TextBox>
-                                        <TextBlock Margin="5,0,5,0">-</TextBlock>
-                                        <TextBox Name="humanBossPalMax" Width="20" VerticalAlignment="Center"
-                                                 PreviewTextInput="NonNegIntSize2_PreviewTextInput" DataObject.Pasting="NonNegIntSize2_Pasting">3</TextBox>
-                                        <TextBlock Margin="5,0,5,5">Pal Bosses:</TextBlock>
-                                        <TextBox Name="humanBossPalBossMin" Width="20" VerticalAlignment="Center"
-                                                 PreviewTextInput="NonNegIntSize2_PreviewTextInput" DataObject.Pasting="NonNegIntSize2_Pasting">0</TextBox>
-                                        <TextBlock Margin="5,0,5,0">-</TextBlock>
-                                        <TextBox Name="humanBossPalBossMax" Width="20" VerticalAlignment="Center"
-                                                 PreviewTextInput="NonNegIntSize2_PreviewTextInput" DataObject.Pasting="NonNegIntSize2_Pasting">0</TextBox>
+                                        <WrapPanel>
+                                            <WrapPanel.Style>
+                                                <Style TargetType="WrapPanel">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding ElementName=randomizeHumanBosses, Path=IsChecked}" Value="True">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </WrapPanel.Style>
+                                            <TextBlock Margin="5,0,5,5">Total:</TextBlock>
+                                            <TextBox Name="humanBossMin" Width="20" VerticalAlignment="Center"
+                                                     PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">3</TextBox>
+                                            <TextBlock Margin="5,0,5,0">-</TextBlock>
+                                            <TextBox Name="humanBossMax" Width="20" VerticalAlignment="Center"
+                                                     PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">3</TextBox>
+                                            <TextBlock Margin="5,0,5,5">Bosses:</TextBlock>
+                                            <TextBox Name="humanBossBossMin" Width="20" VerticalAlignment="Center"
+                                                     PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">1</TextBox>
+                                            <TextBlock Margin="5,0,5,0">-</TextBlock>
+                                            <TextBox Name="humanBossBossMax" Width="20" VerticalAlignment="Center"
+                                                     PreviewTextInput="PositiveIntSize2_PreviewTextInput" DataObject.Pasting="PositiveIntSize2_Pasting">1</TextBox>
+                                        </WrapPanel>
+                                        <WrapPanel>
+                                            <WrapPanel.Style>
+                                                <Style TargetType="WrapPanel">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding ElementName=randomizeHumanBossesPals, Path=IsChecked}" Value="True">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </WrapPanel.Style>
+                                            <TextBlock Margin="5,0,5,5">Pal Total:</TextBlock>
+                                            <TextBox Name="humanBossPalMin" Width="20" VerticalAlignment="Center"
+                                                     PreviewTextInput="NonNegIntSize2_PreviewTextInput" DataObject.Pasting="NonNegIntSize2_Pasting">0</TextBox>
+                                            <TextBlock Margin="5,0,5,0">-</TextBlock>
+                                            <TextBox Name="humanBossPalMax" Width="20" VerticalAlignment="Center"
+                                                     PreviewTextInput="NonNegIntSize2_PreviewTextInput" DataObject.Pasting="NonNegIntSize2_Pasting">3</TextBox>
+                                            <TextBlock Margin="5,0,5,5">Pal Bosses:</TextBlock>
+                                            <TextBox Name="humanBossPalBossMin" Width="20" VerticalAlignment="Center"
+                                                     PreviewTextInput="NonNegIntSize2_PreviewTextInput" DataObject.Pasting="NonNegIntSize2_Pasting">0</TextBox>
+                                            <TextBlock Margin="5,0,5,0">-</TextBlock>
+                                            <TextBox Name="humanBossPalBossMax" Width="20" VerticalAlignment="Center"
+                                                     PreviewTextInput="NonNegIntSize2_PreviewTextInput" DataObject.Pasting="NonNegIntSize2_Pasting">0</TextBox>
+                                        </WrapPanel>
                                     </WrapPanel>
                                 </Border>
                             </WrapPanel>
