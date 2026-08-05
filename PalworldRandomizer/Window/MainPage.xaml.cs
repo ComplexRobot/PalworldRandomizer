@@ -1,7 +1,3 @@
-using Microsoft.Win32;
-using Newtonsoft.Json;
-using PalworldRandomizer.Randomizer;
-using PalworldRandomizer.Serializer;
 using System.Diagnostics;
 using System.IO;
 using System.Numerics;
@@ -13,6 +9,11 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using Microsoft.Win32;
+using Newtonsoft.Json;
+using PalworldRandomizer.Randomizer;
+using PalworldRandomizer.Serializer;
+using SevenZip.Compression.LZ;
 
 namespace PalworldRandomizer.Window;
 
@@ -65,6 +66,8 @@ public class FormData(MainPage window)
     public bool RandomizeMimics { get; set; } = window.randomizeMimics.IsChecked == true;
     public bool RandomizeAllArea { get; set; } = window.randomizeAllArea.IsChecked == true;
     public bool RandomizeSingleSpawns { get; set; } = window.randomizeSingleSpawns.IsChecked == true;
+    public bool RandomizeHumanBosses { get; set; } = window.randomizeHumanBosses.IsChecked == true;
+    public bool RandomizeHumanBossesPals { get; set; } = window.randomizeHumanBossesPals.IsChecked == true;
     public bool EqualizeAreaRarity { get; set; } = window.equalizeAreaRarity.IsChecked == true;
     public bool MethodFull { get; set; } = window.methodFull.IsChecked == true;
     public bool MethodCustomSize { get; set; } = window.methodCustomSize.IsChecked == true;
@@ -86,6 +89,14 @@ public class FormData(MainPage window)
     public int GroupMaxBoss { get; set; } = int.Parse(window.groupMaxBoss.Text);
     public bool MultiBoss { get; set; } = window.multiBoss.IsChecked == true;
     public bool VanillaRestrict { get; set; } = window.vanillaRestrict.IsChecked == true;
+    public int HumanBossMin { get; set; } = int.Parse(window.humanBossMin.Text);
+    public int HumanBossMax { get; set; } = int.Parse(window.humanBossMax.Text);
+    public int HumanBossBossMin { get; set; } = int.Parse(window.humanBossBossMin.Text);
+    public int HumanBossBossMax { get; set; } = int.Parse(window.humanBossBossMax.Text);
+    public int HumanBossPalMin { get; set; } = int.Parse(window.humanBossPalMin.Text);
+    public int HumanBossPalMax { get; set; } = int.Parse(window.humanBossPalMax.Text);
+    public int HumanBossPalBossMin { get; set; } = int.Parse(window.humanBossPalBossMin.Text);
+    public int HumanBossPalBossMax { get; set; } = int.Parse(window.humanBossPalBossMax.Text);
     public bool RarityLevelBoost { get; set; } = window.rarityLevelBoost.IsChecked == true;
     public int Rarity67MinLevel { get; set; } = int.Parse(window.rarity67MinLevel.Text);
     public int Rarity8UpMinLevel { get; set; } = int.Parse(window.rarity8UpMinLevel.Text);
@@ -325,6 +336,17 @@ public partial class MainPage : Grid
         ValidateNumericText(groupMax, int.Parse(groupMin.Text));
         ValidateNumericText(groupMinBoss, 1);
         ValidateNumericText(groupMaxBoss, int.Parse(groupMinBoss.Text));
+
+        ValidateNumericText(humanBossMin, 1, 3, 3);
+        ValidateNumericText(humanBossMax, int.Parse(humanBossMin.Text), 3, 3);
+        ValidateNumericText(humanBossBossMin, 1, null, int.Parse(humanBossMax.Text));
+        ValidateNumericText(humanBossBossMax, int.Parse(humanBossBossMin.Text), null, int.Parse(humanBossMax.Text));
+        ValidateNumericText(humanBossPalMin, 0, null, 3);
+        ValidateNumericText(humanBossPalMax, int.Parse(humanBossPalMin.Text), null, 3);
+        ValidateNumericText(humanBossPalBossMin, 0, null, int.Parse(humanBossPalMax.Text));
+        ValidateNumericText(humanBossPalBossMax, int.Parse(humanBossPalBossMin.Text), null,
+            int.Parse(humanBossPalMax.Text));
+
         ValidateNumericText(spawnListSize, 1, 50);
         ValidateNumericText(vanillaPlusChance, 1, 50, 99);
         ValidateNumericText(fieldLevel, 0, 100);

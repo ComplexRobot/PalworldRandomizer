@@ -541,7 +541,8 @@ public static partial class Randomize
                     (formData.RandomizeAllArea && area.IsAllArea
                     || formData.RandomizeSingleSpawns && area.IsSingleSpawn)
             )
-            && (!formData.StartSheepBall || area.Filename != "BP_PalSpawner_Sheets_green_A_SheepBall.uasset"));
+            && (!formData.StartSheepBall || area.Filename != "BP_PalSpawner_Sheets_green_A_SheepBall.uasset")
+            && !area.IsHumanBoss);
 
         if (!formData.MethodNone)
         {
@@ -2175,6 +2176,109 @@ public static partial class Randomize
                     IntOverflowFix(area.SpawnEntries, area.SpawnEntries.Sum(x => (long)x.Weight), NightOnly(area));
                 }
                 WriteAreaAsset(area);
+            }
+
+            if (formData.RandomizeHumanBosses) {
+                int minHumanBoss = Math.Clamp(formData.HumanBossMin, 1, 3);
+                int maxHumanBoss = Math.Clamp(formData.HumanBossMax, minHumanBoss, 3);
+                int minHumanBossBoss = Math.Clamp(formData.HumanBossBossMin, 1, maxHumanBoss);
+                int maxHumanBossBoss = Math.Clamp(formData.HumanBossBossMax, minHumanBossBoss, maxHumanBoss);
+
+                var humanNamesOriginal = humanSpawns.SelectMany(x => x.SpawnList.Select(y => y.Name)).Distinct();
+                List<string> humanNames = [.. humanNamesOriginal];
+                List<string> humanBossNames = [.. Data.HumanBossNames];
+
+                foreach (var area in areaList.Where(x => x.IsHumanBoss)) {
+                    area.SpawnEntries[0].SpawnList[0].Name = RandomHumanBossName();
+
+                    if (area.IsHumanBossSquad) {
+                        int count = random.Next(minHumanBoss, maxHumanBoss + 1);
+                        int bossCount = random.Next(minHumanBossBoss, maxHumanBossBoss + 1);
+                        (int namesAdded, int bossNamesAdded) = (1, 1);
+
+                        while (namesAdded < count) {
+                            if (bossNamesAdded <  bossCount) {
+                                area.SpawnEntries[namesAdded].SpawnList[0].Name = RandomHumanBossName();
+                                ++bossNamesAdded;
+                            } else {
+                                area.SpawnEntries[namesAdded].SpawnList[0].Name = RandomHumanName();
+                            }
+
+                            ++namesAdded;
+                        }
+
+                        area.SpawnEntries = area.SpawnEntries[..count];
+                    }
+                }
+
+                string RandomHumanName() => RandomName(humanNames, humanNamesOriginal);
+                string RandomHumanBossName() => RandomName(humanBossNames, Data.HumanBossNames);
+            }
+
+            if (formData.RandomizeHumanBossesPals) {
+                int minHumanBossPal = Math.Clamp(formData.HumanBossPalMin, 0, 3);
+                int maxHumanBossPal = Math.Clamp(formData.HumanBossPalMax, minHumanBossPal, 3);
+                int minHumanBossPalBoss = Math.Clamp(formData.HumanBossPalBossMin, 0, maxHumanBossPal);
+                int maxHumanBossPalBoss = Math.Clamp(formData.HumanBossPalBossMax, minHumanBossPalBoss,
+                    maxHumanBossPal);
+
+                var palNamesOriginal = basicSpawns.Values.SelectMany(x => x.SpawnList.Select(y => y.Name)).Distinct();
+                var palBossNamesOriginal = bossSpawns.Values.SelectMany(x => x.SpawnList.Where(y => y.IsBoss && y.IsPal)
+                    .Select(z => z.Name)).Distinct();
+                List<string> palNames = [.. palNamesOriginal];
+                List<string> palBossNames = [.. palBossNamesOriginal];
+
+                foreach (var area in areaList.Where(x => x.IsHumanBoss)) {
+                    int count = random.Next(Math.Min(area.SpawnEntries.Count, minHumanBossPal),
+                        Math.Min(area.SpawnEntries.Count, maxHumanBossPal) + 1);
+                    int bossCount = random.Next(Math.Min(area.SpawnEntries.Count, minHumanBossPalBoss),
+                        Math.Min(area.SpawnEntries.Count, maxHumanBossPalBoss) + 1);
+                    (int namesAdded, int bossNamesAdded) = (0, 0);
+
+                    foreach (var entry in area.SpawnEntries) {
+                        entry.SpawnList = entry.SpawnList[..1];
+                    }
+
+                    while (namesAdded < count) {
+                        if (bossNamesAdded <  bossCount) {
+                            area.SpawnEntries[namesAdded].SpawnList.Add(new() { Name = RandomPalBossName() });
+                            ++bossNamesAdded;
+                        } else {
+                            area.SpawnEntries[namesAdded].SpawnList.Add(new() { Name = RandomPalName() });
+                        }
+
+                        ++namesAdded;
+                    }
+                }
+
+                string RandomPalName() => RandomName(palNames, palNamesOriginal);
+                string RandomPalBossName() => RandomName(palBossNames, palBossNamesOriginal);
+            }
+
+            if (formData.RandomizeHumanBosses || formData.RandomizeHumanBossesPals) {
+                foreach (var area in areaList.Where(x => x.IsHumanBoss)) {
+                    foreach (var entry in area.SpawnEntries) {
+                        int level = entry.SpawnList[0].MinLevel;
+                        foreach (var spawnData in entry.SpawnList) {
+                            ApplyLevelRange(spawnData, LevelMultiplierEx(spawnData, false, false, false), level, 0,
+                                false);
+                        }
+                    }
+
+                    WriteAreaAsset(area);
+                }
+            }
+
+            string RandomName(List<string> names, IEnumerable<string> original) {
+                int index = random.Next(names.Count);
+                string name = names[index];
+                names.RemoveAt(index);
+
+                if (names.Count == 0) {
+                    names.AddRange(original);
+                }
+
+                return name;
             }
         }
 
