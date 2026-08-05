@@ -2222,8 +2222,9 @@ public static partial class Randomize
                 int maxHumanBossPalBoss = Math.Clamp(formData.HumanBossPalBossMax, minHumanBossPalBoss,
                     maxHumanBossPal);
 
-                var palNamesOriginal = basicSpawns.Values.SelectMany(x => x.SpawnList.Select(y => y.Name)).Distinct();
-                var palBossNamesOriginal = bossSpawns.Values.SelectMany(x => x.SpawnList.Where(y => y.IsBoss && y.IsPal)
+                var palNamesOriginal = basicSpawnsOriginal.SelectMany(x => x.SpawnList.Where(y => y.IsPal)
+                    .Select(z => z.Name)).Distinct();
+                var palBossNamesOriginal = bossSpawnsOriginal.SelectMany(x => x.SpawnList.Where(y => y.IsBoss && y.IsPal)
                     .Select(z => z.Name)).Distinct();
                 List<string> palNames = [.. palNamesOriginal];
                 List<string> palBossNames = [.. palBossNamesOriginal];
