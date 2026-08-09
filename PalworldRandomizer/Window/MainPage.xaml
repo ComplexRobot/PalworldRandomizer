@@ -481,6 +481,27 @@
                             </WrapPanel>
                             <CheckBox Name="startSheepBall" IsChecked="True" Margin="5,5,0,5">Lamball At Start</CheckBox>
                             <CheckBox Name="minOneCountSolo" IsChecked="False" Margin="5,5,0,5" Visibility="Collapsed">Min 1 Count Solo Pals</CheckBox>
+                            <TextBlock Margin="5,5,5,0" VerticalAlignment="Top">Damage Multiplier Cap:</TextBlock>
+                            <WrapPanel>
+                                <TextBlock Margin="5,5,5,0" VerticalAlignment="Top">Humans:</TextBlock>
+                                <TextBox Name="humanDamageCap" Height="20" Margin="0,5,0,0"
+                                         PreviewTextInput="NonNegDecSize5_PreviewTextInput" DataObject.Pasting="NonNegDecSize5_Pasting">1</TextBox>
+                            </WrapPanel>
+                            <WrapPanel>
+                                <TextBlock Margin="5,5,5,0" VerticalAlignment="Top">Human Bosses:</TextBlock>
+                                <TextBox Name="humanBossDamageCap" Height="20" Margin="0,5,0,0"
+                                         PreviewTextInput="NonNegDecSize5_PreviewTextInput" DataObject.Pasting="NonNegDecSize5_Pasting">2</TextBox>
+                            </WrapPanel>
+                            <WrapPanel>
+                                <TextBlock Margin="5,5,5,0" VerticalAlignment="Top">Predators:</TextBlock>
+                                <TextBox Name="predatorDamageCap" Height="20" Margin="0,5,0,0"
+                                         PreviewTextInput="NonNegDecSize5_PreviewTextInput" DataObject.Pasting="NonNegDecSize5_Pasting">2</TextBox>
+                            </WrapPanel>
+                            <WrapPanel>
+                                <TextBlock Margin="5,5,5,0" VerticalAlignment="Top">Raid Bosses:</TextBlock>
+                                <TextBox Name="raidDamageCap" Height="20" Margin="0,5,0,0"
+                                         PreviewTextInput="NonNegDecSize5_PreviewTextInput" DataObject.Pasting="NonNegDecSize5_Pasting">9999</TextBox>
+                            </WrapPanel>
                         </WrapPanel>
                     </WrapPanel>
                 </GroupBox>

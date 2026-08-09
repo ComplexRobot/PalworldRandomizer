@@ -116,6 +116,10 @@ public class FormData(MainPage window)
     public bool AllowCagedHumans { get; set; } = window.allowCagedHumans.IsChecked == true;
     public bool StartSheepBall { get; set; } = window.startSheepBall.IsChecked == true;
     public bool MinOneCountSolo { get; set; } = window.minOneCountSolo.IsChecked == true;
+    public decimal HumanDamageCap { get; set; } = decimal.Parse(window.humanDamageCap.Text);
+    public decimal HumanBossDamageCap { get; set; } = decimal.Parse(window.humanBossDamageCap.Text);
+    public decimal PredatorDamageCap { get; set; } = decimal.Parse(window.predatorDamageCap.Text);
+    public decimal RaidDamageCap { get; set; } = decimal.Parse(window.raidDamageCap.Text);
     public bool WeightTypeUniform { get; set; } = window.weightTypeUniform.IsChecked == true;
     public bool WeightTypeCustom { get; set; } = window.weightTypeCustom.IsChecked == true;
     public int WeightUniformMin { get; set; } = int.Parse(window.weightUniformMin.Text);
@@ -364,6 +368,12 @@ public partial class MainPage : Grid
         ValidateNumericText(bossesEverywhereChance, 1, 5, 100);
         ValidateNumericText(bossesEverywhereDungeonsChance, 1, 5, 100);
         ValidateNumericText(bossEggsChance, 1, 5, 100);
+
+        ValidateNumericText(humanDamageCap, 0m, 1);
+        ValidateNumericText(humanBossDamageCap, 0m, 2);
+        ValidateNumericText(predatorDamageCap, 0m, 2);
+        ValidateNumericText(raidDamageCap, 0m, 9999);
+
         ValidateNumericText(weightUniformMin, 1, 10);
         ValidateNumericText(weightUniformMax, int.Parse(weightUniformMin.Text));
         ValidateNumericText(weightCustom1, 0, 60);
