@@ -245,7 +245,9 @@ public static partial class FileModify
         Dictionary<string, GameStruct> palSpawnSchema = [];
         Dictionary<string, GameStruct> humanBossSchema = [];
         Dictionary<string, GameStruct> eggSchema = [];
-        float eggRespawnTime = new FormData().EggRespawnTime();
+
+        var formData = new FormData();
+        float eggRespawnTime = formData.EggRespawnTime();
 
         foreach (var area in areaList.Where(x => !x.IsCage)) {
             if (area.IsEgg) {
@@ -397,6 +399,53 @@ public static partial class FileModify
             schemas.Add(new() {
                 FilePath = "raw/Cages.json",
                 JsonData = JsonConvert.SerializeObject(cageSchema, Formatting.Indented, JsonSerializerSettings),
+            });
+        }
+
+        // Damage Multiplier Caps
+        decimal humanDamageCap = Math.Max(0, formData.HumanDamageCap);
+        decimal humanBossDamageCap = Math.Max(0, formData.HumanBossDamageCap);
+        decimal predatorDamageCap = Math.Max(0, formData.PredatorDamageCap);
+        decimal raidDamageCap = Math.Max(0, formData.RaidDamageCap);
+
+        Dictionary<string, decimal> humanDamageCaps = [];
+        Dictionary<string, decimal> palDamageCaps = [];
+        var usedNames = areaList.SelectMany(x => x.SpawnEntries.SelectMany(y => y.SpawnList.Select(z => z.Name)))
+            .Distinct().ToDictionary(x => x, x => Data.PalData[x]);
+
+        foreach (var (name, characterData) in usedNames) {
+            decimal cap = characterData switch {
+                { IsPal: false, IsBoss: false } => humanDamageCap,
+                { IsPal: false, IsBoss: true } => humanBossDamageCap,
+                { IsPal: true} when name.StartsWith("PREDATOR_", StringComparison.OrdinalIgnoreCase) =>
+                    predatorDamageCap,
+                { IsPal: true} when name.StartsWith("RAID_", StringComparison.OrdinalIgnoreCase) => raidDamageCap,
+                _ => decimal.MaxValue,
+            };
+
+            if ((decimal)characterData.EnemyInflictDamageRate > cap) {
+                (characterData.IsPal switch { true => palDamageCaps, false => humanDamageCaps }).Add(name, cap);
+            }
+        }
+
+        Dictionary<string, Dictionary<string, Dictionary<string, decimal>>> damageCapSchemas = [];
+
+        void AddDamageCaps(string dataTableName, Dictionary<string, decimal> damageCaps) {
+            if (damageCaps.Count > 0) {
+                damageCapSchemas.Add(dataTableName, damageCaps.ToDictionary(
+                    x => x.Key,
+                    x => new Dictionary<string, decimal> { { "EnemyInflictDamageRate", x.Value } }
+                ));
+            }
+        }
+
+        AddDamageCaps("DT_PalHumanParameter", humanDamageCaps);
+        AddDamageCaps("DT_PalMonsterParameter", palDamageCaps);
+
+        if (damageCapSchemas.Count > 0) {
+            schemas.Add(new() {
+                FilePath = "raw/DamageMultiplierCaps.json",
+                JsonData = JsonConvert.SerializeObject(damageCapSchemas, Formatting.Indented),
             });
         }
 
