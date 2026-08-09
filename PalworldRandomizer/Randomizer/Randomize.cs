@@ -430,16 +430,7 @@ public static partial class Randomize
         int countClampFirstBossMax = Math.Max(Math.Max(1, countClampFirstBossMin), formData.CountClampFirstBossMax);
         float eggRespawnTime = formData.EggRespawnTime();
         int totalSpeciesCount = 0;
-        string basePath = UAssetData.AppDataPath(@"Create-Pak");
-        string outputPath = basePath + @"\Pal\Content\Pal\Blueprint\Spawner\SheetsVariant";
-        string eggOutputPath = basePath + @"\Pal\Content\Pal\Blueprint\MapObject\Spawner";
-        if (Directory.Exists(basePath))
-        {
-            Directory.GetFiles(basePath).ForAll(File.Delete);
-            Directory.GetDirectories(basePath).ForAll(x => Directory.Delete(x, true));
-        }
-        Directory.CreateDirectory(outputPath);
-        Directory.CreateDirectory(eggOutputPath);
+
         Dictionary<string, SpawnEntry> swapMap = [];
         List<SpawnEntry> basicSpawnsOriginal = [.. basicSpawns.Values, .. humanSpawns];
         List<SpawnEntry> bossSpawnsOriginal = [.. bossSpawns.Values];
