@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version>2.16.4</Version>
+    <Version>2.16.5</Version>
     <TargetFramework>net10.0-windows</TargetFramework>
     <UseWPF>True</UseWPF>
     <StartupObject>PalworldRandomizer.App</StartupObject>
