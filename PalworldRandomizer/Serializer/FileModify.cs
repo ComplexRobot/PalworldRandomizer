@@ -12,16 +12,21 @@ using PalworldRandomizer.Window;
 
 namespace PalworldRandomizer.Serializer;
 
-public static partial class FileModify
-{
-    public static int AreaSortFunc(AreaData x, AreaData y)
-    {
-        if (x.Modified != y.Modified)
-            return (y.Modified? 1 : 0) - (x.Modified? 1 : 0);
-        if (x.IsEgg != y.IsEgg)
-            return (x.IsEgg? 1 : 0) - (y.IsEgg? 1 : 0);
-        if (x.IsCage != y.IsCage)
-            return (x.IsCage? 1 : 0) - (y.IsCage? 1 : 0);
+/// <summary>Imports and exports spawn areas in CSV and PalSchema formats.</summary>
+public static partial class FileModify {
+    /// <summary>Compares areas by modification state, spawn type and asset filename.</summary>
+    public static int AreaSortFunc(AreaData x, AreaData y) {
+        if (x.Modified != y.Modified) {
+            return (y.Modified ? 1 : 0) - (x.Modified ? 1 : 0);
+        }
+
+        if (x.IsEgg != y.IsEgg) {
+            return (x.IsEgg ? 1 : 0) - (y.IsEgg ? 1 : 0);
+        }
+
+        if (x.IsCage != y.IsCage) {
+            return (x.IsCage ? 1 : 0) - (y.IsCage ? 1 : 0);
+        }
 
         if (x.IsHumanBossSquad != y.IsHumanBossSquad) {
             return (x.IsHumanBossSquad ? 1 : 0) - (y.IsHumanBossSquad ? 1 : 0);
@@ -34,172 +39,190 @@ public static partial class FileModify
         return string.Compare(x.Filename, y.Filename);
     }
 
-    public static Dictionary<string, AreaData> ReadCageData(IEnumerable<GameStruct> cagePalDataList)
-    {
+    /// <summary>Builds editable cage areas from the game cage table entries.</summary>
+    public static Dictionary<string, AreaData> ReadCageData(IEnumerable<GameStruct> cagePalDataList) {
         Dictionary<string, AreaData> cageList = [];
-        foreach (var cagePalData in cagePalDataList)
-        {
-            if (!cageList.TryGetValue($"Cage:{cagePalData.FieldName}", out AreaData? areaData))
-            {
-                areaData = new([], cagePalData.FieldName!)
-                {
+        foreach (var cagePalData in cagePalDataList) {
+            if (!cageList.TryGetValue($"Cage:{cagePalData.FieldName}", out AreaData? areaData)) {
+                areaData = new([], cagePalData.FieldName!) {
                     AreaType = AreaType.Cage,
                     MinLevel = cagePalData.MinLevel,
-                    MaxLevel = cagePalData.MaxLevel
+                    MaxLevel = cagePalData.MaxLevel,
                 };
                 cageList.Add(areaData.SimpleName, areaData);
             }
-            areaData.SpawnEntries.Add(new()
-            {
-                Weight = Convert.ToInt32(cagePalData.Weight_F * 10),
-                SpawnList = [new()
-                {
-                    Name = cagePalData.PalId_S,
-                    MinLevel = cagePalData.MinLevel,
-                    MaxLevel = cagePalData.MaxLevel
-                }]
-            });
+
+            areaData.SpawnEntries.Add(
+                new() {
+                    Weight = Convert.ToInt32(cagePalData.Weight_F * 10),
+                    SpawnList =
+                    [
+                        new()
+                        {
+                            Name = cagePalData.PalId_S,
+                            MinLevel = cagePalData.MinLevel,
+                            MaxLevel = cagePalData.MaxLevel,
+                        },
+                    ],
+                }
+            );
         }
+
         return cageList;
     }
 
+    /// <summary>Builds an editable egg area from its game blueprint data.</summary>
     public static AreaData ReadEggData(string filename, GameStruct spawner) =>
         new([], filename) {
-        AreaType = AreaType.Egg,
-        MinLevel = 1,
-        MaxLevel = 1,
-        SpawnEntries = [.. spawner.PalEggsToSpawnEntries()],
-        EggRespawnTime = spawner.RespawnTimeMinutesObtained,
-        EggLotteryCooldown = 180
-    };
+            AreaType = AreaType.Egg,
+            MinLevel = 1,
+            MaxLevel = 1,
+            SpawnEntries = [.. spawner.PalEggsToSpawnEntries()],
+            EggRespawnTime = spawner.RespawnTimeMinutesObtained,
+            EggLotteryCooldown = 180,
+        };
 
-    public static void SaveCSV(List<AreaData> areaList)
-    {
+    /// <summary>Prompts for a destination and writes the supplied spawn areas as CSV.</summary>
+    public static void SaveCSV(List<AreaData> areaList) {
         SaveFileDialog saveDialog = new()
         {
             FileName = $"PalworldSpawns-{DateTime.Now:MM-dd-yy-HH-mm-ss}",
             DefaultExt = ".csv",
-            Filter = "Comma-separated values|*.csv|All files|*.*"
+            Filter = "Comma-separated values|*.csv|All files|*.*",
         };
-        if (saveDialog.ShowDialog() == true)
-        {
+        if (saveDialog.ShowDialog() == true) {
             File.WriteAllText(saveDialog.FileName, GenerateCSV(areaList), Encoding.UTF8);
         }
     }
 
-    public static string GenerateCSV(List<AreaData> areaList)
-    {
+    /// <summary>Formats spawn areas and their character entries as CSV text.</summary>
+    public static string GenerateCSV(List<AreaData> areaList) {
         StringBuilder stringBuilder = new();
-        stringBuilder.AppendLine("Area Name,Group Index,Weight,Night Only,Character Name,Is Boss,Min. Level,Max. Level,Min. Count,Max. Count");
-        foreach (AreaData area in areaList)
-        {
+        stringBuilder.AppendLine(
+            "Area Name,Group Index,Weight,Night Only,Character Name,Is Boss,Min. Level,Max. Level,Min. Count,Max. Count"
+        );
+        foreach (AreaData area in areaList) {
             string areaName = area.SimpleName;
-            if (area.SpawnEntries.Count == 0)
-            {
+            if (area.SpawnEntries.Count == 0) {
                 stringBuilder.Append(areaName);
                 stringBuilder.Append(',', 9);
                 stringBuilder.AppendLine();
                 continue;
             }
-            for (int i = 0; i < area.SpawnEntries.Count; ++i)
-            {
+
+            for (int i = 0; i < area.SpawnEntries.Count; ++i) {
                 SpawnEntry entry = area.SpawnEntries[i];
-                for (int j = 0; j < entry.SpawnList.Count; ++j)
-                {
+                for (int j = 0; j < entry.SpawnList.Count; ++j) {
                     SpawnData spawnData = entry.SpawnList[j];
-                    stringBuilder.AppendJoin(',', [areaName, i, (j == 0 ? entry.Weight : ""), (j == 0 ? entry.NightOnly : ""), spawnData.SimpleName, spawnData.IsBoss,
-                            spawnData.MinLevel, spawnData.MaxLevel, spawnData.MinCount, spawnData.MaxCount]);
+                    stringBuilder.AppendJoin(
+                        ',',
+                        [
+                            areaName,
+                            i,
+                            (j == 0 ? entry.Weight : ""),
+                            (j == 0 ? entry.NightOnly : ""),
+                            spawnData.SimpleName,
+                            spawnData.IsBoss,
+                            spawnData.MinLevel,
+                            spawnData.MaxLevel,
+                            spawnData.MinCount,
+                            spawnData.MaxCount,
+                        ]
+                    );
                     stringBuilder.AppendLine();
                 }
             }
         }
+
         return stringBuilder.ToString();
     }
 
-    public static string? LoadCSV()
-    {
+    /// <summary>Prompts for a CSV file and replaces the editor areas with its contents.</summary>
+    public static string? LoadCSV() {
         OpenFileDialog openDialog = new()
         {
             DefaultExt = ".csv",
-            Filter = "Comma-separated values|*.csv|All files|*.*"
+            Filter = "Comma-separated values|*.csv|All files|*.*",
         };
-        if (openDialog.ShowDialog() == true && openDialog.FileName != string.Empty)
-        {
-            try
-            {
+        if (openDialog.ShowDialog() == true && openDialog.FileName != string.Empty) {
+            try {
                 Randomize.SaveBackup();
                 PalSpawnPage.Instance.areaList.ItemsSource = ConvertCSV(openDialog.FileName);
                 Randomize.AreaListChanged = true;
-            }
-            catch (Exception e)
-            {
-                if (e.Source == "FileIO")
-                {
+            } catch (Exception e) {
+                if (e.Source == "FileIO") {
                     ExceptionDispatchInfo.Capture(e).Throw();
                 }
+
                 return e.Message;
             }
-        }
-        else
+        } else {
             return "Cancel";
+        }
+
         return null;
     }
 
-    public static List<AreaData> ConvertCSV(string filename)
-    {
+    /// <summary>Loads a CSV file and applies its spawn entries to copies of the vanilla areas.</summary>
+    public static List<AreaData> ConvertCSV(string filename) {
         string[] fileLines = [];
-        try
-        {
+        try {
             fileLines = File.ReadAllLines(filename, Encoding.UTF8)[1..];
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.Source = "FileIO";
             ExceptionDispatchInfo.Capture(e).Throw();
         }
-        List<string[]> csvData = [.. fileLines.Select(x => x.Split(',').Select(x => x.Trim()).ToArray())/*.Where(x => x.Length > 1)*/];
-        Dictionary<string, AreaData> areaDict = Data.AreaDataCopy().ToDictionary(x => x.SimpleName, x => x);
+
+        List<string[]> csvData =
+        [
+            .. fileLines.Select(x => x.Split(',').Select(x => x.Trim()).ToArray()), /*.Where(x => x.Length > 1)*/
+        ];
+        var areaDict = Data.AreaDataCopy().ToDictionary(x => x.SimpleName, x => x);
         HashSet<string> addedNames = [];
-        foreach (string[] list in csvData)
-        {
+        foreach (string[] list in csvData) {
             AreaData area = areaDict[list[0]];
-            if (addedNames.Add(list[0]))
-            {
+            if (addedNames.Add(list[0])) {
                 area.SpawnEntries = [];
             }
-            if (list[1].Length == 0)
+
+            if (list[1].Length == 0) {
                 continue;
+            }
+
             int spawnIndex = int.Parse(list[1]);
-            while (area.SpawnEntries.Count < spawnIndex + 1)
-            {
+            while (area.SpawnEntries.Count < spawnIndex + 1) {
                 area.SpawnEntries.Add(new());
             }
+
             SpawnEntry spawnEntry = area.SpawnEntries[spawnIndex];
-            if (list[2].Length != 0)
+            if (list[2].Length != 0) {
                 spawnEntry.Weight = int.Parse(list[2]);
-            if (list[3].Length != 0)
+            }
+
+            if (list[3].Length != 0) {
                 spawnEntry.NightOnly = bool.Parse(list[3]);
-            if (!Data.SimpleName.TryGetValue(list[4], out string? palName))
-            {
-                if (Data.PalData.ContainsKey(list[4]))
-                {
+            }
+
+            if (!Data.SimpleName.TryGetValue(list[4], out string? palName)) {
+                if (Data.PalData.ContainsKey(list[4])) {
                     palName = list[4];
-                }
-                else
-                {
+                } else {
                     throw new Exception($"Unknown Character Name: \"{list[4]}\"");
                 }
             }
-            spawnEntry.SpawnList.Add(new()
-            {
-                Name = palName,
-                IsBoss = bool.Parse(list[5]),
-                MinLevel = (int) uint.Parse(list[6]),
-                MaxLevel = (int) uint.Parse(list[7]),
-                MinCount = (int) uint.Parse(list[8]),
-                MaxCount = (int) uint.Parse(list[9])
-            });
+
+            spawnEntry.SpawnList.Add(
+                new() {
+                    Name = palName,
+                    IsBoss = bool.Parse(list[5]),
+                    MinLevel = (int)uint.Parse(list[6]),
+                    MaxLevel = (int)uint.Parse(list[7]),
+                    MinCount = (int)uint.Parse(list[8]),
+                    MaxCount = (int)uint.Parse(list[9]),
+                }
+            );
         }
+
         List<AreaData> areaList = [.. areaDict.Values];
         areaList.ForEach(area => area.SpawnEntries.RemoveAll(entry => entry.SpawnList.Count == 0));
         Data.AreaForEachIfDiff(areaList, area => area.Modified = true);
@@ -207,29 +230,30 @@ public static partial class FileModify
         return areaList;
     }
 
-    public class PalSchemaJson
-    {
+    /// <summary>A PalSchema document paired with its destination path inside the export archive.</summary>
+    public class PalSchemaJson {
+        /// <summary>The destination path of the PalSchema document.</summary>
         public string FilePath { get; set; } = string.Empty;
+
+        /// <summary>The serialized PalSchema document content.</summary>
         public string JsonData { get; set; } = string.Empty;
     }
 
-    public static void SavePalSchema(List<AreaData> areaList)
-    {
+    /// <summary>Prompts for a destination and exports modified areas in PalSchema format.</summary>
+    public static void SavePalSchema(List<AreaData> areaList) {
         SaveFileDialog saveDialog = new()
         {
             FileName = $"PalworldSpawns-PalSchema-{DateTime.Now:MM-dd-yy-HH-mm-ss}",
             DefaultExt = ".zip",
-            Filter = "ZIP Archive|*.zip"
+            Filter = "ZIP Archive|*.zip",
         };
 
-        if (saveDialog.ShowDialog() == true)
-        {
+        if (saveDialog.ShowDialog() == true) {
             List<PalSchemaJson> schemaList = GeneratePalSchema(areaList);
 
             using FileStream fileStream = File.Create(saveDialog.FileName);
             using ZipArchive zipArchive = new(fileStream, ZipArchiveMode.Create);
-            foreach (PalSchemaJson schema in schemaList)
-            {
+            foreach (PalSchemaJson schema in schemaList) {
                 using Stream entryStream = zipArchive.CreateEntry($"CustomPalSpawns/" + schema.FilePath).Open();
                 using StreamWriter streamWriter = new(entryStream, Encoding.UTF8);
                 streamWriter.Write(schema.JsonData);
@@ -251,52 +275,67 @@ public static partial class FileModify
 
         foreach (var area in areaList.Where(x => !x.IsCage)) {
             if (area.IsEgg) {
-                eggSchema.Add($"{area.FileNameWithoutExtension}_C",
+                eggSchema.Add(
+                    $"{area.FileNameWithoutExtension}_C",
                     new GameStruct {
-                        SpawnPalEggLotteryDataArray = [.. area.SpawnEntries.Select(entry =>
-                            new GameStruct {
+                        SpawnPalEggLotteryDataArray =
+                        [
+                            .. area.SpawnEntries.Select(entry => new GameStruct
+                            {
                                 PalEggData = new() { PalMonsterId = new() { Key = entry.SpawnList[0].Name } },
                                 Weight_F = entry.Weight / 40.0f,
-                            }
-                        )],
+                            }),
+                        ],
                         RespawnTimeMinutesObtained = eggRespawnTime,
                     }
                 );
             } else if (area.IsPal) {
-                palSpawnSchema.Add($"{area.FileNameWithoutExtension}_C",
+                palSpawnSchema.Add(
+                    $"{area.FileNameWithoutExtension}_C",
                     new GameStruct {
-                        SpawnGroupList = [.. area.SpawnEntries.Select(entry => {
-                            var spawnEntry = new GameStruct {
-                                Weight = entry.Weight,
-                            };
+                        SpawnGroupList =
+                        [
+                            .. area.SpawnEntries.Select(entry =>
+                            {
+                                var spawnEntry = new GameStruct { Weight = entry.Weight };
 
-                            if (entry.NightOnly) {
-                                spawnEntry.OnlyTime = "Night";
-                            }
-
-                            spawnEntry.PalList = [.. entry.SpawnList.Select(spawn => {
-                                var spawnData = new GameStruct();
-
-                                if (spawn.IsPal) {
-                                    spawnData.PalId = new() { Key = PalNameNoneCheck(spawn.Name) };
-                                } else {
-                                    spawnData.NPCID = new() { Key = spawn.Name };
+                                if (entry.NightOnly)
+                                {
+                                    spawnEntry.OnlyTime = "Night";
                                 }
 
-                                spawnData.Level = spawn.MinLevel;
-                                spawnData.Level_Max = spawn.MaxLevel;
-                                spawnData.Num = spawn.MinCount;
-                                spawnData.Num_Max = spawn.MaxCount;
+                                spawnEntry.PalList =
+                                [
+                                    .. entry.SpawnList.Select(spawn =>
+                                    {
+                                        var spawnData = new GameStruct();
 
-                                return spawnData;
-                            })];
+                                        if (spawn.IsPal)
+                                        {
+                                            spawnData.PalId = new() { Key = PalNameNoneCheck(spawn.Name) };
+                                        }
+                                        else
+                                        {
+                                            spawnData.NPCID = new() { Key = spawn.Name };
+                                        }
 
-                            return spawnEntry;
-                        })]
+                                        spawnData.Level = spawn.MinLevel;
+                                        spawnData.Level_Max = spawn.MaxLevel;
+                                        spawnData.Num = spawn.MinCount;
+                                        spawnData.Num_Max = spawn.MaxCount;
+
+                                        return spawnData;
+                                    }),
+                                ];
+
+                                return spawnEntry;
+                            }),
+                        ],
                     }
                 );
             } else if (area.IsHumanBossMono) {
-                var gameStruct = new GameStruct() {
+                var gameStruct = new GameStruct()
+                {
                     HumanName = new() { Key = "None" },
                     OtomoName = new() { Key = "None" },
                 };
@@ -314,13 +353,15 @@ public static partial class FileModify
 
                 humanBossSchema.Add($"{area.FileNameWithoutExtension}_C", gameStruct);
             } else if (area.IsHumanBossSquad) {
-                var gameStruct = new GameStruct() {
+                var gameStruct = new GameStruct()
+                {
                     BP_NPCSpawnPointComponent = new() { NPCName = new() { Key = "None" } },
                     BP_NPCSpawnPointComponent1 = new() { NPCName = new() { Key = "None" } },
                     BP_NPCSpawnPointComponent2 = new() { NPCName = new() { Key = "None" } },
                 };
 
-                GameStruct[] components = [
+                GameStruct[] components =
+                [
                     gameStruct.BP_NPCSpawnPointComponent,
                     gameStruct.BP_NPCSpawnPointComponent1,
                     gameStruct.BP_NPCSpawnPointComponent2,
@@ -331,8 +372,9 @@ public static partial class FileModify
                         components[i].NPCName.Key = PalNameNoneCheck(area.SpawnEntries[i].SpawnList[0].Name);
 
                         if (area.SpawnEntries[i].SpawnList.Count > 1) {
-                            components[i].OtomoName =
-                                new() { Key = PalNameNoneCheck(area.SpawnEntries[i].SpawnList[1].Name) };
+                            components[i].OtomoName = new() {
+                                Key = PalNameNoneCheck(area.SpawnEntries[i].SpawnList[1].Name),
+                            };
                         }
 
                         components[i].OverrideLevel = area.SpawnEntries[i].SpawnList[0].MinLevel;
@@ -348,24 +390,38 @@ public static partial class FileModify
         List<PalSchemaJson> schemas = [];
 
         if (palSpawnSchema.Count != 0) {
-            schemas.Add(new() {
-                FilePath = $"blueprints/PalSpawns.json",
-                JsonData = JsonConvert.SerializeObject(palSpawnSchema, Formatting.Indented, JsonSerializerSettings),
-            });
+            schemas.Add(
+                new() {
+                    FilePath = $"blueprints/PalSpawns.json",
+                    JsonData = JsonConvert.SerializeObject(
+                        palSpawnSchema,
+                        Formatting.Indented,
+                        JsonSerializerSettings
+                    ),
+                }
+            );
         }
 
         if (humanBossSchema.Count != 0) {
-            schemas.Add(new() {
-                FilePath = $"blueprints/HumanBossSpawns.json",
-                JsonData = JsonConvert.SerializeObject(humanBossSchema, Formatting.Indented, JsonSerializerSettings),
-            });
+            schemas.Add(
+                new() {
+                    FilePath = $"blueprints/HumanBossSpawns.json",
+                    JsonData = JsonConvert.SerializeObject(
+                        humanBossSchema,
+                        Formatting.Indented,
+                        JsonSerializerSettings
+                    ),
+                }
+            );
         }
 
         if (eggSchema.Count != 0) {
-            schemas.Add(new() {
-                FilePath = $"blueprints/EggSpawns.json",
-                JsonData = JsonConvert.SerializeObject(eggSchema, Formatting.Indented, JsonSerializerSettings),
-            });
+            schemas.Add(
+                new() {
+                    FilePath = $"blueprints/EggSpawns.json",
+                    JsonData = JsonConvert.SerializeObject(eggSchema, Formatting.Indented, JsonSerializerSettings),
+                }
+            );
         }
 
         IEnumerable<AreaData> cages = areaList.Where(x => x.IsCage);
@@ -384,22 +440,26 @@ public static partial class FileModify
             int i = 0;
             foreach (var area in originalCageList) {
                 foreach (var entry in area.SpawnEntries) {
-                    cageSchema["DT_CapturedCagePal"].Add($"{++i}",
-                        new GameStruct {
-                            FieldName = area.Filename,
-                            PalId_S = entry.SpawnList[0].Name,
-                            Weight_F = entry.Weight / 10.0f,
-                            MinLevel = entry.SpawnList[0].MinLevel,
-                            MaxLevel = entry.SpawnList[0].MaxLevel,
-                        }
-                    );
+                    cageSchema["DT_CapturedCagePal"]
+                        .Add(
+                            $"{++i}",
+                            new GameStruct {
+                                FieldName = area.Filename,
+                                PalId_S = entry.SpawnList[0].Name,
+                                Weight_F = entry.Weight / 10.0f,
+                                MinLevel = entry.SpawnList[0].MinLevel,
+                                MaxLevel = entry.SpawnList[0].MaxLevel,
+                            }
+                        );
                 }
             }
 
-            schemas.Add(new() {
-                FilePath = "raw/Cages.json",
-                JsonData = JsonConvert.SerializeObject(cageSchema, Formatting.Indented, JsonSerializerSettings),
-            });
+            schemas.Add(
+                new() {
+                    FilePath = "raw/Cages.json",
+                    JsonData = JsonConvert.SerializeObject(cageSchema, Formatting.Indented, JsonSerializerSettings),
+                }
+            );
         }
 
         // Damage Multiplier Caps
@@ -410,21 +470,29 @@ public static partial class FileModify
 
         Dictionary<string, decimal> humanDamageCaps = [];
         Dictionary<string, decimal> palDamageCaps = [];
-        var usedNames = areaList.SelectMany(x => x.SpawnEntries.SelectMany(y => y.SpawnList.Select(z => z.Name)))
-            .Distinct().ToDictionary(x => x, x => Data.PalData[x]);
+        var usedNames = areaList
+            .SelectMany(x => x.SpawnEntries.SelectMany(y => y.SpawnList.Select(z => z.Name)))
+            .Distinct()
+            .ToDictionary(x => x, x => Data.PalData[x]);
 
         foreach (var (name, characterData) in usedNames) {
-            decimal cap = characterData switch {
+            decimal cap = characterData switch
+            {
                 { IsPal: false, IsBoss: false } => humanDamageCap,
                 { IsPal: false, IsBoss: true } => humanBossDamageCap,
-                { IsPal: true} when name.StartsWith("PREDATOR_", StringComparison.OrdinalIgnoreCase) =>
+                { IsPal: true } when name.StartsWith("PREDATOR_", StringComparison.OrdinalIgnoreCase) =>
                     predatorDamageCap,
-                { IsPal: true} when name.StartsWith("RAID_", StringComparison.OrdinalIgnoreCase) => raidDamageCap,
+                { IsPal: true } when name.StartsWith("RAID_", StringComparison.OrdinalIgnoreCase) => raidDamageCap,
                 _ => decimal.MaxValue,
             };
 
             if ((decimal)characterData.EnemyInflictDamageRate > cap) {
-                (characterData.IsPal switch { true => palDamageCaps, false => humanDamageCaps }).Add(name, cap);
+                (
+                    characterData.IsPal switch {
+                        true => palDamageCaps,
+                        false => humanDamageCaps,
+                    }
+                ).Add(name, cap);
             }
         }
 
@@ -432,10 +500,13 @@ public static partial class FileModify
 
         void AddDamageCaps(string dataTableName, Dictionary<string, decimal> damageCaps) {
             if (damageCaps.Count > 0) {
-                damageCapSchemas.Add(dataTableName, damageCaps.ToDictionary(
-                    x => x.Key,
-                    x => new Dictionary<string, decimal> { { "EnemyInflictDamageRate", x.Value } }
-                ));
+                damageCapSchemas.Add(
+                    dataTableName,
+                    damageCaps.ToDictionary(
+                        x => x.Key,
+                        x => new Dictionary<string, decimal> { { "EnemyInflictDamageRate", x.Value } }
+                    )
+                );
             }
         }
 
@@ -443,37 +514,35 @@ public static partial class FileModify
         AddDamageCaps("DT_PalMonsterParameter", palDamageCaps);
 
         if (damageCapSchemas.Count > 0) {
-            schemas.Add(new() {
-                FilePath = "raw/DamageMultiplierCaps.json",
-                JsonData = JsonConvert.SerializeObject(damageCapSchemas, Formatting.Indented),
-            });
+            schemas.Add(
+                new() {
+                    FilePath = "raw/DamageMultiplierCaps.json",
+                    JsonData = JsonConvert.SerializeObject(damageCapSchemas, Formatting.Indented),
+                }
+            );
         }
 
         return schemas;
     }
-    public static string? LoadPalSchema()
-    {
+
+    /// <summary>Prompts for a PalSchema archive and loads it into the spawn editor.</summary>
+    public static string? LoadPalSchema() {
         OpenFileDialog openDialog = new()
         {
             DefaultExt = ".zip",
-            Filter = "Zip Archive|*.zip|JSON file|*.json|All files|*.*"
+            Filter = "Zip Archive|*.zip|JSON file|*.json|All files|*.*",
         };
 
-        if (openDialog.ShowDialog() != true || openDialog.FileName.Length == 0)
-        {
+        if (openDialog.ShowDialog() != true || openDialog.FileName.Length == 0) {
             return "Cancel";
         }
 
-        try
-        {
+        try {
             List<AreaData> areaList = Data.AreaDataCopy();
 
-            if (string.Equals(Path.GetExtension(openDialog.FileName), ".zip", StringComparison.OrdinalIgnoreCase))
-            {
+            if (string.Equals(Path.GetExtension(openDialog.FileName), ".zip", StringComparison.OrdinalIgnoreCase)) {
                 ConvertPalSchemaZIP(areaList, openDialog.FileName);
-            }
-            else
-            {
+            } else {
                 ConvertPalSchemaJSON(areaList, File.ReadAllText(openDialog.FileName, Encoding.UTF8));
             }
 
@@ -483,22 +552,18 @@ public static partial class FileModify
             Randomize.SaveBackup();
             PalSpawnPage.Instance.areaList.ItemsSource = areaList;
             Randomize.AreaListChanged = true;
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             return e.Message;
         }
 
         return null;
     }
 
-    public static void ConvertPalSchemaZIP(List<AreaData> areaList, string filename)
-    {
+    /// <summary>Applies the PalSchema documents in an archive to the supplied spawn areas.</summary>
+    public static void ConvertPalSchemaZIP(List<AreaData> areaList, string filename) {
         using ZipArchive zipArchive = ZipFile.OpenRead(filename);
-        foreach (ZipArchiveEntry entry in zipArchive.Entries)
-        {
-            if (!string.Equals(Path.GetExtension(entry.Name), ".json", StringComparison.OrdinalIgnoreCase))
-            {
+        foreach (ZipArchiveEntry entry in zipArchive.Entries) {
+            if (!string.Equals(Path.GetExtension(entry.Name), ".json", StringComparison.OrdinalIgnoreCase)) {
                 continue;
             }
 
@@ -511,10 +576,14 @@ public static partial class FileModify
     /// <summary>JSON serializer settings with a custom converter for <see cref="GameStruct"/>s.</summary>
     public static JsonSerializerSettings JsonSerializerSettings { get; } =
         new() { Converters = [new JsonConverterGameStruct()] };
+
     /// <summary>JSON serializer with a custom <see cref="GameStruct"/> converter.</summary>
     public static JsonSerializer JsonSerializer { get; } = JsonSerializer.CreateDefault(JsonSerializerSettings);
 
-    [GeneratedRegex("^(/Game/Pal/Blueprint/(?<folder>.+?)/(?<package>[^./]+)\\.)?(?<class>[^./]+?)_C$", RegexOptions.ExplicitCapture)]
+    [GeneratedRegex(
+        "^(/Game/Pal/Blueprint/(?<folder>.+?)/(?<package>[^./]+)\\.)?(?<class>[^./]+?)_C$",
+        RegexOptions.ExplicitCapture
+    )]
     private static partial Regex schemaPathRegex();
 
     /// <summary>
@@ -547,16 +616,21 @@ public static partial class FileModify
                         continue;
                     }
 
-                    cageDictionary[entry.FieldName].SpawnEntries.Add(new SpawnEntry {
-                        Weight = Convert.ToInt32(entry.Weight_F * 10),
-                        SpawnList = [
-                            new SpawnData {
-                                Name = entry.PalId_S,
-                                MinLevel = entry.MinLevel,
-                                MaxLevel = entry.MaxLevel
+                    cageDictionary[entry.FieldName]
+                        .SpawnEntries.Add(
+                            new SpawnEntry {
+                                Weight = Convert.ToInt32(entry.Weight_F * 10),
+                                SpawnList =
+                                [
+                                    new SpawnData
+                                    {
+                                        Name = entry.PalId_S,
+                                        MinLevel = entry.MinLevel,
+                                        MaxLevel = entry.MaxLevel,
+                                    },
+                                ],
                             }
-                        ]
-                    });
+                        );
                 }
             } else {
                 Match regexMatch = schemaPathRegex().Match(key);
@@ -565,8 +639,12 @@ public static partial class FileModify
                     continue;
                 }
 
-                var area = areaList.Find(x => x.FileNameWithoutExtension.Equals(regexMatch.Groups["class"].Value,
-                    StringComparison.OrdinalIgnoreCase));
+                var area = areaList.Find(x =>
+                    x.FileNameWithoutExtension.Equals(
+                        regexMatch.Groups["class"].Value,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+                );
 
                 if (area == null) {
                     continue;
@@ -580,13 +658,21 @@ public static partial class FileModify
 
                 area.SpawnEntries = regexMatch.Groups["class"].Value switch {
                     var x when x.StartsWith("BP_PalSpawner_Sheets_", StringComparison.OrdinalIgnoreCase) =>
-                        [.. spawner.PalSpawnsToSpawnEntries()],
+                    [
+                        .. spawner.PalSpawnsToSpawnEntries(),
+                    ],
                     var x when x.StartsWith("bp_palmapobjectspawner_", StringComparison.OrdinalIgnoreCase) =>
-                        [.. spawner.PalEggsToSpawnEntries()],
+                    [
+                        .. spawner.PalEggsToSpawnEntries(),
+                    ],
                     var x when x.StartsWith("BP_MonoNPCSpawnerBossBase_", StringComparison.OrdinalIgnoreCase) =>
-                        [.. spawner.HumanBossMonoToSpawnEntries()],
+                    [
+                        .. spawner.HumanBossMonoToSpawnEntries(),
+                    ],
                     var x when x.StartsWith("BP_SquadNPCSpawnerBossBase_", StringComparison.OrdinalIgnoreCase) =>
-                        [.. spawner.HumanBossSquadToSpawnEntries()],
+                    [
+                        .. spawner.HumanBossSquadToSpawnEntries(),
+                    ],
                     var x => throw new Exception($"Unidentified spawn type '{x}'"),
                 };
             }

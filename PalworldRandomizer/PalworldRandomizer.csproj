@@ -1,42 +1,44 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <Version>2.16.2</Version>
+        <TargetFramework>net10.0-windows</TargetFramework>
+        <UseWPF>True</UseWPF>
+        <StartupObject>PalworldRandomizer.App</StartupObject>
+        <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
+        <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+        <NoWarn>NU1701</NoWarn>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <Version>2.16.2</Version>
-    <TargetFramework>net10.0-windows</TargetFramework>
-    <UseWPF>True</UseWPF>
-    <StartupObject>PalworldRandomizer.App</StartupObject>
-    <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
-	<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-	<NoWarn>NU1701</NoWarn>
-  </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <OutputType>Exe</OutputType>
+    </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <OutputType>Exe</OutputType>
-  </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <OutputType>WinExe</OutputType>
+        <DebugType>embedded</DebugType>
+    </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputType>WinExe</OutputType>
-    <DebugType>embedded</DebugType>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="CUE4Parse" Version="1.2.2.202607" />
-    <PackageReference Include="CUE4Parse-Conversion" Version="1.2.2.202607" />
-    <PackageReference Include="ini-parser" Version="3.4.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.5-beta1" />
-    <PackageReference Include="Emoji.Wpf" Version="0.3.4" />
-    <PackageReference Include="ZstdSharp.Port" Version="0.8.8" />
-    <EmbeddedResource Update="Resources\Resource.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <Compile Update="Resources\Resource.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resource.resx</DependentUpon>
-    </Compile>
-	<Resource Include="Resources\icon.ico" />
-	<Resource Include="Resources\Images\**" />
-  </ItemGroup>
-
+    <ItemGroup>
+        <!-- Regression runner sources are built separately, without starting the WPF application. -->
+        <Compile Remove="Tests\**\*.cs" />
+        <PackageReference Include="CUE4Parse" />
+        <PackageReference Include="CUE4Parse-Conversion" />
+        <PackageReference Include="ini-parser" />
+        <PackageReference Include="Newtonsoft.Json" />
+        <PackageReference Include="Emoji.Wpf" />
+        <PackageReference Include="ZstdSharp.Port" />
+        <!-- Override the vulnerable transitive dependency with its first patched 9.x release. -->
+        <PackageReference Include="Microsoft.Bcl.Memory" />
+        <EmbeddedResource Update="Resources\Resource.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <Compile Update="Resources\Resource.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>Resource.resx</DependentUpon>
+        </Compile>
+        <Resource Include="Resources\icon.ico" />
+        <Resource Include="Resources\Images\**" />
+    </ItemGroup>
 </Project>

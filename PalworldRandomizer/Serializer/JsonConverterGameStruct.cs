@@ -10,8 +10,12 @@ public class JsonConverterGameStruct : JsonConverter {
     /// Recursively reads and expands json into values and <see cref="GameStruct"/>'s
     /// <see cref="GameStruct.Properties">Properties</see>.
     /// </summary>
-    public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue,
-        JsonSerializer serializer) {
+    public override object? ReadJson(
+        JsonReader reader,
+        Type objectType,
+        object? existingValue,
+        JsonSerializer serializer
+    ) {
         return ReadValue();
 
         object? ReadValue() {
@@ -26,8 +30,12 @@ public class JsonConverterGameStruct : JsonConverter {
                 JsonToken.StartArray => ReadList(),
                 JsonToken.Integer => Convert.ToInt32(reader.Value),
                 JsonToken.Float => Convert.ToSingle(reader.Value),
-                JsonToken.String or JsonToken.Boolean or JsonToken.Undefined
-                    or JsonToken.Null or JsonToken.Date or JsonToken.Bytes => reader.Value,
+                JsonToken.String
+                or JsonToken.Boolean
+                or JsonToken.Undefined
+                or JsonToken.Null
+                or JsonToken.Date
+                or JsonToken.Bytes => reader.Value,
                 var x => throw new Exception($"Unexpected token when converting object: '{x}'"),
             };
         }

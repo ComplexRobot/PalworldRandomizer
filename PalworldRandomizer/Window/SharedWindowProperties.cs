@@ -1,5 +1,3 @@
-using Newtonsoft.Json;
-using PalworldRandomizer.Serializer;
 using System.Data;
 using System.Globalization;
 using System.IO;
@@ -10,115 +8,147 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Interop;
+using Newtonsoft.Json;
+using PalworldRandomizer.Serializer;
 
 namespace PalworldRandomizer.Window;
 
-public class ConfigData
-{
-    public string InstallationDirectory = @"C:\Program Files (x86)\Steam\steamapps\common\Palworld";
-    public string GameVersion = "0.0.0.0";
-    public float AssetVersion = 0;
-    public bool AutoReplaceOldFiles = true;
-    public bool AutoRestoreTemplate = true;
-    public bool OutputLog = false;
-    public bool AutoSaveRestoreBackups = true;
-    public bool AutoSaveGenerationData = true;
+/// <summary>Persisted application preferences and game-installation metadata.</summary>
+public class ConfigData {
+    /// <summary>The selected Palworld installation directory.</summary>
+    public string InstallationDirectory { get; set; } = @"C:\Program Files (x86)\Steam\steamapps\common\Palworld";
+
+    /// <summary>The last game version read from the selected archive.</summary>
+    public string GameVersion { get; set; } = "0.0.0.0";
+
+    /// <summary>The version of the application's extracted resources.</summary>
+    public float AssetVersion { get; set; } = 0;
+
+    /// <summary>Whether outdated extracted resources are automatically replaced.</summary>
+    public bool AutoReplaceOldFiles { get; set; } = true;
+
+    /// <summary>Whether the last randomizer template is restored at startup.</summary>
+    public bool AutoRestoreTemplate { get; set; } = true;
+
+    /// <summary>Whether generation writes a text log.</summary>
+    public bool OutputLog { get; set; } = false;
+
+    /// <summary>Whether edited spawn data is automatically backed up and restored.</summary>
+    public bool AutoSaveRestoreBackups { get; set; } = true;
+
+    /// <summary>Whether generated spawn data is automatically saved.</summary>
+    public bool AutoSaveGenerationData { get; set; } = true;
 }
 
-internal static partial class SharedWindow
-{
+internal static partial class SharedWindow {
     public const string GLOBAL_GONFIG_FILENAME = @"Config\GlobalConfig.json";
 
-    public static ConfigData GetConfig()
-    {
+    public static ConfigData GetConfig() {
         string configFilePath = UAssetData.AppDataPath(GLOBAL_GONFIG_FILENAME);
-        if (File.Exists(configFilePath))
-        {
+        if (File.Exists(configFilePath)) {
             ConfigData? config = JsonConvert.DeserializeObject<ConfigData>(File.ReadAllText(configFilePath));
-            if (config != null)
-            {
+            if (config != null) {
                 return config;
             }
         }
+
         return new();
     }
 
-    public static void SaveConfig(ConfigData config)
-    {
-        try
-        {
+    public static void SaveConfig(ConfigData config) {
+        try {
             Directory.CreateDirectory(UAssetData.AppDataPath("Config"));
-            File.WriteAllText(UAssetData.AppDataPath(GLOBAL_GONFIG_FILENAME), JsonConvert.SerializeObject(config, Formatting.Indented));
-        }
-        catch (Exception exception)
-        {
+            File.WriteAllText(
+                UAssetData.AppDataPath(GLOBAL_GONFIG_FILENAME),
+                JsonConvert.SerializeObject(config, Formatting.Indented)
+            );
+        } catch (Exception exception) {
             App.LogException(exception);
         }
     }
 
     [LibraryImport("dwmapi.dll")]
     private static partial int DwmSetWindowAttribute(IntPtr hwnd, int attr, [In] int[] attrValue, int attrSize);
-    [LibraryImport("user32.dll")]
-    private static partial int SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
 
-    public static void EnableDarkMode(System.Windows.Window window)
-    {
+    [LibraryImport("user32.dll")]
+    private static partial int SetWindowPos(
+        IntPtr hWnd,
+        IntPtr hWndInsertAfter,
+        int X,
+        int Y,
+        int cx,
+        int cy,
+        uint uFlags
+    );
+
+    public static void EnableDarkMode(System.Windows.Window window) {
         IntPtr windowHandle = new WindowInteropHelper(window).Handle;
-        if (DwmSetWindowAttribute(windowHandle, 19, [1], 4) != 0)
-        {
+        if (DwmSetWindowAttribute(windowHandle, 19, [1], 4) != 0) {
             DwmSetWindowAttribute(windowHandle, 20, [1], 4);
         }
     }
 
-    public static void TextBox_PreviewTextInput(Regex regex, object sender, TextCompositionEventArgs e)
-    {
-        TextBox textBox = (TextBox) sender;
-        if (e.Text == "\r")
-        {
+    public static void TextBox_PreviewTextInput(Regex regex, object sender, TextCompositionEventArgs e) {
+        var textBox = (TextBox)sender;
+        if (e.Text == "\r") {
             Keyboard.ClearFocus();
             textBox.GetBindingExpression(TextBox.TextProperty)?.UpdateSource();
         }
-        e.Handled = !regex.IsMatch(textBox.Text[..textBox.SelectionStart] + e.Text + textBox.Text[(textBox.SelectionStart + textBox.SelectionLength)..]);
+
+        e.Handled = !regex.IsMatch(
+            textBox.Text[..textBox.SelectionStart]
+                + e.Text
+                + textBox.Text[(textBox.SelectionStart + textBox.SelectionLength)..]
+        );
     }
 
-    public static void TextBox_Pasting(Regex regex, object sender, DataObjectPastingEventArgs e)
-    {
-        if (!e.DataObject.GetDataPresent(typeof(string)))
-        {
+    public static void TextBox_Pasting(Regex regex, object sender, DataObjectPastingEventArgs e) {
+        if (!e.DataObject.GetDataPresent(typeof(string))) {
             e.CancelCommand();
             return;
         }
-        string paste = (string) e.DataObject.GetData(typeof(string));
-        TextBox textBox = (TextBox) sender;
-        if (!regex.IsMatch(textBox.Text[..textBox.SelectionStart] + paste + textBox.Text[(textBox.SelectionStart + textBox.SelectionLength)..]))
+
+        string paste = (string)e.DataObject.GetData(typeof(string));
+        var textBox = (TextBox)sender;
+        if (
+            !regex.IsMatch(
+                textBox.Text[..textBox.SelectionStart]
+                    + paste
+                    + textBox.Text[(textBox.SelectionStart + textBox.SelectionLength)..]
+            )
+        ) {
             e.CancelCommand();
+        }
     }
 
-    public static void PreNotifyInput(object sender, NotifyInputEventArgs e)
-    {
-        if (e.StagingItem.Input is KeyEventArgs keyEventArgs && keyEventArgs.Key == Key.Space && keyEventArgs.RoutedEvent.Name == "KeyDown"
-            && Keyboard.FocusedElement is TextBox textBox)
-        {
+    public static void PreNotifyInput(object sender, NotifyInputEventArgs e) {
+        if (
+            e.StagingItem.Input is KeyEventArgs keyEventArgs
+            && keyEventArgs.Key == Key.Space
+            && keyEventArgs.RoutedEvent.Name == "KeyDown"
+            && Keyboard.FocusedElement is TextBox textBox
+        ) {
             TextCompositionEventArgs eventArgs = new(keyEventArgs.Device, new(e.InputManager, textBox, " "))
             {
-                RoutedEvent = TextCompositionManager.PreviewTextInputEvent
+                RoutedEvent = TextCompositionManager.PreviewTextInputEvent,
             };
             textBox.RaiseEvent(eventArgs);
             keyEventArgs.Handled = eventArgs.Handled;
         }
     }
 
-    public static void PostNotifyInput(object sender, NotifyInputEventArgs e)
-    {
-        if (e.StagingItem.Input is KeyEventArgs keyEventArgs && keyEventArgs.RoutedEvent.Name == "KeyDown" && Keyboard.FocusedElement is TextBox textBox)
-        {
+    public static void PostNotifyInput(object sender, NotifyInputEventArgs e) {
+        if (
+            e.StagingItem.Input is KeyEventArgs keyEventArgs
+            && keyEventArgs.RoutedEvent.Name == "KeyDown"
+            && Keyboard.FocusedElement is TextBox textBox
+        ) {
             TextCompositionEventArgs eventArgs = new(keyEventArgs.Device, new(e.InputManager, textBox, ""))
             {
-                RoutedEvent = TextCompositionManager.PreviewTextInputEvent
+                RoutedEvent = TextCompositionManager.PreviewTextInputEvent,
             };
             textBox.RaiseEvent(eventArgs);
-            if (eventArgs.Handled)
-            {
+            if (eventArgs.Handled) {
                 textBox.Text = "";
             }
         }
@@ -126,92 +156,145 @@ internal static partial class SharedWindow
 
     [GeneratedRegex("^(?!0)[0-9]{0,2}$")]
     private static partial Regex positiveIntSize2Regex();
-    public static void PositiveIntSize2_PreviewTextInput(object sender, TextCompositionEventArgs e) => TextBox_PreviewTextInput(positiveIntSize2Regex(), sender, e);
-    public static void PositiveIntSize2_Pasting(object sender, DataObjectPastingEventArgs e) => TextBox_Pasting(positiveIntSize2Regex(), sender, e);
+
+    public static void PositiveIntSize2_PreviewTextInput(object sender, TextCompositionEventArgs e) =>
+        TextBox_PreviewTextInput(positiveIntSize2Regex(), sender, e);
+
+    public static void PositiveIntSize2_Pasting(object sender, DataObjectPastingEventArgs e) =>
+        TextBox_Pasting(positiveIntSize2Regex(), sender, e);
 
     [GeneratedRegex("^(?:(?!0)[0-9]{0,2}|100)$")]
     private static partial Regex positiveIntPercentRegex();
-    public static void PositiveIntPercent_PreviewTextInput(object sender, TextCompositionEventArgs e) => TextBox_PreviewTextInput(positiveIntPercentRegex(), sender, e);
-    public static void PositiveIntPercent_Pasting(object sender, DataObjectPastingEventArgs e) => TextBox_Pasting(positiveIntPercentRegex(), sender, e);
+
+    public static void PositiveIntPercent_PreviewTextInput(object sender, TextCompositionEventArgs e) =>
+        TextBox_PreviewTextInput(positiveIntPercentRegex(), sender, e);
+
+    public static void PositiveIntPercent_Pasting(object sender, DataObjectPastingEventArgs e) =>
+        TextBox_Pasting(positiveIntPercentRegex(), sender, e);
 
     [GeneratedRegex("^(?!0)[0-9]{0,3}$")]
     private static partial Regex positiveIntSize3Regex();
-    public static void PositiveIntSize3_PreviewTextInput(object sender, TextCompositionEventArgs e) => TextBox_PreviewTextInput(positiveIntSize3Regex(), sender, e);
-    public static void PositiveIntSize3_Pasting(object sender, DataObjectPastingEventArgs e) => TextBox_Pasting(positiveIntSize3Regex(), sender, e);
+
+    public static void PositiveIntSize3_PreviewTextInput(object sender, TextCompositionEventArgs e) =>
+        TextBox_PreviewTextInput(positiveIntSize3Regex(), sender, e);
+
+    public static void PositiveIntSize3_Pasting(object sender, DataObjectPastingEventArgs e) =>
+        TextBox_Pasting(positiveIntSize3Regex(), sender, e);
 
     [GeneratedRegex("^(?!0)[0-9]{0,4}$")]
     private static partial Regex positiveIntSize4Regex();
-    public static void PositiveIntSize4_PreviewTextInput(object sender, TextCompositionEventArgs e) => TextBox_PreviewTextInput(positiveIntSize4Regex(), sender, e);
-    public static void PositiveIntSize4_Pasting(object sender, DataObjectPastingEventArgs e) => TextBox_Pasting(positiveIntSize4Regex(), sender, e);
+
+    public static void PositiveIntSize4_PreviewTextInput(object sender, TextCompositionEventArgs e) =>
+        TextBox_PreviewTextInput(positiveIntSize4Regex(), sender, e);
+
+    public static void PositiveIntSize4_Pasting(object sender, DataObjectPastingEventArgs e) =>
+        TextBox_Pasting(positiveIntSize4Regex(), sender, e);
 
     [GeneratedRegex("^(?!0)[0-9]{0,9}$")]
     private static partial Regex positiveIntSize9Regex();
-    public static void PositiveIntSize9_PreviewTextInput(object sender, TextCompositionEventArgs e) => TextBox_PreviewTextInput(positiveIntSize9Regex(), sender, e);
-    public static void PositiveIntSize9_Pasting(object sender, DataObjectPastingEventArgs e) => TextBox_Pasting(positiveIntSize3Regex(), sender, e);
+
+    public static void PositiveIntSize9_PreviewTextInput(object sender, TextCompositionEventArgs e) =>
+        TextBox_PreviewTextInput(positiveIntSize9Regex(), sender, e);
+
+    public static void PositiveIntSize9_Pasting(object sender, DataObjectPastingEventArgs e) =>
+        TextBox_Pasting(positiveIntSize3Regex(), sender, e);
 
     [GeneratedRegex("^(?:0|(?!0)[0-9]{0,2})$")]
     private static partial Regex nonNegIntSize2Regex();
-    public static void NonNegIntSize2_PreviewTextInput(object sender, TextCompositionEventArgs e) => TextBox_PreviewTextInput(nonNegIntSize2Regex(), sender, e);
-    public static void NonNegIntSize2_Pasting(object sender, DataObjectPastingEventArgs e) => TextBox_Pasting(nonNegIntSize2Regex(), sender, e);
+
+    public static void NonNegIntSize2_PreviewTextInput(object sender, TextCompositionEventArgs e) =>
+        TextBox_PreviewTextInput(nonNegIntSize2Regex(), sender, e);
+
+    public static void NonNegIntSize2_Pasting(object sender, DataObjectPastingEventArgs e) =>
+        TextBox_Pasting(nonNegIntSize2Regex(), sender, e);
 
     [GeneratedRegex("^(?:0|(?!0)[0-9]{0,2}|100)$")]
     private static partial Regex nonNegIntPercentRegex();
-    public static void NonNegIntPercent_PreviewTextInput(object sender, TextCompositionEventArgs e) => TextBox_PreviewTextInput(nonNegIntPercentRegex(), sender, e);
-    public static void NonNegIntPercent_Pasting(object sender, DataObjectPastingEventArgs e) => TextBox_Pasting(nonNegIntPercentRegex(), sender, e);
+
+    public static void NonNegIntPercent_PreviewTextInput(object sender, TextCompositionEventArgs e) =>
+        TextBox_PreviewTextInput(nonNegIntPercentRegex(), sender, e);
+
+    public static void NonNegIntPercent_Pasting(object sender, DataObjectPastingEventArgs e) =>
+        TextBox_Pasting(nonNegIntPercentRegex(), sender, e);
 
     [GeneratedRegex("^(?:0|(?!0)[0-9]{0,3})$")]
     private static partial Regex nonNegIntSize3Regex();
-    public static void NonNegIntSize3_PreviewTextInput(object sender, TextCompositionEventArgs e) => TextBox_PreviewTextInput(nonNegIntSize3Regex(), sender, e);
-    public static void NonNegIntSize3_Pasting(object sender, DataObjectPastingEventArgs e) => TextBox_Pasting(nonNegIntSize3Regex(), sender, e);
+
+    public static void NonNegIntSize3_PreviewTextInput(object sender, TextCompositionEventArgs e) =>
+        TextBox_PreviewTextInput(nonNegIntSize3Regex(), sender, e);
+
+    public static void NonNegIntSize3_Pasting(object sender, DataObjectPastingEventArgs e) =>
+        TextBox_Pasting(nonNegIntSize3Regex(), sender, e);
 
     [GeneratedRegex("^(?:0|(?!0)[0-9]{0,4})$")]
     private static partial Regex nonNegIntSize4Regex();
-    public static void NonNegIntSize4_PreviewTextInput(object sender, TextCompositionEventArgs e) => TextBox_PreviewTextInput(nonNegIntSize4Regex(), sender, e);
-    public static void NonNegIntSize4_Pasting(object sender, DataObjectPastingEventArgs e) => TextBox_Pasting(nonNegIntSize4Regex(), sender, e);
+
+    public static void NonNegIntSize4_PreviewTextInput(object sender, TextCompositionEventArgs e) =>
+        TextBox_PreviewTextInput(nonNegIntSize4Regex(), sender, e);
+
+    public static void NonNegIntSize4_Pasting(object sender, DataObjectPastingEventArgs e) =>
+        TextBox_Pasting(nonNegIntSize4Regex(), sender, e);
 
     [GeneratedRegex("^(?:0|(?!0)[0-9]{0,5})$")]
     private static partial Regex nonNegIntSize5Regex();
-    public static void NonNegIntSize5_PreviewTextInput(object sender, TextCompositionEventArgs e) => TextBox_PreviewTextInput(nonNegIntSize5Regex(), sender, e);
-    public static void NonNegIntSize5_Pasting(object sender, DataObjectPastingEventArgs e) => TextBox_Pasting(nonNegIntSize5Regex(), sender, e);
+
+    public static void NonNegIntSize5_PreviewTextInput(object sender, TextCompositionEventArgs e) =>
+        TextBox_PreviewTextInput(nonNegIntSize5Regex(), sender, e);
+
+    public static void NonNegIntSize5_Pasting(object sender, DataObjectPastingEventArgs e) =>
+        TextBox_Pasting(nonNegIntSize5Regex(), sender, e);
 
     [GeneratedRegex("^(?:0|(?!0)[0-9]{0,9})$")]
     private static partial Regex nonNegIntSize9Regex();
-    public static void NonNegIntSize9_PreviewTextInput(object sender, TextCompositionEventArgs e) => TextBox_PreviewTextInput(nonNegIntSize9Regex(), sender, e);
-    public static void NonNegIntSize9_Pasting(object sender, DataObjectPastingEventArgs e) => TextBox_Pasting(nonNegIntSize9Regex(), sender, e);
+
+    public static void NonNegIntSize9_PreviewTextInput(object sender, TextCompositionEventArgs e) =>
+        TextBox_PreviewTextInput(nonNegIntSize9Regex(), sender, e);
+
+    public static void NonNegIntSize9_Pasting(object sender, DataObjectPastingEventArgs e) =>
+        TextBox_Pasting(nonNegIntSize9Regex(), sender, e);
 
     [GeneratedRegex(@"^(0|(?!0)\d{0,5}|(?=.{0,5}[^.]?$)(0\.\d*|(?![0.])\d*\.\d*))$", RegexOptions.ExplicitCapture)]
     private static partial Regex NonNegDecSize5Regex();
-    public static void NonNegDecSize5_PreviewTextInput(object sender, TextCompositionEventArgs e) => TextBox_PreviewTextInput(NonNegDecSize5Regex(), sender, e);
-    public static void NonNegDecSize5_Pasting(object sender, DataObjectPastingEventArgs e) => TextBox_Pasting(NonNegDecSize5Regex(), sender, e);
+
+    public static void NonNegDecSize5_PreviewTextInput(object sender, TextCompositionEventArgs e) =>
+        TextBox_PreviewTextInput(NonNegDecSize5Regex(), sender, e);
+
+    public static void NonNegDecSize5_Pasting(object sender, DataObjectPastingEventArgs e) =>
+        TextBox_Pasting(NonNegDecSize5Regex(), sender, e);
 }
 
-public class MathConverter : IMultiValueConverter, IValueConverter
-{
-    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
-    {
-        static bool IsNumber(object value) => value is sbyte || value is byte || value is short || value is ushort || value is int || value is uint || value is long || value is ulong
-            || value is float || value is double || value is decimal;
-        string stringToParse = (string) parameter;
-        for (int i = 0; i < values.Length; ++i)
-        {
+/// <summary>Evaluates the existing numeric expressions used by WPF layout bindings.</summary>
+public class MathConverter : IMultiValueConverter, IValueConverter {
+    /// <summary>Substitutes binding values into a numeric expression and evaluates its result.</summary>
+    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture) {
+        static bool IsNumber(object value) =>
+            value is sbyte or byte or short or ushort or int or uint or long or ulong or float or double or decimal;
+        string stringToParse = (string)parameter;
+        for (int i = 0; i < values.Length; ++i) {
             string stringValue;
-            if (IsNumber(values[i]))
-            {
+            if (IsNumber(values[i])) {
                 stringValue = $"{values[i]}";
-            }
-            else if (values[i] == null || values[i] == DependencyProperty.UnsetValue)
-            {
+            } else if (values[i] == null || values[i] == DependencyProperty.UnsetValue) {
                 stringValue = "0";
-            }
-            else
-            {
+            } else {
                 stringValue = "1";
             }
+
             stringToParse = new Regex($"(?:\\[{i}\\]|\\{{{i}\\}})").Replace(stringToParse, stringValue);
         }
+
         return new DataTable().Compute(stringToParse, null);
     }
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) => Convert([value], targetType, parameter, culture);
-    public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) => throw new NotImplementedException();
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
+
+    /// <summary>Substitutes binding values into a numeric expression and evaluates its result.</summary>
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) =>
+        Convert([value], targetType, parameter, culture);
+
+    /// <summary>Reverse conversion of the layout expression is not supported.</summary>
+    public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) =>
+        throw new NotImplementedException();
+
+    /// <summary>Reverse conversion of the layout expression is not supported.</summary>
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
+        throw new NotImplementedException();
 }

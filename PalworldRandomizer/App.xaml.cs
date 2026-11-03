@@ -10,126 +10,137 @@ using PalworldRandomizer.Window;
 
 namespace PalworldRandomizer;
 
-public partial class App : Application
-{
+public partial class App : Application {
+    /// <summary>Whether startup has verified the configured installation directory.</summary>
     public static bool InstallationFolderVerified { get; private set; } = false;
 
-    private void Application_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs eventArgs)
-    {
+    private void Application_DispatcherUnhandledException(
+        object sender,
+        DispatcherUnhandledExceptionEventArgs eventArgs
+    ) {
         LogException(eventArgs.Exception);
-        try
-        {
-            Exception exception = eventArgs.Exception is TargetInvocationException invocationException ? invocationException.InnerException ?? eventArgs.Exception : eventArgs.Exception;
+        try {
+            Exception exception = eventArgs.Exception is TargetInvocationException invocationException
+                ? invocationException.InnerException ?? eventArgs.Exception
+                : eventArgs.Exception;
 #if DEBUG
             string message = exception.ToString();
             Console.WriteLine(message[..message.TakeWhile(x => x != '\n').Count()]);
 #endif
             MessageBox.Show(exception.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             LogException(e);
         }
+
         eventArgs.Handled = true;
     }
 
-    public static void LogException(Exception e)
-    {
-        try { File.AppendAllText(UAssetData.AppDataPath("error-log.txt"), $"{DateTime.Now}\n{e}\n\n\n"); } catch { }
+    /// <summary>Appends an exception to the application error log when possible.</summary>
+    public static void LogException(Exception e) {
+        try {
+            File.AppendAllText(UAssetData.AppDataPath("error-log.txt"), $"{DateTime.Now}\n{e}\n\n\n");
+        } catch { }
     }
 
-    private void Application_Startup(object sender, StartupEventArgs e)
-    {
-        Dispatcher.BeginInvoke(DispatcherPriority.Send, () =>
-        {
-            SettingsPage settingsPage = new();
-            AppWindow settingsWindow = new(() => settingsPage) { Title = "Settings", Topmost = true, Width = 800, Height = 200 };
-            settingsWindow.Closing += (sender, e) =>
-            {
-                if (InstallationFolderVerified)
+    private void Application_Startup(object sender, StartupEventArgs e) =>
+        Dispatcher.BeginInvoke(
+            DispatcherPriority.Send,
+            () => {
+                SettingsPage settingsPage = new();
+                AppWindow settingsWindow = new(() => settingsPage)
                 {
-                    settingsWindow.HideClean();
-                    e.Cancel = true;
-                }
-                else
-                {
-                    Shutdown();
-                }
-            };
-            VerifyInstallationFolder(settingsWindow);
-        });
-    }
+                    Title = "Settings",
+                    Topmost = true,
+                    Width = 800,
+                    Height = 200,
+                };
+                settingsWindow.Closing += (sender, e) => {
+                    if (InstallationFolderVerified) {
+                        settingsWindow.HideClean();
+                        e.Cancel = true;
+                    } else {
+                        Shutdown();
+                    }
+                };
+                VerifyInstallationFolder(settingsWindow);
+            }
+        );
 
-    public void VerifyInstallationFolder(AppWindow settingsWindow)
-    {
-        if (!InstallationFolderVerified && UAssetData.VerifyInstallationFolder(settingsWindow))
-        {
+    /// <summary>Verifies the installation directory and starts loading game data on success.</summary>
+    public void VerifyInstallationFolder(AppWindow settingsWindow) {
+        if (!InstallationFolderVerified && UAssetData.VerifyInstallationFolder(settingsWindow)) {
             InstallationFolderVerified = true;
             ((AppWindow)SettingsPage.Instance.Parent)?.HideClean();
             Initialize();
         }
     }
 
-    private void Initialize()
-    {
-        DispatcherOperation dataOperation = Dispatcher.BeginInvoke(DispatcherPriority.Background, async () =>
-        {
-            try {
-                await using var fileProvider = await UAssetData.Initialize();
-                Data.Initialize(fileProvider);
-                Randomize.Initialize();
-
-                fileProvider.PostMount();
-
-                Randomize.RestoreBackup();
-                PalSpawnPage palSpawnpage = new();
-                AppWindow palSpawnWindow = new(() => palSpawnpage) { Title = "Pal Spawn Editor" };
-                palSpawnpage.ParentWindow = palSpawnWindow;
-                palSpawnWindow.Closing += (sender, e) =>
+    private void Initialize() {
+        DispatcherOperation dataOperation = Dispatcher.BeginInvoke(
+            DispatcherPriority.Background,
+            async () =>
+            {
+                try
                 {
-                    palSpawnWindow.HideClean();
-                    e.Cancel = true;
-                };
-            } catch (Exception e) {
-                await Dispatcher.BeginInvoke(() => ExceptionDispatchInfo.Capture(e).Throw());
+                    await using var fileProvider = await UAssetData.Initialize();
+                    Data.Initialize(fileProvider);
+                    Randomize.Initialize();
+
+                    fileProvider.PostMount();
+
+                    Randomize.RestoreBackup();
+                    PalSpawnPage palSpawnpage = new();
+                    AppWindow palSpawnWindow = new(() => palSpawnpage) { Title = "Pal Spawn Editor" };
+                    palSpawnpage.ParentWindow = palSpawnWindow;
+                    palSpawnWindow.Closing += (sender, e) =>
+                    {
+                        palSpawnWindow.HideClean();
+                        e.Cancel = true;
+                    };
+                }
+                catch (Exception e)
+                {
+                    await Dispatcher.BeginInvoke(() => ExceptionDispatchInfo.Capture(e).Throw());
+                }
             }
-            
-        });
-        Dispatcher.BeginInvoke(DispatcherPriority.Send, () =>
-        {
-            MainWindow = new AppWindow(() => new MainPage(dataOperation)) { Title = "Palworld Randomizer", Width = 1280, Height = 800 };
-            MainWindow.Closed += (sender, e) => Shutdown();
-            ((AppWindow)MainWindow).ShowClean();
-        });
+        );
+        Dispatcher.BeginInvoke(
+            DispatcherPriority.Send,
+            () => {
+                MainWindow = new AppWindow(() => new MainPage(dataOperation)) {
+                    Title = "Palworld Randomizer",
+                    Width = 1280,
+                    Height = 800,
+                };
+                MainWindow.Closed += (sender, e) => Shutdown();
+                ((AppWindow)MainWindow).ShowClean();
+            }
+        );
         InputManager.Current.PreNotifyInput += SharedWindow.PreNotifyInput;
         InputManager.Current.PostNotifyInput += SharedWindow.PostNotifyInput;
     }
 
-    private void Application_Exit(object sender, ExitEventArgs e)
-    {
-        try
-        {
+    private void Application_Exit(object sender, ExitEventArgs e) {
+        try {
             Randomize.SaveBackup();
-            if (MainPage.Instance == null)
-            {
+            if (MainPage.Instance == null) {
                 return;
             }
+
             ConfigData config = SharedWindow.GetConfig();
             config.AutoRestoreTemplate = MainPage.Instance.autoSaveTemplate.IsChecked == true;
             config.OutputLog = MainPage.Instance.outputLog.IsChecked == true;
             SharedWindow.SaveConfig(config);
-            if (config.AutoRestoreTemplate)
-            {
+            if (config.AutoRestoreTemplate) {
                 MainPage.Instance.ValidateFormData();
-                MainPage.SaveTemplate(new FormData(MainPage.Instance), UAssetData.AppDataPath(MainPage.AUTO_TEMPLATE_FILENAME));
-            }
-            else
-            {
+                MainPage.SaveTemplate(
+                    new FormData(MainPage.Instance),
+                    UAssetData.AppDataPath(MainPage.AUTO_TEMPLATE_FILENAME)
+                );
+            } else {
                 File.Delete(UAssetData.AppDataPath(MainPage.AUTO_TEMPLATE_FILENAME));
             }
-        }
-        catch (Exception exception)
-        {
+        } catch (Exception exception) {
             LogException(exception);
         }
     }

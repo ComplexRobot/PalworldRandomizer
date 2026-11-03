@@ -1,29 +1,24 @@
 using System.Windows;
 using System.Windows.Controls;
-using Microsoft.Win32;
 using System.Windows.Input;
+using Microsoft.Win32;
 using PalworldRandomizer.Serializer;
 
 namespace PalworldRandomizer.Window;
 
-public partial class SettingsPage : Grid
-{
+public partial class SettingsPage : Grid {
+    /// <summary>The active installation settings page.</summary>
     public static SettingsPage Instance { get; private set; } = null!;
 
-    public SettingsPage()
-    {
+    /// <summary>Creates the installation settings page.</summary>
+    public SettingsPage() {
         Instance = this;
         InitializeComponent();
     }
 
-    private void OpenInstallationFolder()
-    {
-        OpenFolderDialog openDialog = new()
-        {
-            InitialDirectory = UAssetData.InstallationDirectory
-        };
-        if (openDialog.ShowDialog() == true && openDialog.FolderName != string.Empty)
-        {
+    private void OpenInstallationFolder() {
+        OpenFolderDialog openDialog = new() { InitialDirectory = UAssetData.InstallationDirectory };
+        if (openDialog.ShowDialog() == true && openDialog.FolderName != string.Empty) {
             installationFolderTextbox.Text = UAssetData.InstallationDirectory = openDialog.FolderName;
             ConfigData config = SharedWindow.GetConfig();
             config.InstallationDirectory = UAssetData.InstallationDirectory;
@@ -32,13 +27,9 @@ public partial class SettingsPage : Grid
         }
     }
 
-    private void InstallationFolderButton_Click(object sender, RoutedEventArgs e)
-    {
-        OpenInstallationFolder();
-    }
+    private void InstallationFolderButton_Click(object sender, RoutedEventArgs e) => OpenInstallationFolder();
 
-    private void InstallationFolderTextBox_GotFocus(object sender, RoutedEventArgs e)
-    {
+    private void InstallationFolderTextBox_GotFocus(object sender, RoutedEventArgs e) {
         Keyboard.ClearFocus();
         OpenInstallationFolder();
     }

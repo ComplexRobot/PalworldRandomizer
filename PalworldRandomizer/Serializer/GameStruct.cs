@@ -2,7 +2,6 @@ using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Engine;
 using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Assets.Objects.Properties;
-using CUE4Parse.UE4.Objects.Core.Math;
 using CUE4Parse.Utils;
 using PalworldRandomizer.Randomizer.PalSpawn;
 
@@ -27,19 +26,22 @@ public class GameStruct {
 
         // Data Table
         if (exports.First() is UDataTable dataTable) {
-            DataTable = dataTable.RowMap.ToDictionary(x => x.Key.Text,
+            DataTable = dataTable.RowMap.ToDictionary(
+                x => x.Key.Text,
                 x => new GameStruct(x.Value.Properties),
-                StringComparer.OrdinalIgnoreCase);
-        // Blueprint
+                StringComparer.OrdinalIgnoreCase
+            );
+            // Blueprint
         } else {
-            var mainProperties = exports.FirstOrDefault(x => x.Class!.Name.Text.EndsWith("_C")
-                && x.Name.StartsWith("Default__"))!.Properties;
+            var mainProperties = exports
+                .FirstOrDefault(x => x.Class!.Name.Text.EndsWith("_C") && x.Name.StartsWith("Default__"))!
+                .Properties;
 
             LoadFromAssetProperties(mainProperties);
 
             var components = exports.Where(x => x.Name.StartsWith("BP_") && x.Name.EndsWith("_GEN_VARIABLE"));
 
-            foreach(var component in components) {
+            foreach (var component in components) {
                 Properties.Add(component.Name[..^"_GEN_VARIABLE".Length], new GameStruct(component.Properties));
             }
         }
@@ -60,22 +62,25 @@ public class GameStruct {
         foreach (var property in properties) {
             Properties.Add(property.Name.Text, PropertyTagToValue(property.Tag));
 
-            static object? PropertyTagToValue(FPropertyTagType? tag) => tag switch {
-                NameProperty p => p.Value.IsNone ? null : p.Value.Text,
-                EnumProperty p => p.Value.IsNone ? null : p.Value.Text.SubstringAfterLast(':'),
-                StrProperty p => p.Value,
-                BoolProperty p => p.Value,
-                IntProperty p => p.Value,
-                FloatProperty p => p.Value,
-                DoubleProperty p => p.Value,
-                StructProperty p => p.Value is null ? null : p.Value.StructType switch {
-                    AbstractPropertyHolder x => new GameStruct(x.Properties),
-                    var x => x,
-                },
-                ArrayProperty p => p.Value?.Properties.Select(PropertyTagToValue),
-                ObjectProperty p => p.Value?.Name,
-                var x => throw new Exception($"Unhandled property type '{x?.GetType().Name ?? "null"}'"),
-            };
+            static object? PropertyTagToValue(FPropertyTagType? tag) =>
+                tag switch {
+                    NameProperty p => p.Value.IsNone ? null : p.Value.Text,
+                    EnumProperty p => p.Value.IsNone ? null : p.Value.Text.SubstringAfterLast(':'),
+                    StrProperty p => p.Value,
+                    BoolProperty p => p.Value,
+                    IntProperty p => p.Value,
+                    FloatProperty p => p.Value,
+                    DoubleProperty p => p.Value,
+                    StructProperty p => p.Value is null
+                        ? null
+                        : p.Value.StructType switch {
+                            AbstractPropertyHolder x => new GameStruct(x.Properties),
+                            var x => x,
+                        },
+                    ArrayProperty p => p.Value?.Properties.Select(PropertyTagToValue),
+                    ObjectProperty p => p.Value?.Name,
+                    var x => throw new Exception($"Unhandled property type '{x?.GetType().Name ?? "null"}'"),
+                };
         }
     }
 
@@ -100,238 +105,294 @@ public class GameStruct {
     /// <summary>
     /// Converts Pal spawn sheet data to an enumerable of <see cref="SpawnEntry"/>.
     /// </summary>
-    public IEnumerable<SpawnEntry> PalSpawnsToSpawnEntries() => SpawnGroupList.Select(entry =>
-        new SpawnEntry {
+    public IEnumerable<SpawnEntry> PalSpawnsToSpawnEntries() =>
+        SpawnGroupList.Select(entry => new SpawnEntry {
             Weight = entry.Weight,
-            NightOnly = entry.PropertyExists(nameof(OnlyTime), out string onlyTime)
+            NightOnly =
+                entry.PropertyExists(nameof(OnlyTime), out string onlyTime)
                 && onlyTime is "Night" or "EPalOneDayTimeType::Night",
-            SpawnList = [.. entry.PalList.Select(spawn => {
+            SpawnList =
+            [
+                .. entry.PalList.Select(spawn =>
+                {
                     string characterId =
-                        (!spawn.PropertyExists(nameof(PalId), out GameStruct palId) || palId.Key == "None" ? null
-                            : palId.Key)
-                        ?? (!spawn.PropertyExists(nameof(NPCID), out GameStruct npcId) || npcId.Key == "None" ? null
-                            : npcId.Key)
+                        (
+                            !spawn.PropertyExists(nameof(PalId), out GameStruct palId) || palId.Key == "None"
+                                ? null
+                                : palId.Key
+                        )
+                        ?? (
+                            !spawn.PropertyExists(nameof(NPCID), out GameStruct npcId) || npcId.Key == "None"
+                                ? null
+                                : npcId.Key
+                        )
                         ?? "RowName";
 
-                    return new SpawnData {
+                    return new SpawnData
+                    {
                         Name = characterId,
                         MinLevel = spawn.Level,
                         MaxLevel = spawn.Level_Max,
                         MinCount = spawn.Num,
-                        MaxCount = spawn.Num_Max
+                        MaxCount = spawn.Num_Max,
                     };
-                }
-            )]
-        }
-    );
+                }),
+            ],
+        });
 
     /// <summary>
     /// Converts Pal egg spawn data to an enumerable of <see cref="SpawnEntry"/>.
     /// </summary>
-    public IEnumerable<SpawnEntry> PalEggsToSpawnEntries() => SpawnPalEggLotteryDataArray.Select(entry =>
-        new SpawnEntry {
+    public IEnumerable<SpawnEntry> PalEggsToSpawnEntries() =>
+        SpawnPalEggLotteryDataArray.Select(entry => new SpawnEntry {
             Weight = Convert.ToInt32(entry.Weight_F * 40),
-            SpawnList = [
-                new SpawnData {
-                    Name = entry.PalEggData.PalMonsterId.Key!
-                }
-            ]
-        }
-    );
+            SpawnList = [new SpawnData { Name = entry.PalEggData.PalMonsterId.Key! }],
+        });
 
     /// <summary>
     /// Converts mono human boss spawn data to an enumerable of <see cref="SpawnEntry"/>.
     /// </summary>
-    public IEnumerable<SpawnEntry> HumanBossMonoToSpawnEntries() => [new SpawnEntry {
-        SpawnList = [..
-            ((IEnumerable<GameStruct>)[
-                .. (IEnumerable<GameStruct>)(PropertyExists(nameof(HumanName), out GameStruct n) ? [n] : []),
-                .. (IEnumerable<GameStruct>)(PropertyExists(nameof(OtomoName), out GameStruct o) ? [o] : []),
-            ])
-            .Where(x => x.Key is not null and not "None")
-            .Select(x => new SpawnData {
-                Name = x.Key!,
-                MinLevel = Level,
-                MaxLevel = Level,
-            })
-        ]
-    }];
+    public IEnumerable<SpawnEntry> HumanBossMonoToSpawnEntries() =>
+        [
+            new SpawnEntry
+            {
+                SpawnList =
+                [
+                    .. (
+                        (IEnumerable<GameStruct>)
+                            [
+                                .. (IEnumerable<GameStruct>)(
+                                    PropertyExists(nameof(HumanName), out GameStruct n) ? [n] : []
+                                ),
+                                .. (IEnumerable<GameStruct>)(
+                                    PropertyExists(nameof(OtomoName), out GameStruct o) ? [o] : []
+                                ),
+                            ]
+                    )
+                        .Where(x => x.Key is not null and not "None")
+                        .Select(x => new SpawnData
+                        {
+                            Name = x.Key!,
+                            MinLevel = Level,
+                            MaxLevel = Level,
+                        }),
+                ],
+            },
+        ];
 
     /// <summary>
     /// Converts squad human boss spawn data to an enumerable of <see cref="SpawnEntry"/>.
     /// </summary>
-    public IEnumerable<SpawnEntry> HumanBossSquadToSpawnEntries() => [..
-        ((IEnumerable<GameStruct>)[
-                BP_NPCSpawnPointComponent,
-                BP_NPCSpawnPointComponent1,
-                BP_NPCSpawnPointComponent2,
-            ])
-        .Select(x => 
-            new SpawnEntry {
-                SpawnList = [..
-                    ((IEnumerable<GameStruct>)[
-                        .. (IEnumerable<GameStruct>)(x.PropertyExists(nameof(NPCName), out GameStruct n) ? [n] : []),
-                        .. (IEnumerable<GameStruct>)(x.PropertyExists(nameof(OtomoName), out GameStruct o) ? [o] : []),
-                    ])
-                    .Where(y => y.Key is not null and not "None")
-                    .Select(z => new SpawnData {
-                        Name = z.Key!,
-                        MinLevel = x.OverrideLevel,
-                        MaxLevel = x.OverrideLevel,
-                    })
-                ]
-            }
-        )
-    ];
+    public IEnumerable<SpawnEntry> HumanBossSquadToSpawnEntries() =>
+        [
+            .. (
+                (IEnumerable<GameStruct>)
+                    [BP_NPCSpawnPointComponent, BP_NPCSpawnPointComponent1, BP_NPCSpawnPointComponent2]
+            ).Select(x => new SpawnEntry
+            {
+                SpawnList =
+                [
+                    .. (
+                        (IEnumerable<GameStruct>)
+                            [
+                                .. (IEnumerable<GameStruct>)(
+                                    x.PropertyExists(nameof(NPCName), out GameStruct n) ? [n] : []
+                                ),
+                                .. (IEnumerable<GameStruct>)(
+                                    x.PropertyExists(nameof(OtomoName), out GameStruct o) ? [o] : []
+                                ),
+                            ]
+                    )
+                        .Where(y => y.Key is not null and not "None")
+                        .Select(z => new SpawnData
+                        {
+                            Name = z.Key!,
+                            MinLevel = x.OverrideLevel,
+                            MaxLevel = x.OverrideLevel,
+                        }),
+                ],
+            }),
+        ];
 
     /// <summary>
     /// Dictionary containing all defined properties.<br/>
     /// Values can be <see cref="GameStruct"/>, primitives, List (for arrays) or <see langword="null"/>.
     /// </summary>
     public Dictionary<string, object?> Properties { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+
     /// <summary>
     /// Dictionary containing all objects of a data table.
     /// </summary>
     public Dictionary<string, GameStruct> DataTable { get; set; } = null!;
+
     /// <summary>A Character ID.</summary>
     public string? Key {
         get => (string?)Properties["Key"];
         set => Properties["Key"] = value;
     }
+
     /// <summary>Properties: { Key }<br/>Character ID of a pal.</summary>
     public GameStruct PalId {
         get => (GameStruct)Properties["PalId"]!;
         set => Properties["PalId"] = value;
     }
+
     /// <summary>Properties: { Key }<br/>Character ID of a human.</summary>
     public GameStruct NPCID {
         get => (GameStruct)Properties["NPCID"]!;
         set => Properties["NPCID"] = value;
     }
+
     /// <summary>Minimum level of a character spawn.</summary>
     public int Level {
         get => (int)Properties["Level"]!;
         set => Properties["Level"] = value;
     }
+
     /// <summary>Maximum level of a character spawn.</summary>
     public int Level_Max {
         get => (int)Properties["Level_Max"]!;
         set => Properties["Level_Max"] = value;
     }
+
     /// <summary>Minimum count of a character spawn.</summary>
     public int Num {
         get => (int)Properties["Num"]!;
         set => Properties["Num"] = value;
     }
+
     /// <summary>Maximum count of a character spawn.</summary>
     public int Num_Max {
         get => (int)Properties["Num_Max"]!;
         set => Properties["Num_Max"] = value;
     }
+
     /// <summary>Weight of a spawn group.</summary>
     public int Weight {
         get => (int)Properties["Weight"]!;
         set => Properties["Weight"] = value;
     }
+
     /// <summary>Time of day restriction (enum).</summary>
     public string OnlyTime {
         get => (string)Properties["OnlyTime"]!;
         set => Properties["OnlyTime"] = value;
     }
+
     /// <summary>List of { PalId, NPCID, Level, Level_Max, Num, Num_Max }.</summary>
     public List<GameStruct> PalList {
-        get => Properties["PalList"]! switch {
-            IEnumerable<object?> e => PalList = [.. e.Select(y => (GameStruct)y!)],
-            var x => (List<GameStruct>)x,
-        };
+        get =>
+            Properties["PalList"]! switch {
+                IEnumerable<object?> e => PalList = [.. e.Select(y => (GameStruct)y!)],
+                var x => (List<GameStruct>)x,
+            };
         set => Properties["PalList"] = value;
     }
+
     /// <summary>List of { Weight, OnlyTime, PalList }.</summary>
     public List<GameStruct> SpawnGroupList {
-        get => Properties["SpawnGroupList"]! switch {
-            IEnumerable<object?> e => SpawnGroupList = [.. e.Select(y => (GameStruct)y!)],
-            var x => (List<GameStruct>)x,
-        };
+        get =>
+            Properties["SpawnGroupList"]! switch {
+                IEnumerable<object?> e => SpawnGroupList = [.. e.Select(y => (GameStruct)y!)],
+                var x => (List<GameStruct>)x,
+            };
         set => Properties["SpawnGroupList"] = value;
     }
+
     /// <summary>Properties: { Key }<br/>Character ID of a pal.</summary>
     public GameStruct PalMonsterId {
         get => (GameStruct)Properties["PalMonsterId"]!;
         set => Properties["PalMonsterId"] = value;
     }
+
     /// <summary>Properties: { PalMonsterId }<br/>Character ID of a pal.</summary>
     public GameStruct PalEggData {
         get => (GameStruct)Properties["PalEggData"]!;
         set => Properties["PalEggData"] = value;
     }
+
     /// <summary>List of { PalEggData, WeightF }.</summary>
     public List<GameStruct> SpawnPalEggLotteryDataArray {
-        get => Properties["SpawnPalEggLotteryDataArray"]! switch {
-            IEnumerable<object?> e => SpawnPalEggLotteryDataArray = [.. e.Select(y => (GameStruct)y!)],
-            var x => (List<GameStruct>)x,
-        };
+        get =>
+            Properties["SpawnPalEggLotteryDataArray"]! switch {
+                IEnumerable<object?> e => SpawnPalEggLotteryDataArray = [.. e.Select(y => (GameStruct)y!)],
+                var x => (List<GameStruct>)x,
+            };
         set => Properties["SpawnPalEggLotteryDataArray"] = value;
     }
+
     /// <summary>Respawn time for eggs.</summary>
     public float RespawnTimeMinutesObtained {
         get => (float)Properties["RespawnTimeMinutesObtained"]!;
         set => Properties["RespawnTimeMinutesObtained"] = value;
     }
+
     /// <summary>Name of spawn area type.</summary>
     public string FieldName {
         get => (string)Properties["FieldName"]!;
         set => Properties["FieldName"] = value;
     }
+
     /// <summary>Character ID of a pal (string).</summary>
     public string PalId_S {
         get => (string)Properties["PalId"]!;
         set => Properties["PalId"] = value;
     }
+
     /// <summary>Weight of a character spawn (float).</summary>
     public float Weight_F {
         get => (float)Properties["Weight"]!;
         set => Properties["Weight"] = value;
     }
+
     /// <summary>Minimum level of a character spawn.</summary>
     public int MinLevel {
         get => (int)Properties["MinLevel"]!;
         set => Properties["MinLevel"] = value;
     }
+
     /// <summary>Minimum level of a character spawn.</summary>
     public int MaxLevel {
         get => (int)Properties["MaxLevel"]!;
         set => Properties["MaxLevel"] = value;
     }
+
     /// <summary>Properties: { Key }<br/>Character ID of a human.</summary>
     public GameStruct HumanName {
         get => (GameStruct)Properties["HumanName"]!;
         set => Properties["HumanName"] = value;
     }
+
     /// <summary>Properties: { Key }<br/>Character ID of a pal.</summary>
     public GameStruct OtomoName {
         get => (GameStruct)Properties["OtomoName"]!;
         set => Properties["OtomoName"] = value;
     }
+
     /// <summary>Main spawn component for human boss groups.</summary>
     public GameStruct BP_NPCSpawnPointComponent {
         get => (GameStruct)Properties["BP_NPCSpawnPointComponent"]!;
         set => Properties["BP_NPCSpawnPointComponent"] = value;
     }
+
     /// <summary>Extra spawn component for human boss groups.</summary>
     public GameStruct BP_NPCSpawnPointComponent1 {
         get => (GameStruct)Properties["BP_NPCSpawnPointComponent1"]!;
         set => Properties["BP_NPCSpawnPointComponent1"] = value;
     }
+
     /// <summary>Extra spawn component for human boss groups.</summary>
     public GameStruct BP_NPCSpawnPointComponent2 {
         get => (GameStruct)Properties["BP_NPCSpawnPointComponent2"]!;
         set => Properties["BP_NPCSpawnPointComponent2"] = value;
     }
+
     /// <summary>Properties: { Key }<br/>Character ID.</summary>
     public GameStruct NPCName {
         get => (GameStruct)Properties["NPCName"]!;
         set => Properties["NPCName"] = value;
     }
+
     /// <summary>Level of a character spawn.</summary>
     public int OverrideLevel {
         get => (int)Properties["OverrideLevel"]!;

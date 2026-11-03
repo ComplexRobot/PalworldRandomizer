@@ -1,0 +1,14 @@
+<Project>
+    <PropertyGroup>
+        <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageVersion Include="CUE4Parse" Version="1.2.2.202607" />
+        <PackageVersion Include="CUE4Parse-Conversion" Version="1.2.2.202607" />
+        <PackageVersion Include="ini-parser" Version="3.4.0" />
+        <PackageVersion Include="Newtonsoft.Json" Version="13.0.5-beta1" />
+        <PackageVersion Include="Emoji.Wpf" Version="0.3.4" />
+        <PackageVersion Include="ZstdSharp.Port" Version="0.8.8" />
+        <PackageVersion Include="Microsoft.Bcl.Memory" Version="9.0.14" />
+    </ItemGroup>
+</Project>

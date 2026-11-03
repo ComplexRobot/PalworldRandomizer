@@ -7,58 +7,85 @@ using PalworldRandomizer.Serializer;
 
 namespace PalworldRandomizer.Randomizer;
 
-public static partial class Data
-{
+/// <summary>Shared character metadata and vanilla spawn tables loaded from the game archive.</summary>
+public static partial class Data {
     /// <summary>Dictionary of data for all characters.</summary>
     public static Dictionary<string, CharacterData> PalData { get; private set; } = [];
+
     /// <summary>Dictionary of internal name to English text name.</summary>
     public static Dictionary<string, string> PalName { get; private set; } = new(StringComparer.OrdinalIgnoreCase);
+
     /// <summary>Dictionary of internal name to name used in the spawn editor UI.</summary>
     public static Dictionary<string, string> SimpleName { get; private set; } = [];
+
     /// <summary>List of possible keys used in the spawn editor UI.</summary>
     public static List<string> SimpleNameValues { get; private set; } = [];
+
     /// <summary>Dictionary of icon file paths.</summary>
     public static Dictionary<string, string> PalIcon { get; private set; } = new(StringComparer.OrdinalIgnoreCase);
+
     /// <summary>List of valid non-boss pals.</summary>
     public static List<string> PalList { get; private set; } = [];
+
     /// <summary>Dictionary of non-boss to boss names.</summary>
     public static Dictionary<string, string> BossName { get; private set; } = new(StringComparer.OrdinalIgnoreCase);
+
     /// <summary>List of valid tower boss names.</summary>
     public static List<string> TowerBossNames { get; private set; } = [];
+
     /// <summary>List of special non-boss tower boss variants.</summary>
     public static List<string> TowerNonBossNames { get; private set; } = [];
+
     /// <summary>List of valid raid boss names.</summary>
     public static List<string> RaidBossNames { get; private set; } = [];
+
     /// <summary>List of valid predator boss names.</summary>
     public static List<string> PredatorNames { get; private set; } = [];
+
     /// <summary>List of valid human boss names.</summary>
     public static List<string> HumanBossNames { get; private set; } = [];
+
     /// <summary>Set of flying pal names.</summary>
     public static HashSet<string> FlyingNames { get; private set; } = [];
+
     /// <summary>List of PIDF Rider pals.</summary>
     public static List<string> PolicePalNames { get; private set; } = [];
+
     /// <summary>List of vanilla spawn groups with only one character.</summary>
-    public static Dictionary<string, List<SpawnEntry>> SoloEntries { get; private set; } = new(StringComparer.OrdinalIgnoreCase);
+    public static Dictionary<string, List<SpawnEntry>> SoloEntries { get; private set; } =
+        new(StringComparer.OrdinalIgnoreCase);
+
     /// <summary>List of vanilla boss spawn groups.</summary>
-    public static Dictionary<string, List<SpawnEntry>> BossEntries { get; private set; } = new(StringComparer.OrdinalIgnoreCase);
+    public static Dictionary<string, List<SpawnEntry>> BossEntries { get; private set; } =
+        new(StringComparer.OrdinalIgnoreCase);
+
     /// <summary>List of vanilla spawn groups with more than one character.</summary>
     public static List<SpawnEntry> GroupEntries { get; private set; } = [];
+
     /// <summary>Dictionary of filenames to spawn tables.</summary>
     public static Dictionary<string, AreaData> AreaData { get; private set; } = [];
+
     /// <summary>List of valid Terraria monsters.</summary>
     public static List<string> TerrariaMonsters { get; private set; } = [];
+
     /// <summary>List of valid Terraria boss monsters.</summary>
     public static List<string> TerrariaMonstersBosses { get; private set; } = [];
+
     /// <summary>List of (non-boss) humans from the tower boss fights.</summary>
     public static List<string> TowerHumanNames { get; private set; } = [];
+
     /// <summary>Filename of the first cage spawn in the spawn tables.</summary>
     public static string FirstCage { get; private set; } = null!;
+
     /// <summary>Filename of the first egg spawn in the spawn tables.</summary>
     public static string FirstEgg { get; private set; } = null!;
+
     /// <summary>Filename of the first boss spawn table.</summary>
     public static string FirstBoss { get; private set; } = null!;
+
     /// <summary>Aggressive human names.</summary>
-    public static string[] HumanNames { get; } = [
+    public static string[] HumanNames { get; } =
+    [
         "Believer_Bat",
         "Believer_CrossBow",
         "Believer_Fat_Cane",
@@ -113,15 +140,14 @@ public static partial class Data
         "Female_Kunoichi01",
         "Female_SurveyGirl04",
     ];
+
     /// <summary>Regular police (PIDF) names.</summary>
-    public static string[] PoliceNames { get; } = [
-        "Police_Handgun",
-        "Police_Rifle",
-        "Police_Shotgun",
-        "Police_BowGun",
-    ];
+    public static string[] PoliceNames { get; } =
+    ["Police_Handgun", "Police_Rifle", "Police_Shotgun", "Police_BowGun"];
+
     /// <summary>Guard names.</summary>
-    public static string[] GuardNames { get; } = [
+    public static string[] GuardNames { get; } =
+    [
         "Guard_Rifle",
         "Guard_Shotgun",
         "Male_DarkTrader01",
@@ -136,8 +162,10 @@ public static partial class Data
         "Reward_PalCaptureCount_v02",
         "Reward_Food",
     ];
+
     /// <summary>Names of item merchants.</summary>
-    public static string[] TraderNames { get; } = [
+    public static string[] TraderNames { get; } =
+    [
         "SalesPerson",
         "SalesPerson_Desert",
         "SalesPerson_Desert2",
@@ -171,20 +199,21 @@ public static partial class Data
         "Male_Trader01_v25",
         "NPC_Dungeon_Shop",
     ];
+
     /// <summary>Names of Pal merchants.</summary>
-    public static string[] PalTraderNames { get; } = [
-        "PalDealer",
-        "PalDealer_Desert",
-        "PalDealer_Volcano",
-        "RandomEventShop",
-    ];
+    public static string[] PalTraderNames { get; } =
+    ["PalDealer", "PalDealer_Desert", "PalDealer_Volcano", "RandomEventShop"];
+
     /// <summary>Names of humans with unique effects.</summary>
-    public static string[] SpecialNames { get; } = [
+    public static string[] SpecialNames { get; } =
+    [
         "PalPassive_Doctor",
         //"Visitor_Recruiter", // broken
     ];
+
     /// <summary>Names of various humans that don't do anything special.</summary>
-    public static string[] UselessHumanNames { get; } = [
+    public static string[] UselessHumanNames { get; } =
+    [
         "Male_Kigurumi01_v01",
         "Male_Police_old",
         "Female_Presenter01",
@@ -237,8 +266,10 @@ public static partial class Data
         "Male_Soldier03",
         "Male_Soldier04",
     ];
+
     /// <summary>Names of generic villager NPCs.</summary>
-    public static string[] VillagerNames { get; } = [
+    public static string[] VillagerNames { get; } =
+    [
         "Female_DesertPeople02",
         "Male_DesertPeople01",
         "Female_DTairikuPeople01_v01",
@@ -262,50 +293,78 @@ public static partial class Data
         "MobuVillager",
     ];
 
-    [GeneratedRegex("^(Quest(_[^_]+)?_)?(?<name>.+?)(_[0-9]+(_.+)?|_Flower|_MAX|_Oilrig)?$", RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture)]
+    [GeneratedRegex(
+        "^(Quest(_[^_]+)?_)?(?<name>.+?)(_[0-9]+(_.+)?|_Flower|_MAX|_Oilrig)?$",
+        RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture
+    )]
     private static partial Regex resourceKeyRegex();
 
     [GeneratedRegex(@"^Pal/Content/Pal/Blueprint/MapObject/Spawner/bp_palmapobjectspawner_palegg_.+?\.uasset$")]
     private static partial Regex PalEggSpawnSheetsRegex();
 
-    [GeneratedRegex("^(.+?_)?(HawkBird|Eagle|BirdDragon|ThunderBird|RedArmorBird|HadesBird|Suzaku|Horus|"
-        + "YakushimaMonster002|YakushimaMonster003|YakushimaBoss001|GhostDragon|BlueSkyDragon)(_[^_]+)?$",
-        RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture)]
+    [GeneratedRegex(
+        "^(.+?_)?(HawkBird|Eagle|BirdDragon|ThunderBird|RedArmorBird|HadesBird|Suzaku|Horus|"
+            + "YakushimaMonster002|YakushimaMonster003|YakushimaBoss001|GhostDragon|BlueSkyDragon)(_[^_]+)?$",
+        RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture
+    )]
     private static partial Regex FlyingPalNameRegex();
 
-    public static void Initialize(VfsFileProvider fileProvider)
-    {
-        var palDataAsset = fileProvider.LoadDataTable("Pal/Content/Pal/DataTable/Character/DT_PalMonsterParameter.uasset");
-        var humanDataAsset = fileProvider.LoadDataTable("Pal/Content/Pal/DataTable/Character/DT_PalHumanParameter.uasset");
+    /// <summary>Loads character names, icons, classifications and vanilla spawn areas from the archive.</summary>
+    public static void Initialize(VfsFileProvider fileProvider) {
+        var palDataAsset = fileProvider.LoadDataTable(
+            "Pal/Content/Pal/DataTable/Character/DT_PalMonsterParameter.uasset"
+        );
+        var humanDataAsset = fileProvider.LoadDataTable(
+            "Pal/Content/Pal/DataTable/Character/DT_PalHumanParameter.uasset"
+        );
 
-        PalData = ((IEnumerable<KeyValuePair<string, CharacterData>>)
-            [.. CreateReferencePairs(palDataAsset), .. CreateReferencePairs(humanDataAsset)]).ToDictionary(StringComparer.OrdinalIgnoreCase);
+        PalData = (
+            (IEnumerable<KeyValuePair<string, CharacterData>>)
+                [.. CreateReferencePairs(palDataAsset), .. CreateReferencePairs(humanDataAsset)]
+        ).ToDictionary(StringComparer.OrdinalIgnoreCase);
 
-        PalData["RowName"] = new CharacterData(palDataAsset.First().Value.Properties)
-        {
+        PalData["RowName"] = new CharacterData(palDataAsset.First().Value.Properties) {
             IsPal = true,
             ZukanIndex = -1,
             OverrideNameTextID = null,
-            IsBoss = false
+            IsBoss = false,
         };
 
-        static IEnumerable<KeyValuePair<string, CharacterData>> CreateReferencePairs(Dictionary<FName, FStructFallback> rowMap) =>
-            rowMap.Select(keyValuePair => new KeyValuePair<string, CharacterData>($"{keyValuePair.Key.Text}", new(keyValuePair.Value.Properties)));
+        static IEnumerable<KeyValuePair<string, CharacterData>> CreateReferencePairs(
+            Dictionary<FName, FStructFallback> rowMap
+        ) =>
+            rowMap.Select(keyValuePair => new KeyValuePair<string, CharacterData>(
+                $"{keyValuePair.Key.Text}",
+                new(keyValuePair.Value.Properties)
+            ));
 
-        var palNames = fileProvider.LoadDataTableText("Pal/Content/L10N/en/Pal/DataTable/Text/DT_PalNameText_Common.uasset");
-        var humanNames = fileProvider.LoadDataTableText("Pal/Content/L10N/en/Pal/DataTable/Text/DT_HumanNameText_Common.uasset");
-        var bossNPCIcons = fileProvider.LoadDataTableSoftObject("Pal/Content/Pal/DataTable/Character/DT_PalBossNPCIcon.uasset");
-        var palIcons = fileProvider.LoadDataTableSoftObject("Pal/Content/Pal/DataTable/Character/DT_PalCharacterIconDataTable.uasset");
+        var palNames = fileProvider.LoadDataTableText(
+            "Pal/Content/L10N/en/Pal/DataTable/Text/DT_PalNameText_Common.uasset"
+        );
+        var humanNames = fileProvider.LoadDataTableText(
+            "Pal/Content/L10N/en/Pal/DataTable/Text/DT_HumanNameText_Common.uasset"
+        );
+        var bossNPCIcons = fileProvider.LoadDataTableSoftObject(
+            "Pal/Content/Pal/DataTable/Character/DT_PalBossNPCIcon.uasset"
+        );
+        var palIcons = fileProvider.LoadDataTableSoftObject(
+            "Pal/Content/Pal/DataTable/Character/DT_PalCharacterIconDataTable.uasset"
+        );
 
         string unknownIconPath = fileProvider.SaveTexturePng(
-            "Pal/Content/Pal/Texture/UI/Main_Menu/T_icon_unknown.uasset", UAssetData.PalIconPath(),
-            fileProvider.GameVersionUpdated);
+            "Pal/Content/Pal/Texture/UI/Main_Menu/T_icon_unknown.uasset",
+            UAssetData.PalIconPath(),
+            fileProvider.GameVersionUpdated
+        );
 
         string commonHumanIconPath = fileProvider.SaveTexturePng(
-            "Pal/Content/Pal/Texture/PalIcon/Normal/T_CommonHuman_icon_normal.uasset", UAssetData.PalIconPath("Human"),
-            fileProvider.GameVersionUpdated);
+            "Pal/Content/Pal/Texture/PalIcon/Normal/T_CommonHuman_icon_normal.uasset",
+            UAssetData.PalIconPath("Human"),
+            fileProvider.GameVersionUpdated
+        );
 
-        var weapons = new Dictionary<string, string> {
+        var weapons = new Dictionary<string, string>
+        {
             { "AssaultRifle", UAssetData.WeaponIconPath("T_itemicon_Weapon_AssaultRifle_Default1.png") },
             { "Handgun", UAssetData.WeaponIconPath("T_itemicon_Weapon_HandGun_Default.png") },
             { "Shotgun", UAssetData.WeaponIconPath("T_itemicon_Weapon_PumpActionShotgun.png") },
@@ -332,93 +391,105 @@ public static partial class Data
             { "SakurajimaBoss", "Saya" },
             { "VikingBoss", "Bjorn" },
         };
-        foreach ((string key, var value) in PalData)
-        {
-            if (value.IsPal)
-            {
+        foreach ((string key, var value) in PalData) {
+            if (value.IsPal) {
                 bool isTowerBoss = key.StartsWith("GYM_", StringComparison.OrdinalIgnoreCase);
                 bool isRaidBoss = key.StartsWith("RAID_", StringComparison.OrdinalIgnoreCase);
                 bool isPredator = key.StartsWith("PREDATOR_", StringComparison.OrdinalIgnoreCase);
-                bool isBoss = key.StartsWith("BOSS_", StringComparison.OrdinalIgnoreCase) || isTowerBoss || isRaidBoss || isPredator;
+                bool isBoss =
+                    key.StartsWith("BOSS_", StringComparison.OrdinalIgnoreCase)
+                    || isTowerBoss
+                    || isRaidBoss
+                    || isPredator;
                 bool isSummon = key.StartsWith("SUMMON_", StringComparison.OrdinalIgnoreCase);
                 bool isOilrig = key.EndsWith("_Oilrig", StringComparison.OrdinalIgnoreCase);
-                bool isQuest = key.StartsWith("Quest_", StringComparison.OrdinalIgnoreCase) || key.EndsWith("_Quest", StringComparison.OrdinalIgnoreCase)
-                        || key.EndsWith("_Quest_Friend", StringComparison.OrdinalIgnoreCase) || key.EndsWith("_Quest_Enemy", StringComparison.OrdinalIgnoreCase);
+                bool isQuest =
+                    key.StartsWith("Quest_", StringComparison.OrdinalIgnoreCase)
+                    || key.EndsWith("_Quest", StringComparison.OrdinalIgnoreCase)
+                    || key.EndsWith("_Quest_Friend", StringComparison.OrdinalIgnoreCase)
+                    || key.EndsWith("_Quest_Enemy", StringComparison.OrdinalIgnoreCase);
                 bool isTower = key.EndsWith("_Tower", StringComparison.OrdinalIgnoreCase);
                 bool isPolice = key.StartsWith("POLICE_", StringComparison.OrdinalIgnoreCase);
 
                 string nameString;
 
-                if (value.OverrideNameTextID is string textId && palNames.TryGetValue(textId, out string? name) && name is not null) {
+                if (
+                    value.OverrideNameTextID is string textId
+                    && palNames.TryGetValue(textId, out string? name)
+                    && name is not null
+                ) {
                     nameString = name;
-                } else if (palNames.TryGetValue($"PAL_NAME_{key}", out string? nameFallback) && nameFallback is not null) {
+                } else if (
+                      palNames.TryGetValue($"PAL_NAME_{key}", out string? nameFallback) && nameFallback is not null
+                  ) {
                     nameString = nameFallback;
                 } else {
                     nameString = "en_text";
                 }
 
-                if (nameString is "-" or "Unidentified Pal")
-                {
+                if (nameString is "-" or "Unidentified Pal") {
                     nameString = "en_text";
                 }
-                while (nameString.Contains("  "))
-                {
+
+                while (nameString.Contains("  ")) {
                     nameString = nameString.Replace("  ", " ");
                 }
-                PalName.Add(key, (nameString == "en_text" ? (isBoss ? key[(key.IndexOf('_') + 1)..] : key) : nameString).Trim());
-                if (value.ZukanIndex > 0 && !isSummon && !isOilrig && !isQuest && !isTower
-                    && key != "WorldTreeDragon")
-                {
+
+                PalName.Add(
+                    key,
+                    (nameString == "en_text" ? (isBoss ? key[(key.IndexOf('_') + 1)..] : key) : nameString).Trim()
+                );
+                if (
+                    value.ZukanIndex > 0
+                    && !isSummon
+                    && !isOilrig
+                    && !isQuest
+                    && !isTower
+                    && key != "WorldTreeDragon"
+                ) {
                     PalList.Add(key);
-                }
-                else if (!isRaidBoss && key.Contains("Yakushima"))
-                {
-                    if (isBoss)
-                    {
+                } else if (!isRaidBoss && key.Contains("Yakushima")) {
+                    if (isBoss) {
                         TerrariaMonstersBosses.Add(key);
-                    }
-                    else
-                    {
+                    } else {
                         TerrariaMonsters.Add(key);
                     }
-                }
-                else if (key.EndsWith("_Otomo", StringComparison.OrdinalIgnoreCase) && !isBoss)
-                {
+                } else if (key.EndsWith("_Otomo", StringComparison.OrdinalIgnoreCase) && !isBoss) {
                     TowerNonBossNames.Add(key);
                 } else if (isPolice) {
                     PolicePalNames.Add(key);
                 }
 
-                if (!isBoss || isTowerBoss || isRaidBoss || isPredator)
-                {
+                if (!isBoss || isTowerBoss || isRaidBoss || isPredator) {
                     if (!isQuest) {
-                        if (!isBoss && key is not "WorldTreeDragon" and not "KingWhale")
-                        {
-                            try
-                            {
-                                BossName.Add(key, PalData.Keys.First(k => k.Equals($"BOSS_{key}", StringComparison.OrdinalIgnoreCase)));
-                            }
-                            catch
-                            {
-                            }
-                        }
-                        else if (isTowerBoss)
-                        {
+                        if (!isBoss && key is not "WorldTreeDragon" and not "KingWhale") {
+                            try {
+                                BossName.Add(
+                                    key,
+                                    PalData.Keys.First(k =>
+                                        k.Equals($"BOSS_{key}", StringComparison.OrdinalIgnoreCase)
+                                    )
+                                );
+                            } catch { }
+                        } else if (isTowerBoss) {
                             // TODO: Change to regex
-                            if (!key.EndsWith("_2") && !key.EndsWith("_2_Avatar") && !key.EndsWith("_2_Servant") && !key.EndsWith("_Otomo"))
-                            {
+                            if (
+                                !key.EndsWith("_2")
+                                && !key.EndsWith("_2_Avatar")
+                                && !key.EndsWith("_2_Servant")
+                                && !key.EndsWith("_Otomo")
+                            ) {
                                 TowerBossNames.Add(key);
                             }
-                        }
-                        else if (isPredator)
-                        {
+                        } else if (isPredator) {
                             PredatorNames.Add(key);
-                        }
-                        else
-                        {
+                        } else {
                             // Moon Lord and True Eye of Cthulhu do not work
-                            if (!key.EndsWith("_2") && !key.StartsWith("RAID_YakushimaBoss002") && key != "RAID_YakushimaBoss001_Green")
-                            {
+                            if (
+                                !key.EndsWith("_2")
+                                && !key.StartsWith("RAID_YakushimaBoss002")
+                                && key != "RAID_YakushimaBoss001_Green"
+                            ) {
                                 RaidBossNames.Add(key);
                             }
                         }
@@ -426,75 +497,76 @@ public static partial class Data
 
                     SimpleName.Add(new SpawnData(key).SimpleName, key);
                 }
+
                 PalIconCheck((isBoss || isSummon) && !key.EndsWith("_Otomo"));
-                if (FlyingPalNameRegex().IsMatch(key))
-                {
+                if (FlyingPalNameRegex().IsMatch(key)) {
                     FlyingNames.Add(key);
                 }
-            }
-            else
-            {
+            } else {
                 SimpleName.Add(key, key);
 
-                if (value.OverrideNameTextID is string textId && humanNames.TryGetValue(textId, out string? name) && name is not null)
-                {
+                if (
+                    value.OverrideNameTextID is string textId
+                    && humanNames.TryGetValue(textId, out string? name)
+                    && name is not null
+                ) {
                     PalName.Add(key, name.Trim());
-                }
-                else
-                {
-                    if (humanNameFixes.TryGetValue(key, out string? nameFix))
-                    {
+                } else {
+                    if (humanNameFixes.TryGetValue(key, out string? nameFix)) {
                         PalName.Add(key, nameFix);
-                    }
-                    else
-                    {
+                    } else {
                         PalName.Add(key, "-");
                     }
                 }
-                if (key.StartsWith("BOSS_", StringComparison.OrdinalIgnoreCase))
-                {
+
+                if (key.StartsWith("BOSS_", StringComparison.OrdinalIgnoreCase)) {
                     HumanBossNames.Add(key);
 
                     if (bossNPCIcons.TryGetValue(key, out string? foundPath) && foundPath != null) {
                         string resourcePath = fileProvider.SaveTexturePng(
-                            VfsFileProvider.SoftPathToHardPath(foundPath), UAssetData.NpcIconPath(),
-                            fileProvider.GameVersionUpdated);
+                            VfsFileProvider.SoftPathToHardPath(foundPath),
+                            UAssetData.NpcIconPath(),
+                            fileProvider.GameVersionUpdated
+                        );
                         PalIcon.Add(key, resourcePath);
                     }
-                }
-                else
-                {
+                } else {
                     PalIconCheck();
                 }
-                if (!PalIcon.ContainsKey(key))
-                {
-                    if (PalData[key].Weapon != null && weapons.TryGetValue(PalData[key].Weapon!, out string? weaponName))
-                    {
+
+                if (!PalIcon.ContainsKey(key)) {
+                    if (
+                        PalData[key].Weapon != null
+                        && weapons.TryGetValue(PalData[key].Weapon!, out string? weaponName)
+                    ) {
                         PalIcon.Add(key, weaponName);
-                    }
-                    else
-                    {
+                    } else {
                         PalIcon.Add(key, commonHumanIconPath);
                     }
                 }
-                if (key.EndsWith("Boss"))
-                {
+
+                if (key.EndsWith("Boss")) {
                     TowerHumanNames.Add(key);
                 }
             }
-            void PalIconCheck(bool skipPrefix = false)
-            {
+
+            void PalIconCheck(bool skipPrefix = false) {
                 string resourceKey = resourceKeyRegex().Match(key).Groups[1].Value;
                 resourceKey = skipPrefix ? resourceKey[(resourceKey.IndexOf('_') + 1)..] : resourceKey;
 
-                if (palIcons.TryGetValue(resourceKey, out string? foundPath) && foundPath != null
-                    && foundPath != "/Game/Pal/Texture/PalIcon/Normal/T_dummy_icon.T_dummy_icon") {
+                if (
+                    palIcons.TryGetValue(resourceKey, out string? foundPath)
+                    && foundPath != null
+                    && foundPath != "/Game/Pal/Texture/PalIcon/Normal/T_dummy_icon.T_dummy_icon"
+                ) {
                     string hardPath = VfsFileProvider.SoftPathToHardPath(foundPath);
 
                     if (fileProvider.Files.ContainsKey(hardPath)) {
-                        string resourcePath = fileProvider.SaveTexturePng(hardPath,
+                        string resourcePath = fileProvider.SaveTexturePng(
+                            hardPath,
                             UAssetData.PalIconPath(value.IsPal ? "" : "Human"),
-                            fileProvider.GameVersionUpdated);
+                            fileProvider.GameVersionUpdated
+                        );
                         PalIcon.Add(key, resourcePath);
                     } else {
                         string resourcePath = UAssetData.PalIconPath(Path.GetFileName(hardPath));
@@ -510,32 +582,45 @@ public static partial class Data
                 }
             }
         }
+
         PalName["RowName"] = "<None>";
         SimpleName["<None>"] = "RowName";
         SimpleName.Remove("RowName");
         SimpleNameValues = [.. SimpleName.Keys];
         SimpleNameValues.Sort();
 
-        var spawnerList = ((IEnumerable<string?>)
-            [.. fileProvider.LoadDataTableSoftObject("Pal/Content/Pal/DataTable/Spawner/DT_PalSpawnerPlacement.uasset").Values,
-            .. fileProvider.LoadDataTableSoftObject("Pal/Content/Pal/DataTable/Dungeon/DT_DungeonEnemySpawnDataTable.uasset").Values])
+        var spawnerList = (
+            (IEnumerable<string?>)
+                [
+                    .. fileProvider
+                        .LoadDataTableSoftObject("Pal/Content/Pal/DataTable/Spawner/DT_PalSpawnerPlacement.uasset")
+                        .Values,
+                    .. fileProvider
+                        .LoadDataTableSoftObject(
+                            "Pal/Content/Pal/DataTable/Dungeon/DT_DungeonEnemySpawnDataTable.uasset"
+                        )
+                        .Values,
+                ]
+        )
             .Distinct()
             .Select(value => value is string path ? VfsFileProvider.SoftPathToHardPath(path) : null)
             .Order();
 
         List<AreaData> palAreas = [];
 
-        foreach (string? path in spawnerList)
-        {
+        foreach (string? path in spawnerList) {
             if (path is null) {
                 continue;
             }
 
             string filename = Path.GetFileName(path);
 
-            var spawnEntries = filename switch {
-                var x when x.StartsWith("BP_PalSpawner_", StringComparison.OrdinalIgnoreCase) =>
-                    new GameStruct(fileProvider, path).PalSpawnsToSpawnEntries(),
+            var spawnEntries = filename switch
+            {
+                var x when x.StartsWith("BP_PalSpawner_", StringComparison.OrdinalIgnoreCase) => new GameStruct(
+                    fileProvider,
+                    path
+                ).PalSpawnsToSpawnEntries(),
                 var x when x.StartsWith("BP_MonoNPCSpawnerBossBase_", StringComparison.OrdinalIgnoreCase) =>
                     new GameStruct(fileProvider, path).HumanBossMonoToSpawnEntries(),
                 var x when x.StartsWith("BP_SquadNPCSpawnerBossBase_", StringComparison.OrdinalIgnoreCase) =>
@@ -553,47 +638,48 @@ public static partial class Data
             float nightAverageLevel = 0;
             float nightLevelRange = 0;
             float nightWeightSum = 0;
-            foreach (SpawnEntry spawnEntry in spawnEntries)
-            {
-                if (spawnEntry.SpawnList[0].Name == "RowName")
-                {
+            foreach (SpawnEntry spawnEntry in spawnEntries) {
+                if (spawnEntry.SpawnList[0].Name == "RowName") {
                     continue;
                 }
-                if (spawnEntry.SpawnList.Count == 1 && !spawnEntry.SpawnList[0].IsBoss)
-                {
-                    if (!SoloEntries.TryGetValue(spawnEntry.SpawnList[0].Name, out List<SpawnEntry>? value))
-                    {
+
+                if (spawnEntry.SpawnList.Count == 1 && !spawnEntry.SpawnList[0].IsBoss) {
+                    if (!SoloEntries.TryGetValue(spawnEntry.SpawnList[0].Name, out List<SpawnEntry>? value)) {
                         value = [];
                         SoloEntries.Add(spawnEntry.SpawnList[0].Name, value);
                     }
+
                     value.Add(spawnEntry);
-                }
-                else if (spawnEntry.SpawnList[0].IsBoss)
-                {
-                    if (!spawnEntry.SpawnList[0].Name.StartsWith("PREDATOR_", StringComparison.OrdinalIgnoreCase))
-                    {
-                        if (!BossEntries.TryGetValue(spawnEntry.SpawnList[0].Name, out List<SpawnEntry>? value))
-                        {
+                } else if (spawnEntry.SpawnList[0].IsBoss) {
+                    if (!spawnEntry.SpawnList[0].Name.StartsWith("PREDATOR_", StringComparison.OrdinalIgnoreCase)) {
+                        if (!BossEntries.TryGetValue(spawnEntry.SpawnList[0].Name, out List<SpawnEntry>? value)) {
                             value = [];
                             BossEntries.Add(spawnEntry.SpawnList[0].Name, value);
                         }
+
                         value.Add(spawnEntry);
                     }
-                }
-                else
-                {
+                } else {
                     GroupEntries.Add(spawnEntry);
                 }
-                if (spawnEntry.NightOnly)
-                {
-                    nightAverageLevel += (float) (spawnEntry.SpawnList[0].MinLevel + spawnEntry.SpawnList[0].MaxLevel) * spawnEntry.Weight / 2.0f;
-                    nightLevelRange += (float) (spawnEntry.SpawnList[0].MaxLevel - spawnEntry.SpawnList[0].MinLevel) * spawnEntry.Weight;
+
+                if (spawnEntry.NightOnly) {
+                    nightAverageLevel +=
+                        (float)(spawnEntry.SpawnList[0].MinLevel + spawnEntry.SpawnList[0].MaxLevel)
+                        * spawnEntry.Weight
+                        / 2.0f;
+                    nightLevelRange +=
+                        (float)(spawnEntry.SpawnList[0].MaxLevel - spawnEntry.SpawnList[0].MinLevel)
+                        * spawnEntry.Weight;
                     nightWeightSum += spawnEntry.Weight;
-                }
-                else
-                {
-                    averageLevel += (float) (spawnEntry.SpawnList[0].MinLevel + spawnEntry.SpawnList[0].MaxLevel) * spawnEntry.Weight / 2.0f;
-                    levelRange += (float) (spawnEntry.SpawnList[0].MaxLevel - spawnEntry.SpawnList[0].MinLevel) * spawnEntry.Weight;
+                } else {
+                    averageLevel +=
+                        (float)(spawnEntry.SpawnList[0].MinLevel + spawnEntry.SpawnList[0].MaxLevel)
+                        * spawnEntry.Weight
+                        / 2.0f;
+                    levelRange +=
+                        (float)(spawnEntry.SpawnList[0].MaxLevel - spawnEntry.SpawnList[0].MinLevel)
+                        * spawnEntry.Weight;
                     weightSum += spawnEntry.Weight;
                 }
             }
@@ -612,8 +698,12 @@ public static partial class Data
             area.MaxLevel = Convert.ToInt32(averageLevel / weightSum + levelRange / 2.0f / weightSum);
 
             if (nightWeightSum != 0) {
-                area.MinLevelNight = Convert.ToInt32(nightAverageLevel / nightWeightSum - nightLevelRange / 2.0f / nightWeightSum);
-                area.MaxLevelNight = Convert.ToInt32(nightAverageLevel / nightWeightSum + nightLevelRange / 2.0f / nightWeightSum);
+                area.MinLevelNight = Convert.ToInt32(
+                    nightAverageLevel / nightWeightSum - nightLevelRange / 2.0f / nightWeightSum
+                );
+                area.MaxLevelNight = Convert.ToInt32(
+                    nightAverageLevel / nightWeightSum + nightLevelRange / 2.0f / nightWeightSum
+                );
             }
 
             area.IsBoss = area.SpawnEntries[0].SpawnList[0].IsBoss;
@@ -627,14 +717,17 @@ public static partial class Data
             };
             area.IsInDungeon = filename.Contains("dungeon", StringComparison.OrdinalIgnoreCase);
             area.IsAllArea = filename.Contains("allarea", StringComparison.OrdinalIgnoreCase);
-            area.IsOnlyHumans = !area.SpawnEntries
-                .Exists(x => x.SpawnList.Exists(y => PalData[y.Name].IsPal && y.Name != "RowName"));
-            area.IsSingleSpawn = !area.IsBoss
-                && (area.SpawnEntries.Count(x => x.SpawnList[0].Name != "RowName") == 1
-                || area.SpawnEntries
-                .SelectMany(x => x.SpawnList.Select(y => y.Name).Where(z => z != "RowName"))
-                .Distinct()
-                .Count() == 1);
+            area.IsOnlyHumans = !area.SpawnEntries.Exists(x =>
+                x.SpawnList.Exists(y => PalData[y.Name].IsPal && y.Name != "RowName")
+            );
+            area.IsSingleSpawn =
+                !area.IsBoss
+                && (
+                    area.SpawnEntries.Count(x => x.SpawnList[0].Name != "RowName") == 1
+                    || area.SpawnEntries.SelectMany(x => x.SpawnList.Select(y => y.Name).Where(z => z != "RowName"))
+                        .Distinct()
+                        .Count() == 1
+                );
         }
 
         palAreas.Sort(FileModify.AreaSortFunc);
@@ -648,18 +741,18 @@ public static partial class Data
 
         var cageData = FileModify.ReadCageData(
             new GameStruct(fileProvider, "Pal/Content/Pal/DataTable/Character/DT_CapturedCagePal.uasset")
-            .DataTable.Values);
+                .DataTable
+                .Values
+        );
         FirstCage = cageData.Values.Min(x => x.Filename)!;
-        foreach (var keyPair in cageData)
-        {
+        foreach (var keyPair in cageData) {
             AreaData.Add(keyPair.Key, keyPair.Value);
         }
 
         var eggSpawnerList = fileProvider.Files.Keys.Where(x => PalEggSpawnSheetsRegex().IsMatch(x)).Order();
 
         FirstEgg = Path.GetFileName(eggSpawnerList.First());
-        foreach (string path in eggSpawnerList)
-        {
+        foreach (string path in eggSpawnerList) {
             string filename = Path.GetFileName(path);
 
             var spawnData = new GameStruct(fileProvider, path);
@@ -667,54 +760,74 @@ public static partial class Data
             AreaData.Add(filename, FileModify.ReadEggData(filename, spawnData));
         }
     }
-    public static List<AreaData> AreaDataCopy()
-    {
-        return [.. AreaData.Values.Select(area => area.Clone())];
-    }
-    public static void AreaForEachIfDiff(List<AreaData> areaList, Action<AreaData>? func, Action<AreaData>? elseFunc = null)
-    {
-        foreach (AreaData area in areaList)
-        {
-            List<SpawnEntry> baseEntries = AreaData[area.IsCage ? $"Cage:{area.Filename}" : area.Filename].SpawnEntries;
+
+    /// <summary>Creates independent copies of the vanilla spawn areas.</summary>
+    public static List<AreaData> AreaDataCopy() => [.. AreaData.Values.Select(area => area.Clone())];
+
+    /// <summary>Visits changed and unchanged areas using the supplied callbacks.</summary>
+    public static void AreaForEachIfDiff(
+        List<AreaData> areaList,
+        Action<AreaData>? func,
+        Action<AreaData>? elseFunc = null
+    ) {
+        foreach (AreaData area in areaList) {
+            List<SpawnEntry> baseEntries = AreaData[
+                area.IsCage ? $"Cage:{area.Filename}" : area.Filename
+            ].SpawnEntries;
             List<SpawnEntry> newEntries = area.SpawnEntries;
-            if (baseEntries.Count != newEntries.Count
-                || ((Func<bool>) (() =>
-                {
-                    for (int i = 0; i < baseEntries.Count; ++i)
-                    {
-                        List<SpawnData> baseList = baseEntries[i].SpawnList;
-                        List<SpawnData> newList = newEntries[i].SpawnList;
-                        if (baseList.Count != newList.Count || baseEntries[i].Weight != newEntries[i].Weight || baseEntries[i].NightOnly != newEntries[i].NightOnly)
-                        {
-                            return true;
-                        }
-                        if (((Func<bool>) (() =>
-                        {
-                            for (int j = 0; j < baseList.Count; ++j)
-                            {
-                                if (!string.Equals(baseList[j].Name, newList[j].Name, StringComparison.OrdinalIgnoreCase)
-                                    || baseList[j].IsPal != newList[j].IsPal
-                                    || baseList[j].MinLevel != newList[j].MinLevel
-                                    || baseList[j].MaxLevel != newList[j].MaxLevel
-                                    || baseList[j].MinCount != newList[j].MinCount
-                                    || baseList[j].MaxCount != newList[j].MaxCount)
-                                {
+            if (
+                baseEntries.Count != newEntries.Count
+                || (
+                    (Func<bool>)(
+                        () => {
+                            for (int i = 0; i < baseEntries.Count; ++i) {
+                                List<SpawnData> baseList = baseEntries[i].SpawnList;
+                                List<SpawnData> newList = newEntries[i].SpawnList;
+                                if (
+                                    baseList.Count != newList.Count
+                                    || baseEntries[i].Weight != newEntries[i].Weight
+                                    || baseEntries[i].NightOnly != newEntries[i].NightOnly
+                                ) {
+                                    return true;
+                                }
+
+                                if (
+                                    (
+                                        (Func<bool>)(
+                                            () => {
+                                                for (int j = 0; j < baseList.Count; ++j) {
+                                                    if (
+                                                        !string.Equals(
+                                                            baseList[j].Name,
+                                                            newList[j].Name,
+                                                            StringComparison.OrdinalIgnoreCase
+                                                        )
+                                                        || baseList[j].IsPal != newList[j].IsPal
+                                                        || baseList[j].MinLevel != newList[j].MinLevel
+                                                        || baseList[j].MaxLevel != newList[j].MaxLevel
+                                                        || baseList[j].MinCount != newList[j].MinCount
+                                                        || baseList[j].MaxCount != newList[j].MaxCount
+                                                    ) {
+                                                        return true;
+                                                    }
+                                                }
+
+                                                return false;
+                                            }
+                                        )
+                                    )()
+                                ) {
                                     return true;
                                 }
                             }
+
                             return false;
-                        }))())
-                        {
-                            return true;
                         }
-                    }
-                    return false;
-                }))())
-            {
+                    )
+                )()
+            ) {
                 func?.Invoke(area);
-            }
-            else
-            {
+            } else {
                 elseFunc?.Invoke(area);
             }
         }

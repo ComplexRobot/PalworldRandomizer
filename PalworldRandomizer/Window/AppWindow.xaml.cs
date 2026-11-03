@@ -3,12 +3,10 @@ using System.Windows.Interop;
 
 namespace PalworldRandomizer.Window;
 
-public partial class AppWindow : System.Windows.Window
-{
-    public AppWindow(Func<object> contentSetter)
-    {
-        Loaded += (sender, e) =>
-        {
+public partial class AppWindow : System.Windows.Window {
+    /// <summary>Creates a styled desktop host and defers its content until the window is loaded.</summary>
+    public AppWindow(Func<object> contentSetter) {
+        Loaded += (sender, e) => {
             Left = initialX;
             Top = initialY;
             SharedWindow.EnableDarkMode(this);
@@ -19,26 +17,24 @@ public partial class AppWindow : System.Windows.Window
 
     private double initialX = 0;
     private double initialY = 0;
-    public void ShowClean()
-    {
-        if (!IsLoaded)
-        {
+
+    /// <summary>Shows the desktop window while avoiding its initial unstyled appearance.</summary>
+    public void ShowClean() {
+        if (!IsLoaded) {
             new WindowInteropHelper(this).EnsureHandle();
             initialX = Left;
             initialY = Top;
             Left = -20000;
             Top = -20000;
             Show();
-        }
-        else
-        {
+        } else {
             WindowState = WindowState.Normal;
             ShowInTaskbar = true;
         }
     }
 
-    public void HideClean()
-    {
+    /// <summary>Minimizes the desktop window and hides its taskbar entry.</summary>
+    public void HideClean() {
         WindowState = WindowState.Minimized;
         ShowInTaskbar = false;
     }

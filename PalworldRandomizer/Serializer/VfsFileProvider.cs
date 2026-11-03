@@ -1,4 +1,5 @@
 using System.IO;
+using CUE4Parse_Conversion.Textures;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.FileProvider.Vfs;
 using CUE4Parse.UE4.Assets;
@@ -9,24 +10,30 @@ using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Assets.Objects.Properties;
 using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.UE4.Versions;
-using CUE4Parse_Conversion.Textures;
 
 namespace PalworldRandomizer.Serializer;
 
+/// <summary>Reads game assets and tracks asynchronous texture saves for the application.</summary>
 public class VfsFileProvider()
     : AbstractVfsFileProvider(new VersionContainer(EGame.GAME_UE5_1), StringComparer.OrdinalIgnoreCase),
-    IAsyncDisposable {
+        IAsyncDisposable {
     /// <summary><see langword="true"/> if a game version change was detected during initial load.</summary>
     public bool GameVersionUpdated { get; set; } = false;
 
     private readonly HashSet<string> _savedImagePaths = [];
     private readonly List<Task> _fileSaveTasks = [];
 
+    /// <summary>Leaves initialization to the explicitly registered game archive.</summary>
     public override void Initialize() { }
 
-    public void AddFile(string file, string mountPoint)
-    {
-        OsGameFile gameFile = new(new(Path.GetDirectoryName(file)!), new(file), mountPoint, new VersionContainer(EGame.GAME_UE5_1));
+    /// <summary>Adds an operating-system file to the provider under a virtual mount point.</summary>
+    public void AddFile(string file, string mountPoint) {
+        OsGameFile gameFile = new(
+            new(Path.GetDirectoryName(file)!),
+            new(file),
+            mountPoint,
+            new VersionContainer(EGame.GAME_UE5_1)
+        );
         Files.AddFiles(new Dictionary<string, GameFile> { { gameFile.Path, gameFile } });
     }
 
@@ -59,9 +66,14 @@ public class VfsFileProvider()
         if ((forceOverwrite || !File.Exists(filename)) && TryLoadPackage(gameFile, out var package)) {
             foreach (var export in package.GetExports()) {
                 if (export is UTexture texture) {
-                    _fileSaveTasks.Add(Task.Run(() =>
-                        File.WriteAllBytes(filename,
-                            [.. texture.Decode()!.Encode(ETextureFormat.Png, false, out _)])));
+                    _fileSaveTasks.Add(
+                        Task.Run(() =>
+                            File.WriteAllBytes(
+                                filename,
+                                [.. texture.Decode()!.Encode(ETextureFormat.Png, false, out _)]
+                            )
+                        )
+                    );
                     return filename;
                 }
             }
@@ -77,21 +89,21 @@ public class VfsFileProvider()
     /// </summary>
     public async ValueTask DisposeAsync() => await Task.WhenAll(_fileSaveTasks);
 
-    public IEnumerable<UObject> LoadAsset(string path)
-    {
-        if (TryLoadPackage(path, out IPackage? package))
-        {
+    /// <summary>Loads the exported objects from an asset package.</summary>
+    public IEnumerable<UObject> LoadAsset(string path) {
+        if (TryLoadPackage(path, out IPackage? package)) {
             return package.GetExports();
         }
+
         throw new Exception($"Failed to load package '{path}'.");
     }
 
-    public Dictionary<FName, FStructFallback> LoadDataTable(string path)
-    {
-        if (LoadAsset(path).First() is UDataTable dataTable)
-        {
+    /// <summary>Loads the row map of a game data-table asset.</summary>
+    public Dictionary<FName, FStructFallback> LoadDataTable(string path) {
+        if (LoadAsset(path).First() is UDataTable dataTable) {
             return dataTable.RowMap;
         }
+
         throw new Exception($"'{path}' is not a data table.");
     }
 
@@ -108,11 +120,19 @@ public class VfsFileProvider()
             throw new Exception($"'{path}' is not a SoftObject data table.");
         }
 
-        return dataTable.RowMap.ToDictionary(kvp => kvp.Key.Text,
-            kvp => NoneCheck(((SoftObjectProperty)kvp.Value.Properties
-                .First(x => x.PropertyType.Text == "SoftObjectProperty")
-                .Tag!).Value.AssetPathName),
-            StringComparer.OrdinalIgnoreCase);
+        return dataTable.RowMap.ToDictionary(
+            kvp => kvp.Key.Text,
+            kvp =>
+                NoneCheck(
+                    (
+                        (SoftObjectProperty)
+                            kvp.Value.Properties.First(x => x.PropertyType.Text == "SoftObjectProperty").Tag!
+                    )
+                        .Value
+                        .AssetPathName
+                ),
+            StringComparer.OrdinalIgnoreCase
+        );
 
         static string? NoneCheck(FName fName) => fName.IsNone ? null : fName.Text;
     }
@@ -129,17 +149,19 @@ public class VfsFileProvider()
             throw new Exception($"'{path}' is not a Text data table.");
         }
 
-        return dataTable.RowMap.ToDictionary(kvp => kvp.Key.Text,
+        return dataTable.RowMap.ToDictionary(
+            kvp => kvp.Key.Text,
             kvp => ((TextProperty)kvp.Value.Properties[0].Tag!).Value?.Text,
-            StringComparer.OrdinalIgnoreCase);
+            StringComparer.OrdinalIgnoreCase
+        );
     }
 
-    public string GetOsFileName(string path)
-    {
-        if (this[path] is OsGameFile gameFile)
-        {
+    /// <summary>Returns the physical filename for a provider entry backed by an operating-system file.</summary>
+    public string GetOsFileName(string path) {
+        if (this[path] is OsGameFile gameFile) {
             return gameFile.ActualFile.FullName;
         }
+
         throw new Exception($"'{path}' is not located in the user's file system.");
     }
 }

@@ -4,54 +4,82 @@ using System.Runtime.InteropServices;
 
 namespace PalworldRandomizer.Randomizer.PalSpawn;
 
+/// <summary>A spawn area with its editable groups, metadata and virtualized editor view.</summary>
+/// <param name="spawnEntries">The initial spawn groups.</param>
+/// <param name="name">The game asset filename.</param>
 public class AreaData(List<SpawnEntry> spawnEntries, string name) {
+    /// <summary>The complete list of spawn groups for this area.</summary>
     public List<SpawnEntry> SpawnEntries { get; set; } = spawnEntries;
+
     /// <summary>The filename used for the area. (Usually BP_&lt;...&gt;.uasset)</summary>
     public string Filename { get; set; } = name;
+
     /// <summary>The average minimum level among all spawns in the area.</summary>
     public int MinLevel { get; set; } = 0;
+
     /// <summary>The average maximum level among all spawns in the area.</summary>
     public int MaxLevel { get; set; } = 0;
+
     /// <summary>The average minimum level among all nighttime spawns in the area.</summary>
     public int MinLevelNight { get; set; } = 0;
+
     /// <summary>The average maximum level among all nighttime spawns in the area.</summary>
     public int MaxLevelNight { get; set; } = 0;
+
     /// <summary><see langword="true"/> if the area has been changed from the original vanilla area.</summary>
     public bool Modified { get; set; } = false;
+
     /// <summary>The type of area. Pal spawner, egg, cage, etc.</summary>
     public AreaType AreaType { get; set; } = AreaType.Undefined;
+
     /// <summary>The area is an overworld boss spawn.</summary>
     public bool IsFieldBoss => IsBoss && !IsInDungeon;
+
     /// <summary>The area is a dungeon boss spawn.</summary>
     public bool IsDungeonBoss => IsBoss && IsInDungeon;
+
     /// <summary>The area is a dungeon non-boss spawn.</summary>
     public bool IsDungeon => !IsBoss && IsInDungeon;
+
     /// <summary>The area is an overworld non-boss spawn.</summary>
     public bool IsField => !IsBoss && !IsInDungeon;
+
     /// <summary>The area is a boss spawn of any kind.</summary>
     public bool IsBoss { get; set; } = false;
+
     /// <summary>The area is a dungeon spawn of any kind.</summary>
     public bool IsInDungeon { get; set; } = false;
+
     /// <summary>The area is a pal spawn of any kind.</summary>
     public bool IsPal => AreaType is AreaType.Pal;
+
     /// <summary>The area is a cage spawn in an enemy camp.</summary>
     public bool IsCage => AreaType is AreaType.Cage;
+
     /// <summary>The area is an overworld egg spawn.</summary>
     public bool IsEgg => AreaType is AreaType.Egg;
+
     /// <summary>The area is a human boss mono spawn.</summary>
     public bool IsHumanBossMono => AreaType is AreaType.HumanBossMono;
+
     /// <summary>The area is a human boss squad spawn.</summary>
     public bool IsHumanBossSquad => AreaType is AreaType.HumanBossSquad;
+
     /// <summary>The area is a human boss spawn of any kind.</summary>
     public bool IsHumanBoss => IsHumanBossMono || IsHumanBossSquad;
+
     /// <summary>Named "allarea" - contains spawn points all over the map.</summary>
     public bool IsAllArea { get; set; } = false;
+
     /// <summary>The spawn list contains only humans.</summary>
     public bool IsOnlyHumans { get; set; } = false;
+
     /// <summary>Contains only a single spawn group or species.</summary>
     public bool IsSingleSpawn { get; set; } = false;
+
     /// <summary>The respawn time for an egg spawn in minutes.</summary>
     public float EggRespawnTime { get; set; } = 0;
+
     /// <summary>Unknown.</summary>
     public float EggLotteryCooldown { get; set; } = 0;
 
@@ -60,92 +88,106 @@ public class AreaData(List<SpawnEntry> spawnEntries, string name) {
     /// <summary>
     /// Make a deep-copy clone of the area.
     /// </summary>
-    public AreaData Clone() => new([], Filename) {
-        MinLevel = MinLevel,
-        MaxLevel = MaxLevel,
-        MinLevelNight = MinLevelNight,
-        MaxLevelNight = MaxLevelNight,
-        Modified = Modified,
-        AreaType = AreaType,
-        IsBoss = IsBoss,
-        IsInDungeon = IsInDungeon,
-        IsAllArea = IsAllArea,
-        IsOnlyHumans = IsOnlyHumans,
-        IsSingleSpawn = IsSingleSpawn,
-        EggRespawnTime = EggRespawnTime,
-        EggLotteryCooldown = EggLotteryCooldown,
-        SpawnEntries = SpawnEntries.ConvertAll(entry => entry.Clone()),
-    };
+    public AreaData Clone() =>
+        new([], Filename) {
+            MinLevel = MinLevel,
+            MaxLevel = MaxLevel,
+            MinLevelNight = MinLevelNight,
+            MaxLevelNight = MaxLevelNight,
+            Modified = Modified,
+            AreaType = AreaType,
+            IsBoss = IsBoss,
+            IsInDungeon = IsInDungeon,
+            IsAllArea = IsAllArea,
+            IsOnlyHumans = IsOnlyHumans,
+            IsSingleSpawn = IsSingleSpawn,
+            EggRespawnTime = EggRespawnTime,
+            EggLotteryCooldown = EggLotteryCooldown,
+            SpawnEntries = SpawnEntries.ConvertAll(entry => entry.Clone()),
+        };
 
-    public int EntriesToShow
-    {
+    /// <summary>The number of spawn groups exposed by the virtualized editor view.</summary>
+    public int EntriesToShow {
         get => _virtualEntries.Count;
-        set
-        {
-            if (value == 0)
-            {
+        set {
+            if (value == 0) {
                 _virtualEntries.Clear();
-            }
-            else if (value > _virtualEntries.Count)
-            {
-                foreach (SpawnEntry entry in CollectionsMarshal.AsSpan(SpawnEntries)
-                    .Slice(_virtualEntries.Count, Math.Min(value - _virtualEntries.Count, SpawnEntries.Count - _virtualEntries.Count)))
-                {
+            } else if (value > _virtualEntries.Count) {
+                foreach (
+                    SpawnEntry entry in CollectionsMarshal
+                        .AsSpan(SpawnEntries)
+                        .Slice(
+                            _virtualEntries.Count,
+                            Math.Min(value - _virtualEntries.Count, SpawnEntries.Count - _virtualEntries.Count)
+                        )
+                ) {
                     _virtualEntries.Add(entry);
                 }
-            }
-            else if (value < _virtualEntries.Count)
-            {
-                while (_virtualEntries.Count > value)
-                {
+            } else if (value < _virtualEntries.Count) {
+                while (_virtualEntries.Count > value) {
                     _virtualEntries.RemoveAt(_virtualEntries.Count - 1);
                 }
             }
         }
     }
-    public void Insert(int index, SpawnEntry spawnEntry)
-    {
+
+    /// <summary>Inserts a spawn group and updates the visible portion of the editor view.</summary>
+    public void Insert(int index, SpawnEntry spawnEntry) {
         SpawnEntries.Insert(index, spawnEntry);
-        if (EntriesToShow >= index)
-        {
+        if (EntriesToShow >= index) {
             _virtualEntries.Insert(index, spawnEntry);
         }
     }
-    public void RemoveAt(int index)
-    {
+
+    /// <summary>Removes a spawn group and its visible editor entry, when present.</summary>
+    public void RemoveAt(int index) {
         SpawnEntries.RemoveAt(index);
-        if (EntriesToShow > index)
-        {
+        if (EntriesToShow > index) {
             _virtualEntries.RemoveAt(index);
         }
     }
-    public void Clear()
-    {
+
+    /// <summary>Clears both the underlying spawn groups and their editor view.</summary>
+    public void Clear() {
         SpawnEntries.Clear();
         _virtualEntries.Clear();
     }
-    public int VirtualCapacity
-    {
+
+    /// <summary>The backing-list capacity reserved for visible spawn groups.</summary>
+    public int VirtualCapacity {
         get => _virtualEntries.List.Capacity;
-        set
-        {
-            if (VirtualCapacity < value)
+        set {
+            if (VirtualCapacity < value) {
                 _virtualEntries.List.Capacity = value;
+            }
         }
     }
+
+    /// <summary>The total number of spawn groups in the area.</summary>
     public int Count => SpawnEntries.Count;
+
+    /// <summary>The observable portion of the spawn groups currently displayed in the editor.</summary>
     public ObservableCollection<SpawnEntry> SpawnEntriesView => _virtualEntries;
+
+    /// <summary>The display name, including an asterisk when the area has been modified.</summary>
     public string Name => SimpleName + (Modified ? "*" : "");
+
+    /// <summary>The asset filename without its directory or extension.</summary>
     public string FileNameWithoutExtension => Path.GetFileNameWithoutExtension(Filename);
+
     /// <summary>Filename simplified for the UI.</summary>
-    public string SimpleName => AreaType switch {
-        AreaType.Cage => $"Cage:{Filename}",
-        AreaType.Egg => FileNameWithoutExtension["bp_palmapobjectspawner_".Length..],
-        AreaType.Pal => FileNameWithoutExtension["BP_PalSpawner_Sheets_".Length..],
-        AreaType.HumanBossMono => $"BossMono:{FileNameWithoutExtension["BP_MonoNPCSpawnerBossBase_".Length..]}",
-        AreaType.HumanBossSquad => $"BossSquad:{FileNameWithoutExtension["BP_SquadNPCSpawnerBossBase_".Length..]}",
-        var x => throw new Exception($"Unhandled area type '{x}'"),
-    };
+    public string SimpleName =>
+        AreaType switch {
+            AreaType.Cage => $"Cage:{Filename}",
+            AreaType.Egg => FileNameWithoutExtension["bp_palmapobjectspawner_".Length..],
+            AreaType.Pal => FileNameWithoutExtension["BP_PalSpawner_Sheets_".Length..],
+            AreaType.HumanBossMono => $"BossMono:{FileNameWithoutExtension["BP_MonoNPCSpawnerBossBase_".Length..]}",
+            AreaType.HumanBossSquad =>
+                $"BossSquad:{FileNameWithoutExtension["BP_SquadNPCSpawnerBossBase_".Length..]}",
+            var x => throw new Exception($"Unhandled area type '{x}'"),
+        };
+
+    /// <inheritdoc/>
     public override string ToString() => Name;
 }
 
@@ -155,18 +197,25 @@ public class AreaData(List<SpawnEntry> spawnEntries, string name) {
 public enum AreaType {
     /// <summary>Unknown type.</summary>
     Undefined,
+
     /// <summary>Pal spawner.</summary>
     Pal,
+
     /// <summary>Cage in an enemy camp.</summary>
     Cage,
+
     /// <summary>Overworld egg spawner.</summary>
     Egg,
+
     /// <summary>Overworld human boss spawn with solo human and optionally a pal.</summary>
     HumanBossMono,
+
     /// <summary>Overworld human boss spawn with 3 humans (boss + 2 adds).</summary>
     HumanBossSquad,
 }
 
+/// <summary>An observable collection exposing its backing list for capacity management.</summary>
 public class ObservableList<T> : ObservableCollection<T> {
-    public List<T> List => (List<T>) Items;
+    /// <summary>The mutable list backing this observable collection.</summary>
+    public List<T> List => (List<T>)Items;
 }
