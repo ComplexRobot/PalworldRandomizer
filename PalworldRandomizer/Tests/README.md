@@ -40,18 +40,29 @@ docking, translation resources, timers or persistence file I/O; those are separa
 - Generation's public boundary accepts the portable form model.
 - Spawn groups and areas make independent deep copies, preserving their metadata.
 - The observable editor view stays synchronized after insertion, removal, resizing and clearing.
+- Repeated edits signal invalidation without requiring a WPF page.
+- Actual PalSchema archives use explicit settings and no native dialog.
+- Backup capture stays deferred until dirty/enabled, with capture and I/O failures returned to the caller.
+- Generation returns areas and optional log text, with ordered capture, progress hiding and publication.
+- Restore selects the newest valid backup/log and preserves prior areas after a failed conversion.
+- The production save adapter captures settings only after confirmation, never on cancellation.
 
 The configuration-property check was observed failing against the original assembly, then passing after the fix.
-All 25 checks pass in Debug and Release. The model-construction, configuration-extraction and explicit-export
-checks were observed failing before their implementations. Decimal-population coverage prevented a precision
-regression; independent review caught an ignored-future-number case, now tested against the same production loader.
-These are model/JSON regression checks, not GUI tests, archive-parsing
-tests, benchmarks or proof of trimming/AOT compatibility. The Windows/WPF GUI cannot run natively on the Linux
-host. Capture/restore mappings and unchanged calculations are additionally checked by the milestone source audit.
+The regression runner now passes 31 checks in Debug and Release, retaining its original 25 model/JSON checks.
+New engine-boundary behaviors were observed failing before implementation, including deferred backup capture.
+Decimal-population coverage prevented a precision regression; independent review caught an ignored-future-number
+case, now tested against the same production loader.
+
+These are model/JSON, file-I/O and boundary checks, not GUI tests, archive-parsing benchmarks or trimming/AOT proof.
+The committed generation check runs the actual compiled engine against empty startup tables; it verifies transport
+and ordering, not nonempty gameplay generation. The Windows/WPF GUI cannot run natively on the Linux host.
+Capture/restore, calculation tokens, dialogs, conversions and desktop adapter ordering are additionally source-audited.
+UAssetData startup, native codecs and platform path behavior remain separate portability work.
 
 See [Fixtures/README.md](Fixtures/README.md) for the original settings fixture's provenance. The export check
-references the application's already-built CUE4Parse dependency because Newtonsoft inspects `GameStruct`
-constructor metadata; it does not load game archives or introduce a new application package.
+references the application's already-built CUE4Parse dependency because Newtonsoft inspects GameStruct metadata.
+The generation check also references the already-built Stfu dependency. Neither reference loads archives or adds
+an application package.
 
 ## Formatting checks
 

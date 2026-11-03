@@ -3,6 +3,7 @@ using System.IO;
 using System.Numerics;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -16,89 +17,6 @@ using PalworldRandomizer.Randomizer;
 using PalworldRandomizer.Serializer;
 
 namespace PalworldRandomizer.Window;
-
-/// <summary>Names of the supported methods for combining character weights within a group.</summary>
-public static class GroupWeightMode {
-    /// <summary>The selector name for the Weight Sum mode.</summary>
-    public static readonly string WeightSum = "Weight Sum";
-
-    /// <summary>The selector name for the Weight Average mode.</summary>
-    public static readonly string WeightAverage = "Weight Average";
-
-    /// <summary>The selector name for the Rarity Average (Rounded) mode.</summary>
-    public static readonly string RarityAverageRounded = "Rarity Average (Rounded)";
-
-    /// <summary>The selector name for the Rarity Average (Blend Fractions) mode.</summary>
-    public static readonly string RarityAverageBlend = "Rarity Average (Blend Fractions)";
-
-    /// <summary>The selector name for the Rarity Average (Blend 10 to 20) mode.</summary>
-    public static readonly string RarityAverageBlend10To20 = "Rarity Average (Blend 10 to 20)";
-
-    /// <summary>The selector name for the Rarity Minimum mode.</summary>
-    public static readonly string RarityMinimum = "Rarity Minimum";
-
-    /// <summary>The selector name for the Rarity Maximum mode.</summary>
-    public static readonly string RarityMaximum = "Rarity Maximum";
-
-    /// <summary>The selector name for the Weight Minimum mode.</summary>
-    public static readonly string WeightMinimum = "Weight Minimum";
-
-    /// <summary>The selector name for the Weight Maximum mode.</summary>
-    public static readonly string WeightMaximum = "Weight Maximum";
-}
-
-/// <summary>Names of the supported strategies for preventing integer spawn-weight overflow.</summary>
-public static class OverflowFixMode {
-    /// <summary>The selector name for the Scale All mode.</summary>
-    public static readonly string ScaleAll = "Scale All";
-
-    /// <summary>The selector name for the Scale Night-Only mode.</summary>
-    public static readonly string ScaleNightOnly = "Scale Night-Only";
-
-    /// <summary>The selector name for the Dynamic (Multi-Pass) mode.</summary>
-    public static readonly string Dynamic = "Dynamic (Multi-Pass)";
-}
-
-/// <summary>Names of the supported methods for scaling a spawn level range.</summary>
-public static class LevelScaleMode {
-    /// <summary>The selector name for the Average Level mode.</summary>
-    public static readonly string Average = "Average Level";
-
-    /// <summary>The selector name for the Full mode.</summary>
-    public static readonly string BothLevels = "Full";
-
-    /// <summary>The selector name for the Max. Level mode.</summary>
-    public static readonly string MaxLevel = "Max. Level";
-
-    /// <summary>The selector name for the Extend Min./Max. mode.</summary>
-    public static readonly string LockExtreme = "Extend Min./Max.";
-
-    /// <summary>The selector name for the Maximize Range mode.</summary>
-    public static readonly string MaxRange = "Maximize Range";
-
-    /// <summary>The selector name for the Min. Level mode.</summary>
-    public static readonly string MinLevel = "Min. Level";
-
-    /// <summary>The selector name for the Random mode.</summary>
-    public static readonly string Random = "Random";
-}
-
-// Needed because the default json writer always adds a decimal point with a trailing zero otherwise
-/// <summary>Writes template decimal values without an unnecessary trailing decimal zero.</summary>
-public class JsonWriterDecimal : JsonConverter<decimal> {
-    /// <summary>Decimal reading is not supported by this write-only template converter.</summary>
-    public override decimal ReadJson(
-        JsonReader reader,
-        Type objectType,
-        decimal existingValue,
-        bool hasExistingValue,
-        JsonSerializer serializer
-    ) => throw new NotImplementedException();
-
-    /// <summary>Writes a decimal directly without adding a trailing decimal zero.</summary>
-    public override void WriteJson(JsonWriter writer, decimal value, JsonSerializer serializer) =>
-        writer.WriteRawValue(value.ToString());
-}
 
 public partial class MainPage : Grid {
     /// <summary>The relative path of the automatically restored randomizer template.</summary>
@@ -135,6 +53,7 @@ public partial class MainPage : Grid {
     public MainPage(DispatcherOperation dataOperation) {
         Instance = this;
         InitializeComponent();
+        Randomize.GenerationInvalidated += (_, _) => savePalSchema.IsEnabled = false;
         form.Visibility = Visibility.Collapsed;
         testImage.Visibility = Visibility.Collapsed;
         statusBar.Text = "⌛ Initializing...";
@@ -548,6 +467,65 @@ public partial class MainPage : Grid {
 
     private bool generating = false;
 
+    private void GeneratePalSpawns(FormData formData) {
+        var (areas, outputText) = Randomize.GeneratePalSpawns(
+            formData,
+            () => {
+                PalSpawnPage.SaveBackup();
+                return Dispatcher.Invoke(() => outputLog.IsChecked == true);
+            },
+            value => {
+                if (value is { } percent) {
+                    Dispatcher.BeginInvoke(() => progressBar.Value = percent);
+                } else {
+                    Dispatcher.Invoke(() => progressBar.Visibility = Visibility.Collapsed);
+                }
+            },
+            generatedAreas => PalSpawnPage.Instance.Dispatcher.Invoke(() =>
+                PalSpawnPage.Instance.areaList.ItemsSource = generatedAreas
+            )
+        );
+        if (outputText != null) {
+            try {
+                File.WriteAllText("Palworld-Randomizer-Log.txt", outputText);
+            } catch (Exception e) {
+                Dispatcher.Invoke(() =>
+                    MessageBox.Show(
+                        GetWindow(),
+                        "Error: Failed to write output log.\n\n" + e.Message,
+                        "Output Log Failed",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error
+                    )
+                );
+            }
+        }
+
+        try {
+            if (Randomize.AutoSaveGenerationData) {
+                string date = $"{DateTime.Now:MM-dd-yy-HH-mm-ss}";
+                Directory.CreateDirectory(UAssetData.AppDataPath("Log"));
+                File.WriteAllText(
+                    UAssetData.AppDataPath($"Log\\{date}.csv"),
+                    FileModify.GenerateCSV(areas),
+                    Encoding.UTF8
+                );
+                File.WriteAllText(
+                    UAssetData.AppDataPath($"Log\\{date}.json"),
+                    JsonConvert.SerializeObject(
+                        formData,
+                        Formatting.Indented,
+                        new JsonSerializerSettings { Converters = [new JsonWriterDecimal()] }
+                    )
+                );
+            }
+        } catch (Exception exception) {
+            App.LogException(exception);
+        }
+
+        Dispatcher.Invoke(() => statusBar.Text = "💾 Creating...");
+    }
+
     private void Randomize_Click(object sender, RoutedEventArgs e) {
         if (generating) {
             return;
@@ -570,7 +548,7 @@ public partial class MainPage : Grid {
         progressBar.Value = 0;
         new Thread(formData => {
             try {
-                Randomize.GeneratePalSpawns((FormData)formData!);
+                GeneratePalSpawns((FormData)formData!);
             } catch (Exception e) {
                 Dispatcher.BeginInvoke(() => ExceptionDispatchInfo.Capture(e).Throw());
             }

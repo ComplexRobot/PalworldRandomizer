@@ -2,13 +2,11 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Windows;
 using CUE4Parse.Utils;
 using Newtonsoft.Json;
 using PalworldRandomizer.Models;
 using PalworldRandomizer.Randomizer.PalSpawn;
 using PalworldRandomizer.Serializer;
-using PalworldRandomizer.Window;
 using Stfu.Linq;
 
 namespace PalworldRandomizer.Randomizer;
@@ -32,10 +30,13 @@ public static partial class Randomize {
             field = value;
 
             if (value) {
-                MainPage.Instance.savePalSchema.IsEnabled = false;
+                GenerationInvalidated?.Invoke(null, EventArgs.Empty);
             }
         }
     } = false;
+
+    /// <summary>Raised synchronously for each edit that invalidates generation export.</summary>
+    public static event EventHandler? GenerationInvalidated;
 
     /// <summary>Whether edited spawn data is automatically backed up and restored.</summary>
     public static bool AutoSaveRestoreBackups { get; set; } = true;
@@ -400,10 +401,13 @@ public static partial class Randomize {
     )]
     private static partial Regex questNameRegex();
 
-    private static void RandomizeAndSaveAssets(FormData formData) {
-        SaveBackup();
-        bool outputLog = false;
-        MainPage.Instance.Dispatcher.Invoke(() => outputLog = MainPage.Instance.outputLog.IsChecked == true);
+    private static (List<AreaData> Areas, string? OutputLog) RandomizeAreas(
+        FormData formData,
+        Func<bool> captureOutputLog,
+        Action<double?>? reportProgress,
+        Action<List<AreaData>>? publishAreas
+    ) {
+        bool outputLog = captureOutputLog();
         StringBuilder outputLogBuilder = outputLog ? new($"Random Seed: {formData.RandomSeed}\n\n") : null!;
         double predatorChance = Math.Clamp(formData.PredatorChance, 0, 100) / 100.0;
         int minGroup = Math.Max(1, formData.GroupMin);
@@ -875,9 +879,7 @@ public static partial class Randomize {
 
         foreach (AreaData area in subList) {
             ++progress;
-            MainPage.Instance.Dispatcher.BeginInvoke(() =>
-                MainPage.Instance.progressBar.Value = Math.Ceiling(100.0 * progress / progressTotal)
-            );
+            reportProgress?.Invoke(Math.Ceiling(100.0 * progress / progressTotal));
             bool nightOnly = NightOnly(area);
             float LevelMultiplier(SpawnData spawnData) =>
                 LevelMultiplierEx(spawnData, area.IsInDungeon, area.IsCage, area.IsEgg);
@@ -2553,12 +2555,10 @@ public static partial class Randomize {
             }
         }
 
-        MainPage.Instance.Dispatcher.Invoke(() => MainPage.Instance.progressBar.Visibility = Visibility.Collapsed);
+        reportProgress?.Invoke(null);
         areaList.Sort(FileModify.AreaSortFunc);
         GeneratedAreaList = areaList;
-        PalSpawnPage.Instance.Dispatcher.Invoke(() =>
-            PalSpawnPage.Instance.areaList.ItemsSource = GeneratedAreaList
-        );
+        publishAreas?.Invoke(GeneratedAreaList);
         if (outputLog) {
             outputLogBuilder.AppendJoin(' ', [totalSpeciesCount, "Total Entries"]);
             outputLogBuilder.AppendLine("\n");
@@ -2569,49 +2569,26 @@ public static partial class Randomize {
                     new JsonSerializerSettings { Converters = [new JsonWriterDecimal()] }
                 )
             );
-            try {
-                File.WriteAllText("Palworld-Randomizer-Log.txt", outputLogBuilder.ToString());
-            } catch (Exception e) {
-                MainPage.Instance.Dispatcher.Invoke(() =>
-                    MessageBox.Show(
-                        MainPage.Instance.GetWindow(),
-                        "Error: Failed to write output log.\n\n" + e.Message,
-                        "Output Log Failed",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Error
-                    )
-                );
-            }
         }
 
-        try {
-            if (AutoSaveGenerationData) {
-                string date = $"{DateTime.Now:MM-dd-yy-HH-mm-ss}";
-                Directory.CreateDirectory(UAssetData.AppDataPath("Log"));
-                File.WriteAllText(
-                    UAssetData.AppDataPath($"Log\\{date}.csv"),
-                    FileModify.GenerateCSV(areaList),
-                    Encoding.UTF8
-                );
-                File.WriteAllText(
-                    UAssetData.AppDataPath($"Log\\{date}.json"),
-                    JsonConvert.SerializeObject(
-                        formData,
-                        Formatting.Indented,
-                        new JsonSerializerSettings { Converters = [new JsonWriterDecimal()] }
-                    )
-                );
-            }
-        } catch (Exception exception) {
-            App.LogException(exception);
-        }
+        return (areaList, outputLog ? outputLogBuilder.ToString() : null);
     }
 
-    /// <summary>Generates character groups and randomizes areas using the supplied template.</summary>
-    public static void GeneratePalSpawns(FormData formData) {
+    /// <summary>Generates spawn areas and optionally returns their detailed output log.</summary>
+    /// <param name="formData">The captured settings used by every generation calculation.</param>
+    /// <param name="captureOutputLog">Called after character lists are built, before area generation. The caller
+    /// can back up active edits here and capture the logging choice at the original desktop timing.</param>
+    /// <param name="reportProgress">Receives percentage snapshots; null hides progress before publishing areas.</param>
+    /// <param name="publishAreas">Synchronously receives the sorted areas before final log serialization.</param>
+    /// <returns>The generated areas and log text, or null log text when logging was not requested.</returns>
+    public static (List<AreaData> Areas, string? OutputLog) GeneratePalSpawns(
+        FormData formData,
+        Func<bool> captureOutputLog,
+        Action<double?>? reportProgress = null,
+        Action<List<AreaData>>? publishAreas = null
+    ) {
         GenerateSpawnLists(formData);
-        RandomizeAndSaveAssets(formData);
-        MainPage.Instance.Dispatcher.Invoke(() => MainPage.Instance.statusBar.Text = "💾 Creating...");
+        return RandomizeAreas(formData, captureOutputLog, reportProgress, publishAreas);
     }
 
     /// <summary>Selects a random normal Pal or Terraria character symbol for the decorative icon.</summary>
@@ -2620,13 +2597,16 @@ public static partial class Randomize {
             new Random().Next(Data.PalList.Count + Data.TerrariaMonsters.Count)
         ];
 
-    /// <summary>Saves changed editor data when automatic backups are enabled.</summary>
-    public static void SaveBackup() {
+    /// <summary>Saves supplied editor data when dirty and enabled, returning errors for the caller to report.</summary>
+    /// <param name="captureAreas">Captures the active editor areas only when dirty and enabled, after the dirty
+    /// flag is reset and inside the error boundary, preserving the original desktop capture timing.</param>
+    /// <returns>The backup error, or null on success, no changes, or disabled automatic backups.</returns>
+    public static Exception? SaveBackup(Func<List<AreaData>> captureAreas) {
         try {
             if (AreaListChanged) {
                 AreaListChanged = false;
                 if (AutoSaveRestoreBackups) {
-                    var areaList = (List<AreaData>)PalSpawnPage.Instance.areaList.ItemsSource;
+                    var areaList = captureAreas();
                     Directory.CreateDirectory(UAssetData.AppDataPath("Backups"));
                     File.WriteAllText(
                         UAssetData.AppDataPath($"Backups\\{DateTime.Now:MM-dd-yy-HH-mm-ss}.csv"),
@@ -2636,12 +2616,15 @@ public static partial class Randomize {
                 }
             }
         } catch (Exception exception) {
-            App.LogException(exception);
+            return exception;
         }
+
+        return null;
     }
 
     /// <summary>Restores the newest available backup or generation log when enabled.</summary>
-    public static void RestoreBackup() {
+    /// <returns>The restore error, or null on success, disabled restore, or no available files.</returns>
+    public static Exception? RestoreBackup() {
         try {
             if (AutoSaveRestoreBackups) {
                 DirectoryInfo backupDir = new(UAssetData.AppDataPath("Backups"));
@@ -2660,7 +2643,9 @@ public static partial class Randomize {
                 }
             }
         } catch (Exception exception) {
-            App.LogException(exception);
+            return exception;
         }
+
+        return null;
     }
 }

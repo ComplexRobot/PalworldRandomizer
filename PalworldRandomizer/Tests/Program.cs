@@ -34,6 +34,12 @@ using PalworldRandomizer.Serializer;
     ("Spawn group cloning copies nested characters independently", SpawnClone),
     ("Area cloning preserves metadata and nested spawn data", AreaClone),
     ("Virtual spawn entries remain synchronized after edits", VirtualEntries),
+    ("Edited areas signal invalidation without requiring a WPF page", PortableInvalidation),
+    ("PalSchema archives write explicit settings without desktop dialogs", PortableSchemaArchive),
+    ("Backup saves supplied editor areas and returns failures without WPF", PortableBackup),
+    ("Generation transports explicit logs results and ordered progress without WPF", PortableGeneration),
+    ("Restore selects newest data and returns conversion failures without WPF", PortableRestore),
+    ("PalSchema save cancellation never captures settings or writes files", SchemaSaveCancellation),
 ];
 int failures = 0;
 foreach (var (name, run) in tests) {
@@ -351,8 +357,9 @@ static void FormEggRespawn() {
 // Mode labels are persisted strings; pin every original public field name and value.
 static void ModeValues() {
     foreach (var mode in (JObject)OriginalFormFixture()["modes"]!) {
-        var type = typeof(FormData).Assembly.GetType($"PalworldRandomizer.Window.{mode.Key}")!;
-        var actual = new JObject(type.GetFields(BindingFlags.Public | BindingFlags.Static).Select(
+        var type = typeof(FormData).Assembly.GetType($"PalworldRandomizer.Models.{mode.Key}");
+        Require(type != null, $"Mode values remain in the UI namespace: {mode.Key}.");
+        var actual = new JObject(type!.GetFields(BindingFlags.Public | BindingFlags.Static).Select(
             field => new JProperty(field.Name, field.GetValue(null))
         ));
         Require(JToken.DeepEquals(mode.Value, actual), $"Persisted mode values changed for {mode.Key}.");
@@ -362,7 +369,7 @@ static void ModeValues() {
 // Prevents generation from continuing to consume the removed control-dependent snapshot type.
 static void GenerationSettingsContract() {
     var method = typeof(PalworldRandomizer.Randomizer.Randomize).GetMethod("GeneratePalSpawns")!;
-    Require(method.GetParameters().Single().ParameterType == typeof(FormData), "Generation uses the old UI model.");
+    Require(method.GetParameters()[0].ParameterType == typeof(FormData), "Generation uses the old UI model.");
 }
 
 // Verifies that export receives the captured settings instead of constructing a control-dependent snapshot.
@@ -456,6 +463,189 @@ static void VirtualEntries() {
     Require(area.VirtualCapacity >= 8, "Virtual capacity did not grow.");
     area.Clear();
     Require(area.Count == 0 && area.SpawnEntriesView.Count == 0, "Clearing left stale view entries.");
+}
+
+// Exercises invalidation notifications on the compiled engine, including repeated edits and reset.
+static void PortableInvalidation() {
+    var type = typeof(PalworldRandomizer.Randomizer.Randomize);
+    var notification = type.GetEvent("GenerationInvalidated");
+    Require(notification != null, "The engine has no UI-independent invalidation notification.");
+    int calls = 0;
+    EventHandler handler = (_, _) => calls++;
+    notification!.AddEventHandler(null, handler);
+    try {
+        PalworldRandomizer.Randomizer.Randomize.AreaListChanged = true;
+        PalworldRandomizer.Randomizer.Randomize.AreaListChanged = true;
+        PalworldRandomizer.Randomizer.Randomize.AreaListChanged = false;
+        Require(calls == 2, "Each edit must invalidate export; resetting the dirty flag must not.");
+    } finally {
+        notification.RemoveEventHandler(null, handler);
+        PalworldRandomizer.Randomizer.Randomize.AreaListChanged = false;
+    }
+}
+
+// Writes a real archive using only the compiled serializer and portable settings.
+static void PortableSchemaArchive() {
+    var method = typeof(FileModify).GetMethod("WritePalSchema");
+    Require(method != null, "There is no dialog-free PalSchema archive writer.");
+    string directory = Path.Combine(Path.GetTempPath(), "schema-" + Guid.NewGuid());
+    Directory.CreateDirectory(directory);
+    try {
+        string path = Path.Combine(directory, "spawns.zip");
+        FormData settings = new() { EggRespawnHours = 2, EggRespawnSeconds = 30 };
+        List<AreaData> areas = [new([], "bp_palmapobjectspawner_egg.uasset") { AreaType = AreaType.Egg }];
+        method!.Invoke(null, [path, areas, settings]);
+        using var archive = System.IO.Compression.ZipFile.OpenRead(path);
+        Require(archive.Entries.Count == 1, "Unexpected archive documents.");
+        var entry = archive.Entries.Single();
+        Require(entry.FullName == "CustomPalSpawns/blueprints/EggSpawns.json", "Archive layout changed.");
+        using var stream = entry.Open();
+        using StreamReader reader = new(stream);
+        var egg = JObject.Parse(reader.ReadToEnd())["bp_palmapobjectspawner_egg_C"]!;
+        Require((float)egg["RespawnTimeMinutesObtained"]! == 120.5f, "Archive ignored explicit settings.");
+    } finally {
+        Directory.Delete(directory, true);
+    }
+}
+
+// Exercises the real backup writer in an isolated working directory with unchanged legacy path semantics.
+static void PortableBackup() {
+    var method = typeof(PalworldRandomizer.Randomizer.Randomize).GetMethod(
+        "SaveBackup", [typeof(Func<List<AreaData>>)]
+    );
+    Require(method != null, "Backups still fetch the editor singleton instead of accepting areas.");
+    string originalDirectory = Directory.GetCurrentDirectory();
+    string directory = Path.Combine(Path.GetTempPath(), "backup-" + Guid.NewGuid());
+    Directory.CreateDirectory(directory);
+    bool autoSave = PalworldRandomizer.Randomizer.Randomize.AutoSaveRestoreBackups;
+    try {
+        Directory.SetCurrentDirectory(directory);
+        List<AreaData> edited = [new([], "bp_palmapobjectspawner_edited.uasset") { AreaType = AreaType.Egg }];
+        int captures = 0;
+        Func<List<AreaData>> capture = () => {
+            captures++;
+            Require(!PalworldRandomizer.Randomizer.Randomize.AreaListChanged, "Areas captured before dirty reset.");
+            return edited;
+        };
+        PalworldRandomizer.Randomizer.Randomize.AutoSaveRestoreBackups = false;
+        PalworldRandomizer.Randomizer.Randomize.AreaListChanged = true;
+        Require(method!.Invoke(null, [capture]) == null && captures == 0, "Disabled backup captured editor areas.");
+        Require(!PalworldRandomizer.Randomizer.Randomize.AreaListChanged, "Disabled backup did not reset dirty flag.");
+        Require(Directory.GetFileSystemEntries(directory).Length == 0, "Disabled backup wrote files.");
+        PalworldRandomizer.Randomizer.Randomize.AutoSaveRestoreBackups = true;
+        PalworldRandomizer.Randomizer.Randomize.AreaListChanged = true;
+        Require(method.Invoke(null, [capture]) == null && captures == 1, "Enabled backup did not capture once.");
+        string csv = Directory.GetFiles(directory, "*.csv", SearchOption.AllDirectories).Single();
+        Require(
+            File.ReadAllText(csv) == FileModify.GenerateCSV(edited), "Backup used generated instead of edited areas."
+        );
+        Directory.Delete("Backups", true);
+        File.WriteAllText("Backups", "blocks directory creation");
+        PalworldRandomizer.Randomizer.Randomize.AreaListChanged = true;
+        Require(method.Invoke(null, [capture]) is IOException, "Backup failure was swallowed rather than returned.");
+        Require(
+            !PalworldRandomizer.Randomizer.Randomize.AreaListChanged, "Failed backup changed dirty reset semantics."
+        );
+        PalworldRandomizer.Randomizer.Randomize.AreaListChanged = true;
+        Func<List<AreaData>> failCapture = () => throw new InvalidOperationException("capture failed");
+        Require(method.Invoke(null, [failCapture]) is InvalidOperationException { Message: "capture failed" },
+            "Editor capture failure bypassed backup error transport.");
+    } finally {
+        Directory.SetCurrentDirectory(originalDirectory);
+        PalworldRandomizer.Randomizer.Randomize.AutoSaveRestoreBackups = autoSave;
+        PalworldRandomizer.Randomizer.Randomize.AreaListChanged = false;
+        Directory.Delete(directory, true);
+    }
+}
+
+// Runs the compiled engine against its real empty startup tables; no substitute Data or archive responses.
+static void PortableGeneration() {
+    var method = typeof(PalworldRandomizer.Randomizer.Randomize).GetMethod("GeneratePalSpawns",
+        [typeof(FormData), typeof(Func<bool>), typeof(Action<double?>), typeof(Action<List<AreaData>>)]);
+    Require(method != null, "Generation has no explicit logging/result/progress boundary.");
+    Require(PalworldRandomizer.Randomizer.Data.AreaData.Count == 0, "This check requires unloaded startup tables.");
+    List<string> events = [];
+    List<AreaData>? published = null;
+    FormData settings = new() { RandomSeed = 12345, MethodNone = true, MethodFull = false };
+    Func<bool> capture = () => { events.Add("capture"); return true; };
+    Action<double?> progress = value => events.Add(value == null ? "hide" : $"percent:{value}");
+    Action<List<AreaData>> publish = areas => { events.Add("publish"); published = areas; };
+    var (areas, outputLog) = ((List<AreaData> Areas, string? OutputLog))method!.Invoke(null,
+        [settings, capture, progress, publish])!;
+    Require(events.SequenceEqual(["capture", "hide", "publish"]), "Generation notification order changed.");
+    Require(ReferenceEquals(areas, published)
+        && ReferenceEquals(areas, PalworldRandomizer.Randomizer.Randomize.GeneratedAreaList),
+        "Result, published list and engine list diverged.");
+    Require(outputLog != null && outputLog.StartsWith("Random Seed: 12345\n\n", StringComparison.Ordinal)
+        && outputLog.Contains("0 Total Entries", StringComparison.Ordinal)
+        && outputLog.Contains("\"RandomSeed\": 12345", StringComparison.Ordinal), "Explicit output log is incomplete.");
+    var (_, silentLog) = ((List<AreaData> Areas, string? OutputLog))method.Invoke(
+        null, [settings, (Func<bool>)(() => false), null, null]
+    )!;
+    Require(silentLog == null, "Logging was not explicitly disabled.");
+}
+
+// Verifies actual newest-file selection and failure transport without starting archive initialization.
+static void PortableRestore() {
+    var method = typeof(PalworldRandomizer.Randomizer.Randomize).GetMethod("RestoreBackup")!;
+    Require(method.ReturnType == typeof(Exception), "Restore still reports errors through the WPF application.");
+    string originalDirectory = Directory.GetCurrentDirectory();
+    string directory = Path.Combine(Path.GetTempPath(), "restore-" + Guid.NewGuid());
+    Directory.CreateDirectory(directory);
+    bool autoSave = PalworldRandomizer.Randomizer.Randomize.AutoSaveRestoreBackups;
+    try {
+        Directory.SetCurrentDirectory(directory);
+        Directory.CreateDirectory("Backups");
+        Directory.CreateDirectory("Log");
+        File.WriteAllText("Backups/old.csv", "header\nUnknownArea,0");
+        File.WriteAllText("Log/new.csv", FileModify.GenerateCSV([]));
+        File.SetLastWriteTime("Backups/old.csv", new DateTime(2020, 1, 1));
+        File.SetLastWriteTime("Log/new.csv", new DateTime(2020, 1, 2));
+        var previous = PalworldRandomizer.Randomizer.Randomize.GeneratedAreaList;
+        PalworldRandomizer.Randomizer.Randomize.AutoSaveRestoreBackups = false;
+        Require(method.Invoke(null, null) == null
+            && ReferenceEquals(previous, PalworldRandomizer.Randomizer.Randomize.GeneratedAreaList),
+            "Disabled restore replaced areas.");
+        PalworldRandomizer.Randomizer.Randomize.AutoSaveRestoreBackups = true;
+        Require(method.Invoke(null, null) == null, "Restore did not select the newest valid generation log.");
+        var restored = PalworldRandomizer.Randomizer.Randomize.GeneratedAreaList;
+        Require(!ReferenceEquals(previous, restored), "Enabled restore did not replace areas.");
+        File.SetLastWriteTime("Backups/old.csv", new DateTime(2020, 1, 3));
+        Require(method.Invoke(null, null) is KeyNotFoundException, "Restore conversion failure was swallowed.");
+        Require(ReferenceEquals(restored, PalworldRandomizer.Randomizer.Randomize.GeneratedAreaList),
+            "Failed restore replaced the previous areas.");
+    } finally {
+        Directory.SetCurrentDirectory(originalDirectory);
+        PalworldRandomizer.Randomizer.Randomize.AutoSaveRestoreBackups = autoSave;
+        Directory.Delete(directory, true);
+    }
+}
+
+// Exercises the production dialog adapter through an explicit destination selector, not a replacement writer.
+static void SchemaSaveCancellation() {
+    var adapter = typeof(FileModify).Assembly.GetType("PalworldRandomizer.Window.SpawnFileDialogs")!;
+    var method = adapter.GetMethod("SavePalSchema",
+        [typeof(List<AreaData>), typeof(Func<FormData>), typeof(Func<string>)]);
+    Require(method != null, "The save adapter cannot exercise cancellation independently of a native dialog.");
+    int captures = 0;
+    List<string> events = [];
+    Func<FormData> capture = () => { events.Add("capture"); captures++; return new(); };
+    Func<string?> cancel = () => { events.Add("select"); return null; };
+    method!.Invoke(null, [new List<AreaData>(), capture, cancel]);
+    Require(captures == 0 && events.SequenceEqual(["select"]), "Cancel captured export settings.");
+    string directory = Path.Combine(Path.GetTempPath(), "dialog-" + Guid.NewGuid());
+    Directory.CreateDirectory(directory);
+    try {
+        string path = Path.Combine(directory, "confirmed.zip");
+        Func<string?> confirm = () => { events.Add("confirm"); return path; };
+        method.Invoke(null, [new List<AreaData>(), capture, confirm]);
+        Require(captures == 1 && events.SequenceEqual(["select", "confirm", "capture"]),
+            "Confirmed save did not capture exactly once after selection.");
+        using var archive = System.IO.Compression.ZipFile.OpenRead(path);
+        Require(archive.Entries.Count == 0, "Empty export acquired unexpected data.");
+    } finally {
+        Directory.Delete(directory, true);
+    }
 }
 
 // Fails the current regression check with a diagnostic message.

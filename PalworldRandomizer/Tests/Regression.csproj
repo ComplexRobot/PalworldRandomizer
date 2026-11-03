@@ -16,6 +16,11 @@
             <HintPath>../../.build/$(Configuration)/CUE4Parse.dll</HintPath>
             <ExternallyResolved>true</ExternallyResolved>
         </Reference>
+        <!-- The compiled generation method uses the application's existing Stfu.Linq dependency. -->
+        <Reference Include="Stfu">
+            <HintPath>../../.build/$(Configuration)/Stfu.dll</HintPath>
+            <ExternallyResolved>true</ExternallyResolved>
+        </Reference>
         <PackageReference Include="Newtonsoft.Json" />
     </ItemGroup>
 </Project>

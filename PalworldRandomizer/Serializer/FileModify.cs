@@ -3,13 +3,11 @@ using System.IO.Compression;
 using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using Microsoft.Win32;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PalworldRandomizer.Models;
 using PalworldRandomizer.Randomizer;
 using PalworldRandomizer.Randomizer.PalSpawn;
-using PalworldRandomizer.Window;
 
 namespace PalworldRandomizer.Serializer;
 
@@ -83,19 +81,6 @@ public static partial class FileModify {
             EggLotteryCooldown = 180,
         };
 
-    /// <summary>Prompts for a destination and writes the supplied spawn areas as CSV.</summary>
-    public static void SaveCSV(List<AreaData> areaList) {
-        SaveFileDialog saveDialog = new()
-        {
-            FileName = $"PalworldSpawns-{DateTime.Now:MM-dd-yy-HH-mm-ss}",
-            DefaultExt = ".csv",
-            Filter = "Comma-separated values|*.csv|All files|*.*",
-        };
-        if (saveDialog.ShowDialog() == true) {
-            File.WriteAllText(saveDialog.FileName, GenerateCSV(areaList), Encoding.UTF8);
-        }
-    }
-
     /// <summary>Formats spawn areas and their character entries as CSV text.</summary>
     public static string GenerateCSV(List<AreaData> areaList) {
         StringBuilder stringBuilder = new();
@@ -136,32 +121,6 @@ public static partial class FileModify {
         }
 
         return stringBuilder.ToString();
-    }
-
-    /// <summary>Prompts for a CSV file and replaces the editor areas with its contents.</summary>
-    public static string? LoadCSV() {
-        OpenFileDialog openDialog = new()
-        {
-            DefaultExt = ".csv",
-            Filter = "Comma-separated values|*.csv|All files|*.*",
-        };
-        if (openDialog.ShowDialog() == true && openDialog.FileName != string.Empty) {
-            try {
-                Randomize.SaveBackup();
-                PalSpawnPage.Instance.areaList.ItemsSource = ConvertCSV(openDialog.FileName);
-                Randomize.AreaListChanged = true;
-            } catch (Exception e) {
-                if (e.Source == "FileIO") {
-                    ExceptionDispatchInfo.Capture(e).Throw();
-                }
-
-                return e.Message;
-            }
-        } else {
-            return "Cancel";
-        }
-
-        return null;
     }
 
     /// <summary>Loads a CSV file and applies its spawn entries to copies of the vanilla areas.</summary>
@@ -240,27 +199,16 @@ public static partial class FileModify {
         public string JsonData { get; set; } = string.Empty;
     }
 
-    /// <summary>Prompts for a destination and captures export settings only after confirmation.</summary>
-    /// <param name="areaList">The modified areas selected for export.</param>
-    /// <param name="captureSettings">Captures settings on the UI thread only when the export is confirmed.</param>
-    public static void SavePalSchema(List<AreaData> areaList, Func<FormData> captureSettings) {
-        SaveFileDialog saveDialog = new()
-        {
-            FileName = $"PalworldSpawns-PalSchema-{DateTime.Now:MM-dd-yy-HH-mm-ss}",
-            DefaultExt = ".zip",
-            Filter = "ZIP Archive|*.zip",
-        };
+    /// <summary>Writes a PalSchema archive using an explicit path and captured export settings.</summary>
+    public static void WritePalSchema(string filename, List<AreaData> areaList, FormData formData) {
+        List<PalSchemaJson> schemaList = GeneratePalSchema(areaList, formData);
 
-        if (saveDialog.ShowDialog() == true) {
-            List<PalSchemaJson> schemaList = GeneratePalSchema(areaList, captureSettings());
-
-            using FileStream fileStream = File.Create(saveDialog.FileName);
-            using ZipArchive zipArchive = new(fileStream, ZipArchiveMode.Create);
-            foreach (PalSchemaJson schema in schemaList) {
-                using Stream entryStream = zipArchive.CreateEntry($"CustomPalSpawns/" + schema.FilePath).Open();
-                using StreamWriter streamWriter = new(entryStream, Encoding.UTF8);
-                streamWriter.Write(schema.JsonData);
-            }
+        using FileStream fileStream = File.Create(filename);
+        using ZipArchive zipArchive = new(fileStream, ZipArchiveMode.Create);
+        foreach (PalSchemaJson schema in schemaList) {
+            using Stream entryStream = zipArchive.CreateEntry($"CustomPalSpawns/" + schema.FilePath).Open();
+            using StreamWriter streamWriter = new(entryStream, Encoding.UTF8);
+            streamWriter.Write(schema.JsonData);
         }
     }
 
@@ -526,40 +474,6 @@ public static partial class FileModify {
         }
 
         return schemas;
-    }
-
-    /// <summary>Prompts for a PalSchema archive and loads it into the spawn editor.</summary>
-    public static string? LoadPalSchema() {
-        OpenFileDialog openDialog = new()
-        {
-            DefaultExt = ".zip",
-            Filter = "Zip Archive|*.zip|JSON file|*.json|All files|*.*",
-        };
-
-        if (openDialog.ShowDialog() != true || openDialog.FileName.Length == 0) {
-            return "Cancel";
-        }
-
-        try {
-            List<AreaData> areaList = Data.AreaDataCopy();
-
-            if (string.Equals(Path.GetExtension(openDialog.FileName), ".zip", StringComparison.OrdinalIgnoreCase)) {
-                ConvertPalSchemaZIP(areaList, openDialog.FileName);
-            } else {
-                ConvertPalSchemaJSON(areaList, File.ReadAllText(openDialog.FileName, Encoding.UTF8));
-            }
-
-            Data.AreaForEachIfDiff(areaList, x => x.Modified = true);
-            areaList.Sort(AreaSortFunc);
-
-            Randomize.SaveBackup();
-            PalSpawnPage.Instance.areaList.ItemsSource = areaList;
-            Randomize.AreaListChanged = true;
-        } catch (Exception e) {
-            return e.Message;
-        }
-
-        return null;
     }
 
     /// <summary>Applies the PalSchema documents in an archive to the supplied spawn areas.</summary>

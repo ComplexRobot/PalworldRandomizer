@@ -4,7 +4,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using PalworldRandomizer.Randomizer;
 using PalworldRandomizer.Randomizer.PalSpawn;
-using PalworldRandomizer.Serializer;
 
 namespace PalworldRandomizer.Window;
 
@@ -24,6 +23,13 @@ public partial class PalSpawnPage : Grid {
         InitializeComponent();
         CompositionTarget.Rendering += Window_Rendering;
         spawnEntries.Tag = this;
+    }
+
+    /// <summary>Backs up the active editor list, including imports and reset areas.</summary>
+    public static void SaveBackup() {
+        if (Randomize.SaveBackup(() => (List<AreaData>)Instance.areaList.ItemsSource) is { } error) {
+            App.LogException(error);
+        }
     }
 
     private void UpdateSourceFocusedElement() {
@@ -47,7 +53,7 @@ public partial class PalSpawnPage : Grid {
             return;
         }
 
-        FileModify.SavePalSchema(modifiedAreas, MainPage.Instance.CaptureFormData);
+        SpawnFileDialogs.SavePalSchema(modifiedAreas, MainPage.Instance.CaptureFormData);
     }
 
     private void SavePalSchema_Click(object sender, RoutedEventArgs e) {
@@ -56,7 +62,7 @@ public partial class PalSpawnPage : Grid {
     }
 
     private void LoadPalSchema_Click(object sender, RoutedEventArgs e) {
-        string? status = FileModify.LoadPalSchema();
+        string? status = SpawnFileDialogs.LoadPalSchema();
         if (status == null) {
             MessageBox.Show(
                 GetWindow(),
@@ -86,7 +92,7 @@ public partial class PalSpawnPage : Grid {
                 MessageBoxImage.Warning
             ) == MessageBoxResult.OK
         ) {
-            Randomize.SaveBackup();
+            PalSpawnPage.SaveBackup();
             areaList.ItemsSource = Data.AreaDataCopy();
             Randomize.AreaListChanged = true;
         }
@@ -94,11 +100,11 @@ public partial class PalSpawnPage : Grid {
 
     private void SaveCsv_Click(object sender, RoutedEventArgs e) {
         UpdateSourceFocusedElement();
-        FileModify.SaveCSV((List<AreaData>)areaList.ItemsSource);
+        SpawnFileDialogs.SaveCSV((List<AreaData>)areaList.ItemsSource);
     }
 
     private void LoadCsv_Click(object sender, RoutedEventArgs e) {
-        string? status = FileModify.LoadCSV();
+        string? status = SpawnFileDialogs.LoadCSV();
         if (status == null) {
             MessageBox.Show(
                 GetWindow(),

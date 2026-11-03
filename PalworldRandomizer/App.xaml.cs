@@ -89,7 +89,10 @@ public partial class App : Application {
 
                     fileProvider.PostMount();
 
-                    Randomize.RestoreBackup();
+                    if (Randomize.RestoreBackup() is { } restoreError) {
+                        LogException(restoreError);
+                    }
+
                     PalSpawnPage palSpawnpage = new();
                     AppWindow palSpawnWindow = new(() => palSpawnpage) { Title = "Pal Spawn Editor" };
                     palSpawnpage.ParentWindow = palSpawnWindow;
@@ -123,7 +126,7 @@ public partial class App : Application {
 
     private void Application_Exit(object sender, ExitEventArgs e) {
         try {
-            Randomize.SaveBackup();
+            PalSpawnPage.SaveBackup();
             if (MainPage.Instance == null) {
                 return;
             }
