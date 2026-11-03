@@ -18,14 +18,29 @@ Desktop framework requirement through a project reference. Its output and interm
 ## Coverage
 
 - The eight persisted configuration members use properties rather than public fields.
-- Default JSON and all persisted setting names remain compatible.
-- Existing JSON files round-trip without losing values; omitted members retain their defaults.
+- The UI-independent `Models.FormData` and `Models.ConfigData` construct without `MainPage.Instance`.
+- All 137 form property names, CLR types and startup defaults match the pinned original control fixture.
+- The eight configuration defaults and all 19 persisted mode labels remain compatible.
+- Every nondefault setting round-trips; omitted members retain defaults in standalone DTO deserialization.
+- The production template loader retains captured UI values, replaces arrays and preserves decimal precision.
+- Unknown numeric members outside decimal range are ignored, including nested values; null templates do not capture controls.
+- Explicit zero, false, fractional and null JSON values survive; default arrays are independent.
+- Egg timer arithmetic is unchanged; actual PalSchema JSON export uses an explicitly supplied timer.
+- Generation's public boundary accepts the portable form model.
 - Spawn groups and areas make independent deep copies, preserving their metadata.
 - The observable editor view stays synchronized after insertion, removal, resizing and clearing.
 
 The configuration-property check was observed failing against the original assembly, then passing after the fix.
-All seven checks pass in Debug and Release. These are model regression checks, not GUI tests, archive-parsing tests,
-benchmarks or proof of trimming/AOT compatibility. The Windows/WPF GUI cannot run natively on the Linux test host.
+All 25 checks pass in Debug and Release. The model-construction, configuration-extraction and explicit-export
+checks were observed failing before their implementations. Decimal-population coverage prevented a precision
+regression; independent review caught an ignored-future-number case, now tested against the same production loader.
+These are model/JSON regression checks, not GUI tests, archive-parsing
+tests, benchmarks or proof of trimming/AOT compatibility. The Windows/WPF GUI cannot run natively on the Linux
+host. Capture/restore mappings and unchanged calculations are additionally checked by the milestone source audit.
+
+See [Fixtures/README.md](Fixtures/README.md) for the original settings fixture's provenance. The export check
+references the application's already-built CUE4Parse dependency because Newtonsoft inspects `GameStruct`
+constructor metadata; it does not load game archives or introduce a new application package.
 
 ## Formatting checks
 

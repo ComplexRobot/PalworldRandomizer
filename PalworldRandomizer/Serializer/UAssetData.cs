@@ -10,6 +10,7 @@ using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.Utils;
 using IniParser.Model;
 using IniParser.Parser;
+using PalworldRandomizer.Models;
 using PalworldRandomizer.Resources;
 using PalworldRandomizer.Window;
 

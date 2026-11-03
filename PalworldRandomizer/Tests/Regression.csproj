@@ -4,9 +4,15 @@
         <TargetFramework>net10.0-windows</TargetFramework>
     </PropertyGroup>
     <ItemGroup>
+        <EmbeddedResource Include="Fixtures/FormData.original.json" />
         <!-- Reference the built assembly without requiring the Windows Desktop runtime on Linux. -->
         <Reference Include="PalworldRandomizer">
             <HintPath>../../.build/$(Configuration)/PalworldRandomizer.dll</HintPath>
+            <ExternallyResolved>true</ExternallyResolved>
+        </Reference>
+        <!-- GameStruct's constructor metadata references the existing archive library during JSON export. -->
+        <Reference Include="CUE4Parse">
+            <HintPath>../../.build/$(Configuration)/CUE4Parse.dll</HintPath>
             <ExternallyResolved>true</ExternallyResolved>
         </Reference>
         <PackageReference Include="Newtonsoft.Json" />

@@ -9,4 +9,9 @@
 - Update the transitive Microsoft.Bcl.Memory dependency to address its reported security advisory.
 - Add regression checks for configuration compatibility, deep copies and the editor's virtualized spawn lists.
 
-The existing Windows/WPF interface is unchanged in this maintenance pass. The Avalonia migration is not included yet.
+### Migration groundwork
+
+- Separate randomizer settings from window controls while preserving existing defaults and legacy template values.
+- Keep PalSchema exports tied to explicitly captured settings, including egg timers and damage caps.
+
+The current interface remains Windows/WPF at this increment. Shared Avalonia hosts and UI follow in later increments.

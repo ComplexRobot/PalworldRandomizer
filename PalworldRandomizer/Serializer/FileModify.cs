@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using Microsoft.Win32;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using PalworldRandomizer.Models;
 using PalworldRandomizer.Randomizer;
 using PalworldRandomizer.Randomizer.PalSpawn;
 using PalworldRandomizer.Window;
@@ -239,8 +240,10 @@ public static partial class FileModify {
         public string JsonData { get; set; } = string.Empty;
     }
 
-    /// <summary>Prompts for a destination and exports modified areas in PalSchema format.</summary>
-    public static void SavePalSchema(List<AreaData> areaList) {
+    /// <summary>Prompts for a destination and captures export settings only after confirmation.</summary>
+    /// <param name="areaList">The modified areas selected for export.</param>
+    /// <param name="captureSettings">Captures settings on the UI thread only when the export is confirmed.</param>
+    public static void SavePalSchema(List<AreaData> areaList, Func<FormData> captureSettings) {
         SaveFileDialog saveDialog = new()
         {
             FileName = $"PalworldSpawns-PalSchema-{DateTime.Now:MM-dd-yy-HH-mm-ss}",
@@ -249,7 +252,7 @@ public static partial class FileModify {
         };
 
         if (saveDialog.ShowDialog() == true) {
-            List<PalSchemaJson> schemaList = GeneratePalSchema(areaList);
+            List<PalSchemaJson> schemaList = GeneratePalSchema(areaList, captureSettings());
 
             using FileStream fileStream = File.Create(saveDialog.FileName);
             using ZipArchive zipArchive = new(fileStream, ZipArchiveMode.Create);
@@ -265,12 +268,12 @@ public static partial class FileModify {
     /// Creates a list of <see cref="PalSchemaJson"/> containing spawn data.
     /// </summary>
     /// <param name="areaList">List of areas to create a PalSchema from.</param>
-    public static List<PalSchemaJson> GeneratePalSchema(List<AreaData> areaList) {
+    /// <param name="formData">The settings captured by the UI for egg timers and damage caps.</param>
+    public static List<PalSchemaJson> GeneratePalSchema(List<AreaData> areaList, FormData formData) {
         Dictionary<string, GameStruct> palSpawnSchema = [];
         Dictionary<string, GameStruct> humanBossSchema = [];
         Dictionary<string, GameStruct> eggSchema = [];
 
-        var formData = new FormData();
         float eggRespawnTime = formData.EggRespawnTime();
 
         foreach (var area in areaList.Where(x => !x.IsCage)) {

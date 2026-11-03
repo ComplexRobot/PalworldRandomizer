@@ -47,7 +47,7 @@ public partial class PalSpawnPage : Grid {
             return;
         }
 
-        FileModify.SavePalSchema(modifiedAreas);
+        FileModify.SavePalSchema(modifiedAreas, MainPage.Instance.CaptureFormData);
     }
 
     private void SavePalSchema_Click(object sender, RoutedEventArgs e) {

@@ -4,6 +4,7 @@ using System.Runtime.ExceptionServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
+using PalworldRandomizer.Models;
 using PalworldRandomizer.Randomizer;
 using PalworldRandomizer.Serializer;
 using PalworldRandomizer.Window;
@@ -134,7 +135,7 @@ public partial class App : Application {
             if (config.AutoRestoreTemplate) {
                 MainPage.Instance.ValidateFormData();
                 MainPage.SaveTemplate(
-                    new FormData(MainPage.Instance),
+                    MainPage.Instance.CaptureFormData(),
                     UAssetData.AppDataPath(MainPage.AUTO_TEMPLATE_FILENAME)
                 );
             } else {

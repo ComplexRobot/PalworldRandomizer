@@ -1,0 +1,739 @@
+{
+    "sourceRevision": "e8d698f055e7a7c4ec22d1b51f0e71bb075f3898",
+    "properties": [
+        {
+            "name": "RandomSeed",
+            "type": "System.Int32",
+            "default": 0
+        },
+        {
+            "name": "RandomSeedLocked",
+            "type": "System.Boolean",
+            "default": false
+        },
+        {
+            "name": "RandomizeField",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "RandomizeDungeons",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "RandomizeDungeonBosses",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "RandomizeFieldBosses",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "RandomizePredators",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "PredatorChance",
+            "type": "System.Int32",
+            "default": 30
+        },
+        {
+            "name": "RandomizeCages",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "RandomizeEggs",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "RandomizeQuests",
+            "type": "System.Boolean",
+            "default": false
+        },
+        {
+            "name": "RandomizeMimics",
+            "type": "System.Boolean",
+            "default": false
+        },
+        {
+            "name": "RandomizeAllArea",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "RandomizeSingleSpawns",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "RandomizeHumanBosses",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "RandomizeHumanBossesPals",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "EqualizeAreaRarity",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "MethodFull",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "MethodCustomSize",
+            "type": "System.Boolean",
+            "default": false
+        },
+        {
+            "name": "SpawnListSize",
+            "type": "System.Int32",
+            "default": 50
+        },
+        {
+            "name": "MethodLocalSwap",
+            "type": "System.Boolean",
+            "default": false
+        },
+        {
+            "name": "MethodGlobalSwap",
+            "type": "System.Boolean",
+            "default": false
+        },
+        {
+            "name": "MethodNone",
+            "type": "System.Boolean",
+            "default": false
+        },
+        {
+            "name": "VanillaPlus",
+            "type": "System.Boolean",
+            "default": false
+        },
+        {
+            "name": "VanillaPlusChance",
+            "type": "System.Int32",
+            "default": 50
+        },
+        {
+            "name": "VanillaMerge",
+            "type": "System.Boolean",
+            "default": false
+        },
+        {
+            "name": "VanillaPlusFilter",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "VanillaMergeFilter",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "GroupVanilla",
+            "type": "System.Boolean",
+            "default": false
+        },
+        {
+            "name": "GroupRandom",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "FieldBossExtended",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "GroupMin",
+            "type": "System.Int32",
+            "default": 1
+        },
+        {
+            "name": "GroupMax",
+            "type": "System.Int32",
+            "default": 3
+        },
+        {
+            "name": "GroupMinBoss",
+            "type": "System.Int32",
+            "default": 3
+        },
+        {
+            "name": "GroupMaxBoss",
+            "type": "System.Int32",
+            "default": 3
+        },
+        {
+            "name": "MultiBoss",
+            "type": "System.Boolean",
+            "default": false
+        },
+        {
+            "name": "VanillaRestrict",
+            "type": "System.Boolean",
+            "default": false
+        },
+        {
+            "name": "HumanBossMin",
+            "type": "System.Int32",
+            "default": 3
+        },
+        {
+            "name": "HumanBossMax",
+            "type": "System.Int32",
+            "default": 3
+        },
+        {
+            "name": "HumanBossBossMin",
+            "type": "System.Int32",
+            "default": 1
+        },
+        {
+            "name": "HumanBossBossMax",
+            "type": "System.Int32",
+            "default": 1
+        },
+        {
+            "name": "HumanBossPalMin",
+            "type": "System.Int32",
+            "default": 0
+        },
+        {
+            "name": "HumanBossPalMax",
+            "type": "System.Int32",
+            "default": 3
+        },
+        {
+            "name": "HumanBossPalBossMin",
+            "type": "System.Int32",
+            "default": 0
+        },
+        {
+            "name": "HumanBossPalBossMax",
+            "type": "System.Int32",
+            "default": 0
+        },
+        {
+            "name": "RarityLevelBoost",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "Rarity67MinLevel",
+            "type": "System.Int32",
+            "default": 18
+        },
+        {
+            "name": "Rarity8UpMinLevel",
+            "type": "System.Int32",
+            "default": 30
+        },
+        {
+            "name": "Rarity9UpBossOnly",
+            "type": "System.Boolean",
+            "default": false
+        },
+        {
+            "name": "Rarity8UpSolo",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "Rarity8UpSanity",
+            "type": "System.Boolean",
+            "default": false
+        },
+        {
+            "name": "MixHumanAndPal",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "SeparateAggroHumans",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "BossesEverywhere",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "BossesEverywhereChance",
+            "type": "System.Int32",
+            "default": 5
+        },
+        {
+            "name": "BossesEverywhereDungeons",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "BossesEverywhereDungeonsChance",
+            "type": "System.Int32",
+            "default": 5
+        },
+        {
+            "name": "BossEggs",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "BossEggsChance",
+            "type": "System.Int32",
+            "default": 5
+        },
+        {
+            "name": "SeparateFlying",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "PredatorConstraint",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "AllowCagedHumans",
+            "type": "System.Boolean",
+            "default": false
+        },
+        {
+            "name": "StartSheepBall",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "MinOneCountSolo",
+            "type": "System.Boolean",
+            "default": false
+        },
+        {
+            "name": "HumanDamageCap",
+            "type": "System.Decimal",
+            "default": 1.0
+        },
+        {
+            "name": "HumanBossDamageCap",
+            "type": "System.Decimal",
+            "default": 2.0
+        },
+        {
+            "name": "PredatorDamageCap",
+            "type": "System.Decimal",
+            "default": 2.0
+        },
+        {
+            "name": "RaidDamageCap",
+            "type": "System.Decimal",
+            "default": 9999.0
+        },
+        {
+            "name": "WeightTypeUniform",
+            "type": "System.Boolean",
+            "default": false
+        },
+        {
+            "name": "WeightTypeCustom",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "WeightUniformMin",
+            "type": "System.Int32",
+            "default": 10
+        },
+        {
+            "name": "WeightUniformMax",
+            "type": "System.Int32",
+            "default": 10
+        },
+        {
+            "name": "WeightCustom",
+            "type": "System.Int32[]",
+            "default": [
+                0,
+                60,
+                60,
+                60,
+                25,
+                25,
+                10,
+                10,
+                5,
+                1,
+                1,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                1
+            ]
+        },
+        {
+            "name": "WeightCustomMode",
+            "type": "System.String",
+            "default": "Weight Minimum"
+        },
+        {
+            "name": "HumanRarity",
+            "type": "System.Int32",
+            "default": 4
+        },
+        {
+            "name": "HumanBossRarity",
+            "type": "System.Int32",
+            "default": 5
+        },
+        {
+            "name": "MaxCageRarity",
+            "type": "System.Int32",
+            "default": 9
+        },
+        {
+            "name": "WeightAdjustProbability",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "WeightPrioritizeBoss",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "HumanWeight",
+            "type": "System.Int32",
+            "default": 100
+        },
+        {
+            "name": "HumanWeightAggro",
+            "type": "System.Int32",
+            "default": 25
+        },
+        {
+            "name": "WeightNightOnly",
+            "type": "System.Decimal",
+            "default": 1000.0
+        },
+        {
+            "name": "OverflowFixMode",
+            "type": "System.String",
+            "default": "Dynamic (Multi-Pass)"
+        },
+        {
+            "name": "SpawnPals",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "SpawnHumans",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "SpawnPolice",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "SpawnGuards",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "SpawnTraders",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "SpawnPalTraders",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "SpawnTowerBosses",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "SpawnAlphas",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "SpawnRaidBosses",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "SpawnPredators",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "SpawnHumanBosses",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "SpawnSpecial",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "SpawnTerraria",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "SpawnTerrariaBosses",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "SpawnTowerHumans",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "SpawnPolicePals",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "SpawnUselessHumans",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "SpawnVillagers",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "FieldLevel",
+            "type": "System.Int32",
+            "default": 100
+        },
+        {
+            "name": "DungeonLevel",
+            "type": "System.Int32",
+            "default": 100
+        },
+        {
+            "name": "FieldBossLevel",
+            "type": "System.Int32",
+            "default": 100
+        },
+        {
+            "name": "DungeonBossLevel",
+            "type": "System.Int32",
+            "default": 100
+        },
+        {
+            "name": "PredatorLevel",
+            "type": "System.Int32",
+            "default": 100
+        },
+        {
+            "name": "CageLevel",
+            "type": "System.Int32",
+            "default": 100
+        },
+        {
+            "name": "EnableLevelCap",
+            "type": "System.Boolean",
+            "default": false
+        },
+        {
+            "name": "LevelCap",
+            "type": "System.Int32",
+            "default": 80
+        },
+        {
+            "name": "BossAddLevel",
+            "type": "System.Int32",
+            "default": 85
+        },
+        {
+            "name": "ForceAddLevel",
+            "type": "System.Boolean",
+            "default": false
+        },
+        {
+            "name": "LevelScaleMode",
+            "type": "System.String",
+            "default": "Full"
+        },
+        {
+            "name": "RandomLevelMin",
+            "type": "System.Int32",
+            "default": 1
+        },
+        {
+            "name": "RandomLevelMax",
+            "type": "System.Int32",
+            "default": 65
+        },
+        {
+            "name": "BaseCountMin",
+            "type": "System.Int32",
+            "default": 1
+        },
+        {
+            "name": "BaseCountMax",
+            "type": "System.Int32",
+            "default": 1
+        },
+        {
+            "name": "FieldCount",
+            "type": "System.Int32",
+            "default": 100
+        },
+        {
+            "name": "DungeonCount",
+            "type": "System.Int32",
+            "default": 100
+        },
+        {
+            "name": "FieldBossCount",
+            "type": "System.Int32",
+            "default": 100
+        },
+        {
+            "name": "DungeonBossCount",
+            "type": "System.Int32",
+            "default": 100
+        },
+        {
+            "name": "PredatorCount",
+            "type": "System.Int32",
+            "default": 100
+        },
+        {
+            "name": "CountClampMin",
+            "type": "System.Int32",
+            "default": 0
+        },
+        {
+            "name": "CountClampMax",
+            "type": "System.Int32",
+            "default": 5
+        },
+        {
+            "name": "CountClampFirstMin",
+            "type": "System.Int32",
+            "default": 1
+        },
+        {
+            "name": "CountClampFirstMax",
+            "type": "System.Int32",
+            "default": 5
+        },
+        {
+            "name": "CountClampBossMin",
+            "type": "System.Int32",
+            "default": 0
+        },
+        {
+            "name": "CountClampBossMax",
+            "type": "System.Int32",
+            "default": 5
+        },
+        {
+            "name": "CountClampFirstBossMin",
+            "type": "System.Int32",
+            "default": 1
+        },
+        {
+            "name": "CountClampFirstBossMax",
+            "type": "System.Int32",
+            "default": 5
+        },
+        {
+            "name": "NightOnly",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "NightOnlyDungeons",
+            "type": "System.Boolean",
+            "default": false
+        },
+        {
+            "name": "NightOnlyDungeonBosses",
+            "type": "System.Boolean",
+            "default": false
+        },
+        {
+            "name": "NightOnlyBosses",
+            "type": "System.Boolean",
+            "default": false
+        },
+        {
+            "name": "NightOnlyPredators",
+            "type": "System.Boolean",
+            "default": true
+        },
+        {
+            "name": "EggRespawnHours",
+            "type": "System.Int32",
+            "default": 3
+        },
+        {
+            "name": "EggRespawnMinutes",
+            "type": "System.Int32",
+            "default": 0
+        },
+        {
+            "name": "EggRespawnSeconds",
+            "type": "System.Int32",
+            "default": 0
+        }
+    ],
+    "modes": {
+        "GroupWeightMode": {
+            "WeightSum": "Weight Sum",
+            "WeightAverage": "Weight Average",
+            "RarityAverageRounded": "Rarity Average (Rounded)",
+            "RarityAverageBlend": "Rarity Average (Blend Fractions)",
+            "RarityAverageBlend10To20": "Rarity Average (Blend 10 to 20)",
+            "RarityMinimum": "Rarity Minimum",
+            "RarityMaximum": "Rarity Maximum",
+            "WeightMinimum": "Weight Minimum",
+            "WeightMaximum": "Weight Maximum"
+        },
+        "OverflowFixMode": {
+            "ScaleAll": "Scale All",
+            "ScaleNightOnly": "Scale Night-Only",
+            "Dynamic": "Dynamic (Multi-Pass)"
+        },
+        "LevelScaleMode": {
+            "Average": "Average Level",
+            "BothLevels": "Full",
+            "MaxLevel": "Max. Level",
+            "LockExtreme": "Extend Min./Max.",
+            "MaxRange": "Maximize Range",
+            "MinLevel": "Min. Level",
+            "Random": "Random"
+        }
+    }
+}
