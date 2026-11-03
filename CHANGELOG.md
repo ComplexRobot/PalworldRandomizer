@@ -13,5 +13,6 @@
 
 - Separate randomizer settings from window controls while preserving existing defaults and legacy template values.
 - Keep PalSchema exports tied to explicitly captured settings, including egg timers and damage caps.
+- Add reusable tab navigation, independent page histories, tab-close undo and restorable shell-state groundwork.
 
 The current interface remains Windows/WPF at this increment. Shared Avalonia hosts and UI follow in later increments.

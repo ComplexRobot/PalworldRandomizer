@@ -13,7 +13,18 @@ dotnet run --project PalworldRandomizer/Tests/Regression.csproj -c Debug -p:Trea
 Repeat both commands with `-c Release` to check the Release assembly. Build the application first in the same
 configuration: the runner deliberately references that compiled assembly rather than inheriting the Windows
 Desktop framework requirement through a project reference. Its output and intermediates are isolated under
-`.build/Tests/<Configuration>/`.
+`.build/Tests/Regression/<Configuration>/`.
+
+The UI-independent shell runner links the real view-model sources and can run without building or starting WPF:
+
+```sh
+dotnet run --project PalworldRandomizer/Tests/Shell.csproj -c Release -p:TreatWarningsAsErrors=true
+```
+
+Its 32 checks cover independent histories, Settings-tab reuse, the 30-second close/Undo deadline, last-tab recovery,
+reordering, overflow promotion, binding notifications, detached snapshots and persisted-state recovery. Outputs
+are isolated under `.build/Tests/Shell/<Configuration>/`. These checks do not exercise rendered layout, dragging,
+docking, translation resources, timers or persistence file I/O; those are separate integration gates.
 
 ## Coverage
 

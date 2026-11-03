@@ -1,8 +1,10 @@
 <Project>
     <Import Project="../../Directory.Build.props" />
     <PropertyGroup>
-        <!-- Keep the cross-platform regression runner separate from the WPF build outputs. -->
-        <OutputPath>$(MSBuildThisFileDirectory)../../.build/Tests/$(Configuration)/</OutputPath>
+        <!-- Resolve the SDK default before computing these early-imported artifact paths. -->
+        <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+        <!-- Keep each regression runner separate from the application and sibling test outputs. -->
+        <OutputPath>$(MSBuildThisFileDirectory)../../.build/Tests/$(MSBuildProjectName)/$(Configuration)/</OutputPath>
         <BaseIntermediateOutputPath>$(OutputPath)obj/</BaseIntermediateOutputPath>
         <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
         <IsAotCompatible>false</IsAotCompatible>

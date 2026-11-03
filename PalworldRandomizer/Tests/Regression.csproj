@@ -4,6 +4,7 @@
         <TargetFramework>net10.0-windows</TargetFramework>
     </PropertyGroup>
     <ItemGroup>
+        <Compile Remove="ShellTests.cs" />
         <EmbeddedResource Include="Fixtures/FormData.original.json" />
         <!-- Reference the built assembly without requiring the Windows Desktop runtime on Linux. -->
         <Reference Include="PalworldRandomizer">

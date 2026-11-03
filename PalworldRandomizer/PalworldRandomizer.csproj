@@ -25,6 +25,7 @@
         <PackageReference Include="CUE4Parse-Conversion" />
         <PackageReference Include="ini-parser" />
         <PackageReference Include="Newtonsoft.Json" />
+        <PackageReference Include="CommunityToolkit.Mvvm" />
         <PackageReference Include="Emoji.Wpf" />
         <PackageReference Include="ZstdSharp.Port" />
         <!-- Override the vulnerable transitive dependency with its first patched 9.x release. -->
