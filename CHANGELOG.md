@@ -16,5 +16,6 @@
 - Add reusable tab navigation, independent page histories, tab-close undo and restorable shell-state groundwork.
 - Separate generation progress/results and spawn-file conversion from Windows dialogs without changing calculations.
 - Embed a complete YAML settings catalog and English text, preserving original contracts and verified reference wording.
+- Separate read-only game-archive loading and portable data paths from startup controls, with explicit async ownership.
 
 The current interface remains Windows/WPF at this increment. Shared Avalonia hosts and UI follow in later increments.

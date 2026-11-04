@@ -57,7 +57,8 @@ These are model/JSON, file-I/O and boundary checks, not GUI tests, archive-parsi
 The committed generation check runs the actual compiled engine against empty startup tables; it verifies transport
 and ordering, not nonempty gameplay generation. The Windows/WPF GUI cannot run natively on the Linux host.
 Capture/restore, calculation tokens, dialogs, conversions and desktop adapter ordering are additionally source-audited.
-UAssetData startup, native codecs and platform path behavior remain separate portability work.
+UAssetData startup now has a separate [explicit archive/path boundary and Linux integration runner](ArchiveStartup.md).
+Native icon encoding and complete desktop/browser startup remain separate gates.
 
 See [Fixtures/README.md](Fixtures/README.md) for the original settings fixture's provenance. The export check
 references the application's already-built CUE4Parse dependency because Newtonsoft inspects GameStruct metadata.

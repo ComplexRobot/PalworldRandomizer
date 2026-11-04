@@ -1,8 +1,5 @@
 using System.IO;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Xml;
-using CUE4Parse.Compression;
 using CUE4Parse.MappingsProvider.Usmap;
 using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Assets.Objects.Properties;
@@ -10,14 +7,11 @@ using CUE4Parse.UE4.Objects.UObject;
 using CUE4Parse.Utils;
 using IniParser.Model;
 using IniParser.Parser;
-using PalworldRandomizer.Models;
-using PalworldRandomizer.Resources;
-using PalworldRandomizer.Window;
 
 namespace PalworldRandomizer.Serializer;
 
-/// <summary>Initializes game-archive access and manages extracted application resources.</summary>
-public static partial class UAssetData {
+/// <summary>Opens explicit game archives and builds filesystem paths for extracted application data.</summary>
+public static class UAssetData {
     /// <summary>The version used to determine whether extracted application resources need updating.</summary>
     public const float ASSET_VERSION = 11;
 
@@ -31,161 +25,97 @@ public static partial class UAssetData {
 
     /// <summary>The last version read from the game configuration inside the archive.</summary>
     public static string GameVersion { set; get; } = "0.0.0.0";
-    private static string? appDataPath;
-
-    [GeneratedRegex(
-        @"^Pal/Content/Others/InventoryItemIcon/Texture/T_itemicon_Weapon_"
-            + @"(AssaultRifle_Default1|HandGun_Default|PumpActionShotgun|Launcher_Default|Bat|FragGrenade"
-            + @"|FlameThrower_Default|GatlingGun|BowGun|LaserRifle|GuidedMissileLauncher"
-            + @"|GrenadeLauncher|Katana)\.uasset$",
-        RegexOptions.ExplicitCapture
-    )]
-    private static partial Regex WeaponIconRegex();
-
-    [GeneratedRegex("skyisland")]
-    private static partial Regex TestRegex();
-
-    [GeneratedRegex(@"^Pal/Content/Pal/(Blueprint|DataTable)/.+?\.uasset$", RegexOptions.ExplicitCapture)]
-    private static partial Regex TestBlueprintRegex();
-
-    /// <summary>Verifies the configured archive path and opens setup when it is missing.</summary>
-    public static bool VerifyInstallationFolder(AppWindow settingsWindow) {
-        appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        if (!appDataPath.EndsWith('\\')) {
-            appDataPath += '\\';
-        }
-
-        appDataPath += @"Palworld-Randomizer\";
-        Directory.CreateDirectory(appDataPath);
-        ConfigData config = SharedWindow.GetConfig();
-        SettingsPage.Instance.installationFolderTextbox.Text = InstallationDirectory = config.InstallationDirectory;
-        ArchivePath = InstallationDirectory + @"\Pal\Content\Paks\Pal-Windows.pak";
-        if (!File.Exists(ArchivePath)) {
-            settingsWindow.ShowClean();
-            return false;
-        }
-
-        return true;
-    }
+    private static string _appDataPath = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Palworld-Randomizer"
+    );
 
     /// <summary>
-    /// Updates and copies resources from the Pal-Windows.pak and Resource.resx to the user's system.
+    /// Opens only the selected PAK and USMAP read-only, mounts asynchronously, and reads the game version.
     /// </summary>
-    /// <returns>A <see cref="VfsFileProvider"/> with files created from Pal-Windows.pak.</returns>
-    public static async Task<VfsFileProvider> Initialize() {
-        ConfigData config = SharedWindow.GetConfig();
-        SettingsPage.Instance.installationFolderTextbox.Text = InstallationDirectory = config.InstallationDirectory;
-        GameVersion = config.GameVersion;
-        ArchivePath = InstallationDirectory + @"\Pal\Content\Paks\Pal-Windows.pak";
-        bool replaceAssets = config.AssetVersion < ASSET_VERSION && config.AutoReplaceOldFiles;
-        config.AssetVersion = ASSET_VERSION;
-        XmlDocument xmlDoc = new();
-        xmlDoc.LoadXml(Resource.Resource_resx);
-        foreach (XmlNode resource in xmlDoc.DocumentElement!.SelectNodes("data")!.Cast<XmlNode>()) {
-            string name = resource.Attributes!["name"]!.InnerText;
-            if (name == "Resource.resx") {
-                continue;
+    /// <remarks>
+    /// The caller owns the returned provider and must await DisposeAsync after all asset loads and image saves.
+    /// Failure releases all opened handles. Asset reads on this provider must be serialized. This operation does not
+    /// prepare bundled resources, initialize native Windows codecs, extract images, change globals or save config.
+    /// </remarks>
+    public static async Task<VfsFileProvider> OpenArchiveAsync(
+        string archivePath,
+        string mappingPath,
+        string previousGameVersion = "0.0.0.0"
+    ) {
+        VfsFileProvider provider = new();
+        CUE4Parse.UE4.Readers.FRandomAccessFileStreamArchive? archive = null;
+        Microsoft.Win32.SafeHandles.SafeFileHandle? archiveHandle = null;
+        try {
+            provider.MappingsContainer = new FileUsmapTypeMappingsProvider(mappingPath);
+            // Preserve RegisterVfs(string)'s positional reads: background texture decoding loads lazy bulk data.
+            archiveHandle = File.OpenHandle(archivePath, FileMode.Open, FileAccess.Read, FileShare.Read,
+                FileOptions.Asynchronous);
+            archive = new(archivePath, archiveHandle, provider.Versions);
+            await provider.MountPakAsync(archive).ConfigureAwait(false);
+
+            string gameVersion = previousGameVersion;
+            if (provider.Files.ContainsKey("Pal/Config/DefaultGame.ini")) {
+                byte[] gameIni = provider.SaveAsset("Pal/Config/DefaultGame.ini");
+                IniData iniData = new IniDataParser(new() { AllowDuplicateKeys = true }).Parse(
+                    Encoding.ASCII.GetString(gameIni)
+                );
+                gameVersion = iniData["/Script/EngineSettings.GeneralProjectSettings"]["ProjectVersion"];
             }
 
-            string filename = AppDataPath(
-                resource.SelectSingleNode("value")!.InnerText[
-                    ..resource.SelectSingleNode("value")!.InnerText.IndexOf(';')
-                ]
-            );
-            Directory.CreateDirectory(Path.GetDirectoryName(filename)!);
-            if (replaceAssets || !File.Exists(filename)) {
-                File.WriteAllBytes(filename, (byte[])Resource.ResourceManager.GetObject(name)!);
-            }
+            provider.GameVersion = gameVersion;
+            provider.GameVersionUpdated = gameVersion != previousGameVersion;
+            return provider;
+        } catch {
+            await provider.DisposeAsync().ConfigureAwait(false);
+            archive?.Dispose();
+            archiveHandle?.Dispose();
+            throw;
         }
-
-        OodleHelper.Initialize(AppDataPath("oo2core_9_win64.dll"));
-        ZlibHelper.Initialize(AppDataPath("zlib-ng2.dll"));
-
-        await using VfsFileProvider fileProvider = new()
-        {
-            MappingsContainer = new FileUsmapTypeMappingsProvider(AppDataPath("Mappings.usmap")),
-        };
-
-        fileProvider.RegisterVfs(ArchivePath);
-        fileProvider.Initialize();
-        fileProvider.Mount();
-        string gameVersion = GameVersion;
-        if (fileProvider.TrySaveAsset("Pal/Config/DefaultGame.ini", out byte[]? gameIni)) {
-            IniData iniData = new IniDataParser(new() { AllowDuplicateKeys = true }).Parse(
-                Encoding.ASCII.GetString(gameIni)
-            );
-            gameVersion = iniData["/Script/EngineSettings.GeneralProjectSettings"]["ProjectVersion"];
-        }
-
-        bool gameUpdated = fileProvider.GameVersionUpdated = gameVersion != GameVersion;
-        config.GameVersion = GameVersion = gameVersion;
-
-        Directory.CreateDirectory(PalIconPath());
-        Directory.CreateDirectory(PalIconPath("Human"));
-        Directory.CreateDirectory(NpcIconPath());
-        Directory.CreateDirectory(WeaponIconPath());
-
-        var threadLock = new Lock();
-
-        //ConcurrentDictionary<string, byte> palEggSpawnsReferenced = new();
-        Parallel.ForEach(
-            fileProvider.Files,
-            keyValuePair => {
-                (string key, var value) = keyValuePair;
-
-                if (WeaponIconRegex().IsMatch(key)) {
-                    lock (threadLock) {
-                        fileProvider.SaveTexturePng(key, WeaponIconPath(), gameUpdated);
-                    }
-                }
-                //else if (TestBlueprintRegex().IsMatch(key)
-                //    && TestRegex().IsMatch(JsonConvert.SerializeObject(fileProvider.LoadAsset(key)))) {
-                //    palEggSpawnsReferenced.TryAdd(key, 0);
-                //}
-            }
-        );
-
-        //foreach ((string found, _) in palEggSpawnsReferenced) {
-        //    Console.WriteLine(found);
-        //}
-
-        SharedWindow.SaveConfig(config);
-        return fileProvider;
     }
 
-    /// <summary>Builds a path relative to the application local-data directory.</summary>
-    public static string AppDataPath(string path = null!) => appDataPath + path;
+    /// <summary>Sets the filesystem root for extracted data; null restores the standard local-data location.</summary>
+    /// <remarks>
+    /// Configure before loading data. This legacy process-wide path setting does not create directories.
+    /// </remarks>
+    public static void ConfigureDataRoot(string? root = null) => _appDataPath = root == null
+        ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Palworld-Randomizer")
+        : Path.GetFullPath(root);
 
-    /// <summary>Prefixes a nonempty relative path with the existing Windows path separator.</summary>
-    public static string? PathSeparator(string path) => path.Length > 0 ? '\\' + path : null;
+    /// <summary>
+    /// Builds a filesystem path, accepting legacy relative Windows separators, not CUE asset identifiers.
+    /// </summary>
+    public static string AppDataPath(string? path = null) => Path.Combine(_appDataPath, FileSystemPath(path));
+
+    private static string FileSystemPath(string? path) =>
+        (path ?? "").Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);
 
     /// <summary>Builds a path inside the extracted-assets directory.</summary>
-    public static string AssetsPath(string path = "") => AppDataPath(@"Assets" + PathSeparator(path));
+    public static string AssetsPath(string? path = null) => AppDataPath(Path.Combine("Assets", FileSystemPath(path)));
 
-    //public static string PalSpawnerPath(string path = "") => AssetsPath(@"PalSpawner" + PathSeparator(path));
     /// <summary>Builds a path for extracted Pal spawn assets.</summary>
-    public static string PalSpawnerPath(string path = "") => AssetsPath(path);
+    public static string PalSpawnerPath(string? path = null) => AssetsPath(path);
 
     /// <summary>Builds a path inside the extracted egg-assets directory.</summary>
-    public static string PalEggPath(string path = "") => AssetsPath(@"PalEgg" + PathSeparator(path));
+    public static string PalEggPath(string? path = null) => AssetsPath(Path.Combine("PalEgg", FileSystemPath(path)));
 
     /// <summary>Builds a path inside the application data directory.</summary>
-    public static string DataPath(string path = "") => AppDataPath(@"Data" + PathSeparator(path));
+    public static string DataPath(string? path = null) => AppDataPath(Path.Combine("Data", FileSystemPath(path)));
 
     /// <summary>Builds a path inside the extracted-images directory.</summary>
-    public static string ImagesPath(string path = "") => AppDataPath(@"Images" + PathSeparator(path));
+    public static string ImagesPath(string? path = null) => AppDataPath(Path.Combine("Images", FileSystemPath(path)));
 
     /// <summary>Builds a path inside the extracted Pal-icons directory.</summary>
-    public static string PalIconPath(string path = "") => ImagesPath(@"PalIcon" + PathSeparator(path));
+    public static string PalIconPath(string? path = null) => ImagesPath(Path.Combine("PalIcon", FileSystemPath(path)));
 
     /// <summary>Builds a path inside the extracted NPC-icons directory.</summary>
-    public static string NpcIconPath(string path = "") => ImagesPath(@"NPC" + PathSeparator(path));
+    public static string NpcIconPath(string? path = null) => ImagesPath(Path.Combine("NPC", FileSystemPath(path)));
 
     /// <summary>Builds a path inside the extracted weapon-icons directory.</summary>
-    public static string WeaponIconPath(string path = "") => ImagesPath(@"InventoryItemIcon" + PathSeparator(path));
+    public static string WeaponIconPath(string? path = null) =>
+        ImagesPath(Path.Combine("InventoryItemIcon", FileSystemPath(path)));
 
     /// <summary>Builds a path inside the application imports directory.</summary>
-    public static string ImportsPath(string path = "") => AppDataPath(@"Imports" + PathSeparator(path));
+    public static string ImportsPath(string? path = null) => AppDataPath(Path.Combine("Imports", FileSystemPath(path)));
 
 #if DEBUG
     // Example: PrintClassDefinition("CharacterData", "DT_PalMonsterParameter.uasset");

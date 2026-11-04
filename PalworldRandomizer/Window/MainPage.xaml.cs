@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 using PalworldRandomizer.Models;
 using PalworldRandomizer.Randomizer;
 using PalworldRandomizer.Serializer;
+using PalworldRandomizer.ViewModels;
 
 namespace PalworldRandomizer.Window;
 
@@ -49,8 +50,11 @@ public partial class MainPage : Grid {
             .Select(x => (string)x.GetValue(null)!),
     ];
 
+    /// <summary>Whether startup and restoration have completed successfully on the UI thread.</summary>
+    public bool IsReady { get; private set; }
+
     /// <summary>Creates the randomizer page and restores preferences after game data is loaded.</summary>
-    public MainPage(DispatcherOperation dataOperation) {
+    public MainPage(StartupCompletion startup) {
         Instance = this;
         InitializeComponent();
         Randomize.GenerationInvalidated += (_, _) => savePalSchema.IsEnabled = false;
@@ -59,8 +63,7 @@ public partial class MainPage : Grid {
         statusBar.Text = "⌛ Initializing...";
         Dispatcher.BeginInvoke(
             DispatcherPriority.Input,
-            () => {
-                dataOperation.Wait();
+            async () => IsReady = await startup.InitializeAsync(() => {
                 testImage.Source = new BitmapImage(
                     new Uri(Data.PalIcon[Randomize.GetRandomPal()], UriKind.Absolute)
                 );
@@ -85,7 +88,12 @@ public partial class MainPage : Grid {
                 testImage.Visibility = Visibility.Visible;
                 form.Visibility = Visibility.Visible;
                 statusBar.Text = "";
-            }
+            }, e => {
+                form.Visibility = Visibility.Collapsed;
+                testImage.Visibility = Visibility.Collapsed;
+                statusBar.Text = "Initialization failed.";
+                Dispatcher.BeginInvoke(() => ExceptionDispatchInfo.Capture(e).Throw());
+            })
         );
     }
 

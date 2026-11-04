@@ -1,15 +1,17 @@
 using System.IO;
-using CUE4Parse_Conversion.Textures;
+using System.Runtime.ExceptionServices;
 using CUE4Parse.FileProvider.Objects;
 using CUE4Parse.FileProvider.Vfs;
-using CUE4Parse.UE4.Assets;
 using CUE4Parse.UE4.Assets.Exports;
 using CUE4Parse.UE4.Assets.Exports.Engine;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Assets.Objects.Properties;
 using CUE4Parse.UE4.Objects.UObject;
+using CUE4Parse.UE4.Pak;
+using CUE4Parse.UE4.Readers;
 using CUE4Parse.UE4.Versions;
+using CUE4Parse_Conversion.Textures;
 
 namespace PalworldRandomizer.Serializer;
 
@@ -19,6 +21,37 @@ public class VfsFileProvider()
         IAsyncDisposable {
     /// <summary><see langword="true"/> if a game version change was detected during initial load.</summary>
     public bool GameVersionUpdated { get; set; } = false;
+
+    /// <summary>
+    /// The version read during explicit archive opening, or the caller's fallback when no INI exists.
+    /// </summary>
+    public string GameVersion { get; internal set; } = "0.0.0.0";
+
+    // CUE4Parse's public RegisterVfs/MountAsync log and swallow parser/codec failures. Keep the owned reader's
+    // original exception while still using the provider's asynchronous mount and file-index publication.
+    internal async Task MountPakAsync(FArchive archive) {
+        CheckedPakReader reader = new(archive);
+        PostLoadReader(reader, false);
+        Initialize();
+        int mounted = await MountAsync().ConfigureAwait(false);
+        reader.MountFailure?.Throw();
+        if (mounted != 1) {
+            throw new InvalidDataException("The selected PAK was not mounted; an encryption key may be required.");
+        }
+    }
+
+    private sealed class CheckedPakReader(FArchive archive) : PakFileReader(archive) {
+        internal ExceptionDispatchInfo? MountFailure { get; private set; }
+
+        public override void Mount(StringComparer pathComparer) {
+            try {
+                base.Mount(pathComparer);
+            } catch (Exception exception) {
+                MountFailure = ExceptionDispatchInfo.Capture(exception);
+                throw;
+            }
+        }
+    }
 
     private readonly HashSet<string> _savedImagePaths = [];
     private readonly List<Task> _fileSaveTasks = [];
@@ -56,16 +89,18 @@ public class VfsFileProvider()
     public string SaveTexturePng(string path, string saveFolder, bool forceOverwrite) {
         var gameFile = this[path];
 
-        string filename = saveFolder + '\\' + gameFile.NameWithoutExtension + ".png";
+        string filename = Path.Combine(saveFolder, gameFile.NameWithoutExtension + ".png");
 
         // Prevent saving the same file multiple times
-        if (!_savedImagePaths.Add(filename)) {
+        if (_savedImagePaths.Contains(filename)) {
             return filename;
         }
 
-        if ((forceOverwrite || !File.Exists(filename)) && TryLoadPackage(gameFile, out var package)) {
+        if (forceOverwrite || !File.Exists(filename)) {
+            var package = LoadPackage(gameFile);
             foreach (var export in package.GetExports()) {
                 if (export is UTexture texture) {
+                    _savedImagePaths.Add(filename);
                     _fileSaveTasks.Add(
                         Task.Run(() =>
                             File.WriteAllBytes(
@@ -81,22 +116,26 @@ public class VfsFileProvider()
             throw new Exception($"'{path}' does not contain texture data.");
         }
 
+        _savedImagePaths.Add(filename);
         return filename;
     }
 
     /// <summary>
-    /// Waits for any pending asynchronous file save tasks to complete.
+    /// Waits for scheduled image saves without releasing the archive needed by subsequent data loads.
     /// </summary>
-    public async ValueTask DisposeAsync() => await Task.WhenAll(_fileSaveTasks);
+    public Task WaitForTextureSavesAsync() => Task.WhenAll(_fileSaveTasks);
+
+    /// <summary>Drains pending image saves, then releases archive readers even when an image save fails.</summary>
+    public async ValueTask DisposeAsync() {
+        try {
+            await WaitForTextureSavesAsync();
+        } finally {
+            Dispose();
+        }
+    }
 
     /// <summary>Loads the exported objects from an asset package.</summary>
-    public IEnumerable<UObject> LoadAsset(string path) {
-        if (TryLoadPackage(path, out IPackage? package)) {
-            return package.GetExports();
-        }
-
-        throw new Exception($"Failed to load package '{path}'.");
-    }
+    public IEnumerable<UObject> LoadAsset(string path) => LoadPackage(path).GetExports();
 
     /// <summary>Loads the row map of a game data-table asset.</summary>
     public Dictionary<FName, FStructFallback> LoadDataTable(string path) {

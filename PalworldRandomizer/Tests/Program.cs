@@ -7,6 +7,8 @@ using PalworldRandomizer.Randomizer.PalSpawn;
 using PalworldRandomizer.Serializer;
 
 // Run against a previously built application assembly; no WPF window or game data is needed.
+string testRoot = Path.Combine(Path.GetTempPath(), "regression-" + Guid.NewGuid());
+UAssetData.ConfigureDataRoot(testRoot);
 (string Name, Action Run)[] tests =
 [
     ("Configuration is available independently of the WPF namespace", PortableConfig),
@@ -53,6 +55,11 @@ foreach (var (name, run) in tests) {
 }
 
 Console.WriteLine($"{tests.Length - failures}/{tests.Length} regression checks passed.");
+UAssetData.ConfigureDataRoot();
+if (Directory.Exists(testRoot)) {
+    Directory.Delete(testRoot, true);
+}
+
 return failures == 0 ? 0 : 1;
 
 // Requires the configuration DTO at the portable boundary and exercises its default constructor.
@@ -515,11 +522,13 @@ static void PortableBackup() {
     );
     Require(method != null, "Backups still fetch the editor singleton instead of accepting areas.");
     string originalDirectory = Directory.GetCurrentDirectory();
+    string originalRoot = UAssetData.AppDataPath();
     string directory = Path.Combine(Path.GetTempPath(), "backup-" + Guid.NewGuid());
     Directory.CreateDirectory(directory);
     bool autoSave = PalworldRandomizer.Randomizer.Randomize.AutoSaveRestoreBackups;
     try {
         Directory.SetCurrentDirectory(directory);
+        UAssetData.ConfigureDataRoot(directory);
         List<AreaData> edited = [new([], "bp_palmapobjectspawner_edited.uasset") { AreaType = AreaType.Egg }];
         int captures = 0;
         Func<List<AreaData>> capture = () => {
@@ -552,6 +561,7 @@ static void PortableBackup() {
             "Editor capture failure bypassed backup error transport.");
     } finally {
         Directory.SetCurrentDirectory(originalDirectory);
+        UAssetData.ConfigureDataRoot(originalRoot);
         PalworldRandomizer.Randomizer.Randomize.AutoSaveRestoreBackups = autoSave;
         PalworldRandomizer.Randomizer.Randomize.AreaListChanged = false;
         Directory.Delete(directory, true);
@@ -590,11 +600,13 @@ static void PortableRestore() {
     var method = typeof(PalworldRandomizer.Randomizer.Randomize).GetMethod("RestoreBackup")!;
     Require(method.ReturnType == typeof(Exception), "Restore still reports errors through the WPF application.");
     string originalDirectory = Directory.GetCurrentDirectory();
+    string originalRoot = UAssetData.AppDataPath();
     string directory = Path.Combine(Path.GetTempPath(), "restore-" + Guid.NewGuid());
     Directory.CreateDirectory(directory);
     bool autoSave = PalworldRandomizer.Randomizer.Randomize.AutoSaveRestoreBackups;
     try {
         Directory.SetCurrentDirectory(directory);
+        UAssetData.ConfigureDataRoot(directory);
         Directory.CreateDirectory("Backups");
         Directory.CreateDirectory("Log");
         File.WriteAllText("Backups/old.csv", "header\nUnknownArea,0");
@@ -616,6 +628,7 @@ static void PortableRestore() {
             "Failed restore replaced the previous areas.");
     } finally {
         Directory.SetCurrentDirectory(originalDirectory);
+        UAssetData.ConfigureDataRoot(originalRoot);
         PalworldRandomizer.Randomizer.Randomize.AutoSaveRestoreBackups = autoSave;
         Directory.Delete(directory, true);
     }
