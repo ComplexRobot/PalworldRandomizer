@@ -25,6 +25,11 @@
         <PackageReference Include="CUE4Parse-Conversion" />
         <PackageReference Include="ini-parser" />
         <PackageReference Include="Newtonsoft.Json" />
+        <PackageReference Include="SharpYaml" />
+        <EmbeddedResource Include="Metadata/RandomizerSettings.yaml"
+                          LogicalName="PalworldRandomizer.Metadata.RandomizerSettings.yaml" />
+        <EmbeddedResource Include="Metadata/Locales/en-US.Randomizer.yaml"
+                          LogicalName="PalworldRandomizer.Metadata.Locales.en-US.Randomizer.yaml" />
         <PackageReference Include="CommunityToolkit.Mvvm" />
         <PackageReference Include="Emoji.Wpf" />
         <PackageReference Include="ZstdSharp.Port" />

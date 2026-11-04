@@ -64,6 +64,21 @@ references the application's already-built CUE4Parse dependency because Newtonso
 The generation check also references the already-built Stfu dependency. Neither reference loads archives or adds
 an application package.
 
+## Embedded settings catalog
+
+Build the application in the same configuration, then run:
+
+```sh
+dotnet run --project PalworldRandomizer/Tests/Metadata.csproj -c Debug -p:TreatWarningsAsErrors=true
+```
+
+Repeat in Release. Its 12 checks load the actual production assembly and embedded YAML through
+`SettingsCatalog.LoadEmbedded()`: 137 original setting contracts, exact Nexus text and implementation provenance,
+147 controls, three radio groups, all 457 English keys, read-only nested collections and independent defaults.
+The additional metadata fixture does not replace `Fixtures/FormData.original.json`. No UI bindings, validators,
+editable YAML templates or persistence are executed by this runner. See [the catalog notes](../Metadata/README.md)
+for the API, provenance and scope. Outputs are isolated under `.build/Tests/Metadata/<Configuration>/`.
+
 ## Formatting checks
 
 ```sh

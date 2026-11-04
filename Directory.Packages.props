@@ -7,6 +7,7 @@
         <PackageVersion Include="CUE4Parse-Conversion" Version="1.2.2.202607" />
         <PackageVersion Include="ini-parser" Version="3.4.0" />
         <PackageVersion Include="Newtonsoft.Json" Version="13.0.5-beta1" />
+        <PackageVersion Include="SharpYaml" Version="3.16.0" />
         <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
         <PackageVersion Include="Emoji.Wpf" Version="0.3.4" />
         <PackageVersion Include="ZstdSharp.Port" Version="0.8.8" />
