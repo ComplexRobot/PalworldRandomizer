@@ -25,9 +25,10 @@ public interface IBrowserArchiveWorker {
     /// <param name="mapping">The selected USMAP File; its metadata bound is enforced before parsing.</param>
     /// <param name="previousVersion">The cached game version used only for cache invalidation.</param>
     /// <param name="settingsJson">The serialized <see cref="FormData"/> snapshot for this run.</param>
+    /// <param name="cancellationToken">Cancels waiting for the generation gate or the worker result.</param>
     /// <returns>A small summary and the complete generated ZIP bytes, or a stage-keyed failure.</returns>
     Task<BrowserGenerationReport> GenerateAsync(BrowserFile pak, BrowserFile mapping, string previousVersion,
-        string settingsJson);
+        string settingsJson, CancellationToken cancellationToken = default);
 }
 
 /// <summary>Runs synchronous CUE reads only inside the approved package's dedicated worker.</summary>
@@ -39,7 +40,11 @@ public interface IBrowserArchiveWorker {
 public sealed class BrowserArchiveWorker : IBrowserArchiveWorker {
     private static readonly SemaphoreSlim GenerationGate = new(1, 1);
     private static string? _loadedPak;
+    private static long _loadedPakLength;
+    private static double _loadedPakLastModified;
     private static long _loadedMappingLength;
+    private static double _loadedMappingLastModified;
+    private static bool _initializationFailed;
 
     /// <summary>Owns the provider and both source streams until all serial compatibility work finishes.</summary>
     public async Task<string> ValidateAsync(BrowserFile pak, BrowserFile mapping, string previousVersion) {
@@ -107,7 +112,7 @@ public sealed class BrowserArchiveWorker : IBrowserArchiveWorker {
     /// The worker instance is disposable because the original engine keeps process-wide tables with no reset.
     /// </remarks>
     public async Task<BrowserGenerationReport> GenerateAsync(BrowserFile pak, BrowserFile mapping,
-        string previousVersion, string settingsJson) {
+        string previousVersion, string settingsJson, CancellationToken cancellationToken = default) {
         if (!SpawnJSRuntime.Instance.IsDedicatedWorkerGlobalScope) {
             throw new InvalidOperationException("Generation requires a dedicated browser worker.");
         }
@@ -117,8 +122,13 @@ public sealed class BrowserArchiveWorker : IBrowserArchiveWorker {
         var pakStream = (BrowserFileStream?)null;
         var mappingStream = (BrowserFileStream?)null;
         string stage = "generation.mappingIncompatible";
-        await GenerationGate.WaitAsync();
+        await GenerationGate.WaitAsync(cancellationToken);
         try {
+            if (_initializationFailed) {
+                throw new InvalidOperationException(
+                    "Game data initialization failed; reload the page before retrying.");
+            }
+
             pakStream = new BrowserFileStream(pak);
             mappingStream = new BrowserFileStream(mapping);
             if (mappingStream.Length is <= 0 or > 16 * 1024 * 1024) {
@@ -128,7 +138,10 @@ public sealed class BrowserArchiveWorker : IBrowserArchiveWorker {
             stage = "generation.reselect";
             if (_loadedPak is not null
                 && (!string.Equals(_loadedPak, pak.Name, StringComparison.Ordinal)
-                    || _loadedMappingLength != mappingStream.Length)) {
+                    || _loadedPakLength != pak.Size
+                    || _loadedPakLastModified != pak.LastModified
+                    || _loadedMappingLength != mappingStream.Length
+                    || _loadedMappingLastModified != mapping.LastModified)) {
                 throw new InvalidOperationException(
                     "A different PAK or USMAP was selected; reload the page to reset the game-data tables.");
             }
@@ -151,13 +164,27 @@ public sealed class BrowserArchiveWorker : IBrowserArchiveWorker {
             report.ArchiveEntries = provider.Files.Count;
             provider.GameVersionUpdated = version != previousVersion;
 
+            // Pin immediately after a successful mount: a later failure must not leave process-wide engine
+            // tables populated without the selection that produced them.
+            _loadedPak = pak.Name;
+            _loadedPakLength = pak.Size;
+            _loadedPakLastModified = pak.LastModified;
+            _loadedMappingLength = mappingStream.Length;
+            _loadedMappingLastModified = mapping.LastModified;
+
             FormData settings = string.IsNullOrWhiteSpace(settingsJson)
                 ? new FormData()
                 : JsonConvert.DeserializeObject<FormData>(settingsJson)
                     ?? throw new InvalidDataException("The serialized settings snapshot was empty.");
 
             stage = "generation.dataFailed";
-            Data.Initialize(provider, extractIcons: false);
+            try {
+                Data.Initialize(provider, extractIcons: false);
+            } catch {
+                _initializationFailed = true;
+                throw;
+            }
+
             Randomize.Initialize();
             var (areas, _) = Randomize.GeneratePalSpawns(settings, () => false);
 
@@ -184,8 +211,6 @@ public sealed class BrowserArchiveWorker : IBrowserArchiveWorker {
             report.VanillaAreaCount = Data.AreaData.Count;
             report.GeneratedAreaCount = areas.Count;
             report.ChangedAreaCount = changedAreas;
-            _loadedPak = pak.Name;
-            _loadedMappingLength = mappingStream.Length;
             report.Success = true;
         } catch (Exception exception) {
             report.Success = false;

@@ -125,7 +125,7 @@ public sealed class BrowserSetupFiles(WebWorkerService workers) : IBrowserGenera
         await worker.WhenReady.WaitAsync(TimeSpan.FromSeconds(30), cancellationToken);
         string settingsJson = JsonConvert.SerializeObject(request.Settings);
         BrowserGenerationReport report = await worker.GetService<IBrowserArchiveWorker>()
-            .GenerateAsync(pak, mapping, request.PreviousGameVersion, settingsJson)
+            .GenerateAsync(pak, mapping, request.PreviousGameVersion, settingsJson, cancellationToken)
             .WaitAsync(TimeSpan.FromMinutes(10), cancellationToken);
         LastReport = JsonConvert.SerializeObject(new {
             report.Success,
