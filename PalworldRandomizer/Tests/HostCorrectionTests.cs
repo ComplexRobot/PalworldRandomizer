@@ -40,7 +40,11 @@ internal static class HostCorrectionTests {
             BrowserDownloadResult);
         failures += Run("Disposing the Generate model deletes its temporary output ZIP",
             DisposeDeletesTemporaryZip);
-        Console.WriteLine($"{10 - failures}/10 host correction checks passed.");
+        failures += Run("Repeated Generate deletes the prior temporary ZIP",
+            RepeatedGenerateDeletesPreviousTemporaryZip);
+        failures += Run("Disposing cancels an in-flight generation",
+            DisposeCancelsInFlightGeneration);
+        Console.WriteLine($"{12 - failures}/12 host correction checks passed.");
         return failures == 0 ? 0 : 1;
     }
 
@@ -437,6 +441,38 @@ internal static class HostCorrectionTests {
         Require(path is not null && File.Exists(path), "The generated temporary ZIP was not published.");
         model.Dispose();
         Require(!File.Exists(path), "Disposing the Generate model left its temporary ZIP on disk.");
+    }
+
+    private static void RepeatedGenerateDeletesPreviousTemporaryZip() {
+        SetupViewModel setup = CreateSetup("C:\\game\\Pal-Windows.pak", "C:\\game\\Mappings.usmap", new int[1]);
+        GenerateViewModel model = new(setup, () => new FormData(), NewRoot(),
+            (request, _, _) => Task.FromResult(WriteTinyZip(request)));
+        RunGenerate(model);
+        string? first = model.ResultPath;
+        Require(first is not null && File.Exists(first), "The first generated temporary ZIP was not published.");
+        RunGenerate(model);
+        string? second = model.ResultPath;
+        Require(second is not null && File.Exists(second), "The second generated temporary ZIP was not published.");
+        Require(!string.Equals(first, second, StringComparison.Ordinal), "The second run reused the first path.");
+        Require(!File.Exists(first), "Starting a second run left the prior temporary ZIP on disk.");
+        model.Dispose();
+    }
+
+    private static void DisposeCancelsInFlightGeneration() {
+        SetupViewModel setup = CreateSetup("C:\\game\\Pal-Windows.pak", "C:\\game\\Mappings.usmap", new int[1]);
+        var entered = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        GenerateViewModel model = new(setup, () => new FormData(), NewRoot(),
+            async (request, _, token) => {
+                entered.TrySetResult(true);
+                await Task.Delay(Timeout.Infinite, token);
+                return WriteTinyZip(request);
+            });
+        Task run = model.GenerateCommand.ExecuteAsync(null);
+        WaitFor(() => entered.Task.IsCompleted, "Generation did not start.");
+        model.Dispose();
+        WaitFor(() => run.IsCompleted, "Disposing did not end the in-flight generation.");
+        Dispatcher.UIThread.RunJobs();
+        Require(run.IsCompleted, "The in-flight generation did not complete after disposal.");
     }
 
     private static void RunGenerate(GenerateViewModel model) {

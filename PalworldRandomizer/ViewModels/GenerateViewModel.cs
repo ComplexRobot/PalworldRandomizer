@@ -23,8 +23,11 @@ public sealed partial class GenerateViewModel : ObservableObject, IDisposable {
     private readonly string _dataRoot;
     private readonly Func<GenerationRequest, Action<double?>?, CancellationToken, Task<GenerationResult>> _generate;
     private string? _outputZipPath;
+    private string? _activeOutputPath;
+    private CancellationTokenSource? _cancellation;
     private long _runId;
     private bool _subscribed;
+    private bool _disposed;
 
     [ObservableProperty]
     private bool _isGenerating;
@@ -91,7 +94,15 @@ public sealed partial class GenerateViewModel : ObservableObject, IDisposable {
     /// <summary>Removes this model's temporary ZIP when the host permanently discards it.</summary>
     /// <remarks>A tab switch only detaches; an unsaved result survives until host or model disposal.</remarks>
     public void Dispose() {
+        _disposed = true;
         Detach();
+        _cancellation?.Cancel();
+        string? active = _activeOutputPath;
+        _activeOutputPath = null;
+        if (active is not null) {
+            TryDelete(active);
+        }
+
         if (_outputZipPath is not null) {
             TryDelete(_outputZipPath);
         }
@@ -113,13 +124,26 @@ public sealed partial class GenerateViewModel : ObservableObject, IDisposable {
     /// </remarks>
     [RelayCommand(CanExecute = nameof(CanGenerate), AllowConcurrentExecutions = false)]
     private async Task GenerateAsync() {
+        if (_disposed) {
+            return;
+        }
+
         long run = Interlocked.Increment(ref _runId);
         IsGenerating = true;
         Progress = 0;
         Status = "Generating...";
+        string? previous = _outputZipPath;
+        _outputZipPath = null;
+        _activeOutputPath = null;
+        if (previous is not null) {
+            TryDelete(previous);
+        }
+
+        _cancellation?.Dispose();
+        _cancellation = new CancellationTokenSource();
+        CancellationToken token = _cancellation.Token;
         Result = null;
         Error = null;
-        _outputZipPath = null;
         HasOutput = false;
         HasError = false;
         GenerateCommand.NotifyCanExecuteChanged();
@@ -133,6 +157,7 @@ public sealed partial class GenerateViewModel : ObservableObject, IDisposable {
                 Settings = _captureSettings(),
                 PreviousGameVersion = _setup.Preferences.LastGameVersion,
             };
+            _activeOutputPath = request.OutputZipPath;
 
             // The service resolves and opens archive inputs before its first incomplete await when the
             // engine gate is free. Run the entire delegate on a worker; only the request snapshot and
@@ -154,7 +179,12 @@ public sealed partial class GenerateViewModel : ObservableObject, IDisposable {
                         Status = $"Generating... {reported:F0}%";
                     }, DispatcherPriority.Background);
                 },
-                CancellationToken.None));
+                token));
+
+            if (_disposed) {
+                TryDelete(generationResult.OutputZipPath);
+                return;
+            }
 
             Result = generationResult;
             bool browserDownload = !Path.IsPathFullyQualified(generationResult.OutputZipPath)
@@ -179,11 +209,22 @@ public sealed partial class GenerateViewModel : ObservableObject, IDisposable {
                 HasError = true;
                 Status = "Generation failed.";
             }
+        } catch (OperationCanceledException) {
+            Status = "Generation cancelled.";
+            Error = null;
+            HasError = false;
+            string? cancelled = _activeOutputPath;
+            _activeOutputPath = null;
+            if (cancelled is not null) {
+                TryDelete(cancelled);
+            }
         } catch (Exception exception) {
             Error = exception.Message;
             Status = "Generation failed.";
             HasError = true;
         } finally {
+            _cancellation?.Dispose();
+            _cancellation = null;
             IsGenerating = false;
             GenerateCommand.NotifyCanExecuteChanged();
         }
