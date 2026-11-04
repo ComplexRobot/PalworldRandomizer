@@ -2,25 +2,12 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>net10.0-windows</TargetFramework>
+        <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     </PropertyGroup>
     <ItemGroup>
-        <Compile Remove="ShellTests.cs;MetadataTests.cs;ArchiveTests.cs;StartupTests.cs" />
+        <Compile Include="Program.cs" />
         <EmbeddedResource Include="Fixtures/FormData.original.json" />
-        <!-- Reference the built assembly without requiring the Windows Desktop runtime on Linux. -->
-        <Reference Include="PalworldRandomizer">
-            <HintPath>../../.build/$(Configuration)/PalworldRandomizer.dll</HintPath>
-            <ExternallyResolved>true</ExternallyResolved>
-        </Reference>
-        <!-- GameStruct's constructor metadata references the existing archive library during JSON export. -->
-        <Reference Include="CUE4Parse">
-            <HintPath>../../.build/$(Configuration)/CUE4Parse.dll</HintPath>
-            <ExternallyResolved>true</ExternallyResolved>
-        </Reference>
-        <!-- The compiled generation method uses the application's existing Stfu.Linq dependency. -->
-        <Reference Include="Stfu">
-            <HintPath>../../.build/$(Configuration)/Stfu.dll</HintPath>
-            <ExternallyResolved>true</ExternallyResolved>
-        </Reference>
+        <ProjectReference Include="../../PalworldRandomizer/PalworldRandomizer.csproj" />
         <PackageReference Include="Newtonsoft.Json" />
     </ItemGroup>
 </Project>

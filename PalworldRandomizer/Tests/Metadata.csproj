@@ -8,9 +8,6 @@
         <Compile Include="MetadataTests.cs" />
         <EmbeddedResource Include="Fixtures/SettingsMetadata.original.json" LogicalName="Metadata.Original.json" />
         <PackageReference Include="SharpYaml" />
-        <Reference Include="PalworldRandomizer">
-            <HintPath>../../.build/$(Configuration)/PalworldRandomizer.dll</HintPath>
-            <ExternallyResolved>true</ExternallyResolved>
-        </Reference>
+        <ProjectReference Include="../../PalworldRandomizer/PalworldRandomizer.csproj" />
     </ItemGroup>
 </Project>

@@ -1,0 +1,36 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:PalworldRandomizer.ViewModels"
+             xmlns:controls="using:PalworldRandomizer.Controls"
+             x:Class="PalworldRandomizer.Views.ShellView" x:DataType="vm:ShellViewModel"
+             FontSize="14" Foreground="#DEE4ED">
+    <Grid RowDefinitions="Auto,Auto,*" Background="#20242B">
+        <Grid ColumnDefinitions="*,Auto,Auto,Auto" Background="#191D23">
+            <controls:TabStripPanel x:Name="Strip" Mode="{Binding TabMode}" />
+            <Button x:Name="Overflow" Grid.Column="1" Width="40" Height="40" VerticalAlignment="Top"
+                    AutomationProperties.AutomationId="Shell.Overflow" IsVisible="False" />
+            <Button x:Name="Settings" Grid.Column="2" Width="40" Height="40" Padding="0"
+                    VerticalAlignment="Top" AutomationProperties.AutomationId="Shell.Settings" />
+            <StackPanel x:Name="WindowControls" Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Top" />
+        </Grid>
+        <Border Grid.Row="1" Background="#272D36" Padding="8,4"
+                BorderBrush="#3B4350" BorderThickness="0,1">
+            <StackPanel Orientation="Horizontal" Spacing="4">
+                <Button x:Name="Back" AutomationProperties.AutomationId="Shell.Back"
+                        IsEnabled="{Binding SelectedTab.CanGoBack}" />
+                <Button x:Name="Forward" AutomationProperties.AutomationId="Shell.Forward"
+                        IsEnabled="{Binding SelectedTab.CanGoForward}" />
+            </StackPanel>
+        </Border>
+        <ContentControl x:Name="PageHost" Grid.Row="2" HorizontalContentAlignment="Stretch"
+                        VerticalContentAlignment="Stretch" />
+        <Grid x:Name="OverflowOverlay" Grid.Row="1" Grid.RowSpan="2" ZIndex="10"
+              Background="#40000000" IsVisible="False">
+            <Border x:Name="OverflowMenu" Background="#303844" BorderBrush="#647B96" BorderThickness="1"
+                    CornerRadius="6" Width="280" MaxWidth="280" Margin="8" Padding="8"
+                    VerticalAlignment="Top" HorizontalAlignment="Right">
+                <StackPanel x:Name="OverflowItems" Spacing="4" />
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

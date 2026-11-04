@@ -1,5 +1,6 @@
 /.vs/
 /.build/
 /.publish/
+/evidence/
 *.user
 /*.txt

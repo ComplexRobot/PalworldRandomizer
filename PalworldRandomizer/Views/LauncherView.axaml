@@ -1,0 +1,16 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:PalworldRandomizer.ViewModels"
+             x:Class="PalworldRandomizer.Views.LauncherView" x:DataType="vm:LauncherViewModel">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24" MaxWidth="720" Spacing="12" VerticalAlignment="Center">
+            <TextBlock x:Name="Heading" TextWrapping="Wrap" FontSize="30"
+                       FontWeight="SemiBold" Foreground="#E0E5ED" />
+            <TextBlock x:Name="Introduction" TextWrapping="Wrap" Foreground="#A5B0C0" />
+            <TextBox x:Name="Search" AutomationProperties.AutomationId="Launcher.Search"
+                     Text="{Binding SearchText, Mode=TwoWay}" Margin="0,8" />
+            <StackPanel x:Name="Destinations" Spacing="8" />
+            <TextBlock x:Name="NoResults" Foreground="#A5B0C0" IsVisible="False" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -1,0 +1,16 @@
+<!-- App-owned manual recovery controls. They stay outside #out so they remain usable on a blank canvas. -->
+<section id="recovery-panel" aria-label="Manual software recovery">
+<style>
+#recovery-panel{position:fixed;top:10px;right:10px;z-index:50;width:330px;box-sizing:border-box;background:#1A2029;border:1px solid #42536B;border-radius:8px;padding:12px;box-shadow:0 4px 18px #0008}
+#recovery-panel h2{margin:0 0 6px;font-size:14px}
+#manual-software-recovery{width:100%;padding:9px 10px;border-radius:6px;border:1px solid #8CB5DC;background:#34465E;color:#F2F6FB;font:inherit;font-weight:600;cursor:pointer}
+#manual-software-recovery:focus-visible{outline:3px solid #8CB5DC;outline-offset:2px}
+#manual-software-recovery:disabled{opacity:.65;cursor:progress}
+#recovery-status{margin:8px 0 0;min-height:2.6em;color:#C9D7E8;line-height:1.35}
+#recovery-hint{margin:6px 0 0;color:#99ABC4;font-size:12px}
+</style>
+<h2>Manual software recovery</h2>
+<button id="manual-software-recovery" type="button">Restart in software rendering</button>
+<p id="recovery-status" role="status" aria-live="polite">Recovery is ready to prepare a checkpoint.</p>
+<p id="recovery-hint">Saves this tab's current work, then reloads this page with software rendering. Your saved rendering preference is not changed.</p>
+</section>

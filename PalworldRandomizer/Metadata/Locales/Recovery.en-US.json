@@ -1,0 +1,20 @@
+{
+    "recovery.manualAction": "Restart in software rendering",
+    "recovery.manualHint": "Saves this tab's current work, then reloads this page with software rendering. Your saved rendering preference is not changed.",
+    "recovery.preparing": "Preparing a recovery checkpoint…",
+    "recovery.restoring": "Restoring your work into a fresh software-rendered view…",
+    "recovery.active": "Software rendering is active. Your work was restored; select game files again before generating.",
+    "recovery.notReady": "Recovery is not ready yet. Wait for the application to finish starting.",
+    "recovery.refusedBusy": "Recovery paused: setup validation is still running. Your work is unchanged.",
+    "recovery.refusedPicker": "Recovery paused: a file picker is open. Finish or cancel it first.",
+    "recovery.refusedDuplicate": "Recovery is already being prepared in this tab.",
+    "recovery.refusedAlreadySoftware": "Software rendering is already active in this tab for this session. Your saved preference was not changed.",
+    "recovery.captureFailed": "The current work could not be captured. Nothing was reloaded and your work is unchanged.",
+    "recovery.storeFailed": "The recovery checkpoint could not be saved. Nothing was reloaded and your work is unchanged.",
+    "recovery.markerFailed": "The recovery launch marker could not be verified. Nothing was reloaded and your work is unchanged.",
+    "recovery.ackFailed": "The recovery marker could not be acknowledged. Input remains disabled to prevent restoring stale work.",
+    "recovery.pendingMissing": "The pending recovery checkpoint is missing. Nothing was restored and the existing records were kept.",
+    "recovery.pendingInvalid": "The pending recovery checkpoint is invalid or unsupported. Nothing was restored and the existing records were kept.",
+    "recovery.markerInvalid": "The recovery marker has an unsupported format. Startup was stopped and the existing data was kept.",
+    "recovery.budgetSpent": "The one recovery launch for this tab was already used. Startup was stopped and the existing data was kept."
+}

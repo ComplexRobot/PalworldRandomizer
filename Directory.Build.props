@@ -1,5 +1,7 @@
 <Project>
   <PropertyGroup>
+    <!-- Resolve the SDK default before computing early-imported artifact paths. -->
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
@@ -9,8 +11,9 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IsAotCompatible>true</IsAotCompatible>
     <IsTrimmable>true</IsTrimmable>
-    <OutputPath>$(MSBuildThisFileDirectory)\.build\$(Configuration)</OutputPath>
-    <BaseIntermediateOutputPath>$(OutputPath)\obj</BaseIntermediateOutputPath>
+    <!-- Isolate every project's intermediate and final artifacts from sibling builds. -->
+    <OutputPath>$(MSBuildThisFileDirectory).build\$(MSBuildProjectName)\$(Configuration)\</OutputPath>
+    <BaseIntermediateOutputPath>$(OutputPath)obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <PathMap>$(MSBuildThisFileDirectory)=.</PathMap>

@@ -7,10 +7,7 @@
     <ItemGroup>
         <Compile Include="ArchiveTests.cs" />
         <Compile Include="StartupTests.cs" />
-        <Reference Include="PalworldRandomizer">
-            <HintPath>../../.build/$(Configuration)/PalworldRandomizer.dll</HintPath>
-            <ExternallyResolved>true</ExternallyResolved>
-        </Reference>
+        <ProjectReference Include="../../PalworldRandomizer/PalworldRandomizer.csproj" />
         <PackageReference Include="CUE4Parse" />
         <PackageReference Include="CUE4Parse-Conversion" />
         <PackageReference Include="ini-parser" />

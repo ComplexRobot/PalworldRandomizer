@@ -1,0 +1,12 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:semi="https://irihi.tech/semi"
+             x:Class="PalworldRandomizer.App"
+             RequestedThemeVariant="Dark">
+    <!-- Approved coexistence composition: Avalonia resources precede Semi/Ursa, as verified in spike 001. -->
+    <Application.Styles>
+        <FluentTheme />
+        <semi:SemiTheme Locale="en-US" />
+        <semi:UrsaSemiTheme Locale="en-US" />
+    </Application.Styles>
+</Application>

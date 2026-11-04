@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk.WebAssembly">
+    <PropertyGroup>
+        <TargetFramework>net10.0-browser</TargetFramework>
+        <RuntimeIdentifier>browser-wasm</RuntimeIdentifier>
+        <OutputType>Exe</OutputType>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <WasmMainJSPath>wwwroot/main.js</WasmMainJSPath>
+        <WasmMainHTMLPath>wwwroot/index.html</WasmMainHTMLPath>
+        <WasmEnableThreads>false</WasmEnableThreads>
+        <PublishTrimmed>false</PublishTrimmed>
+        <WasmBuildNative>true</WasmBuildNative>
+        <InvariantGlobalization>false</InvariantGlobalization>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\PalworldRandomizer\PalworldRandomizer.csproj" />
+        <PackageReference Include="Avalonia.Browser" />
+        <PackageReference Include="Avalonia.Fonts.Inter" />
+        <PackageReference Include="SpawnDev.SpawnJS" />
+        <PackageReference Include="SpawnDev.SpawnJS.WebWorkers" />
+        <EmbeddedResource Include="..\PalworldRandomizer\Metadata\Locales\Recovery.en-US.json"
+                          LogicalName="PalworldRandomizer.Metadata.Locales.Recovery.en-US.json"
+                          WithCulture="false" />
+        <Content Include="..\PalworldRandomizer\Metadata\Locales\Recovery.en-US.json"
+                 Link="wwwroot\Recovery.en-US.json"
+                 CopyToOutputDirectory="PreserveNewest"
+                 CopyToPublishDirectory="PreserveNewest" />
+    </ItemGroup>
+</Project>

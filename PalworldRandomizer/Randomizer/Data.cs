@@ -1,4 +1,3 @@
-using System.IO;
 using System.Text.RegularExpressions;
 using CUE4Parse.UE4.Assets.Objects;
 using CUE4Parse.UE4.Objects.UObject;

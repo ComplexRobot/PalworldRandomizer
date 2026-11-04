@@ -1,3 +1,5 @@
 ﻿<Solution>
-  <Project Path="PalworldRandomizer\PalworldRandomizer.csproj" />
+  <Project Path="PalworldRandomizer/PalworldRandomizer.csproj" />
+  <Project Path="PalworldRandomizer.Desktop/PalworldRandomizer.Desktop.csproj" />
+  <Project Path="PalworldRandomizer.Browser/PalworldRandomizer.Browser.csproj" />
 </Solution>

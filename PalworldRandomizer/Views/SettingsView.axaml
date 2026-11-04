@@ -1,0 +1,104 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:PalworldRandomizer.ViewModels"
+             xmlns:l="using:PalworldRandomizer.Localization"
+             x:Class="PalworldRandomizer.Views.SettingsView" x:DataType="vm:SetupViewModel"
+             Background="#202630" Foreground="#D9E2F0" FontSize="14">
+    <!-- Setup is the only implemented Settings category in this bounded component. -->
+    <UserControl.Resources><l:SetupTextConverter x:Key="Text" /></UserControl.Resources>
+    <UserControl.Styles>
+        <Style Selector="Border.file"><Setter Property="Padding" Value="12" />
+            <Setter Property="CornerRadius" Value="7" /><Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="#42536B" /><Setter Property="Background" Value="#252F3D" />
+        </Style>
+        <Style Selector="Border.file.missing"><Setter Property="BorderBrush" Value="#75A8D1" />
+            <Setter Property="BoxShadow" Value="0 0 12 0 #557BA5C4" /></Style>
+        <Style Selector="ComboBox"><Setter Property="MinWidth" Value="270" /></Style>
+        <Style Selector="ToolTip"><Setter Property="ShowDelay" Value="0" /></Style>
+    </UserControl.Styles>
+    <Grid ColumnDefinitions="150,*">
+        <Border Background="#1A2029" Padding="18,28"><StackPanel Spacing="18">
+            <TextBlock Text="{l:SetupText setup.title}" FontSize="18" FontWeight="SemiBold" />
+            <Border Background="#34465E" CornerRadius="5" Padding="12,10">
+                <TextBlock Text="{l:SetupText setup.title}" /></Border>
+        </StackPanel></Border>
+        <ScrollViewer Grid.Column="1" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Margin="30,26,30,40" Spacing="12" MaxWidth="780" HorizontalAlignment="Stretch">
+                <TextBlock Text="{l:SetupText setup.title}" FontSize="26" FontWeight="SemiBold" />
+                <TextBlock Text="{l:SetupText setup.subtitle}" Foreground="#A7B7CD" TextWrapping="Wrap" />
+                <TextBlock Text="{l:SetupText setup.language}" Margin="0,16,0,0" />
+                <ComboBox x:Name="Language" SelectionChanged="PreferenceChanged"
+                          AutomationProperties.AutomationId="Setup.Language">
+                    <ComboBoxItem Content="{l:SetupText setup.english}" />
+                </ComboBox>
+                <TextBlock Text="{l:SetupText setup.languageNote}" Foreground="#99ABC4" />
+                <TextBlock Text="{l:SetupText setup.rendering}" Margin="0,8,0,0" />
+                <ComboBox x:Name="Rendering" SelectionChanged="PreferenceChanged"
+                          AutomationProperties.AutomationId="Setup.Rendering">
+                    <ComboBoxItem Content="{l:SetupText setup.gpu}" />
+                    <ComboBoxItem Content="{l:SetupText setup.software}" />
+                </ComboBox>
+                <TextBlock Text="{l:SetupText setup.rendererNote}" TextWrapping="Wrap" Foreground="#99ABC4" />
+                <TextBlock Text="{l:SetupText setup.pak}" Margin="0,10,0,0" />
+                <Border x:Name="PakArea" Classes="file" Classes.missing="{Binding PakEmpty}" DragDrop.AllowDrop="True">
+                    <StackPanel Spacing="8"><Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                        <TextBox x:Name="Pak" Text="{Binding PakText, Mode=TwoWay}"
+                                 IsReadOnly="{Binding !CanTypePaths}" KeyDown="InputKeyDown" LostFocus="InputLostFocus"
+                                 AutomationProperties.AutomationId="Setup.Pak" />
+                        <TextBlock Grid.Column="1" Text="⚠" IsVisible="{Binding PakInvalid}"
+                                   ToolTip.Tip="{l:SetupText setup.invalidPath}" ToolTip.ShowDelay="0" />
+                        <Button Grid.Column="2" Tag="pak" Content="{l:SetupText setup.browse}" Click="BrowseClicked"
+                                AutomationProperties.AutomationId="Setup.BrowsePak" />
+                    </Grid><TextBlock x:Name="PakHint" Foreground="#99ABC4" FontSize="12" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+                <TextBlock Text="{l:SetupText setup.mapping}" Margin="0,8,0,0" />
+                <Border x:Name="MappingArea" Classes="file" Classes.missing="{Binding MappingEmpty}"
+                        DragDrop.AllowDrop="True">
+                    <StackPanel Spacing="8"><Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                        <TextBox x:Name="Mapping" Text="{Binding MappingText, Mode=TwoWay}"
+                                 IsReadOnly="{Binding !CanTypePaths}" KeyDown="InputKeyDown" LostFocus="InputLostFocus"
+                                 AutomationProperties.AutomationId="Setup.Mapping" />
+                        <TextBlock Grid.Column="1" Text="⚠" IsVisible="{Binding MappingInvalid}"
+                                   ToolTip.Tip="{l:SetupText setup.invalidPath}" ToolTip.ShowDelay="0" />
+                        <Button Grid.Column="2" Tag="mapping" Content="{l:SetupText setup.browse}" Click="BrowseClicked"
+                                AutomationProperties.AutomationId="Setup.BrowseMapping" />
+                    </Grid><TextBlock x:Name="MappingHint" Foreground="#99ABC4" FontSize="12" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+                <TextBlock Text="{l:SetupText setup.busy}" IsVisible="{Binding IsBusy}" Foreground="#A9C9E7" />
+                <TextBlock Text="{l:SetupText setup.ready}" IsVisible="{Binding IsReady}" Foreground="#A7CFB4" />
+                <TextBlock Text="{l:SetupText setup.formats}" FontSize="20" Margin="0,18,0,4" />
+                <TextBlock Text="{l:SetupText setup.date}" />
+                <ComboBox x:Name="Date" SelectionChanged="PreferenceChanged"
+                          AutomationProperties.AutomationId="Setup.Date" />
+                <TextBlock Text="{l:SetupText setup.time}" />
+                <ComboBox x:Name="Time" SelectionChanged="PreferenceChanged"
+                          AutomationProperties.AutomationId="Setup.Time" />
+                <CheckBox x:Name="Hyphens" Content="{l:SetupText setup.separator}" IsCheckedChanged="SeparatorChanged"
+                          AutomationProperties.AutomationId="Setup.Hyphens" />
+                <TextBlock Text="{l:SetupText setup.filename}" />
+                <TextBox x:Name="Filename" TextChanged="FilenameChanged"
+                         AutomationProperties.AutomationId="Setup.Filename" />
+                <TextBlock x:Name="Preview" TextWrapping="Wrap" Foreground="#A9C9E7" />
+            </StackPanel>
+        </ScrollViewer>
+        <!-- Notifications are rendered above the page, below the owning shell's tab strip. -->
+        <ItemsControl Grid.ColumnSpan="2" ItemsSource="{Binding Toasts}" HorizontalAlignment="Right"
+                      VerticalAlignment="Top" Width="340" Margin="0,12,12,0" ZIndex="100">
+            <ItemsControl.ItemTemplate><DataTemplate x:DataType="vm:SetupToast">
+                <Border Background="#263A50" BorderBrush="#6383A8" BorderThickness="1" CornerRadius="6"
+                        Padding="12" Margin="0,0,0,8" BoxShadow="0 3 12 0 #50000000">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                        <StackPanel Spacing="6"><TextBlock Text="{Binding Key, Converter={StaticResource Text}}"
+                            TextWrapping="Wrap" /><TextBlock Text="{Binding Detail}" TextWrapping="Wrap" FontSize="11"
+                            Foreground="#BAC9DB" MaxHeight="70" /></StackPanel>
+                        <Button Grid.Column="1" Content="×" Tag="{Binding}" Click="CloseToastClicked" Padding="7,1"
+                                VerticalAlignment="Top" ToolTip.Tip="{l:SetupText setup.close}"
+                                AutomationProperties.AutomationId="Setup.CloseToast" />
+                    </Grid>
+                </Border>
+            </DataTemplate></ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</UserControl>

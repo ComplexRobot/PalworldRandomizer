@@ -1,0 +1,34 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:PalworldRandomizer.ViewModels"
+             xmlns:locale="using:PalworldRandomizer.Localization"
+             x:Class="PalworldRandomizer.Controls.ShellTabHeader" x:DataType="vm:ShellTab"
+             ClipToBounds="True" Height="40">
+    <UserControl.Resources>
+        <locale:LocaleKeyConverter x:Key="Locale" />
+    </UserControl.Resources>
+    <UserControl.Styles>
+        <Style Selector="Button.tab">
+            <Setter Property="Background" Value="#2B3039" />
+            <Setter Property="BorderThickness" Value="0,0,0,2" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="CornerRadius" Value="4,4,0,0" />
+        </Style>
+        <Style Selector=":is(UserControl).selected Button.tab">
+            <Setter Property="Background" Value="#354253" />
+            <Setter Property="BorderBrush" Value="#7793B3" />
+        </Style>
+    </UserControl.Styles>
+    <Grid x:Name="HeaderLayout" ColumnDefinitions="*,32">
+        <Button x:Name="SelectTab" Classes="tab" HorizontalAlignment="Stretch" IsVisible="{Binding !IsClosed}"
+                HorizontalContentAlignment="Stretch" VerticalAlignment="Stretch" Padding="12,8" MinWidth="0"
+                ToolTip.Tip="{Binding TitleKey, Converter={StaticResource Locale}}">
+            <TextBlock Text="{Binding TitleKey, Converter={StaticResource Locale}}"
+                       TextTrimming="CharacterEllipsis" FontSize="14" />
+        </Button>
+        <Button x:Name="CloseTab" Grid.Column="1" IsVisible="{Binding !IsClosed}"
+                Padding="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+        <Button x:Name="UndoClose" Grid.ColumnSpan="2" IsVisible="{Binding IsClosed}"
+                HorizontalAlignment="Stretch" />
+    </Grid>
+</UserControl>

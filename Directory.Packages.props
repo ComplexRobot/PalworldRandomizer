@@ -9,8 +9,18 @@
         <PackageVersion Include="Newtonsoft.Json" Version="13.0.5-beta1" />
         <PackageVersion Include="SharpYaml" Version="3.16.0" />
         <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
-        <PackageVersion Include="Emoji.Wpf" Version="0.3.4" />
+        <PackageVersion Include="Stfu" Version="0.1.1" />
         <PackageVersion Include="ZstdSharp.Port" Version="0.8.8" />
         <PackageVersion Include="Microsoft.Bcl.Memory" Version="9.0.14" />
+        <PackageVersion Include="Avalonia" Version="12.1.5" />
+        <PackageVersion Include="Avalonia.Desktop" Version="12.1.5" />
+        <PackageVersion Include="Avalonia.Browser" Version="12.1.5" />
+        <PackageVersion Include="Avalonia.Themes.Fluent" Version="12.1.5" />
+        <PackageVersion Include="Avalonia.Fonts.Inter" Version="12.1.5" />
+        <PackageVersion Include="Semi.Avalonia" Version="12.0.1" />
+        <PackageVersion Include="Irihi.Ursa" Version="2.3.0" />
+        <PackageVersion Include="Irihi.Ursa.Themes.Semi" Version="2.3.0" />
+        <PackageVersion Include="SpawnDev.SpawnJS" Version="3.0.5" />
+        <PackageVersion Include="SpawnDev.SpawnJS.WebWorkers" Version="2.2.5" />
     </ItemGroup>
 </Project>

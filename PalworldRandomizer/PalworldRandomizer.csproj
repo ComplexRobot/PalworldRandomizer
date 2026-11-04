@@ -1,40 +1,49 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <Version>2.16.2</Version>
-        <TargetFramework>net10.0-windows</TargetFramework>
-        <UseWPF>True</UseWPF>
-        <StartupObject>PalworldRandomizer.App</StartupObject>
-        <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
-        <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+        <TargetFramework>net10.0</TargetFramework>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <!-- Keep package assemblies beside the library for the existing isolated test runners. -->
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
         <NoWarn>NU1701</NoWarn>
     </PropertyGroup>
 
-    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-        <OutputType>Exe</OutputType>
-    </PropertyGroup>
-
-    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-        <OutputType>WinExe</OutputType>
-        <DebugType>embedded</DebugType>
-    </PropertyGroup>
-
     <ItemGroup>
-        <!-- Regression runner sources are built separately, without starting the WPF application. -->
+        <!-- Legacy WPF shell sources stay as read-only porting material until each workflow is replaced. -->
+        <Compile Remove="App.xaml.cs" />
+        <Compile Remove="Window\**\*.cs" />
+        <Compile Include="Window\SpawnFileSaveAdapter.cs" />
         <Compile Remove="Tests\**\*.cs" />
+        <None Include="App.xaml" />
+        <None Include="Window\**\*.xaml" />
+        <None Include="Window\**\*.xaml.cs" />
         <PackageReference Include="CUE4Parse" />
         <PackageReference Include="CUE4Parse-Conversion" />
         <PackageReference Include="ini-parser" />
         <PackageReference Include="Newtonsoft.Json" />
         <PackageReference Include="SharpYaml" />
+        <PackageReference Include="CommunityToolkit.Mvvm" />
+        <PackageReference Include="ZstdSharp.Port" />
+        <PackageReference Include="Avalonia" />
+        <PackageReference Include="Avalonia.Themes.Fluent" />
+        <PackageReference Include="Avalonia.Fonts.Inter" />
+        <PackageReference Include="Semi.Avalonia" />
+        <PackageReference Include="Irihi.Ursa" />
+        <PackageReference Include="Irihi.Ursa.Themes.Semi" />
+        <!-- Override the vulnerable transitive dependency with its first patched 9.x release. -->
+        <PackageReference Include="Microsoft.Bcl.Memory" />
         <EmbeddedResource Include="Metadata/RandomizerSettings.yaml"
                           LogicalName="PalworldRandomizer.Metadata.RandomizerSettings.yaml" />
         <EmbeddedResource Include="Metadata/Locales/en-US.Randomizer.yaml"
                           LogicalName="PalworldRandomizer.Metadata.Locales.en-US.Randomizer.yaml" />
-        <PackageReference Include="CommunityToolkit.Mvvm" />
-        <PackageReference Include="Emoji.Wpf" />
-        <PackageReference Include="ZstdSharp.Port" />
-        <!-- Override the vulnerable transitive dependency with its first patched 9.x release. -->
-        <PackageReference Include="Microsoft.Bcl.Memory" />
+        <EmbeddedResource Include="Metadata/Locales/en-US.json"
+                          LogicalName="PalworldRandomizer.Metadata.Locales.en-US.json" />
+        <EmbeddedResource Include="Metadata/Locales/Setup.en-US.json"
+                          LogicalName="PalworldRandomizer.Metadata.Locales.Setup.en-US.json"
+                          WithCulture="false" />
+        <EmbeddedResource Include="Metadata/Locales/Recovery.en-US.json"
+                          LogicalName="PalworldRandomizer.Metadata.Locales.Recovery.en-US.json"
+                          WithCulture="false" />
         <EmbeddedResource Update="Resources\Resource.resx">
             <Generator>ResXFileCodeGenerator</Generator>
             <LastGenOutput>Resource.Designer.cs</LastGenOutput>
@@ -44,7 +53,7 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>Resource.resx</DependentUpon>
         </Compile>
-        <Resource Include="Resources\icon.ico" />
-        <Resource Include="Resources\Images\**" />
+        <AvaloniaResource Include="Resources\icon.ico" />
+        <AvaloniaResource Include="Resources\Images\**" />
     </ItemGroup>
 </Project>

@@ -1,4 +1,3 @@
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -7,7 +6,6 @@ using Newtonsoft.Json;
 using PalworldRandomizer.Models;
 using PalworldRandomizer.Randomizer.PalSpawn;
 using PalworldRandomizer.Serializer;
-using Stfu.Linq;
 
 namespace PalworldRandomizer.Randomizer;
 
