@@ -194,6 +194,9 @@ public sealed partial class GenerateViewModel : ObservableObject, IDisposable {
     /// <summary>The generated ZIP path for display, or null before a successful run.</summary>
     public string? ResultPath => Result?.OutputZipPath;
 
+    /// <summary>Keeps the bound result path current when a run publishes its result.</summary>
+    partial void OnResultChanged(GenerationResult? value) => OnPropertyChanged(nameof(ResultPath));
+
     /// <summary>Copies the generated ZIP to a new local destination without overwriting anything.</summary>
     /// <remarks>
     /// The destination must be an absolute local path that is neither the temporary output nor one of the

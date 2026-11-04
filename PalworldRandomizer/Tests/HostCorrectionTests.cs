@@ -164,9 +164,16 @@ internal static class HostCorrectionTests {
                 generatorCalled = true;
                 return Task.FromResult(WriteTinyZip(request));
             });
+        bool resultPathNotified = false;
+        model.PropertyChanged += (_, args) => {
+            if (args.PropertyName == nameof(GenerateViewModel.ResultPath)) {
+                resultPathNotified = true;
+            }
+        };
 
         RunGenerate(model);
         Require(generatorCalled, "The injected generator was not invoked.");
+        Require(resultPathNotified, "Changing the result did not notify the bound ResultPath.");
         Require(model.HasOutput && model.Result is not null, "The generated result was not published.");
         Require(model.Result!.OutputZipPath == model.ResultPath && File.Exists(model.ResultPath),
             "The published result is not the ZIP the generator wrote.");
