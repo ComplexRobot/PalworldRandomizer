@@ -38,7 +38,9 @@ internal static class HostCorrectionTests {
             SaveRefusesAliasesAndExistingFiles);
         failures += Run("A browser download result completes without native save state",
             BrowserDownloadResult);
-        Console.WriteLine($"{9 - failures}/9 host correction checks passed.");
+        failures += Run("Disposing the Generate model deletes its temporary output ZIP",
+            DisposeDeletesTemporaryZip);
+        Console.WriteLine($"{10 - failures}/10 host correction checks passed.");
         return failures == 0 ? 0 : 1;
     }
 
@@ -424,6 +426,17 @@ internal static class HostCorrectionTests {
         }
 
         return false;
+    }
+
+    private static void DisposeDeletesTemporaryZip() {
+        SetupViewModel setup = CreateSetup("C:\\game\\Pal-Windows.pak", "C:\\game\\Mappings.usmap", new int[1]);
+        GenerateViewModel model = new(setup, () => new FormData(), NewRoot(),
+            (request, _, _) => Task.FromResult(WriteTinyZip(request)));
+        RunGenerate(model);
+        string? path = model.ResultPath;
+        Require(path is not null && File.Exists(path), "The generated temporary ZIP was not published.");
+        model.Dispose();
+        Require(!File.Exists(path), "Disposing the Generate model left its temporary ZIP on disk.");
     }
 
     private static void RunGenerate(GenerateViewModel model) {

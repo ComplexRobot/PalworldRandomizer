@@ -231,7 +231,9 @@ public partial class ShellView : UserControl {
         foreach (var stale in _headers.Keys.Except(_state.Tabs).ToArray()) {
             stale.PropertyChanged -= OnTabChanged;
             _headers.Remove(stale);
-            _pages.Remove(stale.Id);
+            if (_pages.Remove(stale.Id, out var removedPage)) {
+                (removedPage.Content.DataContext as IDisposable)?.Dispose();
+            }
         }
 
         var strip = this.FindControl<TabStripPanel>("Strip")!;
