@@ -1,3 +1,4 @@
+using System.Reflection;
 using PalworldRandomizer.Models;
 using PalworldRandomizer.Serializer;
 using PalworldRandomizer.ViewModels;
@@ -22,6 +23,10 @@ internal static class TemplateManagementTests {
             () => ViewModelCrudAsync(catalog));
         await check("Randomizer session imports and exports templates",
             () => ViewModelImportExportAsync(catalog));
+        await check("Switching templates waits for an in-flight save without cross-writing",
+            () => SwitchWhileSaveInFlightAsync(catalog));
+        await check("Rename is refused while the previous save failed",
+            () => RenameAfterFailedSaveAsync(catalog));
     }
 
     private static async Task ListAsync() {
@@ -341,6 +346,11 @@ internal static class TemplateManagementTests {
                     "Deleting a template during cleanup failed.");
             }
 
+            session.SpawnListSize = 123;
+            session.MethodNone = true;
+            session.MethodFull = false;
+            await session.WaitForSaveAsync();
+
             Require(await session.DeleteTemplateAsync(),
                 "Deleting the final template failed.");
             Require(session.TemplateNames.Count == 1
@@ -348,9 +358,107 @@ internal static class TemplateManagementTests {
                 "Deleting every template must recreate Default.");
             Require(session.Values.SpawnListSize == 50 && session.Values.MethodFull,
                 "The recreated Default values changed.");
+            Require(session.CanUndoDelete,
+                "Deleting every template must leave the temporary undo available.");
+            Require(await session.UndoDeleteAsync(),
+                "Undoing the delete-all failed.");
+            Require(session.TemplateName == TemplateStore.DefaultName,
+                "Undo after delete-all must select the restored Default template.");
+            Require(session.Values.SpawnListSize == 123 && session.Values.MethodNone
+                && !session.Values.MethodFull,
+                "Undo after delete-all did not restore the deleted Default values.");
+            Require(!session.CanUndoDelete,
+                "The delete-all undo action must be consumed after a successful restore.");
         } finally {
             Directory.Delete(root, true);
         }
+    }
+
+    private static async Task SwitchWhileSaveInFlightAsync(SettingsCatalog catalog) {
+        string root = NewRoot();
+        try {
+            var store = TemplateStore.CreateNative(root);
+            var session = await RandomizerViewModel.CreateAsync(catalog, store);
+            Require(await session.CreateTemplateAsync("Alpha"), "Creating Alpha failed.");
+            await session.WaitForSaveAsync();
+            Require(await session.CreateTemplateAsync("Beta"), "Creating Beta failed.");
+            await session.WaitForSaveAsync();
+            Require(await session.SelectTemplateAsync("Alpha"), "Selecting Alpha failed.");
+            await session.WaitForSaveAsync();
+
+            SemaphoreSlim writes = WriteGate(store);
+            await writes.WaitAsync();
+            bool switched;
+            bool released = false;
+            try {
+                session.SpawnListSize = 123;
+                Require(session.HasPendingSave,
+                    "The queued save must be reported as pending.");
+                Task<bool> switching = session.SelectTemplateAsync("Beta");
+                await Task.Delay(150);
+                Require(!switching.IsCompleted,
+                    "Switching must wait for the in-flight save instead of cross-writing.");
+                writes.Release();
+                released = true;
+                switched = await switching;
+            } finally {
+                if (!released) {
+                    writes.Release();
+                }
+            }
+
+            Require(switched, "Switching to Beta failed after the save completed.");
+            Require(session.TemplateName == "Beta",
+                "The active template did not switch to Beta.");
+            TemplateSnapshot alpha = await store.LoadAsync("Alpha");
+            Require(alpha.Values.SpawnListSize == 123,
+                "The in-flight save must reach Alpha without crossing into Beta.");
+            TemplateSnapshot beta = await store.LoadAsync("Beta");
+            Require(beta.Values.SpawnListSize == 50 && beta.Values.MethodFull,
+                "Switching must not write Alpha's values into Beta.");
+        } finally {
+            Directory.Delete(root, true);
+        }
+    }
+
+    private static async Task RenameAfterFailedSaveAsync(SettingsCatalog catalog) {
+        string root = NewRoot();
+        try {
+            var store = TemplateStore.CreateNative(root);
+            var session = await RandomizerViewModel.CreateAsync(catalog, store);
+            Require(await session.CreateTemplateAsync("Alpha"), "Creating Alpha failed.");
+            await session.WaitForSaveAsync();
+            string alphaPath = Path.Combine(root, "Alpha.yaml");
+            Require(File.Exists(alphaPath), "The Alpha template file is missing.");
+
+            File.Delete(alphaPath);
+            Directory.CreateDirectory(alphaPath);
+            session.SpawnListSize = 321;
+            await session.WaitForSaveAsync();
+            Require(session.HasError && session.HasPendingSave,
+                "A failed save must report the error and keep the changes pending.");
+            Require(session.SaveStatus == "Save failed",
+                "A failed save must not report a saved state.");
+
+            bool renamed = await session.RenameTemplateAsync("Renamed");
+            Require(!renamed,
+                "Renaming must be refused while unsaved changes remain.");
+            Require(session.HasError,
+                "A refused rename must keep a truthful error.");
+            Require(session.TemplateName == "Alpha",
+                "A refused rename must keep the active template name.");
+            Require(!File.Exists(Path.Combine(root, "Renamed.yaml")),
+                "A refused rename must not create the new template file.");
+        } finally {
+            Directory.Delete(root, true);
+        }
+    }
+
+    private static SemaphoreSlim WriteGate(TemplateStore store) {
+        FieldInfo? field = typeof(TemplateStore).GetField("_writes",
+            BindingFlags.NonPublic | BindingFlags.Instance);
+        return field?.GetValue(store) as SemaphoreSlim
+            ?? throw new InvalidOperationException("The template store write gate is unavailable.");
     }
 
     private static async Task ViewModelImportExportAsync(SettingsCatalog catalog) {

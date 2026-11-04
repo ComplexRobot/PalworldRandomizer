@@ -524,6 +524,11 @@ public sealed class RandomizerViewModel : ObservableObject {
             }
 
             await WaitForSaveAsync().ConfigureAwait(true);
+            if (_dirty) {
+                SetError(ErrorMessage ?? "The template has unsaved changes; rename was refused.");
+                return false;
+            }
+
             await _store.RenameAsync(_store.Name, normalized, CloneValues(Values)).ConfigureAwait(true);
             ClearUndo();
             await RefreshTemplatesAsync().ConfigureAwait(true);
@@ -631,7 +636,8 @@ public sealed class RandomizerViewModel : ObservableObject {
             } else {
                 if (TemplateNames.Any(templateName =>
                         string.Equals(templateName, deleted.Name, StringComparison.OrdinalIgnoreCase))) {
-                    SetError($"A template named '{deleted.Name}' already exists; the deleted template cannot be restored.");
+                    SetError($"A template named '{deleted.Name}' already exists; " +
+                        "the deleted template cannot be restored.");
                     return false;
                 }
 

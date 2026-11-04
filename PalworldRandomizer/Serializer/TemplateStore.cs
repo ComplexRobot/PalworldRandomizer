@@ -340,7 +340,9 @@ public sealed class TemplateStore {
     /// <param name="name">The existing relative template name without its extension.</param>
     /// <param name="newName">The new relative template name without its extension.</param>
     /// <param name="values">Values used when the old template has no YAML file yet.</param>
-    /// <exception cref="InvalidDataException">The new name is invalid, duplicate or the old template is absent.</exception>
+    /// <exception cref="InvalidDataException">
+    /// The new name is invalid, duplicate or the old template is absent.
+    /// </exception>
     public async Task<TemplateEntry> RenameAsync(string name, string newName, FormData? values = null) {
         EnsureDirectoryMode();
         string oldNormalized = NormalizeName(name);
