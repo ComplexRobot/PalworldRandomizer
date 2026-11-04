@@ -1,8 +1,11 @@
+using System.Collections.Specialized;
 using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
 using PalworldRandomizer.ViewModels;
 using Ursa.Controls;
@@ -16,6 +19,9 @@ public partial class RandomizerView : UserControl {
     private NumericIntUpDown? _vanillaPlusChance;
     private TextBox? _spawnListSizeText;
     private TextBox? _vanillaPlusChanceText;
+    private ComboBox? _templateSelector;
+    private bool _syncingTemplateSelector;
+    private bool _templateDropDownOpen;
     private bool _draftsApplied;
 
     /// <summary>Creates the compiled category view; the host supplies the shared Default session.</summary>
@@ -35,6 +41,7 @@ public partial class RandomizerView : UserControl {
 
         BuildCategories();
         HookNumericControls();
+        HookTemplateControls();
     }
 
     /// <inheritdoc />
@@ -42,6 +49,7 @@ public partial class RandomizerView : UserControl {
         _model?.PropertyChanged -= ModelChanged;
 
         UnhookNumericControls();
+        UnhookTemplateControls();
         _model = null;
         _draftsApplied = false;
         base.OnDetachedFromVisualTree(args);
@@ -50,6 +58,9 @@ public partial class RandomizerView : UserControl {
     private void ModelChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs args) {
         if (args.PropertyName == nameof(RandomizerViewModel.SelectedCategory)) {
             BuildCategories();
+        } else if (args.PropertyName == nameof(RandomizerViewModel.TemplateName)
+                   || args.PropertyName == nameof(RandomizerViewModel.SelectedTemplateName)) {
+            SyncTemplateSelector();
         }
     }
 
@@ -174,4 +185,219 @@ public partial class RandomizerView : UserControl {
 
     private void VanillaPlusChanceTextChanged(object? sender, TextChangedEventArgs args) =>
         _model?.SetVanillaPlusChanceText(_vanillaPlusChanceText?.Text);
+
+    private void HookTemplateControls() {
+        _templateSelector = this.FindControl<ComboBox>("TemplateSelector");
+        if (_templateSelector is null) {
+            return;
+        }
+
+        _templateSelector.AddHandler(KeyDownEvent, TemplateSelectorKeyDown, RoutingStrategies.Tunnel);
+        _templateSelector.LostFocus += TemplateSelectorLostFocus;
+        _templateSelector.SelectionChanged += TemplateSelectorSelectionChanged;
+        _templateSelector.DropDownOpened += TemplateSelectorDropDownOpened;
+        _templateSelector.DropDownClosed += TemplateSelectorDropDownClosed;
+        if (_model is not null) {
+            _model.TemplateNames.CollectionChanged += TemplateNamesChanged;
+        }
+
+        SyncTemplateSelector();
+    }
+
+    private void UnhookTemplateControls() {
+        if (_templateSelector is not null) {
+            _templateSelector.RemoveHandler(KeyDownEvent, TemplateSelectorKeyDown);
+            _templateSelector.LostFocus -= TemplateSelectorLostFocus;
+            _templateSelector.SelectionChanged -= TemplateSelectorSelectionChanged;
+            _templateSelector.DropDownOpened -= TemplateSelectorDropDownOpened;
+            _templateSelector.DropDownClosed -= TemplateSelectorDropDownClosed;
+        }
+
+        if (_model is not null) {
+            _model.TemplateNames.CollectionChanged -= TemplateNamesChanged;
+        }
+
+        _templateSelector = null;
+        _templateDropDownOpen = false;
+    }
+
+    private void TemplateNamesChanged(object? sender, NotifyCollectionChangedEventArgs args) {
+        if (_model is not null && _model.IsTemplateBusy) {
+            return;
+        }
+
+        SyncTemplateSelector();
+    }
+
+    private void SyncTemplateSelector() {
+        if (_model is null || _templateSelector is null) {
+            return;
+        }
+
+        _syncingTemplateSelector = true;
+        try {
+            _templateSelector.SelectedItem = _model.TemplateName;
+            _templateSelector.Text = _model.TemplateName;
+        } finally {
+            _syncingTemplateSelector = false;
+        }
+    }
+
+    private void TemplateSelectorDropDownOpened(object? sender, EventArgs args) =>
+        _templateDropDownOpen = true;
+
+    private void TemplateSelectorDropDownClosed(object? sender, EventArgs args) =>
+        _templateDropDownOpen = false;
+
+    private void TemplateSelectorSelectionChanged(object? sender, SelectionChangedEventArgs args) {
+        if (_syncingTemplateSelector || _model is null || _model.IsTemplateBusy || !_templateDropDownOpen) {
+            return;
+        }
+
+        if (_templateSelector?.SelectedItem is string name
+            && !string.Equals(name, _model.TemplateName, StringComparison.Ordinal)) {
+            _ = _model.SelectTemplateAsync(name);
+        }
+    }
+
+    private void TemplateSelectorKeyDown(object? sender, KeyEventArgs args) {
+        if (_model is null || _templateSelector is null || _model.IsTemplateBusy
+            || _templateDropDownOpen || args.Key != Key.Enter) {
+            return;
+        }
+
+        args.Handled = true;
+        _ = CommitTemplateTextAsync(_templateSelector.Text);
+    }
+
+    private void TemplateSelectorLostFocus(object? sender, FocusChangedEventArgs args) {
+        if (_syncingTemplateSelector || _templateDropDownOpen || _model is null
+            || _templateSelector is null || _model.IsTemplateBusy) {
+            return;
+        }
+
+        if (!string.Equals(_templateSelector.Text, _model.TemplateName, StringComparison.Ordinal)) {
+            // Enter is the explicit rename gesture; an uncommitted typed name is discarded on blur.
+            _templateSelector.SetCurrentValue(ComboBox.TextProperty, _model.TemplateName);
+        }
+    }
+
+    private async Task CommitTemplateTextAsync(string? text) {
+        if (_model is null || string.Equals(text, _model.TemplateName, StringComparison.Ordinal)) {
+            return;
+        }
+
+        bool committed = await _model.CommitTemplateNameAsync(text).ConfigureAwait(true);
+        if (!committed) {
+            _templateSelector?.SetCurrentValue(ComboBox.TextProperty, _model.TemplateName);
+        }
+
+        SyncTemplateSelector();
+    }
+
+    private async void NewTemplateClicked(object? sender, RoutedEventArgs args) {
+        if (_model is null) {
+            return;
+        }
+
+        await _model.CreateTemplateAsync().ConfigureAwait(true);
+        SyncTemplateSelector();
+    }
+
+    private async void DeleteTemplateClicked(object? sender, RoutedEventArgs args) {
+        if (_model is null) {
+            return;
+        }
+
+        await _model.DeleteTemplateAsync().ConfigureAwait(true);
+        SyncTemplateSelector();
+    }
+
+    private async void UndoTemplateClicked(object? sender, RoutedEventArgs args) {
+        if (_model is null) {
+            return;
+        }
+
+        await _model.UndoDeleteAsync().ConfigureAwait(true);
+        SyncTemplateSelector();
+    }
+
+    private async void ImportTemplateClicked(object? sender, RoutedEventArgs args) {
+        if (_model is null) {
+            return;
+        }
+
+        TopLevel? top = TopLevel.GetTopLevel(this);
+        if (top is null) {
+            _model.ReportTemplateError("The file picker is unavailable in this host.");
+            return;
+        }
+
+        IReadOnlyList<IStorageFile> files = await top.StorageProvider.OpenFilePickerAsync(
+            new FilePickerOpenOptions {
+                Title = "Import Template",
+                AllowMultiple = false,
+                FileTypeFilter = [
+                    new FilePickerFileType("Template files") { Patterns = ["*.yaml", "*.yml", "*.json"] },
+                    FilePickerFileTypes.All,
+                ],
+            }).ConfigureAwait(true);
+        if (files.Count == 0) {
+            return;
+        }
+
+        string? path = files[0].TryGetLocalPath();
+        if (string.IsNullOrWhiteSpace(path)) {
+            _model.ReportTemplateError("The selected file has no local path in this host.");
+            return;
+        }
+
+        await _model.ImportTemplateAsync(path).ConfigureAwait(true);
+        SyncTemplateSelector();
+    }
+
+    private async void ExportYamlClicked(object? sender, RoutedEventArgs args) =>
+        await ExportTemplateAsync(json: false).ConfigureAwait(true);
+
+    private async void ExportJsonClicked(object? sender, RoutedEventArgs args) =>
+        await ExportTemplateAsync(json: true).ConfigureAwait(true);
+
+    private async Task ExportTemplateAsync(bool json) {
+        if (_model is null) {
+            return;
+        }
+
+        TopLevel? top = TopLevel.GetTopLevel(this);
+        if (top is null) {
+            _model.ReportTemplateError("The file picker is unavailable in this host.");
+            return;
+        }
+
+        string extension = json ? ".json" : ".yaml";
+        IStorageFile? file = await top.StorageProvider.SaveFilePickerAsync(
+            new FilePickerSaveOptions {
+                Title = json ? "Export Template as JSON" : "Export Template as YAML",
+                SuggestedFileName = _model.TemplateName + extension,
+                DefaultExtension = extension.TrimStart('.'),
+                ShowOverwritePrompt = true,
+                FileTypeChoices = json
+                    ? [new FilePickerFileType("JSON template") { Patterns = ["*.json"] }]
+                    : [new FilePickerFileType("YAML template") { Patterns = ["*.yaml", "*.yml"] }],
+            }).ConfigureAwait(true);
+        if (file is null) {
+            return;
+        }
+
+        string? path = file.TryGetLocalPath();
+        if (string.IsNullOrWhiteSpace(path)) {
+            _model.ReportTemplateError("The selected destination has no local path in this host.");
+            return;
+        }
+
+        if (!Path.HasExtension(path)) {
+            path += extension;
+        }
+
+        await _model.ExportTemplateAsync(path, json).ConfigureAwait(true);
+    }
 }

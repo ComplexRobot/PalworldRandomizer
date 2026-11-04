@@ -6,6 +6,12 @@ namespace PalworldRandomizer.Serializer;
 
 /// <summary>Loads template JSON onto captured settings without depending on a WPF page.</summary>
 public static class TemplateJson {
+    /// <summary>Writes the complete FormData contract as JSON-compatible text.</summary>
+    public static string Serialize(FormData values) {
+        ArgumentNullException.ThrowIfNull(values);
+        return JsonConvert.SerializeObject(values, Formatting.Indented);
+    }
+
     /// <summary>Populates current settings for an object template, or returns null for a JSON null.</summary>
     public static FormData? Load(string json, Func<FormData> captureFormData) {
         var template = JsonConvert.DeserializeObject<JObject>(

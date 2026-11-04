@@ -17,6 +17,7 @@ try {
     await Check("Original conditional visibility follows No Randomization and vanilla toggles", ConditionalVisibility);
     await Check("Area Group Type and Area Selections are functional while other categories remain unavailable", CategoryAvailability);
     await AreaSelectionsTests.RunAsync(catalog, Check);
+    await TemplateManagementTests.RunAsync(catalog, Check);
     await Check("Catalog numeric bounds and the 11 English labels remain exact", CatalogEvidence);
     await Check("YAML preserves every FormData member, array and decimal through a round trip", YamlRoundTrip);
     await Check("Unsupported YAML members are rejected instead of silently defaulted", YamlUnknownMember);

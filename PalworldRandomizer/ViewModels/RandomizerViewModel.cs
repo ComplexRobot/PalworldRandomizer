@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using PalworldRandomizer.Localization;
@@ -30,6 +31,8 @@ public sealed class RandomizerViewModel : ObservableObject {
     private bool _savePending;
     private bool _suppressSave;
     private int _revision;
+    private int _templateOperationDepth;
+    private DeletedTemplate? _deletedTemplate;
 
     private RandomizerViewModel(SettingsCatalog catalog, TemplateStore store) {
         _catalog = catalog ?? throw new ArgumentNullException(nameof(catalog));
@@ -61,8 +64,20 @@ public sealed class RandomizerViewModel : ObservableObject {
         string.Equals(category.Key, _selectedCategory, StringComparison.Ordinal))?.Title
         ?? EnglishText("category.AreaGroupType", "Area Group Type");
 
-    /// <summary>Gets the truthful template file name.</summary>
+    /// <summary>Gets the active template name without the hidden .yaml extension.</summary>
     public string TemplateName => _store.Name;
+
+    /// <summary>Gets the active template name without the hidden .yaml extension.</summary>
+    public string SelectedTemplateName => _store.Name;
+
+    /// <summary>Gets every selectable template name in Default-first order.</summary>
+    public ObservableCollection<string> TemplateNames { get; } = new();
+
+    /// <summary>Gets whether a deleted template can still be restored with the temporary undo control.</summary>
+    public bool CanUndoDelete => _deletedTemplate is not null;
+
+    /// <summary>Gets whether a template operation is currently running.</summary>
+    public bool IsTemplateBusy => _templateOperationDepth > 0;
 
     /// <summary>Gets the complete catalog category list, including unavailable categories.</summary>
     public IReadOnlyList<RandomizerCategory> Categories { get; }
@@ -398,19 +413,372 @@ public sealed class RandomizerViewModel : ObservableObject {
         }
     }
 
+    /// <summary>Reloads the selectable template names from the Templates directory.</summary>
+    public async Task RefreshTemplatesAsync() {
+        ReplaceTemplateNames(await _store.ListAsync().ConfigureAwait(true));
+    }
+
+    /// <summary>Loads one named template and makes it the active save target.</summary>
+    /// <param name="name">The relative template name without its extension.</param>
+    /// <param name="force">Whether to reload even when the name already matches the active template.</param>
+    /// <param name="clearUndo">Whether switching templates dismisses the temporary delete undo.</param>
+    public async Task<bool> SelectTemplateAsync(string? name, bool force = false, bool clearUndo = true) {
+        if (string.IsNullOrWhiteSpace(name)) {
+            return false;
+        }
+
+        string normalized = TemplateStore.NormalizeName(name);
+        if (!force && string.Equals(normalized, TemplateStore.NormalizeName(_store.Name),
+                StringComparison.Ordinal)) {
+            return true;
+        }
+
+        BeginTemplateOperation();
+        _suppressSave = true;
+        try {
+            await WaitForSaveAsync().ConfigureAwait(true);
+            TemplateSnapshot snapshot = await _store.SelectAsync(normalized).ConfigureAwait(true);
+            Values = snapshot.Values;
+            SpawnListSizeText = Values.SpawnListSize.ToString(CultureInfo.InvariantCulture);
+            VanillaPlusChanceText = Values.VanillaPlusChance.ToString(CultureInfo.InvariantCulture);
+            _dirty = false;
+            _savePending = false;
+            IsEditingEnabled = true;
+            SetError(null);
+            SetSaveStatus(StatusFor(snapshot));
+            if (clearUndo) {
+                ClearUndo();
+            }
+
+            OnPropertyChanged(nameof(TemplateName));
+            OnPropertyChanged(nameof(SelectedTemplateName));
+            OnPropertyChanged(nameof(IsEditingEnabled));
+            OnPropertyChanged(nameof(HasPendingSave));
+            NotifyAllValues();
+            return true;
+        } catch (Exception exception) {
+            SetError(exception.Message);
+            return false;
+        } finally {
+            _suppressSave = false;
+            EndTemplateOperation();
+        }
+    }
+
+    /// <summary>Creates a new template with the original FormData defaults and selects it.</summary>
+    /// <param name="name">The optional name; a unique "New Template" name is generated when null.</param>
+    /// <param name="values">The initial values, or the original FormData defaults when null.</param>
+    public async Task<bool> CreateTemplateAsync(string? name = null, FormData? values = null) {
+        BeginTemplateOperation();
+        _suppressSave = true;
+        try {
+            if (!_store.SupportsMultipleTemplates) {
+                SetError("Creating templates requires the native Templates folder.");
+                return false;
+            }
+
+            await WaitForSaveAsync().ConfigureAwait(true);
+            string requested = string.IsNullOrWhiteSpace(name) ? NextTemplateName() : name!;
+            TemplateEntry entry = await _store.CreateAsync(requested, values ?? new FormData())
+                .ConfigureAwait(true);
+            ClearUndo();
+            await RefreshTemplatesAsync().ConfigureAwait(true);
+            bool selected = await SelectTemplateAsync(entry.Name, force: true, clearUndo: false)
+                .ConfigureAwait(true);
+            if (selected) {
+                SetError(null);
+                SetSaveStatus("Saved");
+            }
+
+            return selected;
+        } catch (Exception exception) {
+            SetError(exception.Message);
+            return false;
+        } finally {
+            _suppressSave = false;
+            EndTemplateOperation();
+        }
+    }
+
+    /// <summary>Renames the active template and keeps its on-disk file path in sync.</summary>
+    /// <param name="newName">The new relative template name without its extension.</param>
+    public async Task<bool> RenameTemplateAsync(string? newName) {
+        BeginTemplateOperation();
+        _suppressSave = true;
+        try {
+            if (!_store.SupportsMultipleTemplates) {
+                SetError("Renaming templates requires the native Templates folder.");
+                return false;
+            }
+
+            string? validation = TemplateStore.ValidateName(newName);
+            if (validation is not null) {
+                SetError(validation);
+                return false;
+            }
+
+            string normalized = TemplateStore.NormalizeName(newName!);
+            if (string.Equals(normalized, _store.Name, StringComparison.Ordinal)) {
+                SetError(null);
+                return true;
+            }
+
+            await WaitForSaveAsync().ConfigureAwait(true);
+            await _store.RenameAsync(_store.Name, normalized, CloneValues(Values)).ConfigureAwait(true);
+            ClearUndo();
+            await RefreshTemplatesAsync().ConfigureAwait(true);
+            SetError(null);
+            SetSaveStatus("Saved");
+            OnPropertyChanged(nameof(TemplateName));
+            OnPropertyChanged(nameof(SelectedTemplateName));
+            return true;
+        } catch (Exception exception) {
+            SetError(exception.Message);
+            OnPropertyChanged(nameof(TemplateName));
+            OnPropertyChanged(nameof(SelectedTemplateName));
+            return false;
+        } finally {
+            _suppressSave = false;
+            EndTemplateOperation();
+        }
+    }
+
+    /// <summary>Applies typed template text as a selection of an existing template or a rename.</summary>
+    /// <param name="text">The text typed into the editable template selector.</param>
+    public async Task<bool> CommitTemplateNameAsync(string? text) {
+        string? validation = TemplateStore.ValidateName(text);
+        if (validation is not null) {
+            SetError(validation);
+            return false;
+        }
+
+        string normalized = TemplateStore.NormalizeName(text!);
+        string? match = TemplateNames.FirstOrDefault(templateName =>
+            string.Equals(TemplateStore.NormalizeName(templateName), normalized,
+                StringComparison.OrdinalIgnoreCase));
+        if (match is not null && !string.Equals(TemplateStore.NormalizeName(match),
+                TemplateStore.NormalizeName(_store.Name), StringComparison.Ordinal)) {
+            return await SelectTemplateAsync(match).ConfigureAwait(true);
+        }
+
+        if (string.Equals(normalized, TemplateStore.NormalizeName(_store.Name), StringComparison.Ordinal)) {
+            SetError(null);
+            return true;
+        }
+
+        return await RenameTemplateAsync(normalized).ConfigureAwait(true);
+    }
+
+    /// <summary>Deletes the active template and leaves a temporary undo action.</summary>
+    /// <param name="name">The optional template name; the active template when null.</param>
+    public async Task<bool> DeleteTemplateAsync(string? name = null) {
+        BeginTemplateOperation();
+        _suppressSave = true;
+        try {
+            if (!_store.SupportsMultipleTemplates) {
+                SetError("Deleting templates requires the native Templates folder.");
+                return false;
+            }
+
+            string target = string.IsNullOrWhiteSpace(name)
+                ? _store.Name
+                : TemplateStore.NormalizeName(name);
+            bool deletingActive = string.Equals(target, _store.Name, StringComparison.OrdinalIgnoreCase);
+            await WaitForSaveAsync().ConfigureAwait(true);
+            FormData saved = deletingActive
+                ? CloneValues(Values)
+                : CloneValues((await _store.LoadAsync(target).ConfigureAwait(true)).Values);
+            TemplateDeleteResult result = await _store.DeleteAsync(target).ConfigureAwait(true);
+            _deletedTemplate = new DeletedTemplate(result.Name, saved, result.DefaultRecreated);
+            NotifyUndo();
+            await RefreshTemplatesAsync().ConfigureAwait(true);
+            bool selected = true;
+            if (deletingActive) {
+                string next = TemplateNames.FirstOrDefault(templateName =>
+                        string.Equals(templateName, TemplateStore.DefaultName, StringComparison.Ordinal))
+                    ?? TemplateNames.FirstOrDefault()
+                    ?? TemplateStore.DefaultName;
+                selected = await SelectTemplateAsync(next, force: true, clearUndo: false).ConfigureAwait(true);
+            }
+
+            if (selected) {
+                SetError(null);
+            }
+
+            return selected;
+        } catch (Exception exception) {
+            SetError(exception.Message);
+            return false;
+        } finally {
+            _suppressSave = false;
+            EndTemplateOperation();
+        }
+    }
+
+    /// <summary>Restores the most recently deleted template when its name is still free.</summary>
+    public async Task<bool> UndoDeleteAsync() {
+        BeginTemplateOperation();
+        _suppressSave = true;
+        try {
+            if (_deletedTemplate is not { } deleted) {
+                return false;
+            }
+
+            await WaitForSaveAsync().ConfigureAwait(true);
+            if (deleted.DefaultRecreated
+                && string.Equals(deleted.Name, TemplateStore.DefaultName, StringComparison.Ordinal)) {
+                await _store.SaveAsync(TemplateStore.DefaultName, deleted.Values).ConfigureAwait(true);
+            } else {
+                if (TemplateNames.Any(templateName =>
+                        string.Equals(templateName, deleted.Name, StringComparison.OrdinalIgnoreCase))) {
+                    SetError($"A template named '{deleted.Name}' already exists; the deleted template cannot be restored.");
+                    return false;
+                }
+
+                await _store.CreateAsync(deleted.Name, deleted.Values).ConfigureAwait(true);
+            }
+
+            _deletedTemplate = null;
+            NotifyUndo();
+            await RefreshTemplatesAsync().ConfigureAwait(true);
+            bool selected = await SelectTemplateAsync(deleted.Name, force: true, clearUndo: false)
+                .ConfigureAwait(true);
+            if (!selected) {
+                return false;
+            }
+
+            SetError(null);
+            SetSaveStatus("Saved");
+            return true;
+        } catch (Exception exception) {
+            SetError(exception.Message);
+            return false;
+        } finally {
+            _suppressSave = false;
+            EndTemplateOperation();
+        }
+    }
+
+    /// <summary>Imports a YAML or JSON file as a new template and selects it.</summary>
+    /// <param name="sourcePath">The YAML or JSON file to read.</param>
+    /// <param name="name">The optional destination name; defaults to the source file name.</param>
+    public async Task<bool> ImportTemplateAsync(string sourcePath, string? name = null) {
+        BeginTemplateOperation();
+        _suppressSave = true;
+        try {
+            if (!_store.SupportsMultipleTemplates) {
+                SetError("Importing templates requires the native Templates folder.");
+                return false;
+            }
+
+            await WaitForSaveAsync().ConfigureAwait(true);
+            TemplateEntry entry = await _store.ImportAsync(sourcePath, name).ConfigureAwait(true);
+            ClearUndo();
+            await RefreshTemplatesAsync().ConfigureAwait(true);
+            bool selected = await SelectTemplateAsync(entry.Name, force: true, clearUndo: false)
+                .ConfigureAwait(true);
+            if (selected) {
+                SetError(null);
+                SetSaveStatus("Saved");
+            }
+
+            return selected;
+        } catch (Exception exception) {
+            SetError(exception.Message);
+            return false;
+        } finally {
+            _suppressSave = false;
+            EndTemplateOperation();
+        }
+    }
+
+    /// <summary>Exports the active template as YAML or JSON.</summary>
+    /// <param name="destinationPath">The destination file path.</param>
+    /// <param name="json">Whether to write JSON instead of YAML.</param>
+    public async Task<bool> ExportTemplateAsync(string destinationPath, bool json) {
+        BeginTemplateOperation();
+        _suppressSave = true;
+        try {
+            await WaitForSaveAsync().ConfigureAwait(true);
+            await _store.ExportAsync(_store.Name, destinationPath, json).ConfigureAwait(true);
+            SetError(null);
+            return true;
+        } catch (Exception exception) {
+            SetError(exception.Message);
+            return false;
+        } finally {
+            _suppressSave = false;
+            EndTemplateOperation();
+        }
+    }
+
+    /// <summary>Shows a template-related failure without changing the active template.</summary>
+    /// <param name="message">The actionable error text.</param>
+    public void ReportTemplateError(string message) {
+        ArgumentException.ThrowIfNullOrWhiteSpace(message);
+        SetError(message);
+    }
+
+    private void ReplaceTemplateNames(IReadOnlyList<TemplateEntry> entries) {
+        TemplateNames.Clear();
+        foreach (TemplateEntry entry in entries) {
+            TemplateNames.Add(entry.Name);
+        }
+    }
+
+    private string NextTemplateName() {
+        if (!TemplateNames.Any(name => string.Equals(name, "New Template", StringComparison.OrdinalIgnoreCase))) {
+            return "New Template";
+        }
+
+        for (int index = 2; ; index++) {
+            string candidate = "New Template " + index.ToString(CultureInfo.InvariantCulture);
+            if (!TemplateNames.Any(name => string.Equals(name, candidate, StringComparison.OrdinalIgnoreCase))) {
+                return candidate;
+            }
+        }
+    }
+
+    private static string StatusFor(TemplateSnapshot snapshot) => snapshot.Source switch {
+        TemplateSource.Yaml => "Saved",
+        TemplateSource.LegacyJson => "Loaded from Default.json; not saved as YAML yet",
+        _ => "No saved Default template yet",
+    };
+
+    private void BeginTemplateOperation() {
+        _templateOperationDepth++;
+        OnPropertyChanged(nameof(IsTemplateBusy));
+    }
+
+    private void EndTemplateOperation() {
+        if (_templateOperationDepth > 0) {
+            _templateOperationDepth--;
+        }
+
+        OnPropertyChanged(nameof(IsTemplateBusy));
+    }
+
+    private void NotifyUndo() => OnPropertyChanged(nameof(CanUndoDelete));
+
+    private void ClearUndo() {
+        if (_deletedTemplate is null) {
+            return;
+        }
+
+        _deletedTemplate = null;
+        NotifyUndo();
+    }
+
     private async Task InitializeAsync() {
         try {
+            ReplaceTemplateNames(await _store.ListAsync().ConfigureAwait(true));
             TemplateSnapshot snapshot = await _store.LoadAsync().ConfigureAwait(true);
             Values = snapshot.Values;
             SpawnListSizeText = Values.SpawnListSize.ToString(CultureInfo.InvariantCulture);
             VanillaPlusChanceText = Values.VanillaPlusChance.ToString(CultureInfo.InvariantCulture);
             IsEditingEnabled = true;
             ErrorMessage = null;
-            SetSaveStatus(snapshot.Source switch {
-                TemplateSource.Yaml => "Saved",
-                TemplateSource.LegacyJson => "Loaded from Default.json; not saved as YAML yet",
-                _ => "No saved Default template yet",
-            });
+            SetSaveStatus(StatusFor(snapshot));
         } catch (Exception exception) {
             Values = new FormData();
             IsEditingEnabled = false;
@@ -422,6 +790,10 @@ public sealed class RandomizerViewModel : ObservableObject {
         NotifyAllValues();
         OnPropertyChanged(nameof(IsEditingEnabled));
         OnPropertyChanged(nameof(HasPendingSave));
+        OnPropertyChanged(nameof(TemplateName));
+        OnPropertyChanged(nameof(SelectedTemplateName));
+        OnPropertyChanged(nameof(CanUndoDelete));
+        OnPropertyChanged(nameof(IsTemplateBusy));
     }
 
     private IReadOnlyList<RandomizerCategory> BuildCategories() {
@@ -720,5 +1092,7 @@ public sealed class RandomizerViewModel : ObservableObject {
 
     private static FormData CloneValues(FormData values) =>
         TemplateYaml.Deserialize(TemplateYaml.Serialize(values));
+
+    private sealed record DeletedTemplate(string Name, FormData Values, bool DefaultRecreated);
 }
 
