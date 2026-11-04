@@ -15,7 +15,8 @@ try {
     await Check("User method selection remains exclusive across the five methods", MethodExclusivity);
     await Check("Conflicting imported methods are displayed without normalizing FormData", ImportedMethodConflict);
     await Check("Original conditional visibility follows No Randomization and vanilla toggles", ConditionalVisibility);
-    await Check("Area Group Type and Area Selections are functional while other categories remain unavailable", CategoryAvailability);
+    await Check("All nine catalog categories are available and generic rows edit real FormData", CategoryAvailability);
+    await Check("Generic rows edit Boolean, array and selector values and save", GenericRowsEditFormData);
     await AreaSelectionsTests.RunAsync(catalog, Check);
     await TemplateManagementTests.RunAsync(catalog, Check);
     await Check("Catalog numeric bounds and the 11 English labels remain exact", CatalogEvidence);
@@ -141,8 +142,9 @@ async Task ConditionalVisibility() {
 
 async Task CategoryAvailability() {
     var session = await RandomizerViewModel.CreateAsync(catalog, new MemoryStore().Create());
-    Require(session.Categories.Count(category => category.IsAvailable) == 2,
-        "Area Group Type and Area Selections must be the only functional categories.");
+    Require(session.Categories.Count == 9, "The catalog category count changed.");
+    Require(session.Categories.All(category => category.IsAvailable),
+        "Every catalog category must be available in this build.");
     var area = session.Categories.Single(category => category.Key == "AreaGroupType");
     Require(area.IsAvailable && area.Title == "Area Group Type", "The Area Group Type category changed.");
     var selections = session.Categories.Single(category => category.Key == "AreaSelections");
@@ -152,7 +154,41 @@ async Task CategoryAvailability() {
     Require(session.SelectedCategory == "AreaSelections" && session.IsAreaSelectionsSelected,
         "The Area Selections category could not be selected.");
     session.SelectedCategory = "Randomize";
-    Require(session.SelectedCategory == "AreaSelections", "An unavailable category must be ignored.");
+    Require(session.SelectedCategory == "Randomize" && session.IsGenericCategorySelected,
+        "The Randomize category could not be selected.");
+    Require(session.CurrentCategoryRows.Count == 3, "The Randomize row count changed.");
+    var probability = session.Categories.Single(category => category.Key == "Probability");
+    Require(probability.IsAvailable && probability.Title == "Probability",
+        "The Probability category changed.");
+    session.SelectedCategory = "Probability";
+    Require(session.CurrentCategoryRows.Count == 15, "The Probability row count changed.");
+}
+
+async Task GenericRowsEditFormData() {
+    var store = new MemoryStore();
+    var session = await RandomizerViewModel.CreateAsync(catalog, store.Create());
+    session.SelectedCategory = "Probability";
+    var equalize = session.CurrentCategoryRows.OfType<BooleanSettingRowViewModel>()
+        .Single(row => row.Name == "EqualizeAreaRarity");
+    Require(equalize.IsChecked, "The Probability Boolean default changed.");
+    equalize.IsChecked = false;
+    Require(!session.Values.EqualizeAreaRarity, "A generic Boolean row did not update FormData.");
+    var weight = session.CurrentCategoryRows.OfType<IntArraySettingRowViewModel>()
+        .Single(row => row.Name == "WeightCustom");
+    weight.Text = "4, 3, 2";
+    Require(session.Values.WeightCustom.SequenceEqual([4, 3, 2]),
+        "A generic array row did not update FormData.");
+    var mode = session.CurrentCategoryRows.OfType<StringSettingRowViewModel>()
+        .Single(row => row.Name == "WeightCustomMode");
+    Require(mode.HasChoices, "The WeightCustomMode selector lost its options.");
+    mode.SelectedChoice = mode.Choices.Single(choice => choice.Value == "Weight Average");
+    Require(session.Values.WeightCustomMode == "Weight Average",
+        "A generic selector row did not update FormData.");
+    await session.WaitForSaveAsync();
+    Require(store.LastYaml is not null, "A generic row edit was not saved.");
+    FormData saved = TemplateYaml.Deserialize(store.LastYaml!);
+    Require(!saved.EqualizeAreaRarity && saved.WeightCustom.SequenceEqual([4, 3, 2])
+        && saved.WeightCustomMode == "Weight Average", "The saved YAML lost a generic row edit.");
 }
 
 async Task CatalogEvidence() {
@@ -328,12 +364,14 @@ async Task RecoveryStateShape() {
     RandomizerState valid = new(RandomizerState.CurrentSchema, new FormData(), "50", "50", "AreaGroupType");
     RandomizerState.Validate(valid);
     RandomizerState.Validate(valid with { SelectedCategory = "AreaSelections" });
+    RandomizerState.Validate(valid with { SelectedCategory = "Randomize" });
+    RandomizerState.Validate(valid with { SelectedCategory = "Probability" });
     RequireThrows<InvalidDataException>(() => RandomizerState.Validate(null),
         "A missing checkpoint must be refused.");
     RequireThrows<InvalidDataException>(() => RandomizerState.Validate(valid with { Schema = 99 }),
         "An unsupported checkpoint schema must be refused.");
-    RequireThrows<InvalidDataException>(() => RandomizerState.Validate(valid with { SelectedCategory = "Randomize" }),
-        "An unsupported checkpoint category must be refused.");
+    RequireThrows<InvalidDataException>(() => RandomizerState.Validate(valid with { SelectedCategory = "NotACategory" }),
+        "An unknown checkpoint category must be refused.");
     RequireThrows<InvalidDataException>(() => RandomizerState.Validate(valid with { SpawnListSizeText = null! }),
         "A checkpoint without raw drafts must be refused.");
     string json = System.Text.Json.JsonSerializer.Serialize(valid);

@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "Palworld Randomizer (Desktop)": {
+      "commandName": "Project",
+      "workingDirectory": "$(MSBuildProjectDirectory)",
+      "hotReloadEnabled": false
+    }
+  }
+}

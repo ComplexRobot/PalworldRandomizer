@@ -23,6 +23,19 @@ public sealed record RandomizerState(
     /// <summary>The Area Selections category identifier.</summary>
     public const string AreaSelections = "AreaSelections";
 
+    /// <summary>The catalog category identifiers supported by this checkpoint schema.</summary>
+    private static readonly HashSet<string> SupportedCategories = new(StringComparer.Ordinal) {
+        "Randomize",
+        "AreaSelections",
+        "Probability",
+        "AreaGroupType",
+        "SpawnGroupSettings",
+        "PossiblePalSpawns",
+        "LevelAdjustment",
+        "IndividualCountMultiplier",
+        "AdditionalSettings",
+    };
+
     /// <summary>Rejects malformed or unsupported checkpoint data before any live session is changed.</summary>
     /// <exception cref="InvalidDataException">The state is missing, unsupported or incomplete.</exception>
     public static void Validate(RandomizerState? state) {
@@ -42,8 +55,7 @@ public sealed record RandomizerState(
             throw new InvalidDataException("The recovery Randomizer raw drafts are incomplete.");
         }
 
-        if (!string.Equals(state.SelectedCategory, AreaGroupType, StringComparison.Ordinal)
-            && !string.Equals(state.SelectedCategory, AreaSelections, StringComparison.Ordinal)) {
+        if (!SupportedCategories.Contains(state.SelectedCategory)) {
             throw new InvalidDataException("The recovery Randomizer category is not supported.");
         }
     }

@@ -2,7 +2,6 @@
   "profiles": {
     "Palworld Randomizer": {
       "commandName": "Project",
-      "commandLineArgs": "> out.txt",
       "workingDirectory": "$(SolutionDir)",
       "hotReloadEnabled": false
     }

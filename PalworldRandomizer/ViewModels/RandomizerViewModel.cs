@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Reflection;
 using CommunityToolkit.Mvvm.ComponentModel;
 using PalworldRandomizer.Localization;
 using PalworldRandomizer.Models;
@@ -33,6 +34,10 @@ public sealed class RandomizerViewModel : ObservableObject {
     private int _revision;
     private int _templateOperationDepth;
     private DeletedTemplate? _deletedTemplate;
+    private readonly Dictionary<string, PropertyInfo> _propertyCache = new(StringComparer.Ordinal);
+    private readonly List<SettingRowViewModel> _allRows = [];
+    private IReadOnlyDictionary<string, IReadOnlyList<SettingRowViewModel>> _categoryRows =
+        new Dictionary<string, IReadOnlyList<SettingRowViewModel>>(StringComparer.Ordinal);
 
     private RandomizerViewModel(SettingsCatalog catalog, TemplateStore store) {
         _catalog = catalog ?? throw new ArgumentNullException(nameof(catalog));
@@ -44,6 +49,7 @@ public sealed class RandomizerViewModel : ObservableObject {
         VanillaPlusChanceText = Values.VanillaPlusChance.ToString(CultureInfo.InvariantCulture);
         Categories = BuildCategories();
         AreaSelections = BuildAreaSelections();
+        BuildSettingRows();
     }
 
     /// <summary>Reads and validates the Default template before any edit or automatic save can start.</summary>
@@ -93,6 +99,15 @@ public sealed class RandomizerViewModel : ObservableObject {
     /// <summary>Gets the real Area Selections rows in original catalog order.</summary>
     public IReadOnlyList<AreaSelectionViewModel> AreaSelections { get; }
 
+    /// <summary>Gets the generic setting rows for the selected category, or empty for custom categories.</summary>
+    public IReadOnlyList<SettingRowViewModel> CurrentCategoryRows =>
+        _categoryRows.TryGetValue(_selectedCategory, out IReadOnlyList<SettingRowViewModel>? rows)
+            ? rows
+            : Array.Empty<SettingRowViewModel>();
+
+    /// <summary>Gets whether the selected category uses the generic setting-row renderer.</summary>
+    public bool IsGenericCategorySelected => CurrentCategoryRows.Count > 0;
+
     /// <summary>Gets or selects an implemented category; unavailable categories are ignored.</summary>
     public string SelectedCategory {
         get => _selectedCategory;
@@ -108,6 +123,8 @@ public sealed class RandomizerViewModel : ObservableObject {
             OnPropertyChanged(nameof(CategoryTitle));
             OnPropertyChanged(nameof(IsAreaGroupTypeSelected));
             OnPropertyChanged(nameof(IsAreaSelectionsSelected));
+            OnPropertyChanged(nameof(CurrentCategoryRows));
+            OnPropertyChanged(nameof(IsGenericCategorySelected));
         }
     }
 
@@ -807,12 +824,8 @@ public sealed class RandomizerViewModel : ObservableObject {
         var categories = new List<RandomizerCategory>();
         foreach (SettingDefinition definition in _catalog.Definitions) {
             if (seen.Add(definition.Category)) {
-                bool available = string.Equals(definition.Category, RandomizerState.AreaGroupType,
-                    StringComparison.Ordinal)
-                    || string.Equals(definition.Category, RandomizerState.AreaSelections,
-                    StringComparison.Ordinal);
                 categories.Add(new RandomizerCategory(definition.Category, EnglishText(definition.CategoryKey,
-                    definition.Category), available));
+                    definition.Category), true));
             }
         }
 
@@ -831,6 +844,154 @@ public sealed class RandomizerViewModel : ObservableObject {
         return items.AsReadOnly();
     }
 
+    private void BuildSettingRows() {
+        var map = new Dictionary<string, List<SettingRowViewModel>>(StringComparer.Ordinal);
+        foreach (SettingDefinition definition in _catalog.Definitions) {
+            if (string.Equals(definition.Category, RandomizerState.AreaGroupType, StringComparison.Ordinal)
+                || string.Equals(definition.Category, RandomizerState.AreaSelections, StringComparison.Ordinal)) {
+                continue;
+            }
+
+            SettingRowViewModel? row = definition.Type switch {
+                SettingValueType.Boolean => new BooleanSettingRowViewModel(this, definition,
+                    Label(definition.Name), Description(definition.Name)),
+                SettingValueType.Int32 => new IntSettingRowViewModel(this, definition,
+                    Label(definition.Name), Description(definition.Name)),
+                SettingValueType.Decimal => new DecimalSettingRowViewModel(this, definition,
+                    Label(definition.Name), Description(definition.Name)),
+                SettingValueType.String => new StringSettingRowViewModel(this, definition,
+                    Label(definition.Name), Description(definition.Name)),
+                SettingValueType.Int32Array => new IntArraySettingRowViewModel(this, definition,
+                    Label(definition.Name), Description(definition.Name)),
+                _ => null,
+            };
+            if (row is null) {
+                continue;
+            }
+
+            _allRows.Add(row);
+            if (!map.TryGetValue(definition.Category, out List<SettingRowViewModel>? rows)) {
+                rows = [];
+                map[definition.Category] = rows;
+            }
+
+            rows.Add(row);
+        }
+
+        _categoryRows = map.ToDictionary(pair => pair.Key,
+            pair => (IReadOnlyList<SettingRowViewModel>)pair.Value.AsReadOnly(), StringComparer.Ordinal);
+    }
+
+    internal string Text(string key, string fallback) => EnglishText(key, fallback);
+
+    internal bool GetBoolValue(string name) => GetProperty(name).GetValue(Values) is true;
+
+    internal void SetBoolValue(string name, bool value) {
+        if (GetBoolValue(name) == value) {
+            return;
+        }
+
+        ApplyRadioGroup(name, value);
+        GetProperty(name).SetValue(Values, value);
+        RefreshRows();
+        QueueSave();
+    }
+
+    internal int GetIntValue(string name) => GetProperty(name).GetValue(Values) is int value ? value : 0;
+
+    internal void SetIntValue(string name, int value) {
+        if (GetIntValue(name) == value) {
+            return;
+        }
+
+        GetProperty(name).SetValue(Values, value);
+        RefreshRows();
+        QueueSave();
+    }
+
+    internal decimal GetDecimalValue(string name) =>
+        GetProperty(name).GetValue(Values) is decimal value ? value : 0m;
+
+    internal void SetDecimalValue(string name, decimal value) {
+        if (GetDecimalValue(name) == value) {
+            return;
+        }
+
+        GetProperty(name).SetValue(Values, value);
+        RefreshRows();
+        QueueSave();
+    }
+
+    internal IReadOnlyList<int> GetIntArrayValue(string name) =>
+        GetProperty(name).GetValue(Values) is IReadOnlyList<int> values ? values : Array.Empty<int>();
+
+    internal void SetIntArrayValue(string name, string text) {
+        var parsed = new List<int>();
+        foreach (string part in text.Split(',', StringSplitOptions.RemoveEmptyEntries
+            | StringSplitOptions.TrimEntries)) {
+            if (int.TryParse(part, NumberStyles.Integer, CultureInfo.InvariantCulture, out int value)) {
+                parsed.Add(value);
+            }
+        }
+
+        GetProperty(name).SetValue(Values, parsed.ToArray());
+        RefreshRows();
+        QueueSave();
+    }
+
+    internal string GetStringValue(string name) => GetProperty(name).GetValue(Values) as string ?? string.Empty;
+
+    internal void SetStringValue(string name, string value) {
+        if (string.Equals(GetStringValue(name), value, StringComparison.Ordinal)) {
+            return;
+        }
+
+        GetProperty(name).SetValue(Values, value);
+        RefreshRows();
+        QueueSave();
+    }
+
+    private void ApplyRadioGroup(string name, bool value) {
+        if (!value || !_definitions.TryGetValue(name, out SettingDefinition? definition)
+            || definition.RadioGroup is null) {
+            return;
+        }
+
+        SettingRadioGroup? group = _catalog.RadioGroups.FirstOrDefault(candidate =>
+            string.Equals(candidate.Id, definition.RadioGroup, StringComparison.Ordinal));
+        if (group is null) {
+            return;
+        }
+
+        foreach (string member in group.Members) {
+            if (string.Equals(member, name, StringComparison.Ordinal)) {
+                continue;
+            }
+
+            PropertyInfo property = GetProperty(member);
+            if (property.GetValue(Values) is true) {
+                property.SetValue(Values, false);
+            }
+        }
+    }
+
+    private void RefreshRows() {
+        foreach (SettingRowViewModel row in _allRows) {
+            row.Refresh();
+        }
+    }
+
+    private PropertyInfo GetProperty(string name) {
+        if (_propertyCache.TryGetValue(name, out PropertyInfo? property)) {
+            return property;
+        }
+
+        property = typeof(FormData).GetProperty(name, BindingFlags.Public | BindingFlags.Instance)
+            ?? throw new InvalidOperationException($"FormData member '{name}' was not found.");
+        _propertyCache[name] = property;
+        return property;
+    }
+
     private string Label(string name) => _definitions.TryGetValue(name, out SettingDefinition? definition)
         ? EnglishText(definition.LabelKey, name) : name;
 
@@ -840,7 +1001,7 @@ public sealed class RandomizerViewModel : ObservableObject {
     private string EnglishText(string key, string fallback) =>
         _english.TryGetValue(key, out string? value) ? value : fallback;
 
-    private int NumericBound(string name, string part, int fallback) {
+    internal int NumericBound(string name, string part, int fallback) {
         if (!_definitions.TryGetValue(name, out SettingDefinition? definition)
             || definition.Controls.FirstOrDefault(control => control.Numeric is not null)?.Numeric is not
             SourceNumericConstraint numeric) {
@@ -1023,6 +1184,10 @@ public sealed class RandomizerViewModel : ObservableObject {
         OnPropertyChanged(nameof(SelectedCategory));
         foreach (AreaSelectionViewModel selection in AreaSelections) {
             selection.Refresh();
+        }
+
+        foreach (SettingRowViewModel row in _allRows) {
+            row.Refresh();
         }
 
         OnPropertyChanged(nameof(IsAreaGroupTypeSelected));

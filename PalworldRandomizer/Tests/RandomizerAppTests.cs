@@ -59,9 +59,36 @@ internal static class RandomizerAppTests {
         Require(ReferenceEquals(page.DataContext, randomizer), "The page did not use the shared session.");
         Require(app.ShellState.SelectedTab.Section == "category.AreaGroupType",
             "The Randomizer tab did not record its category route.");
-        Require(page.GetVisualDescendants().OfType<TextBlock>()
+        Require(!page.GetVisualDescendants().OfType<TextBlock>()
             .Any(text => text.Text == "Not available in this build"),
-            "Other categories are not visibly unavailable.");
+            "A category still renders the unavailable notice.");
+        Button genericCategory = page.GetVisualDescendants().OfType<Button>()
+            .Single(button => AutomationProperties.GetAutomationId(button)
+                == "Randomizer.Category.Randomize");
+        genericCategory.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Dispatcher.UIThread.RunJobs();
+        Require(randomizer.SelectedCategory == "Randomize",
+            "The actual sidebar did not switch to a generic category.");
+        Require(page.FindControl<StackPanel>("GenericSettingsPanel")!.IsVisible,
+            "The generic settings panel did not appear.");
+        Require(page.FindControl<StackPanel>("AreaGroupTypePanel")!.IsVisible == false,
+            "The Area Group Type panel did not hide for a generic category.");
+        Require(randomizer.CurrentCategoryRows.OfType<BooleanSettingRowViewModel>().Any(),
+            "The Randomize category exposed no Boolean settings in the shared session.");
+        Require(page.FindControl<StackPanel>("GenericSettingsPanel")!
+                .GetVisualDescendants().OfType<ToggleSwitch>().Any()
+            || page.FindControl<StackPanel>("GenericSettingsPanel")!
+                .GetVisualDescendants().OfType<RadioButton>().Any()
+            || page.FindControl<StackPanel>("GenericSettingsPanel")!
+                .GetVisualDescendants().OfType<NumericIntUpDown>().Any(),
+            "A generic category rendered no settings rows.");
+        Button backToGroup = page.GetVisualDescendants().OfType<Button>()
+            .Single(button => AutomationProperties.GetAutomationId(button)
+                == "Randomizer.Category.AreaGroupType");
+        backToGroup.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+        Dispatcher.UIThread.RunJobs();
+        Require(randomizer.SelectedCategory == "AreaGroupType",
+            "The actual sidebar did not return to Area Group Type.");
 
         NumericIntUpDown spawn = page.FindControl<NumericIntUpDown>("SpawnListSizeBox")!;
         NumericIntUpDown chance = page.FindControl<NumericIntUpDown>("VanillaPlusChanceBox")!;

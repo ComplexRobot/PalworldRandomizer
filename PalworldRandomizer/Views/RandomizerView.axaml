@@ -34,6 +34,85 @@
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
     </UserControl.Styles>
+    <UserControl.DataTemplates>
+        <DataTemplate DataType="vm:BooleanSettingRowViewModel">
+            <Border Classes="setting" Margin="0,0,0,8">
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                    <RadioButton IsChecked="{Binding IsChecked, Mode=TwoWay}" IsVisible="{Binding IsRadio}"
+                                 AutomationProperties.AutomationId="{Binding AutomationId}" />
+                    <StackPanel Grid.Column="1" Spacing="3">
+                        <TextBlock Classes="settingTitle" Text="{Binding Label}" />
+                        <TextBlock Classes="settingDescription" Text="{Binding Description}" />
+                    </StackPanel>
+                    <ToggleSwitch Grid.Column="2" IsChecked="{Binding IsChecked, Mode=TwoWay}"
+                                  IsVisible="{Binding IsToggle}"
+                                  AutomationProperties.AutomationId="{Binding AutomationId}" />
+                </Grid>
+            </Border>
+        </DataTemplate>
+        <DataTemplate DataType="vm:IntSettingRowViewModel">
+            <Border Classes="setting" Margin="0,0,0,8">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                    <StackPanel Spacing="3">
+                        <TextBlock Classes="settingTitle" Text="{Binding Label}" />
+                        <TextBlock Classes="settingDescription" Text="{Binding Description}" />
+                    </StackPanel>
+                    <ursa:NumericIntUpDown Grid.Column="1" Minimum="{Binding Minimum}"
+                                           Maximum="{Binding Maximum}" EmptyInputValue="{Binding Fallback}"
+                                           AllowDrag="True" Value="{Binding Value, Mode=TwoWay}"
+                                           AutomationProperties.AutomationId="{Binding AutomationId}" />
+                </Grid>
+            </Border>
+        </DataTemplate>
+        <DataTemplate DataType="vm:DecimalSettingRowViewModel">
+            <Border Classes="setting" Margin="0,0,0,8">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                    <StackPanel Spacing="3">
+                        <TextBlock Classes="settingTitle" Text="{Binding Label}" />
+                        <TextBlock Classes="settingDescription" Text="{Binding Description}" />
+                    </StackPanel>
+                    <TextBox Grid.Column="1" Width="180" Text="{Binding Text, Mode=TwoWay}"
+                             AutomationProperties.AutomationId="{Binding AutomationId}" />
+                </Grid>
+            </Border>
+        </DataTemplate>
+        <DataTemplate DataType="vm:IntArraySettingRowViewModel">
+            <Border Classes="setting" Margin="0,0,0,8">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                    <StackPanel Spacing="3">
+                        <TextBlock Classes="settingTitle" Text="{Binding Label}" />
+                        <TextBlock Classes="settingDescription" Text="{Binding Description}" />
+                    </StackPanel>
+                    <TextBox Grid.Column="1" Width="220" Text="{Binding Text, Mode=TwoWay}"
+                             Watermark="1, 2, 3"
+                             AutomationProperties.AutomationId="{Binding AutomationId}" />
+                </Grid>
+            </Border>
+        </DataTemplate>
+        <DataTemplate DataType="vm:StringSettingRowViewModel">
+            <Border Classes="setting" Margin="0,0,0,8">
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                    <StackPanel Spacing="3">
+                        <TextBlock Classes="settingTitle" Text="{Binding Label}" />
+                        <TextBlock Classes="settingDescription" Text="{Binding Description}" />
+                    </StackPanel>
+                    <ComboBox Grid.Column="1" Width="220" ItemsSource="{Binding Choices}"
+                              SelectedItem="{Binding SelectedChoice, Mode=TwoWay}"
+                              IsVisible="{Binding HasChoices}"
+                              AutomationProperties.AutomationId="{Binding AutomationId}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="vm:SettingOptionChoice">
+                                <TextBlock Text="{Binding Label}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <TextBox Grid.Column="1" Width="220" Text="{Binding Value, Mode=TwoWay}"
+                             IsVisible="{Binding IsPlainText}"
+                             AutomationProperties.AutomationId="{Binding AutomationId}" />
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </UserControl.DataTemplates>
     <Grid ColumnDefinitions="210,*" RowDefinitions="Auto,*">
         <Border Grid.RowSpan="2" Background="#1A2029" Padding="16,22">
             <StackPanel Spacing="18">
@@ -234,6 +313,11 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
+                </StackPanel>
+                <StackPanel x:Name="GenericSettingsPanel" Spacing="12"
+                            IsVisible="{Binding IsGenericCategorySelected}"
+                            IsEnabled="{Binding IsEditingEnabled}">
+                    <ItemsControl ItemsSource="{Binding CurrentCategoryRows}" />
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>
