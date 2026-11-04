@@ -56,6 +56,7 @@ public sealed class RecoveryHostBridge(
     ShellView shellView,
     SettingsView view,
     SetupViewModel setup,
+    RandomizerViewModel? randomizer,
     Func<AppPreferences, Task> save,
     Func<string, string, string, Task<ArchiveCompatibility>> validate,
     Func<string, string, bool> usable,
@@ -66,6 +67,7 @@ public sealed class RecoveryHostBridge(
     private readonly ShellViewModel _shell = shell;
     private readonly ShellView _shellView = shellView;
     private readonly SettingsView _view = view;
+    private readonly RandomizerViewModel? _randomizer = randomizer;
     private readonly Func<AppPreferences, Task> _save = save;
     private readonly Func<string, string, string, Task<ArchiveCompatibility>> _validate = validate;
     private readonly Func<string, string, bool> _usable = usable;
@@ -135,7 +137,8 @@ public sealed class RecoveryHostBridge(
 
         try {
             Gate();
-            Setup = WorkspaceRecovery.Restore(state, _shell, _view, _save, _validate, _usable, true);
+            Setup = WorkspaceRecovery.Restore(state, _shell, _view, _save, _validate, _usable, true,
+                _randomizer);
             _restorePending = true;
             _shellView.Loaded += ShellLoaded;
             return RecoveryAttachResult.Restored;
@@ -205,6 +208,10 @@ public sealed class RecoveryHostBridge(
             return Refused("recovery.refusedBusy");
         }
 
+        if (_randomizer is { HasPendingSave: true }) {
+            return Refused("recovery.captureFailed");
+        }
+
         if (_softwareSession || Setup.Preferences.Renderer == "software") {
             return Refused("recovery.refusedAlreadySoftware");
         }
@@ -225,7 +232,7 @@ public sealed class RecoveryHostBridge(
         }
 
         try {
-            var state = WorkspaceRecovery.Capture(_shell, Setup, _view);
+            var state = WorkspaceRecovery.Capture(_shell, Setup, _view, _randomizer);
             string json = WorkspaceRecovery.Serialize(state);
             return Json(new {
                 status = "captured",

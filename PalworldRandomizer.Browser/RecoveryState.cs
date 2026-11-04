@@ -10,13 +10,18 @@ namespace PalworldRandomizer.Browser;
 /// <param name="PakDraft">The exact current PAK input text, which may be incomplete.</param>
 /// <param name="MappingDraft">The exact current mapping input text, which may be incomplete.</param>
 /// <param name="FilenameDraft">The exact current filename format text, which may be invalid.</param>
+/// <param name="Randomizer">The detached first-category values and raw drafts, when this host has one.</param>
 public sealed record RecoveryState(
     int Schema,
     AppPreferences Preferences,
     ShellState Shell,
     string PakDraft,
     string MappingDraft,
-    string FilenameDraft) {
-    /// <summary>The only recovery schema understood by this stage.</summary>
-    public const int CurrentSchema = 1;
+    string FilenameDraft,
+    RandomizerState? Randomizer = null) {
+    /// <summary>The current recovery schema, including the first Randomizer session.</summary>
+    public const int CurrentSchema = 2;
+
+    /// <summary>The earlier shell and Setup checkpoint shape, which has no Randomizer session.</summary>
+    public const int LegacySchema = 1;
 }

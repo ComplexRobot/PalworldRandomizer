@@ -309,7 +309,15 @@ public static partial class Data {
     private static partial Regex FlyingPalNameRegex();
 
     /// <summary>Loads character names, icons, classifications and vanilla spawn areas from the archive.</summary>
-    public static void Initialize(VfsFileProvider fileProvider) {
+    public static void Initialize(VfsFileProvider fileProvider) => Initialize(fileProvider, true);
+
+    /// <summary>Loads gameplay data and spawn areas, optionally skipping optional UI icon extraction.</summary>
+    /// <param name="fileProvider">The live selected archive provider; reads remain serialized and caller-owned.</param>
+    /// <param name="extractIcons">
+    /// When false, no texture is decoded or encoded and <see cref="PalIcon"/> stays empty. PalSchema generation and
+    /// every spawn/character table remain fully populated; hosts without a PNG codec can still generate real data.
+    /// </param>
+    public static void Initialize(VfsFileProvider fileProvider, bool extractIcons) {
         var palDataAsset = fileProvider.LoadDataTable(
             "Pal/Content/Pal/DataTable/Character/DT_PalMonsterParameter.uasset"
         );
@@ -343,24 +351,30 @@ public static partial class Data {
         var humanNames = fileProvider.LoadDataTableText(
             "Pal/Content/L10N/en/Pal/DataTable/Text/DT_HumanNameText_Common.uasset"
         );
-        var bossNPCIcons = fileProvider.LoadDataTableSoftObject(
-            "Pal/Content/Pal/DataTable/Character/DT_PalBossNPCIcon.uasset"
-        );
-        var palIcons = fileProvider.LoadDataTableSoftObject(
-            "Pal/Content/Pal/DataTable/Character/DT_PalCharacterIconDataTable.uasset"
-        );
+        Dictionary<string, string?> bossNPCIcons = extractIcons
+            ? fileProvider.LoadDataTableSoftObject("Pal/Content/Pal/DataTable/Character/DT_PalBossNPCIcon.uasset")
+            : [];
+        Dictionary<string, string?> palIcons = extractIcons
+            ? fileProvider.LoadDataTableSoftObject(
+                "Pal/Content/Pal/DataTable/Character/DT_PalCharacterIconDataTable.uasset"
+            )
+            : [];
 
-        string unknownIconPath = fileProvider.SaveTexturePng(
-            "Pal/Content/Pal/Texture/UI/Main_Menu/T_icon_unknown.uasset",
-            UAssetData.PalIconPath(),
-            fileProvider.GameVersionUpdated
-        );
+        string unknownIconPath = extractIcons
+            ? fileProvider.SaveTexturePng(
+                "Pal/Content/Pal/Texture/UI/Main_Menu/T_icon_unknown.uasset",
+                UAssetData.PalIconPath(),
+                fileProvider.GameVersionUpdated
+            )
+            : string.Empty;
 
-        string commonHumanIconPath = fileProvider.SaveTexturePng(
-            "Pal/Content/Pal/Texture/PalIcon/Normal/T_CommonHuman_icon_normal.uasset",
-            UAssetData.PalIconPath("Human"),
-            fileProvider.GameVersionUpdated
-        );
+        string commonHumanIconPath = extractIcons
+            ? fileProvider.SaveTexturePng(
+                "Pal/Content/Pal/Texture/PalIcon/Normal/T_CommonHuman_icon_normal.uasset",
+                UAssetData.PalIconPath("Human"),
+                fileProvider.GameVersionUpdated
+            )
+            : string.Empty;
 
         var weapons = new Dictionary<string, string>
         {
@@ -497,7 +511,10 @@ public static partial class Data {
                     SimpleName.Add(new SpawnData(key).SimpleName, key);
                 }
 
-                PalIconCheck((isBoss || isSummon) && !key.EndsWith("_Otomo"));
+                if (extractIcons) {
+                    PalIconCheck((isBoss || isSummon) && !key.EndsWith("_Otomo"));
+                }
+
                 if (FlyingPalNameRegex().IsMatch(key)) {
                     FlyingNames.Add(key);
                 }
@@ -521,7 +538,11 @@ public static partial class Data {
                 if (key.StartsWith("BOSS_", StringComparison.OrdinalIgnoreCase)) {
                     HumanBossNames.Add(key);
 
-                    if (bossNPCIcons.TryGetValue(key, out string? foundPath) && foundPath != null) {
+                    if (
+                        extractIcons
+                        && bossNPCIcons.TryGetValue(key, out string? foundPath)
+                        && foundPath != null
+                    ) {
                         string resourcePath = fileProvider.SaveTexturePng(
                             VfsFileProvider.SoftPathToHardPath(foundPath),
                             UAssetData.NpcIconPath(),
@@ -529,11 +550,11 @@ public static partial class Data {
                         );
                         PalIcon.Add(key, resourcePath);
                     }
-                } else {
+                } else if (extractIcons) {
                     PalIconCheck();
                 }
 
-                if (!PalIcon.ContainsKey(key)) {
+                if (extractIcons && !PalIcon.ContainsKey(key)) {
                     if (
                         PalData[key].Weapon != null
                         && weapons.TryGetValue(PalData[key].Weapon!, out string? weaponName)
@@ -550,6 +571,10 @@ public static partial class Data {
             }
 
             void PalIconCheck(bool skipPrefix = false) {
+                if (!extractIcons) {
+                    return;
+                }
+
                 string resourceKey = resourceKeyRegex().Match(key).Groups[1].Value;
                 resourceKey = skipPrefix ? resourceKey[(resourceKey.IndexOf('_') + 1)..] : resourceKey;
 

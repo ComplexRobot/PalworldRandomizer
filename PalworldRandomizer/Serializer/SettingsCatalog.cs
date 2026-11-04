@@ -10,6 +10,9 @@ public sealed class SettingsCatalog {
     /// <summary>The catalog definitions in original member order.</summary>
     public IReadOnlyList<SettingDefinition> Definitions { get; }
 
+    /// <summary>The Area Selections Boolean definitions in original member order.</summary>
+    public IReadOnlyList<SettingDefinition> AreaSelections { get; }
+
     /// <summary>The compiled English strings, addressed by stable localization keys.</summary>
     public IReadOnlyDictionary<string, string> English { get; }
 
@@ -20,6 +23,8 @@ public sealed class SettingsCatalog {
         RadioGroups = catalog.RadioGroups.ConvertAll(x =>
             new SettingRadioGroup(x.Id, x.Members.ToList().AsReadOnly(), x.DefaultMember)).AsReadOnly();
         Definitions = catalog.Settings.ConvertAll(x => new SettingDefinition(x)).AsReadOnly();
+        AreaSelections = Definitions.Where(definition => string.Equals(definition.Category,
+            "AreaSelections", StringComparison.Ordinal)).ToList().AsReadOnly();
         English = new ReadOnlyDictionary<string, string>(locale.Strings);
     }
 

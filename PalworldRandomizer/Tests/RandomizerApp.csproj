@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net10.0</TargetFramework>
+        <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    </PropertyGroup>
+    <ItemGroup>
+        <Compile Include="RandomizerAppTests.cs" />
+        <ProjectReference Include="..\..\PalworldRandomizer\PalworldRandomizer.csproj" />
+        <ProjectReference Include="..\..\PalworldRandomizer.Desktop\PalworldRandomizer.Desktop.csproj" />
+        <PackageReference Include="Avalonia.Headless" VersionOverride="12.1.5" />
+        <PackageReference Include="SkiaSharp" VersionOverride="3.119.4" />
+    </ItemGroup>
+</Project>

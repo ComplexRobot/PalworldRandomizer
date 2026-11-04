@@ -4,3 +4,4 @@
 /evidence/
 *.user
 /*.txt
+.worktrees/

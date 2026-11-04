@@ -1,0 +1,20 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:PalworldRandomizer.ViewModels"
+             x:Class="PalworldRandomizer.Views.GenerateView" x:DataType="vm:GenerateViewModel">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24" Spacing="12" MaxWidth="720" VerticalAlignment="Center">
+            <TextBlock Text="Generate PalSchema" FontSize="24" FontWeight="SemiBold" Foreground="#E0E5ED" />
+            <TextBlock Text="{Binding Status}" TextWrapping="Wrap" Foreground="#A5B0C0" />
+            <ProgressBar Value="{Binding Progress}" Maximum="100" IsVisible="{Binding IsGenerating}" />
+            <TextBlock Text="{Binding Error}" Foreground="#E57373" TextWrapping="Wrap"
+                       IsVisible="{Binding HasError}" />
+            <TextBlock Text="{Binding ResultPath}" Foreground="#A5B0C0" TextWrapping="Wrap"
+                       IsVisible="{Binding HasOutput}" />
+            <StackPanel Orientation="Horizontal" Spacing="12">
+                <Button Content="Generate" Command="{Binding GenerateCommand}" />
+                <Button Content="Save PalSchema" x:Name="SaveButton" IsVisible="{Binding HasOutput}" />
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

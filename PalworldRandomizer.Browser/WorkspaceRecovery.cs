@@ -10,7 +10,8 @@ namespace PalworldRandomizer.Browser;
 /// <summary>Captures and restores actual managed shell and Setup state.</summary>
 public static class WorkspaceRecovery {
     /// <summary>Captures detached actual shell state and the exact current Setup drafts.</summary>
-    public static RecoveryState Capture(ShellViewModel shell, SetupViewModel setup, SettingsView view) {
+    public static RecoveryState Capture(ShellViewModel shell, SetupViewModel setup, SettingsView view,
+        RandomizerViewModel? randomizer = null) {
         ArgumentNullException.ThrowIfNull(shell);
         ArgumentNullException.ThrowIfNull(setup);
         ArgumentNullException.ThrowIfNull(view);
@@ -26,7 +27,8 @@ public static class WorkspaceRecovery {
             shell.CaptureState(),
             setup.PakText,
             setup.MappingText,
-            filename.Text ?? "");
+            filename.Text ?? "",
+            randomizer?.CaptureState());
     }
 
     /// <summary>Serializes and validates a detached recovery document.</summary>
@@ -59,7 +61,8 @@ public static class WorkspaceRecovery {
         Func<AppPreferences, Task> save,
         Func<string, string, string, Task<ArchiveCompatibility>> validate,
         Func<string, string, bool> usable,
-        bool browser) {
+        bool browser,
+        RandomizerViewModel? randomizer = null) {
         ArgumentNullException.ThrowIfNull(state);
         ArgumentNullException.ThrowIfNull(shell);
         ArgumentNullException.ThrowIfNull(view);
@@ -67,6 +70,10 @@ public static class WorkspaceRecovery {
         ArgumentNullException.ThrowIfNull(validate);
         ArgumentNullException.ThrowIfNull(usable);
         Validate(state);
+        if (state.Randomizer is not null && (randomizer is null || !randomizer.IsEditingEnabled)) {
+            throw new InvalidDataException("The recovery Randomizer session cannot be restored in this host.");
+        }
+
         TextBox filename = FilenameControl(view);
         ValidateViewFormats(state.Preferences, view);
         var setup = new SetupViewModel(state.Preferences, save, validate, usable, browser) {
@@ -76,13 +83,25 @@ public static class WorkspaceRecovery {
         shell.RestoreState(state.Shell);
         view.DataContext = setup;
         filename.Text = state.FilenameDraft;
+        if (state.Randomizer is not null) {
+            randomizer!.RestoreState(state.Randomizer);
+        }
+
         return setup;
     }
 
     /// <summary>Rejects unsupported, malformed, or inconsistent recovery data before any live mutation.</summary>
     private static void Validate(RecoveryState state) {
-        if (state.Schema != RecoveryState.CurrentSchema) {
+        if (state.Schema is not (RecoveryState.LegacySchema or RecoveryState.CurrentSchema)) {
             throw new InvalidDataException("The recovery schema is not supported.");
+        }
+
+        if (state.Schema == RecoveryState.LegacySchema && state.Randomizer is not null) {
+            throw new InvalidDataException("A legacy recovery checkpoint cannot contain Randomizer state.");
+        }
+
+        if (state.Randomizer is not null) {
+            RandomizerState.Validate(state.Randomizer);
         }
 
         if (state.Preferences is null) {

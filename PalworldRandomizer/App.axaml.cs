@@ -9,6 +9,7 @@ using Avalonia.Media;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using PalworldRandomizer.Localization;
+using PalworldRandomizer.Randomizer;
 using PalworldRandomizer.ViewModels;
 using PalworldRandomizer.Views;
 
@@ -55,11 +56,21 @@ public partial class App : Application {
         }
     } = null!;
 
+    /// <summary>The shared Default template session; null leaves the Randomizer workflow unavailable.</summary>
+    public RandomizerViewModel? Randomizer { get; init; }
+
     /// <summary>The browser's public File picker; null uses the native StorageProvider.</summary>
     public Func<string, Task<string?>>? PickFileAsync { get; init; }
 
     /// <summary>One narrow seam for unimplemented launcher destinations.</summary>
     public Func<AppPage, bool> PageAvailable { get; init; } = _implemented;
+
+    /// <summary>The host's generation implementation; null uses the native engine service.</summary>
+    /// <remarks>
+    /// The Browser host supplies its bounded worker service; the Desktop host leaves this null so the
+    /// original native generation runs. The page and settings capture remain identical in both hosts.
+    /// </remarks>
+    public Func<GenerationRequest, Action<double?>?, CancellationToken, Task<GenerationResult>>? Generate { get; init; }
 
     /// <summary>The actual UI-independent shell state shared with recovery.</summary>
     public ShellViewModel ShellState { get; private set; } = null!;
@@ -83,7 +94,8 @@ public partial class App : Application {
         Settings = new SettingsView { DataContext = setup, PickFileAsync = PickFileAsync };
         ShellState = new ShellViewModel(firstRun: !setup.Preferences.SetupCompleted
             || setup.PakEmpty || setup.MappingEmpty || setup.PakInvalid || setup.MappingInvalid);
-        Shell = new ShellView(ShellState, CreatePage, PageAvailable);
+        Shell = new ShellView(ShellState, CreatePage,
+            page => PageAvailable(page) || (page == AppPage.Randomizer && Randomizer is not null));
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
             desktop.MainWindow = new Avalonia.Controls.Window {
@@ -154,11 +166,28 @@ public partial class App : Application {
         _addTab.BorderThickness = new Thickness(Setup.HighlightNewTab ? 2 : 0);
     }
 
-    /// <summary>Returns the real Settings page or an explicit unavailable notice for this build.</summary>
-    private Control CreatePage(ShellTab tab) => tab.Page == AppPage.Settings ? Settings : new TextBlock {
-        Text = EnglishMetadata.Get("Shell.Unavailable"),
-        Margin = new Thickness(30),
-        TextWrapping = TextWrapping.Wrap,
-        Foreground = Brush.Parse("#A5B0C0"),
-    };
+    /// <summary>Returns a real implemented page or an explicit unavailable notice for this build.</summary>
+    private Control CreatePage(ShellTab tab) {
+        if (tab.Page == AppPage.Settings) {
+            return Settings;
+        }
+
+        if (tab.Page == AppPage.Randomizer && Randomizer is not null) {
+            return new RandomizerView(Randomizer);
+        }
+
+        if (tab.Page == AppPage.Generate && PageAvailable(AppPage.Generate) && Randomizer is { } randomizer) {
+            return new GenerateView {
+                DataContext = new GenerateViewModel(Setup, () => randomizer.CaptureState().Values,
+                    generate: Generate),
+            };
+        }
+
+        return new TextBlock {
+            Text = EnglishMetadata.Get("Shell.Unavailable"),
+            Margin = new Thickness(30),
+            TextWrapping = TextWrapping.Wrap,
+            Foreground = Brush.Parse("#A5B0C0"),
+        };
+    }
 }

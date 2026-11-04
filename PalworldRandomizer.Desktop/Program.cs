@@ -28,7 +28,11 @@ internal static class Program {
             setup.Toasts.Add(new("setup.persistenceFailed", storageError));
         }
 
-        PalworldRandomizer.App app = new() { Setup = setup };
+        RandomizerViewModel randomizer = RandomizerViewModel.CreateAsync(
+            SettingsCatalog.LoadEmbedded(), TemplateStore.CreateNative()).GetAwaiter().GetResult();
+        PalworldRandomizer.App app = new() {
+            Setup = setup, Randomizer = randomizer, PageAvailable = DesktopPagePolicy.IsAvailable,
+        };
         NativeRenderingOptions rendering = NativeRendering.OptionsFor(preferences.Renderer);
         return AppBuilder.Configure(() => app)
             .UsePlatformDetect()

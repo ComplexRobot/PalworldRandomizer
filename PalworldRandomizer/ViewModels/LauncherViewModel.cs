@@ -43,7 +43,8 @@ public sealed class LauncherViewModel(ShellViewModel shell, Func<AppPage, bool>?
     public IRelayCommand<LauncherDestination> NavigateCommand { get; } =
         new RelayCommand<LauncherDestination>(destination => {
             if (destination is { IsAvailable: true }) {
-                shell.NavigateSelected(destination.Page);
+                shell.NavigateSelected(destination.Page, destination.Page == AppPage.Randomizer
+                    ? "category.AreaGroupType" : null);
             }
         });
 }

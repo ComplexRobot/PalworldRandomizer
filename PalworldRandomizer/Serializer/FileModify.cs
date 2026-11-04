@@ -200,10 +200,26 @@ public static partial class FileModify {
 
     /// <summary>Writes a PalSchema archive using an explicit path and captured export settings.</summary>
     public static void WritePalSchema(string filename, List<AreaData> areaList, FormData formData) {
-        List<PalSchemaJson> schemaList = GeneratePalSchema(areaList, formData);
-
         using FileStream fileStream = File.Create(filename);
-        using ZipArchive zipArchive = new(fileStream, ZipArchiveMode.Create);
+        WritePalSchema(fileStream, areaList, formData);
+    }
+
+    /// <summary>Writes a PalSchema archive to an open destination without touching the filesystem.</summary>
+    /// <remarks>
+    /// The destination stays open so an in-memory or browser-provided stream can be inspected after the ZIP is
+    /// complete. Each document is written in turn, so the archive never needs the whole document set as one buffer.
+    /// </remarks>
+    /// <param name="target">The writable destination; the caller owns and disposes it.</param>
+    /// <param name="areaList">The generated areas to serialize.</param>
+    /// <param name="formData">The captured settings for egg timers and damage caps.</param>
+    public static void WritePalSchema(Stream target, List<AreaData> areaList, FormData formData) =>
+        WritePalSchema(target, GeneratePalSchema(areaList, formData));
+
+    /// <summary>Writes already serialized PalSchema documents to an open destination.</summary>
+    /// <param name="target">The writable destination; the caller owns and disposes it.</param>
+    /// <param name="schemaList">The serialized documents and their archive paths.</param>
+    public static void WritePalSchema(Stream target, List<PalSchemaJson> schemaList) {
+        using ZipArchive zipArchive = new(target, ZipArchiveMode.Create, leaveOpen: true);
         foreach (PalSchemaJson schema in schemaList) {
             using Stream entryStream = zipArchive.CreateEntry($"CustomPalSpawns/" + schema.FilePath).Open();
             using StreamWriter streamWriter = new(entryStream, Encoding.UTF8);

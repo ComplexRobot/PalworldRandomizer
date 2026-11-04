@@ -1,0 +1,209 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:PalworldRandomizer.ViewModels"
+             xmlns:ursa="using:Ursa.Controls"
+             x:Class="PalworldRandomizer.Views.RandomizerView" x:DataType="vm:RandomizerViewModel"
+             Background="#202630" Foreground="#D9E2F0" FontSize="14">
+    <UserControl.Styles>
+        <Style Selector="Border.setting">
+            <Setter Property="Background" Value="#252F3D" />
+            <Setter Property="BorderBrush" Value="#334155" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="7" />
+            <Setter Property="Padding" Value="14,12" />
+        </Style>
+        <Style Selector="TextBlock.settingTitle">
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+        <Style Selector="TextBlock.settingDescription">
+            <Setter Property="Foreground" Value="#A7B7CD" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+        <Style Selector="RadioButton">
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="ToggleSwitch">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+        </Style>
+        <Style Selector="ursa|NumericIntUpDown">
+            <Setter Property="Width" Value="150" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+    </UserControl.Styles>
+    <Grid ColumnDefinitions="210,*" RowDefinitions="Auto,*">
+        <Border Grid.RowSpan="2" Background="#1A2029" Padding="16,22">
+            <StackPanel Spacing="18">
+                <TextBlock Text="{Binding PageTitle}" FontSize="18" FontWeight="SemiBold" />
+                <Border Background="#34465E" CornerRadius="5" Padding="12,10">
+                    <TextBlock Text="{Binding CategoryTitle}" TextWrapping="Wrap" />
+                </Border>
+                <StackPanel x:Name="CategoriesPanel" Spacing="6" />
+            </StackPanel>
+        </Border>
+        <Border Grid.Column="1" Padding="28,18,28,14" Background="#1C222B"
+                BorderBrush="#2B3442" BorderThickness="0,0,0,1">
+            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
+                <TextBlock Text="{Binding CategoryTitle}" FontSize="20" FontWeight="SemiBold"
+                           VerticalAlignment="Center" />
+                <Border Grid.Column="1" Background="#263A50" BorderBrush="#42536B" BorderThickness="1"
+                        CornerRadius="5" Padding="10,6" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding TemplateName}" FontSize="12" />
+                </Border>
+                <TextBlock Grid.Column="2" Text="{Binding SaveStatus}" Foreground="#A7B7CD"
+                           FontSize="12" VerticalAlignment="Center" />
+            </Grid>
+        </Border>
+        <ScrollViewer Grid.Row="1" Grid.Column="1" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Margin="28,20,28,40" Spacing="12" MaxWidth="820"
+                        HorizontalAlignment="Stretch">
+                <Border Background="#3A2A2A" BorderBrush="#A86969" BorderThickness="1"
+                        CornerRadius="6" Padding="12" IsVisible="{Binding HasError}">
+                    <TextBlock Text="{Binding ErrorMessage}" TextWrapping="Wrap" Foreground="#F1C7C7" />
+                </Border>
+                <TextBlock Text="{Binding CategoryTitle}" FontSize="26" FontWeight="SemiBold" />
+                <StackPanel x:Name="AreaGroupTypePanel" Spacing="12" IsVisible="{Binding IsAreaGroupTypeSelected}"
+                            IsEnabled="{Binding IsEditingEnabled}">
+                <Border Classes="setting">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                        <RadioButton x:Name="MethodFullRadio" IsChecked="{Binding MethodFull, Mode=TwoWay}" />
+                        <StackPanel Grid.Column="1" Spacing="3">
+                            <TextBlock Classes="settingTitle" Text="{Binding MethodFullLabel}" />
+                            <TextBlock Classes="settingDescription" Text="{Binding MethodFullDescription}" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+                <Border Classes="setting">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                        <RadioButton x:Name="MethodCustomSizeRadio" IsChecked="{Binding MethodCustomSize, Mode=TwoWay}" />
+                        <StackPanel Grid.Column="1" Spacing="3">
+                            <TextBlock Classes="settingTitle" Text="{Binding MethodCustomSizeLabel}" />
+                            <TextBlock Classes="settingDescription"
+                                       Text="{Binding MethodCustomSizeDescription}" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+                <Border Classes="setting" Margin="28,0,0,0">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                        <StackPanel Spacing="3">
+                            <TextBlock Classes="settingTitle" Text="{Binding SpawnListSizeLabel}" />
+                            <TextBlock Classes="settingDescription" Text="{Binding SpawnListSizeDescription}" />
+                        </StackPanel>
+                        <ursa:NumericIntUpDown x:Name="SpawnListSizeBox" Grid.Column="1"
+                                               Minimum="{Binding SpawnListSizeMinimum}"
+                                               EmptyInputValue="{Binding SpawnListSizeFallback}"
+                                               AllowDrag="True" Value="{Binding SpawnListSize, Mode=TwoWay}" />
+                    </Grid>
+                </Border>
+                <Border Classes="setting">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                        <RadioButton x:Name="MethodLocalSwapRadio" IsChecked="{Binding MethodLocalSwap, Mode=TwoWay}" />
+                        <StackPanel Grid.Column="1" Spacing="3">
+                            <TextBlock Classes="settingTitle" Text="{Binding MethodLocalSwapLabel}" />
+                            <TextBlock Classes="settingDescription"
+                                       Text="{Binding MethodLocalSwapDescription}" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+                <Border Classes="setting">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                        <RadioButton x:Name="MethodGlobalSwapRadio" IsChecked="{Binding MethodGlobalSwap, Mode=TwoWay}" />
+                        <StackPanel Grid.Column="1" Spacing="3">
+                            <TextBlock Classes="settingTitle" Text="{Binding MethodGlobalSwapLabel}" />
+                            <TextBlock Classes="settingDescription"
+                                       Text="{Binding MethodGlobalSwapDescription}" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+                <Border Classes="setting">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                        <RadioButton x:Name="MethodNoneRadio" IsChecked="{Binding MethodNone, Mode=TwoWay}" />
+                        <StackPanel Grid.Column="1" Spacing="3">
+                            <TextBlock Classes="settingTitle" Text="{Binding MethodNoneLabel}" />
+                            <TextBlock Classes="settingDescription" Text="{Binding MethodNoneDescription}" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+                <Border x:Name="VanillaPlusRow" Classes="setting" IsVisible="{Binding ShowVanillaPlus}">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                        <StackPanel Spacing="3">
+                            <TextBlock Classes="settingTitle" Text="{Binding VanillaPlusLabel}" />
+                            <TextBlock Classes="settingDescription" Text="{Binding VanillaPlusDescription}" />
+                        </StackPanel>
+                        <ToggleSwitch x:Name="VanillaPlusToggle" Grid.Column="1" IsChecked="{Binding VanillaPlus, Mode=TwoWay}" />
+                    </Grid>
+                </Border>
+                <Border x:Name="VanillaPlusChanceRow" Classes="setting" Margin="28,0,0,0" IsVisible="{Binding ShowVanillaPlusChance}">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                        <StackPanel Spacing="3">
+                            <TextBlock Classes="settingTitle" Text="{Binding VanillaPlusChanceLabel}" />
+                            <TextBlock Classes="settingDescription"
+                                       Text="{Binding VanillaPlusChanceDescription}" />
+                        </StackPanel>
+                        <ursa:NumericIntUpDown x:Name="VanillaPlusChanceBox" Grid.Column="1"
+                                               Minimum="{Binding VanillaPlusChanceMinimum}"
+                                               Maximum="{Binding VanillaPlusChanceMaximum}"
+                                               EmptyInputValue="{Binding VanillaPlusChanceFallback}"
+                                               AllowDrag="True"
+                                               Value="{Binding VanillaPlusChance, Mode=TwoWay}" />
+                    </Grid>
+                </Border>
+                <Border x:Name="VanillaMergeRow" Classes="setting" IsVisible="{Binding ShowVanillaMerge}">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                        <StackPanel Spacing="3">
+                            <TextBlock Classes="settingTitle" Text="{Binding VanillaMergeLabel}" />
+                            <TextBlock Classes="settingDescription" Text="{Binding VanillaMergeDescription}" />
+                        </StackPanel>
+                        <ToggleSwitch x:Name="VanillaMergeToggle" Grid.Column="1" IsChecked="{Binding VanillaMerge, Mode=TwoWay}" />
+                    </Grid>
+                </Border>
+                <Border x:Name="VanillaPlusFilterRow" Classes="setting" Margin="28,0,0,0" IsVisible="{Binding ShowVanillaPlusFilter}">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                        <StackPanel Spacing="3">
+                            <TextBlock Classes="settingTitle" Text="{Binding VanillaPlusFilterLabel}" />
+                            <TextBlock Classes="settingDescription"
+                                       Text="{Binding VanillaPlusFilterDescription}" />
+                        </StackPanel>
+                        <ToggleSwitch x:Name="VanillaPlusFilterToggle" Grid.Column="1"
+                                      IsChecked="{Binding VanillaPlusFilter, Mode=TwoWay}" />
+                    </Grid>
+                </Border>
+                <Border x:Name="VanillaMergeFilterRow" Classes="setting" Margin="28,0,0,0" IsVisible="{Binding ShowVanillaMergeFilter}">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                        <StackPanel Spacing="3">
+                            <TextBlock Classes="settingTitle" Text="{Binding VanillaMergeFilterLabel}" />
+                            <TextBlock Classes="settingDescription"
+                                       Text="{Binding VanillaMergeFilterDescription}" />
+                        </StackPanel>
+                        <ToggleSwitch x:Name="VanillaMergeFilterToggle" Grid.Column="1"
+                                      IsChecked="{Binding VanillaMergeFilter, Mode=TwoWay}" />
+                    </Grid>
+                </Border>
+                </StackPanel>
+                <StackPanel x:Name="AreaSelectionsPanel" Spacing="12" IsVisible="{Binding IsAreaSelectionsSelected}"
+                            IsEnabled="{Binding IsEditingEnabled}">
+                    <ItemsControl ItemsSource="{Binding AreaSelections}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:AreaSelectionViewModel">
+                                <Border Classes="setting" Margin="0,0,0,8">
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                                        <StackPanel Spacing="3">
+                                            <TextBlock Classes="settingTitle" Text="{Binding Label}" />
+                                            <TextBlock Classes="settingDescription" Text="{Binding Description}" />
+                                        </StackPanel>
+                                        <ToggleSwitch Grid.Column="1" IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                      AutomationProperties.AutomationId="{Binding AutomationId}"
+                                                      Tag="{Binding Name}" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

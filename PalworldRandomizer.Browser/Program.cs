@@ -4,6 +4,7 @@ using Avalonia.Browser;
 using Microsoft.Extensions.DependencyInjection;
 using PalworldRandomizer.Browser;
 using PalworldRandomizer.Models;
+using PalworldRandomizer.Serializer;
 using PalworldRandomizer.ViewModels;
 using SpawnDev.SpawnJS;
 using SpawnDev.SpawnJS.JSObjects;
@@ -34,6 +35,9 @@ await builder.Build().RunAsync(async app => {
         setup.Toasts.Add(new("setup.persistenceFailed", storageError));
     }
 
+    TemplateStore templates = BrowserTemplateStore.CreateStore();
+    RandomizerViewModel randomizer = await RandomizerViewModel.CreateAsync(
+        SettingsCatalog.LoadEmbedded(), templates);
     TaskCompletionSource<string> bootRequest = new(TaskCreationOptions.RunContinuationsAsynchronously);
     TaskCompletionSource<string> bootDecision = new(TaskCreationOptions.RunContinuationsAsynchronously);
     js.Set("recoveryBoot", (Func<string, Task<string>>)(json => {
@@ -86,11 +90,15 @@ await builder.Build().RunAsync(async app => {
 
     bool software = mode == "software" || preferences.Renderer == "software";
     RecoveryHostBridge? bridge = null;
-    PalworldRandomizer.App shared = new() { Setup = setup, PickFileAsync = picker.PickAsync };
+    PalworldRandomizer.App shared = new() {
+        Setup = setup, PickFileAsync = picker.PickAsync, Randomizer = randomizer,
+        Generate = files.GenerateAsync,
+        PageAvailable = page => page is AppPage.Settings or AppPage.Generate,
+    };
     shared.SurfaceReady += () => {
         try {
             bridge = new RecoveryHostBridge(shared.ShellState, shared.Shell, shared.Settings,
-                shared.Setup, store.SaveAsync, files.ValidateAsync, files.IsUsable, picker);
+                shared.Setup, shared.Randomizer, store.SaveAsync, files.ValidateAsync, files.IsUsable, picker);
         } catch (Exception exception) {
             bootDecision.TrySetResult(DecisionRefused("recovery.pendingInvalid", exception.Message));
             return;
