@@ -12,6 +12,10 @@ try {
         && resources.Contains("PalworldRandomizer.Metadata.Locales.en-US.Randomizer.yaml"),
         "catalog and English locale are compiled resources");
     var catalog = SettingsCatalog.LoadEmbedded();
+    Check(catalog.Definitions.All(x => x.DescriptionOrigin is "Reference" or "Implementation")
+        && catalog.Definitions.SelectMany(x => x.Options).All(x =>
+            x.DescriptionOrigin is "Reference" or "Implementation"),
+        "description provenance uses neutral source categories");
     Check(catalog.Definitions.Count == 137, "production loader covers all 137 original members");
     var properties = typeof(FormData).GetProperties();
     Check(properties.Select(x => x.Name).Order().SequenceEqual(catalog.Definitions.Select(x => x.Name).Order()),
@@ -43,13 +47,13 @@ try {
         string status = expected.GetProperty("OriginalDescriptionStatus").GetString()!;
         Require(definition.OriginalDescriptionStatus == status, name);
         Require(catalog.English[definition.LabelKey] == expected.GetProperty("Label").GetString(), name);
-        string? hash = expected.GetProperty("NexusSha256").GetString();
+        string? hash = expected.GetProperty("ReferenceSha256").GetString();
         if (hash is not null) {
             var keys = definition.AdditionalDescriptionKeys.Prepend(definition.DescriptionKey);
-            Require(keys.Any(key => Hash(catalog.English[key]) == hash), "exact Nexus paragraph: " + name);
+            Require(keys.Any(key => Hash(catalog.English[key]) == hash), "exact Reference paragraph: " + name);
         }
 
-        string origin = status is "verified" or "shared-range" ? "Nexus" : "Implementation";
+        string origin = status is "verified" or "shared-range" ? "Reference" : "Implementation";
         Require(definition.DescriptionOrigin == origin && definition.DescriptionReferences.Count > 0, name);
     }
 

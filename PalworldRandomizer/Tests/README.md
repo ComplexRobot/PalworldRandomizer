@@ -72,8 +72,8 @@ Build the application in the same configuration, then run:
 dotnet run --project PalworldRandomizer/Tests/Metadata.csproj -c Debug -p:TreatWarningsAsErrors=true
 ```
 
-Repeat in Release. Its 12 checks load the actual production assembly and embedded YAML through
-`SettingsCatalog.LoadEmbedded()`: 137 original setting contracts, exact Nexus text and implementation provenance,
+Repeat in Release. Its 13 checks load the actual production assembly and embedded YAML through
+`SettingsCatalog.LoadEmbedded()`: 137 original setting contracts, exact reference text and implementation provenance,
 147 controls, three radio groups, all 457 English keys, read-only nested collections and independent defaults.
 The additional metadata fixture does not replace `Fixtures/FormData.original.json`. No UI bindings, validators,
 editable YAML templates or persistence are executed by this runner. See [the catalog notes](../Metadata/README.md)

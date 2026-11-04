@@ -49,7 +49,7 @@
                 ]
             }
         ],
-        "NexusSha256": "7ed5da987d68823716fcff7a3be2858e252d0594c9ef2d46218a5ed786320820",
+        "ReferenceSha256": "7ed5da987d68823716fcff7a3be2858e252d0594c9ef2d46218a5ed786320820",
         "Label": "Random Seed:"
     },
     {
@@ -92,7 +92,7 @@
                 ]
             }
         ],
-        "NexusSha256": "7ed5da987d68823716fcff7a3be2858e252d0594c9ef2d46218a5ed786320820",
+        "ReferenceSha256": "7ed5da987d68823716fcff7a3be2858e252d0594c9ef2d46218a5ed786320820",
         "Label": "Lock Seed"
     },
     {
@@ -117,7 +117,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "0ff060eb28a752571ed0b8c5df87c19d4f0ab9385f69336c25a2ec9f450d6667",
+        "ReferenceSha256": "0ff060eb28a752571ed0b8c5df87c19d4f0ab9385f69336c25a2ec9f450d6667",
         "Label": "Overworld Pals"
     },
     {
@@ -142,7 +142,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "1e041e05b06da8d3baf38a3b465e4315f6d90636eefd1041a8512da9e2332de7",
+        "ReferenceSha256": "1e041e05b06da8d3baf38a3b465e4315f6d90636eefd1041a8512da9e2332de7",
         "Label": "Dungeon Pals"
     },
     {
@@ -167,7 +167,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "9e1e0f34cf994d1f59cebecd445905e614826fbc3237bc323f61acc8d7526b4e",
+        "ReferenceSha256": "9e1e0f34cf994d1f59cebecd445905e614826fbc3237bc323f61acc8d7526b4e",
         "Label": "Dungeon Bosses"
     },
     {
@@ -192,7 +192,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "b6f13eb2cd9fed99461ffffeb6a92ac5a8045399e74027506f2ab192fa2c64f0",
+        "ReferenceSha256": "b6f13eb2cd9fed99461ffffeb6a92ac5a8045399e74027506f2ab192fa2c64f0",
         "Label": "Overworld Bosses"
     },
     {
@@ -224,7 +224,7 @@
                 ]
             }
         ],
-        "NexusSha256": null,
+        "ReferenceSha256": null,
         "Label": "Predators"
     },
     {
@@ -283,7 +283,7 @@
                 ]
             }
         ],
-        "NexusSha256": null,
+        "ReferenceSha256": null,
         "Label": "Predator Spawn Rate:"
     },
     {
@@ -308,7 +308,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "73935024b7d86d504414d40f10e5ca0fc739d1e2cb9fac9bc1345fca95525f6c",
+        "ReferenceSha256": "73935024b7d86d504414d40f10e5ca0fc739d1e2cb9fac9bc1345fca95525f6c",
         "Label": "Cages"
     },
     {
@@ -333,7 +333,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "e5d95a2bbae0897ce3b07f1b2bf0e66eb61a188fa84f07820be693d212fc8708",
+        "ReferenceSha256": "e5d95a2bbae0897ce3b07f1b2bf0e66eb61a188fa84f07820be693d212fc8708",
         "Label": "Overworld Eggs"
     },
     {
@@ -365,7 +365,7 @@
                 ]
             }
         ],
-        "NexusSha256": null,
+        "ReferenceSha256": null,
         "Label": "Quest Areas"
     },
     {
@@ -397,7 +397,7 @@
                 ]
             }
         ],
-        "NexusSha256": null,
+        "ReferenceSha256": null,
         "Label": "Mimics"
     },
     {
@@ -422,7 +422,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "ae968cf1e822d00fdf52893c8bb94531f503eb143ff2d1bed48208d8771d85f1",
+        "ReferenceSha256": "ae968cf1e822d00fdf52893c8bb94531f503eb143ff2d1bed48208d8771d85f1",
         "Label": "Global Spawns"
     },
     {
@@ -447,7 +447,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "53fb7fe30ecfc0afcef7cebbbe40c9203799418186cada503fde525477b9481f",
+        "ReferenceSha256": "53fb7fe30ecfc0afcef7cebbbe40c9203799418186cada503fde525477b9481f",
         "Label": "Solo Spawns"
     },
     {
@@ -472,7 +472,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": null,
+        "ReferenceSha256": null,
         "Label": "Human Bosses"
     },
     {
@@ -497,7 +497,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": null,
+        "ReferenceSha256": null,
         "Label": "Human Boss Pals"
     },
     {
@@ -565,7 +565,7 @@
                 ]
             }
         ],
-        "NexusSha256": "f1cb4d2546322e06e6fa66c2ddb1ad46c7a376c7da64c1d375ae3066693d1457",
+        "ReferenceSha256": "f1cb4d2546322e06e6fa66c2ddb1ad46c7a376c7da64c1d375ae3066693d1457",
         "Label": "Equalize Global Rarity"
     },
     {
@@ -590,7 +590,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "4536f7d7c4f9f4988d7943504e961aef39ff5c6497811991f2ea25d8b36d2771",
+        "ReferenceSha256": "4536f7d7c4f9f4988d7943504e961aef39ff5c6497811991f2ea25d8b36d2771",
         "Label": "All Species Everywhere"
     },
     {
@@ -615,7 +615,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "26672dbe28069b30a6eb95166c6dd50a4d5fec7a5c5a10065d0d488af24ea122",
+        "ReferenceSha256": "26672dbe28069b30a6eb95166c6dd50a4d5fec7a5c5a10065d0d488af24ea122",
         "Label": "Custom Groups Count (Per Area):"
     },
     {
@@ -655,7 +655,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "26672dbe28069b30a6eb95166c6dd50a4d5fec7a5c5a10065d0d488af24ea122",
+        "ReferenceSha256": "26672dbe28069b30a6eb95166c6dd50a4d5fec7a5c5a10065d0d488af24ea122",
         "Label": "Custom Groups Count (Per Area):"
     },
     {
@@ -680,7 +680,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "814d3d575f894e12eb6b6f204829dd2b2e4f5ae7753d8ddcd920d4abbd2a67ca",
+        "ReferenceSha256": "814d3d575f894e12eb6b6f204829dd2b2e4f5ae7753d8ddcd920d4abbd2a67ca",
         "Label": "Match Vanilla Groups Count (Per Area)"
     },
     {
@@ -705,7 +705,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "a7c29b78a40010a4a6f1769c1a7fab5251ce9bbe4bd58ad50f74c6f061040e69",
+        "ReferenceSha256": "a7c29b78a40010a4a6f1769c1a7fab5251ce9bbe4bd58ad50f74c6f061040e69",
         "Label": "Global Species Swap"
     },
     {
@@ -730,7 +730,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "b9e82489e06ed5436bd912c39cf0390216019ca9ff2feae55c8b720bff443d14",
+        "ReferenceSha256": "b9e82489e06ed5436bd912c39cf0390216019ca9ff2feae55c8b720bff443d14",
         "Label": "No Randomization"
     },
     {
@@ -773,7 +773,7 @@
                 ]
             }
         ],
-        "NexusSha256": "0d877faffb53dbdb8d1f67ab6f16ecd5e846a696c7b952f0f9891468dc4d2fd0",
+        "ReferenceSha256": "0d877faffb53dbdb8d1f67ab6f16ecd5e846a696c7b952f0f9891468dc4d2fd0",
         "Label": "Add To Vanilla With Probability:"
     },
     {
@@ -831,7 +831,7 @@
                 ]
             }
         ],
-        "NexusSha256": "0d877faffb53dbdb8d1f67ab6f16ecd5e846a696c7b952f0f9891468dc4d2fd0",
+        "ReferenceSha256": "0d877faffb53dbdb8d1f67ab6f16ecd5e846a696c7b952f0f9891468dc4d2fd0",
         "Label": "Add To Vanilla With Probability:"
     },
     {
@@ -891,7 +891,7 @@
                 ]
             }
         ],
-        "NexusSha256": "bef351e5851b3eb60ef9e3e2bc5759bc0e3a02486bcd2c6268c1181cd77f1ae8",
+        "ReferenceSha256": "bef351e5851b3eb60ef9e3e2bc5759bc0e3a02486bcd2c6268c1181cd77f1ae8",
         "Label": "Merge Vanilla"
     },
     {
@@ -951,7 +951,7 @@
                 ]
             }
         ],
-        "NexusSha256": "6978bed77bf99bb275f2e03c976ea95c2d1512583cf491c784ae335822c818ac",
+        "ReferenceSha256": "6978bed77bf99bb275f2e03c976ea95c2d1512583cf491c784ae335822c818ac",
         "Label": "Filter Vanilla Before Adding"
     },
     {
@@ -1028,7 +1028,7 @@
                 ]
             }
         ],
-        "NexusSha256": "6978bed77bf99bb275f2e03c976ea95c2d1512583cf491c784ae335822c818ac",
+        "ReferenceSha256": "6978bed77bf99bb275f2e03c976ea95c2d1512583cf491c784ae335822c818ac",
         "Label": "Filter Vanilla Before Merging"
     },
     {
@@ -1071,7 +1071,7 @@
                 ]
             }
         ],
-        "NexusSha256": "ab6b7bdabae6684142ede6457d82bae3b9f081164494bad1384bc087ebd19065",
+        "ReferenceSha256": "ab6b7bdabae6684142ede6457d82bae3b9f081164494bad1384bc087ebd19065",
         "Label": "Vanilla-Based"
     },
     {
@@ -1114,7 +1114,7 @@
                 ]
             }
         ],
-        "NexusSha256": "ae77f36b0e1fec74abe8c0e2492981e194b28a03190f6fae1cbcc67510d0ca99",
+        "ReferenceSha256": "ae77f36b0e1fec74abe8c0e2492981e194b28a03190f6fae1cbcc67510d0ca99",
         "Label": "Randomized"
     },
     {
@@ -1157,7 +1157,7 @@
                 ]
             }
         ],
-        "NexusSha256": "440ca27ece123fd6252584ffd225a402dcbd1a4bc27d7ed1658ba14d05e6d015",
+        "ReferenceSha256": "440ca27ece123fd6252584ffd225a402dcbd1a4bc27d7ed1658ba14d05e6d015",
         "Label": "Multiple Overworld Boss Spawns"
     },
     {
@@ -1227,7 +1227,7 @@
                 ]
             }
         ],
-        "NexusSha256": "881337dbd85acc980ce8ecef8fa443f841ef156432ed049f7d9365cf84d33657",
+        "ReferenceSha256": "881337dbd85acc980ce8ecef8fa443f841ef156432ed049f7d9365cf84d33657",
         "Label": "Randomized Group Size:"
     },
     {
@@ -1297,7 +1297,7 @@
                 ]
             }
         ],
-        "NexusSha256": "881337dbd85acc980ce8ecef8fa443f841ef156432ed049f7d9365cf84d33657",
+        "ReferenceSha256": "881337dbd85acc980ce8ecef8fa443f841ef156432ed049f7d9365cf84d33657",
         "Label": "Randomized Group Size:"
     },
     {
@@ -1368,7 +1368,7 @@
                 ]
             }
         ],
-        "NexusSha256": "881337dbd85acc980ce8ecef8fa443f841ef156432ed049f7d9365cf84d33657",
+        "ReferenceSha256": "881337dbd85acc980ce8ecef8fa443f841ef156432ed049f7d9365cf84d33657",
         "Label": "Randomized Group Size: Bosses:"
     },
     {
@@ -1439,7 +1439,7 @@
                 ]
             }
         ],
-        "NexusSha256": "881337dbd85acc980ce8ecef8fa443f841ef156432ed049f7d9365cf84d33657",
+        "ReferenceSha256": "881337dbd85acc980ce8ecef8fa443f841ef156432ed049f7d9365cf84d33657",
         "Label": "Randomized Group Size: Bosses:"
     },
     {
@@ -1499,7 +1499,7 @@
                 ]
             }
         ],
-        "NexusSha256": "71163f616ab40a857b2d947627bdf0f5a5e945a05d8b9b6e842a0294affb6bf0",
+        "ReferenceSha256": "71163f616ab40a857b2d947627bdf0f5a5e945a05d8b9b6e842a0294affb6bf0",
         "Label": "Boss Groups Are All Bosses"
     },
     {
@@ -1559,7 +1559,7 @@
                 ]
             }
         ],
-        "NexusSha256": "a8f66a041f7d25916a43b95b5da52930a672de9bfb3196ff995c7cb3ad5e54c6",
+        "ReferenceSha256": "a8f66a041f7d25916a43b95b5da52930a672de9bfb3196ff995c7cb3ad5e54c6",
         "Label": "Restrict To Vanilla"
     },
     {
@@ -1657,7 +1657,7 @@
                 ]
             }
         ],
-        "NexusSha256": null,
+        "ReferenceSha256": null,
         "Label": "Human Bosses: Total:"
     },
     {
@@ -1755,7 +1755,7 @@
                 ]
             }
         ],
-        "NexusSha256": null,
+        "ReferenceSha256": null,
         "Label": "Human Bosses: Total:"
     },
     {
@@ -1853,7 +1853,7 @@
                 ]
             }
         ],
-        "NexusSha256": null,
+        "ReferenceSha256": null,
         "Label": "Human Bosses: Bosses:"
     },
     {
@@ -1951,7 +1951,7 @@
                 ]
             }
         ],
-        "NexusSha256": null,
+        "ReferenceSha256": null,
         "Label": "Human Bosses: Bosses:"
     },
     {
@@ -2049,7 +2049,7 @@
                 ]
             }
         ],
-        "NexusSha256": null,
+        "ReferenceSha256": null,
         "Label": "Human Bosses: Total:"
     },
     {
@@ -2147,7 +2147,7 @@
                 ]
             }
         ],
-        "NexusSha256": null,
+        "ReferenceSha256": null,
         "Label": "Human Bosses: Total:"
     },
     {
@@ -2245,7 +2245,7 @@
                 ]
             }
         ],
-        "NexusSha256": null,
+        "ReferenceSha256": null,
         "Label": "Human Bosses: Bosses:"
     },
     {
@@ -2343,7 +2343,7 @@
                 ]
             }
         ],
-        "NexusSha256": null,
+        "ReferenceSha256": null,
         "Label": "Human Bosses: Bosses:"
     },
     {
@@ -2386,7 +2386,7 @@
                 ]
             }
         ],
-        "NexusSha256": "134f82b67c92af2e2ec2ecc43e862d440606338810007b945a0decde45fba3f8",
+        "ReferenceSha256": "134f82b67c92af2e2ec2ecc43e862d440606338810007b945a0decde45fba3f8",
         "Label": "Minimum Level For Rare Pals:"
     },
     {
@@ -2445,7 +2445,7 @@
                 ]
             }
         ],
-        "NexusSha256": "134f82b67c92af2e2ec2ecc43e862d440606338810007b945a0decde45fba3f8",
+        "ReferenceSha256": "134f82b67c92af2e2ec2ecc43e862d440606338810007b945a0decde45fba3f8",
         "Label": "Minimum Level For Rare Pals: 6-7:"
     },
     {
@@ -2504,7 +2504,7 @@
                 ]
             }
         ],
-        "NexusSha256": "134f82b67c92af2e2ec2ecc43e862d440606338810007b945a0decde45fba3f8",
+        "ReferenceSha256": "134f82b67c92af2e2ec2ecc43e862d440606338810007b945a0decde45fba3f8",
         "Label": "Minimum Level For Rare Pals: 8+:"
     },
     {
@@ -2547,7 +2547,7 @@
                 ]
             }
         ],
-        "NexusSha256": "a292212555b8d6043b9ebc53365a9972f5d834b0bd3d53f88941322257f23b1c",
+        "ReferenceSha256": "a292212555b8d6043b9ebc53365a9972f5d834b0bd3d53f88941322257f23b1c",
         "Label": "Rare (9+) Pals Are Boss-Only"
     },
     {
@@ -2607,7 +2607,7 @@
                 ]
             }
         ],
-        "NexusSha256": "6ff5d4497d8b42ff8bcbc457fccd7b6e992bf3f6ec34833abc7a1a8fc9b9b949",
+        "ReferenceSha256": "6ff5d4497d8b42ff8bcbc457fccd7b6e992bf3f6ec34833abc7a1a8fc9b9b949",
         "Label": "Rare (8+) Pals Always Solo"
     },
     {
@@ -2677,7 +2677,7 @@
                 ]
             }
         ],
-        "NexusSha256": "a19375da339a1957afb20d3f4b72f723b4906066ab47b31014a13a2ba8036bd7",
+        "ReferenceSha256": "a19375da339a1957afb20d3f4b72f723b4906066ab47b31014a13a2ba8036bd7",
         "Label": "Rare (8+) Pals Sanity"
     },
     {
@@ -2737,7 +2737,7 @@
                 ]
             }
         ],
-        "NexusSha256": "3e66a483d496f0752405be05d71e9d13fa54987e6afd8dbf55502e23f0f2cf57",
+        "ReferenceSha256": "3e66a483d496f0752405be05d71e9d13fa54987e6afd8dbf55502e23f0f2cf57",
         "Label": "Allow Mixed Pal/Human Groups"
     },
     {
@@ -2797,7 +2797,7 @@
                 ]
             }
         ],
-        "NexusSha256": "95cbb3cdc97fd2b5cf4c551d55c84f90a16fb607e473db4ff8477b15b88f5916",
+        "ReferenceSha256": "95cbb3cdc97fd2b5cf4c551d55c84f90a16fb607e473db4ff8477b15b88f5916",
         "Label": "Non-Aggro Human Sanity"
     },
     {
@@ -2877,7 +2877,7 @@
                 ]
             }
         ],
-        "NexusSha256": "022fa7daba49bb37b87ff38546ce1c08b0505500634b70dac5463b2d91d0710a",
+        "ReferenceSha256": "022fa7daba49bb37b87ff38546ce1c08b0505500634b70dac5463b2d91d0710a",
         "Label": "Bosses Everywhere:"
     },
     {
@@ -2972,7 +2972,7 @@
                 ]
             }
         ],
-        "NexusSha256": "022fa7daba49bb37b87ff38546ce1c08b0505500634b70dac5463b2d91d0710a",
+        "ReferenceSha256": "022fa7daba49bb37b87ff38546ce1c08b0505500634b70dac5463b2d91d0710a",
         "Label": "Bosses Everywhere:"
     },
     {
@@ -3042,7 +3042,7 @@
                 ]
             }
         ],
-        "NexusSha256": "a7ecc47fa9bd98589d1cf50c95f0b6ca8b4dc3f567962e29cceddaa568a7dd98",
+        "ReferenceSha256": "a7ecc47fa9bd98589d1cf50c95f0b6ca8b4dc3f567962e29cceddaa568a7dd98",
         "Label": "Bosses Everywhere (Dungeons):"
     },
     {
@@ -3127,7 +3127,7 @@
                 ]
             }
         ],
-        "NexusSha256": "a7ecc47fa9bd98589d1cf50c95f0b6ca8b4dc3f567962e29cceddaa568a7dd98",
+        "ReferenceSha256": "a7ecc47fa9bd98589d1cf50c95f0b6ca8b4dc3f567962e29cceddaa568a7dd98",
         "Label": "Bosses Everywhere (Dungeons):"
     },
     {
@@ -3187,7 +3187,7 @@
                 ]
             }
         ],
-        "NexusSha256": "cdada2cfdd984f45a0f0ca4e2bae99915ae034cd670a82e98982dffbfff3dc26",
+        "ReferenceSha256": "cdada2cfdd984f45a0f0ca4e2bae99915ae034cd670a82e98982dffbfff3dc26",
         "Label": "Boss Eggs:"
     },
     {
@@ -3262,7 +3262,7 @@
                 ]
             }
         ],
-        "NexusSha256": "cdada2cfdd984f45a0f0ca4e2bae99915ae034cd670a82e98982dffbfff3dc26",
+        "ReferenceSha256": "cdada2cfdd984f45a0f0ca4e2bae99915ae034cd670a82e98982dffbfff3dc26",
         "Label": "Boss Eggs:"
     },
     {
@@ -3322,7 +3322,7 @@
                 ]
             }
         ],
-        "NexusSha256": "92235a7e73a0eba0c2eae1d985943a40f0df40e0b71d037d9a163a83446c22da",
+        "ReferenceSha256": "92235a7e73a0eba0c2eae1d985943a40f0df40e0b71d037d9a163a83446c22da",
         "Label": "Flying Pal Sanity"
     },
     {
@@ -3371,7 +3371,7 @@
                 ]
             }
         ],
-        "NexusSha256": null,
+        "ReferenceSha256": null,
         "Label": "Restrict Predators"
     },
     {
@@ -3431,7 +3431,7 @@
                 ]
             }
         ],
-        "NexusSha256": "d1165fe4459e4fe1a3a621e811db44cd88cbe3819252851e2e707cc777dfb11e",
+        "ReferenceSha256": "d1165fe4459e4fe1a3a621e811db44cd88cbe3819252851e2e707cc777dfb11e",
         "Label": "Allow Caged Humans"
     },
     {
@@ -3474,7 +3474,7 @@
                 ]
             }
         ],
-        "NexusSha256": "eb8daf2eeae0dbeeeb4bf5d407f60ec6128e4ed3589f6beef9855a8a978ddb2d",
+        "ReferenceSha256": "eb8daf2eeae0dbeeeb4bf5d407f60ec6128e4ed3589f6beef9855a8a978ddb2d",
         "Label": "Lamball At Start"
     },
     {
@@ -3523,7 +3523,7 @@
                 ]
             }
         ],
-        "NexusSha256": null,
+        "ReferenceSha256": null,
         "Label": "Min 1 Count Solo Pals"
     },
     {
@@ -3577,7 +3577,7 @@
                 ]
             }
         ],
-        "NexusSha256": null,
+        "ReferenceSha256": null,
         "Label": "Damage Multiplier Cap: Humans:"
     },
     {
@@ -3631,7 +3631,7 @@
                 ]
             }
         ],
-        "NexusSha256": null,
+        "ReferenceSha256": null,
         "Label": "Damage Multiplier Cap: Human Bosses:"
     },
     {
@@ -3685,7 +3685,7 @@
                 ]
             }
         ],
-        "NexusSha256": null,
+        "ReferenceSha256": null,
         "Label": "Damage Multiplier Cap: Predators:"
     },
     {
@@ -3739,7 +3739,7 @@
                 ]
             }
         ],
-        "NexusSha256": null,
+        "ReferenceSha256": null,
         "Label": "Damage Multiplier Cap: Raid Bosses:"
     },
     {
@@ -3782,7 +3782,7 @@
                 ]
             }
         ],
-        "NexusSha256": "7e5b5e84ddd41870e370bb9e4e2bcc2487ae7668b72a088c3ad9cc5d6af280ae",
+        "ReferenceSha256": "7e5b5e84ddd41870e370bb9e4e2bcc2487ae7668b72a088c3ad9cc5d6af280ae",
         "Label": "Random Weight Range:"
     },
     {
@@ -3825,7 +3825,7 @@
                 ]
             }
         ],
-        "NexusSha256": "33e605bf4eb937ce05c52507a118e0f84eac0e1527b900d413b84560688706b4",
+        "ReferenceSha256": "33e605bf4eb937ce05c52507a118e0f84eac0e1527b900d413b84560688706b4",
         "Label": "Rarity-Based Weights:"
     },
     {
@@ -3883,7 +3883,7 @@
                 ]
             }
         ],
-        "NexusSha256": "7e5b5e84ddd41870e370bb9e4e2bcc2487ae7668b72a088c3ad9cc5d6af280ae",
+        "ReferenceSha256": "7e5b5e84ddd41870e370bb9e4e2bcc2487ae7668b72a088c3ad9cc5d6af280ae",
         "Label": "Random Weight Range:"
     },
     {
@@ -3941,7 +3941,7 @@
                 ]
             }
         ],
-        "NexusSha256": "7e5b5e84ddd41870e370bb9e4e2bcc2487ae7668b72a088c3ad9cc5d6af280ae",
+        "ReferenceSha256": "7e5b5e84ddd41870e370bb9e4e2bcc2487ae7668b72a088c3ad9cc5d6af280ae",
         "Label": "Random Weight Range:"
     },
     {
@@ -4602,7 +4602,7 @@
                 ]
             }
         ],
-        "NexusSha256": "ada45d75f67058ba0a6361f7c19ce62f26f72f17b5a6a5c410e51446e29523d1",
+        "ReferenceSha256": "ada45d75f67058ba0a6361f7c19ce62f26f72f17b5a6a5c410e51446e29523d1",
         "Label": "Rarity-Based Weights: 1:"
     },
     {
@@ -4615,8 +4615,8 @@
             {
                 "Value": "Weight Sum",
                 "LabelKey": "options.WeightCustomMode.0.label",
-                "DescriptionKey": "nexus.N737",
-                "DescriptionOrigin": "Nexus",
+                "DescriptionKey": "reference.N737",
+                "DescriptionOrigin": "Reference",
                 "DescriptionReferences": [
                     "N737"
                 ]
@@ -4624,8 +4624,8 @@
             {
                 "Value": "Weight Average",
                 "LabelKey": "options.WeightCustomMode.1.label",
-                "DescriptionKey": "nexus.N737",
-                "DescriptionOrigin": "Nexus",
+                "DescriptionKey": "reference.N737",
+                "DescriptionOrigin": "Reference",
                 "DescriptionReferences": [
                     "N737"
                 ]
@@ -4633,8 +4633,8 @@
             {
                 "Value": "Rarity Average (Rounded)",
                 "LabelKey": "options.WeightCustomMode.2.label",
-                "DescriptionKey": "nexus.N738",
-                "DescriptionOrigin": "Nexus",
+                "DescriptionKey": "reference.N738",
+                "DescriptionOrigin": "Reference",
                 "DescriptionReferences": [
                     "N738"
                 ]
@@ -4642,8 +4642,8 @@
             {
                 "Value": "Rarity Average (Blend Fractions)",
                 "LabelKey": "options.WeightCustomMode.3.label",
-                "DescriptionKey": "nexus.N738",
-                "DescriptionOrigin": "Nexus",
+                "DescriptionKey": "reference.N738",
+                "DescriptionOrigin": "Reference",
                 "DescriptionReferences": [
                     "N738"
                 ]
@@ -4651,8 +4651,8 @@
             {
                 "Value": "Rarity Average (Blend 10 to 20)",
                 "LabelKey": "options.WeightCustomMode.4.label",
-                "DescriptionKey": "nexus.N738",
-                "DescriptionOrigin": "Nexus",
+                "DescriptionKey": "reference.N738",
+                "DescriptionOrigin": "Reference",
                 "DescriptionReferences": [
                     "N738"
                 ]
@@ -4678,8 +4678,8 @@
             {
                 "Value": "Weight Minimum",
                 "LabelKey": "options.WeightCustomMode.7.label",
-                "DescriptionKey": "nexus.N737",
-                "DescriptionOrigin": "Nexus",
+                "DescriptionKey": "reference.N737",
+                "DescriptionOrigin": "Reference",
                 "DescriptionReferences": [
                     "N737"
                 ]
@@ -4687,8 +4687,8 @@
             {
                 "Value": "Weight Maximum",
                 "LabelKey": "options.WeightCustomMode.8.label",
-                "DescriptionKey": "nexus.N737",
-                "DescriptionOrigin": "Nexus",
+                "DescriptionKey": "reference.N737",
+                "DescriptionOrigin": "Reference",
                 "DescriptionReferences": [
                     "N737"
                 ]
@@ -4744,7 +4744,7 @@
                 ]
             }
         ],
-        "NexusSha256": "a59bdf47698fc20c536b214b26cb16b75fe517a140d51d0699afc372bf3fe03c",
+        "ReferenceSha256": "a59bdf47698fc20c536b214b26cb16b75fe517a140d51d0699afc372bf3fe03c",
         "Label": "Group Weight Mode:"
     },
     {
@@ -4814,7 +4814,7 @@
                 ]
             }
         ],
-        "NexusSha256": "2e23dbc5d4af3eb16883a2ddfb91faf8518e0a56c89a6c15e6bdbb6db933e790",
+        "ReferenceSha256": "2e23dbc5d4af3eb16883a2ddfb91faf8518e0a56c89a6c15e6bdbb6db933e790",
         "Label": "Human Rarity:"
     },
     {
@@ -4884,7 +4884,7 @@
                 ]
             }
         ],
-        "NexusSha256": "978d31a4686158bcda78a30f591f00dd82443b8019fbc88f0d653a4b4779f271",
+        "ReferenceSha256": "978d31a4686158bcda78a30f591f00dd82443b8019fbc88f0d653a4b4779f271",
         "Label": "Human Boss:"
     },
     {
@@ -4954,7 +4954,7 @@
                 ]
             }
         ],
-        "NexusSha256": "0fad36182510e9645ef02bcdc02ff5f1802893031cdaa6da51cc50941d5d1da2",
+        "ReferenceSha256": "0fad36182510e9645ef02bcdc02ff5f1802893031cdaa6da51cc50941d5d1da2",
         "Label": "Max Cage Rarity:"
     },
     {
@@ -5014,7 +5014,7 @@
                 ]
             }
         ],
-        "NexusSha256": "1d9becdc3e7dbc47ea243d9d8f28cf99564fa572f3b14364638306696f39ec0c",
+        "ReferenceSha256": "1d9becdc3e7dbc47ea243d9d8f28cf99564fa572f3b14364638306696f39ec0c",
         "Label": "Convert Weights To Percentages"
     },
     {
@@ -5074,7 +5074,7 @@
                 ]
             }
         ],
-        "NexusSha256": "279e434a79b03a9e4bb9cf97771d04036e2db8ad8b92e968eef9ff175060c1da",
+        "ReferenceSha256": "279e434a79b03a9e4bb9cf97771d04036e2db8ad8b92e968eef9ff175060c1da",
         "Label": "Prioritize Boss Rarity"
     },
     {
@@ -5127,7 +5127,7 @@
                 ]
             }
         ],
-        "NexusSha256": "f9c36d8ba7f0cbbd4c8f3c2e6e7635d3419e939fe9fca4aa85babca6fd93d178",
+        "ReferenceSha256": "f9c36d8ba7f0cbbd4c8f3c2e6e7635d3419e939fe9fca4aa85babca6fd93d178",
         "Label": "Human Weight:"
     },
     {
@@ -5180,7 +5180,7 @@
                 ]
             }
         ],
-        "NexusSha256": "bbc5f9ffa5ed6f77a6234f3781530b3eef862cf140188e0968a6a271efcb8941",
+        "ReferenceSha256": "bbc5f9ffa5ed6f77a6234f3781530b3eef862cf140188e0968a6a271efcb8941",
         "Label": "Aggro Human Weight:"
     },
     {
@@ -5250,7 +5250,7 @@
                 ]
             }
         ],
-        "NexusSha256": "c395222cc35f51a9649318c8d31923fc1fa71250cb3f7b72a2bf2543b2a1cde5",
+        "ReferenceSha256": "c395222cc35f51a9649318c8d31923fc1fa71250cb3f7b72a2bf2543b2a1cde5",
         "Label": "Night-Only Weight Multiplier:"
     },
     {
@@ -5263,8 +5263,8 @@
             {
                 "Value": "Scale All",
                 "LabelKey": "options.OverflowFixMode.0.label",
-                "DescriptionKey": "nexus.N751",
-                "DescriptionOrigin": "Nexus",
+                "DescriptionKey": "reference.N751",
+                "DescriptionOrigin": "Reference",
                 "DescriptionReferences": [
                     "N751"
                 ]
@@ -5272,8 +5272,8 @@
             {
                 "Value": "Scale Night-Only",
                 "LabelKey": "options.OverflowFixMode.1.label",
-                "DescriptionKey": "nexus.N751",
-                "DescriptionOrigin": "Nexus",
+                "DescriptionKey": "reference.N751",
+                "DescriptionOrigin": "Reference",
                 "DescriptionReferences": [
                     "N751"
                 ]
@@ -5281,8 +5281,8 @@
             {
                 "Value": "Dynamic (Multi-Pass)",
                 "LabelKey": "options.OverflowFixMode.2.label",
-                "DescriptionKey": "nexus.N751",
-                "DescriptionOrigin": "Nexus",
+                "DescriptionKey": "reference.N751",
+                "DescriptionOrigin": "Reference",
                 "DescriptionReferences": [
                     "N751"
                 ]
@@ -5321,7 +5321,7 @@
                 ]
             }
         ],
-        "NexusSha256": "1e0ab50c5176ad887c3d7d493b64f87b3560b061fc0d1daab16c31f894195538",
+        "ReferenceSha256": "1e0ab50c5176ad887c3d7d493b64f87b3560b061fc0d1daab16c31f894195538",
         "Label": "Int Overflow Fix:"
     },
     {
@@ -5346,7 +5346,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "297f71ee6c91eb323b9e2d6fc67ea7158011a160c732b90798f6c182c1a82d88",
+        "ReferenceSha256": "297f71ee6c91eb323b9e2d6fc67ea7158011a160c732b90798f6c182c1a82d88",
         "Label": "Pals"
     },
     {
@@ -5371,7 +5371,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "d0819e151f9d48e0287e5b98c73ee96c3550b50704e0a51f0715456bd66f171b",
+        "ReferenceSha256": "d0819e151f9d48e0287e5b98c73ee96c3550b50704e0a51f0715456bd66f171b",
         "Label": "Humans (Aggressive)"
     },
     {
@@ -5396,7 +5396,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "58e2ff6ba7bc07f24f18ea5d2d43b406ec11bfb242e1e2f7a08aab7b3f676980",
+        "ReferenceSha256": "58e2ff6ba7bc07f24f18ea5d2d43b406ec11bfb242e1e2f7a08aab7b3f676980",
         "Label": "Police"
     },
     {
@@ -5439,7 +5439,7 @@
                 ]
             }
         ],
-        "NexusSha256": "f4cec236c503ec87af24b85dccfa1d9f2f84a64941c1f777ba0aa5a20d79be17",
+        "ReferenceSha256": "f4cec236c503ec87af24b85dccfa1d9f2f84a64941c1f777ba0aa5a20d79be17",
         "Label": "Guards"
     },
     {
@@ -5482,7 +5482,7 @@
                 ]
             }
         ],
-        "NexusSha256": "8d6fa93f170e1fec93e36ca00a8c86097412dafd649f1cac19fb20824339a302",
+        "ReferenceSha256": "8d6fa93f170e1fec93e36ca00a8c86097412dafd649f1cac19fb20824339a302",
         "Label": "Item Merchants"
     },
     {
@@ -5525,7 +5525,7 @@
                 ]
             }
         ],
-        "NexusSha256": "f1078ba0291aac7e4cf70a3b82037cb972e0c358cd508bd11034e3651fe18d84",
+        "ReferenceSha256": "f1078ba0291aac7e4cf70a3b82037cb972e0c358cd508bd11034e3651fe18d84",
         "Label": "Pal Merchants"
     },
     {
@@ -5568,7 +5568,7 @@
                 ]
             }
         ],
-        "NexusSha256": "6a13c9c1010a309b9a86a16b8ac21f8d4718ed39d595a727ecf39abaf93423bd",
+        "ReferenceSha256": "6a13c9c1010a309b9a86a16b8ac21f8d4718ed39d595a727ecf39abaf93423bd",
         "Label": "Tower Bosses"
     },
     {
@@ -5593,7 +5593,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "5ce9b82fe34b8f0fe9a70c709d5fcf97158dd6aa4f22eb47b4a1050e4df0d234",
+        "ReferenceSha256": "5ce9b82fe34b8f0fe9a70c709d5fcf97158dd6aa4f22eb47b4a1050e4df0d234",
         "Label": "Normal Bosses"
     },
     {
@@ -5636,7 +5636,7 @@
                 ]
             }
         ],
-        "NexusSha256": "afb7e008d3063b5969618dc3588fcf7f03c7bf4434678b226f415f6dcd08e906",
+        "ReferenceSha256": "afb7e008d3063b5969618dc3588fcf7f03c7bf4434678b226f415f6dcd08e906",
         "Label": "Raid Bosses"
     },
     {
@@ -5661,7 +5661,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "e462c458d0c94a726d10577f74121b62b3af09545ecf0d2f416199af9b4a8cb9",
+        "ReferenceSha256": "e462c458d0c94a726d10577f74121b62b3af09545ecf0d2f416199af9b4a8cb9",
         "Label": "Predators"
     },
     {
@@ -5704,7 +5704,7 @@
                 ]
             }
         ],
-        "NexusSha256": "c562d1693dcb4faa45cea2f3792298c3db7561249a8d4d321e99d481cf1fffab",
+        "ReferenceSha256": "c562d1693dcb4faa45cea2f3792298c3db7561249a8d4d321e99d481cf1fffab",
         "Label": "Human Bosses"
     },
     {
@@ -5747,7 +5747,7 @@
                 ]
             }
         ],
-        "NexusSha256": "2b280b340871d83f4d42097f71321d07d049ebb0cdb18fe2025d4cceca4a009a",
+        "ReferenceSha256": "2b280b340871d83f4d42097f71321d07d049ebb0cdb18fe2025d4cceca4a009a",
         "Label": "Dr. Brawn"
     },
     {
@@ -5772,7 +5772,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "92e95531e94287082d1ff8a9ab565dc7696521e1206a53d3b9d90428fd7efc03",
+        "ReferenceSha256": "92e95531e94287082d1ff8a9ab565dc7696521e1206a53d3b9d90428fd7efc03",
         "Label": "Terraria Monsters"
     },
     {
@@ -5797,7 +5797,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "0dfa14249519db5a53523d192033dd4a5396eeb7dbef4c6361d28fdc209944e3",
+        "ReferenceSha256": "0dfa14249519db5a53523d192033dd4a5396eeb7dbef4c6361d28fdc209944e3",
         "Label": "Terraria Bosses"
     },
     {
@@ -5840,7 +5840,7 @@
                 ]
             }
         ],
-        "NexusSha256": "a5bf399b7117c4389b6d2875d44c9828de4224c78cfe8adb90c1da4900f40466",
+        "ReferenceSha256": "a5bf399b7117c4389b6d2875d44c9828de4224c78cfe8adb90c1da4900f40466",
         "Label": "Tower Humans"
     },
     {
@@ -5883,7 +5883,7 @@
                 ]
             }
         ],
-        "NexusSha256": "499043ee66ff37fb2ba61593c4716bf9c7f2ef0d86d2502db83d96c878ea487c",
+        "ReferenceSha256": "499043ee66ff37fb2ba61593c4716bf9c7f2ef0d86d2502db83d96c878ea487c",
         "Label": "Police Pals"
     },
     {
@@ -5926,7 +5926,7 @@
                 ]
             }
         ],
-        "NexusSha256": "3724b47157fb421f250c189fb88a65565d6bd5093114a86fd34a4cedf1723d7c",
+        "ReferenceSha256": "3724b47157fb421f250c189fb88a65565d6bd5093114a86fd34a4cedf1723d7c",
         "Label": "Extra Humans"
     },
     {
@@ -5969,7 +5969,7 @@
                 ]
             }
         ],
-        "NexusSha256": "fa8c6ad63698517dad730268ca1888e8fe77c13bb383513b16990e4b14412e17",
+        "ReferenceSha256": "fa8c6ad63698517dad730268ca1888e8fe77c13bb383513b16990e4b14412e17",
         "Label": "Villagers"
     },
     {
@@ -6022,7 +6022,7 @@
                 ]
             }
         ],
-        "NexusSha256": "95c6ec67fadc068d17a2b9b15389b9c870ecab8f579a8658031a7dd0c3adfcba",
+        "ReferenceSha256": "95c6ec67fadc068d17a2b9b15389b9c870ecab8f579a8658031a7dd0c3adfcba",
         "Label": "Overworld:"
     },
     {
@@ -6075,7 +6075,7 @@
                 ]
             }
         ],
-        "NexusSha256": "95c6ec67fadc068d17a2b9b15389b9c870ecab8f579a8658031a7dd0c3adfcba",
+        "ReferenceSha256": "95c6ec67fadc068d17a2b9b15389b9c870ecab8f579a8658031a7dd0c3adfcba",
         "Label": "Dungeon:"
     },
     {
@@ -6128,7 +6128,7 @@
                 ]
             }
         ],
-        "NexusSha256": "95c6ec67fadc068d17a2b9b15389b9c870ecab8f579a8658031a7dd0c3adfcba",
+        "ReferenceSha256": "95c6ec67fadc068d17a2b9b15389b9c870ecab8f579a8658031a7dd0c3adfcba",
         "Label": "Overworld Boss:"
     },
     {
@@ -6181,7 +6181,7 @@
                 ]
             }
         ],
-        "NexusSha256": "95c6ec67fadc068d17a2b9b15389b9c870ecab8f579a8658031a7dd0c3adfcba",
+        "ReferenceSha256": "95c6ec67fadc068d17a2b9b15389b9c870ecab8f579a8658031a7dd0c3adfcba",
         "Label": "Dungeon Boss:"
     },
     {
@@ -6234,7 +6234,7 @@
                 ]
             }
         ],
-        "NexusSha256": "95c6ec67fadc068d17a2b9b15389b9c870ecab8f579a8658031a7dd0c3adfcba",
+        "ReferenceSha256": "95c6ec67fadc068d17a2b9b15389b9c870ecab8f579a8658031a7dd0c3adfcba",
         "Label": "Predator:"
     },
     {
@@ -6287,7 +6287,7 @@
                 ]
             }
         ],
-        "NexusSha256": "95c6ec67fadc068d17a2b9b15389b9c870ecab8f579a8658031a7dd0c3adfcba",
+        "ReferenceSha256": "95c6ec67fadc068d17a2b9b15389b9c870ecab8f579a8658031a7dd0c3adfcba",
         "Label": "Cage:"
     },
     {
@@ -6312,7 +6312,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "118991cee9b78d5b7949017f038c7264b8f730f7f429314a838f390c6f8e2347",
+        "ReferenceSha256": "118991cee9b78d5b7949017f038c7264b8f730f7f429314a838f390c6f8e2347",
         "Label": "Level Cap:"
     },
     {
@@ -6365,7 +6365,7 @@
                 ]
             }
         ],
-        "NexusSha256": "118991cee9b78d5b7949017f038c7264b8f730f7f429314a838f390c6f8e2347",
+        "ReferenceSha256": "118991cee9b78d5b7949017f038c7264b8f730f7f429314a838f390c6f8e2347",
         "Label": "Level Cap:"
     },
     {
@@ -6438,7 +6438,7 @@
                 ]
             }
         ],
-        "NexusSha256": "a1ea8b7760e0aa7ad9480c6f130873c3e49f064e92484c9f602c78260309ebdb",
+        "ReferenceSha256": "a1ea8b7760e0aa7ad9480c6f130873c3e49f064e92484c9f602c78260309ebdb",
         "Label": "w/Boss Level Scale:"
     },
     {
@@ -6501,7 +6501,7 @@
                 ]
             }
         ],
-        "NexusSha256": "04cd60e8a64ae67d10ab79a5655872e954f33592695dbe24e605755edbd271d8",
+        "ReferenceSha256": "04cd60e8a64ae67d10ab79a5655872e954f33592695dbe24e605755edbd271d8",
         "Label": "Enforce Vanilla w/Boss Levels"
     },
     {
@@ -6514,8 +6514,8 @@
             {
                 "Value": "Average Level",
                 "LabelKey": "options.LevelScaleMode.0.label",
-                "DescriptionKey": "nexus.N804",
-                "DescriptionOrigin": "Nexus",
+                "DescriptionKey": "reference.N804",
+                "DescriptionOrigin": "Reference",
                 "DescriptionReferences": [
                     "N804"
                 ]
@@ -6523,8 +6523,8 @@
             {
                 "Value": "Full",
                 "LabelKey": "options.LevelScaleMode.1.label",
-                "DescriptionKey": "nexus.N801",
-                "DescriptionOrigin": "Nexus",
+                "DescriptionKey": "reference.N801",
+                "DescriptionOrigin": "Reference",
                 "DescriptionReferences": [
                     "N801"
                 ]
@@ -6532,8 +6532,8 @@
             {
                 "Value": "Max. Level",
                 "LabelKey": "options.LevelScaleMode.2.label",
-                "DescriptionKey": "nexus.N802",
-                "DescriptionOrigin": "Nexus",
+                "DescriptionKey": "reference.N802",
+                "DescriptionOrigin": "Reference",
                 "DescriptionReferences": [
                     "N802"
                 ]
@@ -6541,8 +6541,8 @@
             {
                 "Value": "Extend Min./Max.",
                 "LabelKey": "options.LevelScaleMode.3.label",
-                "DescriptionKey": "nexus.N806",
-                "DescriptionOrigin": "Nexus",
+                "DescriptionKey": "reference.N806",
+                "DescriptionOrigin": "Reference",
                 "DescriptionReferences": [
                     "N806"
                 ]
@@ -6550,8 +6550,8 @@
             {
                 "Value": "Maximize Range",
                 "LabelKey": "options.LevelScaleMode.4.label",
-                "DescriptionKey": "nexus.N805",
-                "DescriptionOrigin": "Nexus",
+                "DescriptionKey": "reference.N805",
+                "DescriptionOrigin": "Reference",
                 "DescriptionReferences": [
                     "N805"
                 ]
@@ -6559,8 +6559,8 @@
             {
                 "Value": "Min. Level",
                 "LabelKey": "options.LevelScaleMode.5.label",
-                "DescriptionKey": "nexus.N803",
-                "DescriptionOrigin": "Nexus",
+                "DescriptionKey": "reference.N803",
+                "DescriptionOrigin": "Reference",
                 "DescriptionReferences": [
                     "N803"
                 ]
@@ -6568,8 +6568,8 @@
             {
                 "Value": "Random",
                 "LabelKey": "options.LevelScaleMode.6.label",
-                "DescriptionKey": "nexus.N807",
-                "DescriptionOrigin": "Nexus",
+                "DescriptionKey": "reference.N807",
+                "DescriptionOrigin": "Reference",
                 "DescriptionReferences": [
                     "N807"
                 ]
@@ -6590,7 +6590,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "44a6c193effd5f70f78b1fedc5ecfae05c2dfdf28cec59cdd84331a8da30d38c",
+        "ReferenceSha256": "44a6c193effd5f70f78b1fedc5ecfae05c2dfdf28cec59cdd84331a8da30d38c",
         "Label": "Scale Mode:"
     },
     {
@@ -6643,7 +6643,7 @@
                 ]
             }
         ],
-        "NexusSha256": "1f8e6f9d3f9f051ec9cb24abf186f2f025e65b765635791174c4545b6f6c6f93",
+        "ReferenceSha256": "1f8e6f9d3f9f051ec9cb24abf186f2f025e65b765635791174c4545b6f6c6f93",
         "Label": "Level Range:"
     },
     {
@@ -6696,7 +6696,7 @@
                 ]
             }
         ],
-        "NexusSha256": "1f8e6f9d3f9f051ec9cb24abf186f2f025e65b765635791174c4545b6f6c6f93",
+        "ReferenceSha256": "1f8e6f9d3f9f051ec9cb24abf186f2f025e65b765635791174c4545b6f6c6f93",
         "Label": "Level Range:"
     },
     {
@@ -6753,7 +6753,7 @@
                 ]
             }
         ],
-        "NexusSha256": "79f5ad6717d5851610f56f46289cb1f5c4f388eccc3a3598b9a256c46347dff3",
+        "ReferenceSha256": "79f5ad6717d5851610f56f46289cb1f5c4f388eccc3a3598b9a256c46347dff3",
         "Label": "Base Count:"
     },
     {
@@ -6810,7 +6810,7 @@
                 ]
             }
         ],
-        "NexusSha256": "79f5ad6717d5851610f56f46289cb1f5c4f388eccc3a3598b9a256c46347dff3",
+        "ReferenceSha256": "79f5ad6717d5851610f56f46289cb1f5c4f388eccc3a3598b9a256c46347dff3",
         "Label": "Base Count:"
     },
     {
@@ -6845,7 +6845,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "54f3d5ba8b113148ad17ab9f401f53861ffd506f40dd8ede66f68d59c998cfa4",
+        "ReferenceSha256": "54f3d5ba8b113148ad17ab9f401f53861ffd506f40dd8ede66f68d59c998cfa4",
         "Label": "Overworld:"
     },
     {
@@ -6880,7 +6880,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "54f3d5ba8b113148ad17ab9f401f53861ffd506f40dd8ede66f68d59c998cfa4",
+        "ReferenceSha256": "54f3d5ba8b113148ad17ab9f401f53861ffd506f40dd8ede66f68d59c998cfa4",
         "Label": "Dungeon:"
     },
     {
@@ -6915,7 +6915,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "54f3d5ba8b113148ad17ab9f401f53861ffd506f40dd8ede66f68d59c998cfa4",
+        "ReferenceSha256": "54f3d5ba8b113148ad17ab9f401f53861ffd506f40dd8ede66f68d59c998cfa4",
         "Label": "Overworld Boss:"
     },
     {
@@ -6950,7 +6950,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "54f3d5ba8b113148ad17ab9f401f53861ffd506f40dd8ede66f68d59c998cfa4",
+        "ReferenceSha256": "54f3d5ba8b113148ad17ab9f401f53861ffd506f40dd8ede66f68d59c998cfa4",
         "Label": "Dungeon Boss:"
     },
     {
@@ -6985,7 +6985,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "54f3d5ba8b113148ad17ab9f401f53861ffd506f40dd8ede66f68d59c998cfa4",
+        "ReferenceSha256": "54f3d5ba8b113148ad17ab9f401f53861ffd506f40dd8ede66f68d59c998cfa4",
         "Label": "Predator:"
     },
     {
@@ -7020,7 +7020,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "15b24d61199c444573510cda6883bac765795e8cf4ba4d76f36b9a50c33d94bc",
+        "ReferenceSha256": "15b24d61199c444573510cda6883bac765795e8cf4ba4d76f36b9a50c33d94bc",
         "Label": "Count Min/Max:"
     },
     {
@@ -7055,7 +7055,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "15b24d61199c444573510cda6883bac765795e8cf4ba4d76f36b9a50c33d94bc",
+        "ReferenceSha256": "15b24d61199c444573510cda6883bac765795e8cf4ba4d76f36b9a50c33d94bc",
         "Label": "Count Min/Max:"
     },
     {
@@ -7090,7 +7090,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "15b24d61199c444573510cda6883bac765795e8cf4ba4d76f36b9a50c33d94bc",
+        "ReferenceSha256": "15b24d61199c444573510cda6883bac765795e8cf4ba4d76f36b9a50c33d94bc",
         "Label": "First Pal Min/Max:"
     },
     {
@@ -7125,7 +7125,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "15b24d61199c444573510cda6883bac765795e8cf4ba4d76f36b9a50c33d94bc",
+        "ReferenceSha256": "15b24d61199c444573510cda6883bac765795e8cf4ba4d76f36b9a50c33d94bc",
         "Label": "First Pal Min/Max:"
     },
     {
@@ -7160,7 +7160,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "15b24d61199c444573510cda6883bac765795e8cf4ba4d76f36b9a50c33d94bc",
+        "ReferenceSha256": "15b24d61199c444573510cda6883bac765795e8cf4ba4d76f36b9a50c33d94bc",
         "Label": "Boss Min/Max:"
     },
     {
@@ -7195,7 +7195,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "15b24d61199c444573510cda6883bac765795e8cf4ba4d76f36b9a50c33d94bc",
+        "ReferenceSha256": "15b24d61199c444573510cda6883bac765795e8cf4ba4d76f36b9a50c33d94bc",
         "Label": "Boss Min/Max:"
     },
     {
@@ -7230,7 +7230,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "15b24d61199c444573510cda6883bac765795e8cf4ba4d76f36b9a50c33d94bc",
+        "ReferenceSha256": "15b24d61199c444573510cda6883bac765795e8cf4ba4d76f36b9a50c33d94bc",
         "Label": "First Boss Min/Max:"
     },
     {
@@ -7265,7 +7265,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "15b24d61199c444573510cda6883bac765795e8cf4ba4d76f36b9a50c33d94bc",
+        "ReferenceSha256": "15b24d61199c444573510cda6883bac765795e8cf4ba4d76f36b9a50c33d94bc",
         "Label": "First Boss Min/Max:"
     },
     {
@@ -7290,7 +7290,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "86730295ed3d0775aae28e8345f82b6859b02afc970db6df96bbcce24c337e2f",
+        "ReferenceSha256": "86730295ed3d0775aae28e8345f82b6859b02afc970db6df96bbcce24c337e2f",
         "Label": "Nocturnal Pals Are Night-Only (Overworld)"
     },
     {
@@ -7315,7 +7315,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "86730295ed3d0775aae28e8345f82b6859b02afc970db6df96bbcce24c337e2f",
+        "ReferenceSha256": "86730295ed3d0775aae28e8345f82b6859b02afc970db6df96bbcce24c337e2f",
         "Label": "Nocturnal Pals Are Night-Only (Dungeons)"
     },
     {
@@ -7340,7 +7340,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "86730295ed3d0775aae28e8345f82b6859b02afc970db6df96bbcce24c337e2f",
+        "ReferenceSha256": "86730295ed3d0775aae28e8345f82b6859b02afc970db6df96bbcce24c337e2f",
         "Label": "Nocturnal Pals Are Night-Only (Dungeon Bosses)"
     },
     {
@@ -7365,7 +7365,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "86730295ed3d0775aae28e8345f82b6859b02afc970db6df96bbcce24c337e2f",
+        "ReferenceSha256": "86730295ed3d0775aae28e8345f82b6859b02afc970db6df96bbcce24c337e2f",
         "Label": "Nocturnal Pals Are Night-Only (Overworld Bosses)"
     },
     {
@@ -7397,7 +7397,7 @@
                 ]
             }
         ],
-        "NexusSha256": "86730295ed3d0775aae28e8345f82b6859b02afc970db6df96bbcce24c337e2f",
+        "ReferenceSha256": "86730295ed3d0775aae28e8345f82b6859b02afc970db6df96bbcce24c337e2f",
         "Label": "Nocturnal Pals Are Night-Only (Predators)"
     },
     {
@@ -7433,7 +7433,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "40c533538107db0f9eabcd314af54506262c2a5e2878bcfacc1f80a046915762",
+        "ReferenceSha256": "40c533538107db0f9eabcd314af54506262c2a5e2878bcfacc1f80a046915762",
         "Label": "Egg Respawn Time: h"
     },
     {
@@ -7469,7 +7469,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "40c533538107db0f9eabcd314af54506262c2a5e2878bcfacc1f80a046915762",
+        "ReferenceSha256": "40c533538107db0f9eabcd314af54506262c2a5e2878bcfacc1f80a046915762",
         "Label": "Egg Respawn Time: m"
     },
     {
@@ -7505,7 +7505,7 @@
                 "Visibility": []
             }
         ],
-        "NexusSha256": "40c533538107db0f9eabcd314af54506262c2a5e2878bcfacc1f80a046915762",
+        "ReferenceSha256": "40c533538107db0f9eabcd314af54506262c2a5e2878bcfacc1f80a046915762",
         "Label": "Egg Respawn Time: s"
     }
 ]

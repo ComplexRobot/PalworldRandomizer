@@ -40,7 +40,7 @@ public sealed class SettingDefinition {
     /// <summary>The stable primary description resource key.</summary>
     public string DescriptionKey { get; }
 
-    /// <summary>Nexus or Implementation; newly authored text is never attributed to Nexus.</summary>
+    /// <summary>Reference or Implementation; newly authored text is never attributed to Reference.</summary>
     public string DescriptionOrigin { get; }
 
     /// <summary>The original audit's verified/shared-range/missing/ambiguous classification.</summary>
@@ -107,7 +107,7 @@ public sealed class SettingDefinition {
 /// <param name="Value">The original, untranslated persisted token.</param>
 /// <param name="LabelKey">The localized choice label.</param>
 /// <param name="DescriptionKey">The localized choice explanation.</param>
-/// <param name="DescriptionOrigin">Nexus or Implementation.</param>
+/// <param name="DescriptionOrigin">Reference or Implementation.</param>
 /// <param name="DescriptionReferences">Source paragraph IDs or implementation locations.</param>
 public sealed record SettingOption(string Value, string LabelKey, string DescriptionKey, string DescriptionOrigin,
     IReadOnlyList<string> DescriptionReferences);

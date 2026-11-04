@@ -1,6 +1,5 @@
 # Original contract: 72a836172e7778b5d2c003c81418172c57126e24.
-# Description references: Nexus paragraph IDs or implementation source locations, never mixed authorship.
-# Nexus: https://www.nexusmods.com/palworld/mods/1706?tab=description
+# Description references: Reference paragraph IDs or implementation source locations, never mixed authorship.
 RadioGroups:
     -   Id: randomizationMethod
         Members:
@@ -25,8 +24,8 @@ Settings:
         Type: Int32
         Default: '0'
         LabelKey: settings.RandomSeed.label
-        DescriptionKey: nexus.N642
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N642
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N642
         OriginalDescriptionStatus: verified
@@ -68,8 +67,8 @@ Settings:
         Type: Boolean
         Default: 'false'
         LabelKey: settings.RandomSeedLocked.label
-        DescriptionKey: nexus.N642
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N642
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N642
         OriginalDescriptionStatus: shared-range
@@ -102,8 +101,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.RandomizeField.label
-        DescriptionKey: nexus.N634
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N634
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N634
         OriginalDescriptionStatus: verified
@@ -127,8 +126,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.RandomizeDungeons.label
-        DescriptionKey: nexus.N635
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N635
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N635
         OriginalDescriptionStatus: verified
@@ -152,8 +151,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.RandomizeDungeonBosses.label
-        DescriptionKey: nexus.N636
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N636
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N636
         OriginalDescriptionStatus: verified
@@ -177,8 +176,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.RandomizeFieldBosses.label
-        DescriptionKey: nexus.N637
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N637
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N637
         OriginalDescriptionStatus: verified
@@ -280,8 +279,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.RandomizeCages.label
-        DescriptionKey: nexus.N638
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N638
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N638
         OriginalDescriptionStatus: verified
@@ -305,8 +304,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.RandomizeEggs.label
-        DescriptionKey: nexus.N639
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N639
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N639
         OriginalDescriptionStatus: verified
@@ -390,8 +389,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.RandomizeAllArea.label
-        DescriptionKey: nexus.N640
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N640
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N640
         OriginalDescriptionStatus: verified
@@ -415,8 +414,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.RandomizeSingleSpawns.label
-        DescriptionKey: nexus.N641
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N641
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N641
         OriginalDescriptionStatus: verified
@@ -490,8 +489,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.EqualizeAreaRarity.label
-        DescriptionKey: nexus.N716
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N716
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N716
         OriginalDescriptionStatus: verified
@@ -537,8 +536,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.MethodFull.label
-        DescriptionKey: nexus.N657
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N657
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N657
         OriginalDescriptionStatus: verified
@@ -562,8 +561,8 @@ Settings:
         Type: Boolean
         Default: 'false'
         LabelKey: settings.MethodCustomSize.label
-        DescriptionKey: nexus.N658
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N658
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N658
         OriginalDescriptionStatus: verified
@@ -587,8 +586,8 @@ Settings:
         Type: Int32
         Default: '50'
         LabelKey: settings.SpawnListSize.label
-        DescriptionKey: nexus.N658
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N658
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N658
         OriginalDescriptionStatus: shared-range
@@ -625,8 +624,8 @@ Settings:
         Type: Boolean
         Default: 'false'
         LabelKey: settings.MethodLocalSwap.label
-        DescriptionKey: nexus.N659
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N659
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N659
         OriginalDescriptionStatus: verified
@@ -650,8 +649,8 @@ Settings:
         Type: Boolean
         Default: 'false'
         LabelKey: settings.MethodGlobalSwap.label
-        DescriptionKey: nexus.N660
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N660
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N660
         OriginalDescriptionStatus: verified
@@ -675,8 +674,8 @@ Settings:
         Type: Boolean
         Default: 'false'
         LabelKey: settings.MethodNone.label
-        DescriptionKey: nexus.N661
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N661
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N661
         OriginalDescriptionStatus: verified
@@ -700,8 +699,8 @@ Settings:
         Type: Boolean
         Default: 'false'
         LabelKey: settings.VanillaPlus.label
-        DescriptionKey: nexus.N662
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N662
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N662
         OriginalDescriptionStatus: verified
@@ -734,8 +733,8 @@ Settings:
         Type: Int32
         Default: '50'
         LabelKey: settings.VanillaPlusChance.label
-        DescriptionKey: nexus.N662
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N662
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N662
         OriginalDescriptionStatus: shared-range
@@ -781,8 +780,8 @@ Settings:
         Type: Boolean
         Default: 'false'
         LabelKey: settings.VanillaMerge.label
-        DescriptionKey: nexus.N663
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N663
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N663
         OriginalDescriptionStatus: verified
@@ -824,8 +823,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.VanillaPlusFilter.label
-        DescriptionKey: nexus.N664
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N664
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N664
         OriginalDescriptionStatus: shared-range
@@ -867,8 +866,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.VanillaMergeFilter.label
-        DescriptionKey: nexus.N664
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N664
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N664
         OriginalDescriptionStatus: shared-range
@@ -919,8 +918,8 @@ Settings:
         Type: Boolean
         Default: 'false'
         LabelKey: settings.GroupVanilla.label
-        DescriptionKey: nexus.N683
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N683
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N683
         OriginalDescriptionStatus: verified
@@ -953,8 +952,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.GroupRandom.label
-        DescriptionKey: nexus.N684
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N684
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N684
         OriginalDescriptionStatus: verified
@@ -987,8 +986,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.FieldBossExtended.label
-        DescriptionKey: nexus.N686
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N686
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N686
         OriginalDescriptionStatus: verified
@@ -1021,8 +1020,8 @@ Settings:
         Type: Int32
         Default: '1'
         LabelKey: settings.GroupMin.label
-        DescriptionKey: nexus.N685
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N685
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N685
         OriginalDescriptionStatus: shared-range
@@ -1073,8 +1072,8 @@ Settings:
         Type: Int32
         Default: '3'
         LabelKey: settings.GroupMax.label
-        DescriptionKey: nexus.N685
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N685
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N685
         OriginalDescriptionStatus: shared-range
@@ -1125,8 +1124,8 @@ Settings:
         Type: Int32
         Default: '3'
         LabelKey: settings.GroupMinBoss.label
-        DescriptionKey: nexus.N685
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N685
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N685
         OriginalDescriptionStatus: shared-range
@@ -1178,8 +1177,8 @@ Settings:
         Type: Int32
         Default: '3'
         LabelKey: settings.GroupMaxBoss.label
-        DescriptionKey: nexus.N685
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N685
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N685
         OriginalDescriptionStatus: shared-range
@@ -1231,8 +1230,8 @@ Settings:
         Type: Boolean
         Default: 'false'
         LabelKey: settings.MultiBoss.label
-        DescriptionKey: nexus.N687
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N687
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N687
         OriginalDescriptionStatus: verified
@@ -1274,8 +1273,8 @@ Settings:
         Type: Boolean
         Default: 'false'
         LabelKey: settings.VanillaRestrict.label
-        DescriptionKey: nexus.N688
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N688
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N688
         OriginalDescriptionStatus: verified
@@ -1856,8 +1855,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.RarityLevelBoost.label
-        DescriptionKey: nexus.N689
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N689
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N689
         OriginalDescriptionStatus: verified
@@ -1890,8 +1889,8 @@ Settings:
         Type: Int32
         Default: '18'
         LabelKey: settings.Rarity67MinLevel.label
-        DescriptionKey: nexus.N689
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N689
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N689
         OriginalDescriptionStatus: shared-range
@@ -1939,8 +1938,8 @@ Settings:
         Type: Int32
         Default: '30'
         LabelKey: settings.Rarity8UpMinLevel.label
-        DescriptionKey: nexus.N689
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N689
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N689
         OriginalDescriptionStatus: shared-range
@@ -1988,8 +1987,8 @@ Settings:
         Type: Boolean
         Default: 'false'
         LabelKey: settings.Rarity9UpBossOnly.label
-        DescriptionKey: nexus.N690
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N690
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N690
         OriginalDescriptionStatus: verified
@@ -2022,8 +2021,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.Rarity8UpSolo.label
-        DescriptionKey: nexus.N691
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N691
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N691
         OriginalDescriptionStatus: verified
@@ -2065,8 +2064,8 @@ Settings:
         Type: Boolean
         Default: 'false'
         LabelKey: settings.Rarity8UpSanity.label
-        DescriptionKey: nexus.N692
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N692
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N692
         OriginalDescriptionStatus: verified
@@ -2113,8 +2112,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.MixHumanAndPal.label
-        DescriptionKey: nexus.N693
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N693
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N693
         OriginalDescriptionStatus: verified
@@ -2156,8 +2155,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.SeparateAggroHumans.label
-        DescriptionKey: nexus.N695
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N695
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N695
         OriginalDescriptionStatus: verified
@@ -2199,8 +2198,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.BossesEverywhere.label
-        DescriptionKey: nexus.N696
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N696
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N696
         OriginalDescriptionStatus: verified
@@ -2252,8 +2251,8 @@ Settings:
         Type: Int32
         Default: '5'
         LabelKey: settings.BossesEverywhereChance.label
-        DescriptionKey: nexus.N696
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N696
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N696
         OriginalDescriptionStatus: shared-range
@@ -2318,8 +2317,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.BossesEverywhereDungeons.label
-        DescriptionKey: nexus.N697
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N697
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N697
         OriginalDescriptionStatus: verified
@@ -2366,8 +2365,8 @@ Settings:
         Type: Int32
         Default: '5'
         LabelKey: settings.BossesEverywhereDungeonsChance.label
-        DescriptionKey: nexus.N697
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N697
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N697
         OriginalDescriptionStatus: shared-range
@@ -2427,8 +2426,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.BossEggs.label
-        DescriptionKey: nexus.N698
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N698
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N698
         OriginalDescriptionStatus: verified
@@ -2470,8 +2469,8 @@ Settings:
         Type: Int32
         Default: '5'
         LabelKey: settings.BossEggsChance.label
-        DescriptionKey: nexus.N698
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N698
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N698
         OriginalDescriptionStatus: shared-range
@@ -2526,8 +2525,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.SeparateFlying.label
-        DescriptionKey: nexus.N694
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N694
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N694
         OriginalDescriptionStatus: verified
@@ -2608,8 +2607,8 @@ Settings:
         Type: Boolean
         Default: 'false'
         LabelKey: settings.AllowCagedHumans.label
-        DescriptionKey: nexus.N699
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N699
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N699
         OriginalDescriptionStatus: verified
@@ -2651,8 +2650,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.StartSheepBall.label
-        DescriptionKey: nexus.N701
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N701
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N701
         OriginalDescriptionStatus: verified
@@ -2908,8 +2907,8 @@ Settings:
         Type: Boolean
         Default: 'false'
         LabelKey: settings.WeightTypeUniform.label
-        DescriptionKey: nexus.N714
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N714
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N714
         OriginalDescriptionStatus: verified
@@ -2942,8 +2941,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.WeightTypeCustom.label
-        DescriptionKey: nexus.N715
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N715
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N715
         OriginalDescriptionStatus: verified
@@ -2976,8 +2975,8 @@ Settings:
         Type: Int32
         Default: '10'
         LabelKey: settings.WeightUniformMin.label
-        DescriptionKey: nexus.N714
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N714
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N714
         OriginalDescriptionStatus: shared-range
@@ -3023,8 +3022,8 @@ Settings:
         Type: Int32
         Default: '10'
         LabelKey: settings.WeightUniformMax.label
-        DescriptionKey: nexus.N714
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N714
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N714
         OriginalDescriptionStatus: shared-range
@@ -3091,8 +3090,8 @@ Settings:
             - 0
             - 1
         LabelKey: settings.WeightCustom.label
-        DescriptionKey: nexus.N725
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N725
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N725
         OriginalDescriptionStatus: shared-range
@@ -3529,7 +3528,7 @@ Settings:
         DescriptionReferences:
             - Randomizer/Randomize.cs:1178-1237
         AdditionalDescriptionKeys:
-            - nexus.N730
+            - reference.N730
         OriginalDescriptionStatus: ambiguous
         Category: Probability
         CategoryKey: category.Probability
@@ -3538,32 +3537,32 @@ Settings:
         Options:
             -   Value: Weight Sum
                 LabelKey: options.WeightCustomMode.0.label
-                DescriptionKey: nexus.N737
-                DescriptionOrigin: Nexus
+                DescriptionKey: reference.N737
+                DescriptionOrigin: Reference
                 DescriptionReferences:
                     - N737
             -   Value: Weight Average
                 LabelKey: options.WeightCustomMode.1.label
-                DescriptionKey: nexus.N737
-                DescriptionOrigin: Nexus
+                DescriptionKey: reference.N737
+                DescriptionOrigin: Reference
                 DescriptionReferences:
                     - N737
             -   Value: Rarity Average (Rounded)
                 LabelKey: options.WeightCustomMode.2.label
-                DescriptionKey: nexus.N738
-                DescriptionOrigin: Nexus
+                DescriptionKey: reference.N738
+                DescriptionOrigin: Reference
                 DescriptionReferences:
                     - N738
             -   Value: Rarity Average (Blend Fractions)
                 LabelKey: options.WeightCustomMode.3.label
-                DescriptionKey: nexus.N738
-                DescriptionOrigin: Nexus
+                DescriptionKey: reference.N738
+                DescriptionOrigin: Reference
                 DescriptionReferences:
                     - N738
             -   Value: Rarity Average (Blend 10 to 20)
                 LabelKey: options.WeightCustomMode.4.label
-                DescriptionKey: nexus.N738
-                DescriptionOrigin: Nexus
+                DescriptionKey: reference.N738
+                DescriptionOrigin: Reference
                 DescriptionReferences:
                     - N738
             -   Value: Rarity Minimum
@@ -3580,14 +3579,14 @@ Settings:
                     - Randomizer/Randomize.cs:1178-1212
             -   Value: Weight Minimum
                 LabelKey: options.WeightCustomMode.7.label
-                DescriptionKey: nexus.N737
-                DescriptionOrigin: Nexus
+                DescriptionKey: reference.N737
+                DescriptionOrigin: Reference
                 DescriptionReferences:
                     - N737
             -   Value: Weight Maximum
                 LabelKey: options.WeightCustomMode.8.label
-                DescriptionKey: nexus.N737
-                DescriptionOrigin: Nexus
+                DescriptionKey: reference.N737
+                DescriptionOrigin: Reference
                 DescriptionReferences:
                     - N737
         Controls:
@@ -3623,8 +3622,8 @@ Settings:
         Type: Int32
         Default: '4'
         LabelKey: settings.HumanRarity.label
-        DescriptionKey: nexus.N726
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N726
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N726
         OriginalDescriptionStatus: verified
@@ -3675,8 +3674,8 @@ Settings:
         Type: Int32
         Default: '5'
         LabelKey: settings.HumanBossRarity.label
-        DescriptionKey: nexus.N727
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N727
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N727
         OriginalDescriptionStatus: verified
@@ -3727,8 +3726,8 @@ Settings:
         Type: Int32
         Default: '9'
         LabelKey: settings.MaxCageRarity.label
-        DescriptionKey: nexus.N700
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N700
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N700
         OriginalDescriptionStatus: verified
@@ -3779,8 +3778,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.WeightAdjustProbability.label
-        DescriptionKey: nexus.N728
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N728
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N728
         OriginalDescriptionStatus: verified
@@ -3822,8 +3821,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.WeightPrioritizeBoss.label
-        DescriptionKey: nexus.N729
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N729
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N729
         OriginalDescriptionStatus: verified
@@ -3865,8 +3864,8 @@ Settings:
         Type: Int32
         Default: '100'
         LabelKey: settings.HumanWeight.label
-        DescriptionKey: nexus.N741
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N741
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N741
         OriginalDescriptionStatus: verified
@@ -3908,8 +3907,8 @@ Settings:
         Type: Int32
         Default: '25'
         LabelKey: settings.HumanWeightAggro.label
-        DescriptionKey: nexus.N742
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N742
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N742
         OriginalDescriptionStatus: verified
@@ -3951,8 +3950,8 @@ Settings:
         Type: Decimal
         Default: '1000.0'
         LabelKey: settings.WeightNightOnly.label
-        DescriptionKey: nexus.N743
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N743
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N743
         OriginalDescriptionStatus: verified
@@ -4005,8 +4004,8 @@ Settings:
         Type: String
         Default: Dynamic (Multi-Pass)
         LabelKey: settings.OverflowFixMode.label
-        DescriptionKey: nexus.N744
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N744
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N744
         OriginalDescriptionStatus: verified
@@ -4017,20 +4016,20 @@ Settings:
         Options:
             -   Value: Scale All
                 LabelKey: options.OverflowFixMode.0.label
-                DescriptionKey: nexus.N751
-                DescriptionOrigin: Nexus
+                DescriptionKey: reference.N751
+                DescriptionOrigin: Reference
                 DescriptionReferences:
                     - N751
             -   Value: Scale Night-Only
                 LabelKey: options.OverflowFixMode.1.label
-                DescriptionKey: nexus.N751
-                DescriptionOrigin: Nexus
+                DescriptionKey: reference.N751
+                DescriptionOrigin: Reference
                 DescriptionReferences:
                     - N751
             -   Value: Dynamic (Multi-Pass)
                 LabelKey: options.OverflowFixMode.2.label
-                DescriptionKey: nexus.N751
-                DescriptionOrigin: Nexus
+                DescriptionKey: reference.N751
+                DescriptionOrigin: Reference
                 DescriptionReferences:
                     - N751
         Controls:
@@ -4057,8 +4056,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.SpawnPals.label
-        DescriptionKey: nexus.N763
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N763
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N763
         OriginalDescriptionStatus: verified
@@ -4082,8 +4081,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.SpawnHumans.label
-        DescriptionKey: nexus.N764
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N764
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N764
         OriginalDescriptionStatus: verified
@@ -4107,8 +4106,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.SpawnPolice.label
-        DescriptionKey: nexus.N765
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N765
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N765
         OriginalDescriptionStatus: verified
@@ -4132,8 +4131,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.SpawnGuards.label
-        DescriptionKey: nexus.N766
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N766
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N766
         OriginalDescriptionStatus: verified
@@ -4166,8 +4165,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.SpawnTraders.label
-        DescriptionKey: nexus.N767
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N767
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N767
         OriginalDescriptionStatus: verified
@@ -4200,8 +4199,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.SpawnPalTraders.label
-        DescriptionKey: nexus.N768
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N768
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N768
         OriginalDescriptionStatus: verified
@@ -4234,8 +4233,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.SpawnTowerBosses.label
-        DescriptionKey: nexus.N771
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N771
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N771
         OriginalDescriptionStatus: verified
@@ -4268,8 +4267,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.SpawnAlphas.label
-        DescriptionKey: nexus.N770
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N770
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N770
         OriginalDescriptionStatus: verified
@@ -4293,8 +4292,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.SpawnRaidBosses.label
-        DescriptionKey: nexus.N772
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N772
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N772
         OriginalDescriptionStatus: verified
@@ -4327,8 +4326,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.SpawnPredators.label
-        DescriptionKey: nexus.N773
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N773
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N773
         OriginalDescriptionStatus: verified
@@ -4352,8 +4351,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.SpawnHumanBosses.label
-        DescriptionKey: nexus.N774
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N774
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N774
         OriginalDescriptionStatus: verified
@@ -4386,8 +4385,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.SpawnSpecial.label
-        DescriptionKey: nexus.N769
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N769
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N769
         OriginalDescriptionStatus: verified
@@ -4420,8 +4419,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.SpawnTerraria.label
-        DescriptionKey: nexus.N775
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N775
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N775
         OriginalDescriptionStatus: verified
@@ -4445,8 +4444,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.SpawnTerrariaBosses.label
-        DescriptionKey: nexus.N776
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N776
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N776
         OriginalDescriptionStatus: verified
@@ -4470,8 +4469,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.SpawnTowerHumans.label
-        DescriptionKey: nexus.N777
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N777
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N777
         OriginalDescriptionStatus: verified
@@ -4504,8 +4503,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.SpawnPolicePals.label
-        DescriptionKey: nexus.N778
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N778
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N778
         OriginalDescriptionStatus: verified
@@ -4538,8 +4537,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.SpawnUselessHumans.label
-        DescriptionKey: nexus.N779
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N779
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N779
         OriginalDescriptionStatus: verified
@@ -4572,8 +4571,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.SpawnVillagers.label
-        DescriptionKey: nexus.N780
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N780
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N780
         OriginalDescriptionStatus: verified
@@ -4606,8 +4605,8 @@ Settings:
         Type: Int32
         Default: '100'
         LabelKey: settings.FieldLevel.label
-        DescriptionKey: nexus.N789
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N789
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N789
         OriginalDescriptionStatus: shared-range
@@ -4649,8 +4648,8 @@ Settings:
         Type: Int32
         Default: '100'
         LabelKey: settings.DungeonLevel.label
-        DescriptionKey: nexus.N789
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N789
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N789
         OriginalDescriptionStatus: shared-range
@@ -4692,8 +4691,8 @@ Settings:
         Type: Int32
         Default: '100'
         LabelKey: settings.FieldBossLevel.label
-        DescriptionKey: nexus.N789
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N789
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N789
         OriginalDescriptionStatus: shared-range
@@ -4735,8 +4734,8 @@ Settings:
         Type: Int32
         Default: '100'
         LabelKey: settings.DungeonBossLevel.label
-        DescriptionKey: nexus.N789
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N789
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N789
         OriginalDescriptionStatus: shared-range
@@ -4778,8 +4777,8 @@ Settings:
         Type: Int32
         Default: '100'
         LabelKey: settings.PredatorLevel.label
-        DescriptionKey: nexus.N789
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N789
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N789
         OriginalDescriptionStatus: shared-range
@@ -4821,8 +4820,8 @@ Settings:
         Type: Int32
         Default: '100'
         LabelKey: settings.CageLevel.label
-        DescriptionKey: nexus.N789
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N789
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N789
         OriginalDescriptionStatus: shared-range
@@ -4864,8 +4863,8 @@ Settings:
         Type: Boolean
         Default: 'false'
         LabelKey: settings.EnableLevelCap.label
-        DescriptionKey: nexus.N791
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N791
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N791
         OriginalDescriptionStatus: verified
@@ -4889,8 +4888,8 @@ Settings:
         Type: Int32
         Default: '80'
         LabelKey: settings.LevelCap.label
-        DescriptionKey: nexus.N791
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N791
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N791
         OriginalDescriptionStatus: shared-range
@@ -4932,8 +4931,8 @@ Settings:
         Type: Int32
         Default: '85'
         LabelKey: settings.BossAddLevel.label
-        DescriptionKey: nexus.N810
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N810
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N810
         OriginalDescriptionStatus: verified
@@ -4985,8 +4984,8 @@ Settings:
         Type: Boolean
         Default: 'false'
         LabelKey: settings.ForceAddLevel.label
-        DescriptionKey: nexus.N812
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N812
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N812
         OriginalDescriptionStatus: verified
@@ -5029,8 +5028,8 @@ Settings:
         Type: String
         Default: Full
         LabelKey: settings.LevelScaleMode.label
-        DescriptionKey: nexus.N799
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N799
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N799
         OriginalDescriptionStatus: verified
@@ -5041,44 +5040,44 @@ Settings:
         Options:
             -   Value: Average Level
                 LabelKey: options.LevelScaleMode.0.label
-                DescriptionKey: nexus.N804
-                DescriptionOrigin: Nexus
+                DescriptionKey: reference.N804
+                DescriptionOrigin: Reference
                 DescriptionReferences:
                     - N804
             -   Value: Full
                 LabelKey: options.LevelScaleMode.1.label
-                DescriptionKey: nexus.N801
-                DescriptionOrigin: Nexus
+                DescriptionKey: reference.N801
+                DescriptionOrigin: Reference
                 DescriptionReferences:
                     - N801
             -   Value: Max. Level
                 LabelKey: options.LevelScaleMode.2.label
-                DescriptionKey: nexus.N802
-                DescriptionOrigin: Nexus
+                DescriptionKey: reference.N802
+                DescriptionOrigin: Reference
                 DescriptionReferences:
                     - N802
             -   Value: Extend Min./Max.
                 LabelKey: options.LevelScaleMode.3.label
-                DescriptionKey: nexus.N806
-                DescriptionOrigin: Nexus
+                DescriptionKey: reference.N806
+                DescriptionOrigin: Reference
                 DescriptionReferences:
                     - N806
             -   Value: Maximize Range
                 LabelKey: options.LevelScaleMode.4.label
-                DescriptionKey: nexus.N805
-                DescriptionOrigin: Nexus
+                DescriptionKey: reference.N805
+                DescriptionOrigin: Reference
                 DescriptionReferences:
                     - N805
             -   Value: Min. Level
                 LabelKey: options.LevelScaleMode.5.label
-                DescriptionKey: nexus.N803
-                DescriptionOrigin: Nexus
+                DescriptionKey: reference.N803
+                DescriptionOrigin: Reference
                 DescriptionReferences:
                     - N803
             -   Value: Random
                 LabelKey: options.LevelScaleMode.6.label
-                DescriptionKey: nexus.N807
-                DescriptionOrigin: Nexus
+                DescriptionKey: reference.N807
+                DescriptionOrigin: Reference
                 DescriptionReferences:
                     - N807
         Controls:
@@ -5096,8 +5095,8 @@ Settings:
         Type: Int32
         Default: '1'
         LabelKey: settings.RandomLevelMin.label
-        DescriptionKey: nexus.N807
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N807
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N807
         OriginalDescriptionStatus: shared-range
@@ -5139,8 +5138,8 @@ Settings:
         Type: Int32
         Default: '65'
         LabelKey: settings.RandomLevelMax.label
-        DescriptionKey: nexus.N807
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N807
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N807
         OriginalDescriptionStatus: shared-range
@@ -5185,8 +5184,8 @@ Settings:
         Type: Int32
         Default: '1'
         LabelKey: settings.BaseCountMin.label
-        DescriptionKey: nexus.N816
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N816
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N816
         OriginalDescriptionStatus: shared-range
@@ -5230,8 +5229,8 @@ Settings:
         Type: Int32
         Default: '1'
         LabelKey: settings.BaseCountMax.label
-        DescriptionKey: nexus.N816
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N816
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N816
         OriginalDescriptionStatus: shared-range
@@ -5275,8 +5274,8 @@ Settings:
         Type: Int32
         Default: '100'
         LabelKey: settings.FieldCount.label
-        DescriptionKey: nexus.N814
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N814
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N814
         OriginalDescriptionStatus: shared-range
@@ -5309,8 +5308,8 @@ Settings:
         Type: Int32
         Default: '100'
         LabelKey: settings.DungeonCount.label
-        DescriptionKey: nexus.N814
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N814
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N814
         OriginalDescriptionStatus: shared-range
@@ -5343,8 +5342,8 @@ Settings:
         Type: Int32
         Default: '100'
         LabelKey: settings.FieldBossCount.label
-        DescriptionKey: nexus.N814
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N814
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N814
         OriginalDescriptionStatus: shared-range
@@ -5377,8 +5376,8 @@ Settings:
         Type: Int32
         Default: '100'
         LabelKey: settings.DungeonBossCount.label
-        DescriptionKey: nexus.N814
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N814
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N814
         OriginalDescriptionStatus: shared-range
@@ -5411,8 +5410,8 @@ Settings:
         Type: Int32
         Default: '100'
         LabelKey: settings.PredatorCount.label
-        DescriptionKey: nexus.N814
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N814
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N814
         OriginalDescriptionStatus: shared-range
@@ -5445,8 +5444,8 @@ Settings:
         Type: Int32
         Default: '0'
         LabelKey: settings.CountClampMin.label
-        DescriptionKey: nexus.N818
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N818
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N818
         OriginalDescriptionStatus: shared-range
@@ -5479,8 +5478,8 @@ Settings:
         Type: Int32
         Default: '5'
         LabelKey: settings.CountClampMax.label
-        DescriptionKey: nexus.N818
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N818
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N818
         OriginalDescriptionStatus: shared-range
@@ -5513,8 +5512,8 @@ Settings:
         Type: Int32
         Default: '1'
         LabelKey: settings.CountClampFirstMin.label
-        DescriptionKey: nexus.N818
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N818
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N818
         OriginalDescriptionStatus: shared-range
@@ -5547,8 +5546,8 @@ Settings:
         Type: Int32
         Default: '5'
         LabelKey: settings.CountClampFirstMax.label
-        DescriptionKey: nexus.N818
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N818
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N818
         OriginalDescriptionStatus: shared-range
@@ -5589,7 +5588,7 @@ Settings:
             - Randomizer/Randomize.cs:1300-1329
             - Randomizer/Randomize.cs:1653-1680
         AdditionalDescriptionKeys:
-            - nexus.N818
+            - reference.N818
         OriginalDescriptionStatus: ambiguous
         Category: IndividualCountMultiplier
         CategoryKey: category.IndividualCountMultiplier
@@ -5627,7 +5626,7 @@ Settings:
             - Randomizer/Randomize.cs:1300-1329
             - Randomizer/Randomize.cs:1653-1680
         AdditionalDescriptionKeys:
-            - nexus.N818
+            - reference.N818
         OriginalDescriptionStatus: ambiguous
         Category: IndividualCountMultiplier
         CategoryKey: category.IndividualCountMultiplier
@@ -5666,7 +5665,7 @@ Settings:
             - Randomizer/Randomize.cs:1653-1669
             - Window/MainPage.xaml.cs:426
         AdditionalDescriptionKeys:
-            - nexus.N818
+            - reference.N818
         OriginalDescriptionStatus: ambiguous
         Category: IndividualCountMultiplier
         CategoryKey: category.IndividualCountMultiplier
@@ -5704,7 +5703,7 @@ Settings:
             - Randomizer/Randomize.cs:1300-1319
             - Randomizer/Randomize.cs:1653-1669
         AdditionalDescriptionKeys:
-            - nexus.N818
+            - reference.N818
         OriginalDescriptionStatus: ambiguous
         Category: IndividualCountMultiplier
         CategoryKey: category.IndividualCountMultiplier
@@ -5736,8 +5735,8 @@ Settings:
         Type: Boolean
         Default: 'true'
         LabelKey: settings.NightOnly.label
-        DescriptionKey: nexus.N820
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N820
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N820
         OriginalDescriptionStatus: shared-range
@@ -5761,8 +5760,8 @@ Settings:
         Type: Boolean
         Default: 'false'
         LabelKey: settings.NightOnlyDungeons.label
-        DescriptionKey: nexus.N820
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N820
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N820
         OriginalDescriptionStatus: shared-range
@@ -5786,8 +5785,8 @@ Settings:
         Type: Boolean
         Default: 'false'
         LabelKey: settings.NightOnlyDungeonBosses.label
-        DescriptionKey: nexus.N820
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N820
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N820
         OriginalDescriptionStatus: shared-range
@@ -5811,8 +5810,8 @@ Settings:
         Type: Boolean
         Default: 'false'
         LabelKey: settings.NightOnlyBosses.label
-        DescriptionKey: nexus.N820
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N820
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N820
         OriginalDescriptionStatus: shared-range
@@ -5842,7 +5841,7 @@ Settings:
             - Window/MainPage.xaml:1044
             - Randomizer/Randomize.cs:647-656
         AdditionalDescriptionKeys:
-            - nexus.N820
+            - reference.N820
         OriginalDescriptionStatus: ambiguous
         Category: AdditionalSettings
         CategoryKey: category.AdditionalSettings
@@ -5868,8 +5867,8 @@ Settings:
         Type: Int32
         Default: '3'
         LabelKey: settings.EggRespawnHours.label
-        DescriptionKey: nexus.N822
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N822
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N822
         OriginalDescriptionStatus: shared-range
@@ -5903,8 +5902,8 @@ Settings:
         Type: Int32
         Default: '0'
         LabelKey: settings.EggRespawnMinutes.label
-        DescriptionKey: nexus.N822
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N822
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N822
         OriginalDescriptionStatus: shared-range
@@ -5938,8 +5937,8 @@ Settings:
         Type: Int32
         Default: '0'
         LabelKey: settings.EggRespawnSeconds.label
-        DescriptionKey: nexus.N822
-        DescriptionOrigin: Nexus
+        DescriptionKey: reference.N822
+        DescriptionOrigin: Reference
         DescriptionReferences:
             - N822
         OriginalDescriptionStatus: shared-range

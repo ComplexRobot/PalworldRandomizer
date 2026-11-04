@@ -1,26 +1,26 @@
-# nexus.* values retain the audited exactDescription text without rewriting.
-# implementation.* values are owner-approved code-backed additions, NOT Nexus quotations.
+# reference.* values retain the audited exactDescription text without rewriting.
+# implementation.* values are owner-approved code-backed additions, NOT Reference quotations.
 Culture: en-US
 Strings:
     settings.RandomSeed.label: 'Random Seed:'
-    nexus.N642: A "seed" used by the randomizer to start the generation process. Locking this will ensure consistent
+    reference.N642: A "seed" used by the randomizer to start the generation process. Locking this will ensure consistent
         results.
     category.Randomize: Randomize
     controls.randomSeed.label.0: 'Random Seed:'
     settings.RandomSeedLocked.label: Lock Seed
     controls.randomSeedLocked.label.0: Lock Seed
     settings.RandomizeField.label: Overworld Pals
-    nexus.N634: Affects all spawns outside of dungeons except for bosses.
+    reference.N634: Affects all spawns outside of dungeons except for bosses.
     category.AreaSelections: Area Selections
     controls.randomizeField.label.0: Overworld Pals
     settings.RandomizeDungeons.label: Dungeon Pals
-    nexus.N635: Affects all spawns inside dungeons except for bosses.
+    reference.N635: Affects all spawns inside dungeons except for bosses.
     controls.randomizeDungeons.label.0: Dungeon Pals
     settings.RandomizeDungeonBosses.label: Dungeon Bosses
-    nexus.N636: Affects bosses inside dungeons.
+    reference.N636: Affects bosses inside dungeons.
     controls.randomizeDungeonBosses.label.0: Dungeon Bosses
     settings.RandomizeFieldBosses.label: Overworld Bosses
-    nexus.N637: Affects bosses outside dungeons, not including tower bosses or raid bosses.
+    reference.N637: Affects bosses outside dungeons, not including tower bosses or raid bosses.
     controls.randomizeFieldBosses.label.0: Overworld Bosses
     settings.RandomizePredators.label: Predators
     implementation.RandomizePredators.description: Retained legacy predator-area selection. The original control
@@ -33,10 +33,10 @@ Strings:
         to change spawns.
     controls.predatorChance.label.0: 'Predator Spawn Rate:'
     settings.RandomizeCages.label: Cages
-    nexus.N638: Locked cages of Pals found at enemy camps.
+    reference.N638: Locked cages of Pals found at enemy camps.
     controls.randomizeCages.label.0: Cages
     settings.RandomizeEggs.label: Overworld Eggs
-    nexus.N639: Random eggs that spawn around the map.
+    reference.N639: Random eggs that spawn around the map.
     controls.randomizeEggs.label.0: Overworld Eggs
     settings.RandomizeQuests.label: Quest Areas
     implementation.RandomizeQuests.description: Retained legacy quest-area selection. The original control is
@@ -47,11 +47,11 @@ Strings:
         hidden and the current generation code does not read this switch; it does not change mimic spawns.
     controls.randomizeMimics.label.0: Mimics
     settings.RandomizeAllArea.label: Global Spawns
-    nexus.N640: 'Spawn tables that have spawners throughout the world. As of 1.0, this is a single spawn table:
+    reference.N640: 'Spawn tables that have spawners throughout the world. As of 1.0, this is a single spawn table:
         1% chance level 55 Dupin spawn.'
     controls.randomizeAllArea.label.0: Global Spawns
     settings.RandomizeSingleSpawns.label: Solo Spawns
-    nexus.N641: Spawn tables that contain only one possible spawn group or species of which there are many as
+    reference.N641: Spawn tables that contain only one possible spawn group or species of which there are many as
         of 1.0. The level 55 Dupin spawn is also  a solo spawn, but the Global Spawn setting with take priority.
     controls.randomizeSingleSpawns.label.0: Solo Spawns
     settings.RandomizeHumanBosses.label: Human Bosses
@@ -66,64 +66,64 @@ Strings:
         then adds at most one companion to each available human entry. The available entries also limit both counts.
     controls.randomizeHumanBossesPals.label.0: Human Boss Pals
     settings.EqualizeAreaRarity.label: Equalize Global Rarity
-    nexus.N716: Will shuffle the global list of spawn groups of all areas to have consistent rarity composition
+    reference.N716: Will shuffle the global list of spawn groups of all areas to have consistent rarity composition
         between them.
     category.Probability: Probability
     controls.equalizeAreaRarity.label.0: Equalize Global Rarity
     settings.MethodFull.label: All Species Everywhere
-    nexus.N657: All possible spawns will have a chance to appear in all areas. Random groups will be added until
+    reference.N657: All possible spawns will have a chance to appear in all areas. Random groups will be added until
         all species are in every spawn table.
     category.AreaGroupType: Area Group Type
     controls.methodFull.label.0: All Species Everywhere
     settings.MethodCustomSize.label: 'Custom Groups Count (Per Area):'
-    nexus.N658: Sets an exact number of possible spawn groups in each area. Will fill each spawn table with the
+    reference.N658: Sets an exact number of possible spawn groups in each area. Will fill each spawn table with the
         chosen number of random spawn groups.
     controls.methodCustomSize.label.0: 'Custom Groups Count (Per Area):'
     settings.SpawnListSize.label: 'Custom Groups Count (Per Area):'
     controls.spawnListSize.label.0: 'Custom Groups Count (Per Area):'
     settings.MethodLocalSwap.label: Match Vanilla Groups Count (Per Area)
-    nexus.N659: Each area will have the same number of groups as vanilla, swapped out with random ones.
+    reference.N659: Each area will have the same number of groups as vanilla, swapped out with random ones.
     controls.methodLocalSwap.label.0: Match Vanilla Groups Count (Per Area)
     settings.MethodGlobalSwap.label: Global Species Swap
-    nexus.N660: Every character in the vanilla spawn list will be matched with a random choice and changed one-to-one
+    reference.N660: Every character in the vanilla spawn list will be matched with a random choice and changed one-to-one
         in every spawn table. It depends only on the first pal in a group and pairs it with a random group.
     controls.methodGlobalSwap.label.0: Global Species Swap
     settings.MethodNone.label: No Randomization
-    nexus.N661: Don't randomize the groups, the chosen options will be filters that modify the vanilla spawn tables.
+    reference.N661: Don't randomize the groups, the chosen options will be filters that modify the vanilla spawn tables.
     controls.methodNone.label.0: No Randomization
     settings.VanillaPlus.label: 'Add To Vanilla With Probability:'
-    nexus.N662: Randomized results are appended to the vanilla spawn lists. The chance of a non-vanilla group
+    reference.N662: Randomized results are appended to the vanilla spawn lists. The chance of a non-vanilla group
         spawning is the specified percentage.
     controls.vanillaPlus.label.0: 'Add To Vanilla With Probability:'
     settings.VanillaPlusChance.label: 'Add To Vanilla With Probability:'
     controls.vanillaPlusChance.label.0: 'Add To Vanilla With Probability:'
     settings.VanillaMerge.label: Merge Vanilla
-    nexus.N663: Randomized results are merged with the vanilla spawn groups, making every group contain vanilla
+    reference.N663: Randomized results are merged with the vanilla spawn groups, making every group contain vanilla
         spawns at roughly the same spawn probability as vanilla. This will make it so vanilla spawns have random
         pals spawned alongside them. Warning! This will easily add a lot of extra pals to the groups and will
         add extra bosses to every boss spawn.
     controls.vanillaMerge.label.0: Merge Vanilla
     settings.VanillaPlusFilter.label: Filter Vanilla Before Adding
-    nexus.N664: When enabled, the vanilla spawn lists will be filtered the same as "No Randomization" before adding
+    reference.N664: When enabled, the vanilla spawn lists will be filtered the same as "No Randomization" before adding
         to or merging with the spawn list.
     controls.vanillaPlusFilter.label.0: Filter Vanilla Before Adding
     settings.VanillaMergeFilter.label: Filter Vanilla Before Merging
     controls.vanillaMergeFilter.label.0: Filter Vanilla Before Merging
     settings.GroupVanilla.label: Vanilla-Based
-    nexus.N683: Generates groups similar to groups in the vanilla spawn tables. Will try to match existing vanilla
+    reference.N683: Generates groups similar to groups in the vanilla spawn tables. Will try to match existing vanilla
         groups as closely as possible.
     category.SpawnGroupSettings: Spawn Group Settings
     controls.groupVanilla.label.0: Vanilla-Based
     settings.GroupRandom.label: Randomized
-    nexus.N684: Creates completely random groups, combining totally random Pals together.
+    reference.N684: Creates completely random groups, combining totally random Pals together.
     controls.groupRandom.label.0: Randomized
     settings.FieldBossExtended.label: Multiple Overworld Boss Spawns
-    nexus.N686: Normally, overworld bosses will only have one group, ~~and will therefore always match the icon
+    reference.N686: Normally, overworld bosses will only have one group, ~~and will therefore always match the icon
         that appears on the map screen~~. With this checked, there will instead be multiple possible random boss
         spawns on a given overworld location.
     controls.fieldBossExtended.label.0: Multiple Overworld Boss Spawns
     settings.GroupMin.label: 'Randomized Group Size:'
-    nexus.N685: Sets the number of pals in a group to be random between the minimum and maximum chosen.
+    reference.N685: Sets the number of pals in a group to be random between the minimum and maximum chosen.
     controls.groupMin.label.0: 'Randomized Group Size:'
     settings.GroupMax.label: 'Randomized Group Size:'
     controls.groupMax.label.0: 'Randomized Group Size:'
@@ -134,11 +134,11 @@ Strings:
     controls.groupMaxBoss.label.0: 'Randomized Group Size:'
     controls.groupMaxBoss.label.1: 'Bosses:'
     settings.MultiBoss.label: Boss Groups Are All Bosses
-    nexus.N687: Normally, boss groups will contain only one boss Pal and possibly some normal Pals with it. With
+    reference.N687: Normally, boss groups will contain only one boss Pal and possibly some normal Pals with it. With
         this checked, boss groups will instead be composed of multiple bosses.
     controls.multiBoss.label.0: Boss Groups Are All Bosses
     settings.VanillaRestrict.label: Restrict To Vanilla
-    nexus.N688: Makes areas contain only pals that appear in that area in vanilla. Could be used to make areas
+    reference.N688: Makes areas contain only pals that appear in that area in vanilla. Could be used to make areas
         contain random groups comprised only of vanilla characters.
     controls.vanillaRestrict.label.0: Restrict To Vanilla
     settings.HumanBossMin.label: 'Human Bosses: Total:'
@@ -191,7 +191,7 @@ Strings:
     controls.humanBossPalBossMax.label.0: 'Human Bosses:'
     controls.humanBossPalBossMax.label.1: 'Bosses:'
     settings.RarityLevelBoost.label: 'Minimum Level For Rare Pals:'
-    nexus.N689: Sets a minimum level for pals at or above a certain rarity to the numbers chosen.
+    reference.N689: Sets a minimum level for pals at or above a certain rarity to the numbers chosen.
     controls.rarityLevelBoost.label.0: 'Minimum Level For Rare Pals:'
     settings.Rarity67MinLevel.label: 'Minimum Level For Rare Pals: 6-7:'
     controls.rarity67MinLevel.label.0: 'Minimum Level For Rare Pals:'
@@ -200,45 +200,45 @@ Strings:
     controls.rarity8UpMinLevel.label.0: 'Minimum Level For Rare Pals:'
     controls.rarity8UpMinLevel.label.1: '8+:'
     settings.Rarity9UpBossOnly.label: Rare (9+) Pals Are Boss-Only
-    nexus.N690: Pals with a rarity of 9 or above will only be bosses and spawn only at boss locations. (This may
+    reference.N690: Pals with a rarity of 9 or above will only be bosses and spawn only at boss locations. (This may
         prevent them from appearing at all with certain settings. Use All Species Everywhere with Dungeon Bosses
         enabled or Multiple Spawn Groups For Overworld Bosses to ensure all are possible with this setting.)
     controls.rarity9UpBossOnly.label.0: Rare (9+) Pals Are Boss-Only
     settings.Rarity8UpSolo.label: Rare (8+) Pals Always Solo
-    nexus.N691: Pals with a rarity of 8 or above will always be in a solo group, overriding the chosen group settings.
+    reference.N691: Pals with a rarity of 8 or above will always be in a solo group, overriding the chosen group settings.
     controls.rarity8UpSolo.label.0: Rare (8+) Pals Always Solo
     settings.Rarity8UpSanity.label: Rare (8+) Pals Sanity
-    nexus.N692: ' An alternative to the always solo setting that ensures every group can have at most 1 Pal of
+    reference.N692: ' An alternative to the always solo setting that ensures every group can have at most 1 Pal of
         rarity 8 or above. Experimental setting: May make generation very slow and more Pal species duplicates.'
     controls.rarity8UpSanity.label.0: Rare (8+) Pals Sanity
     settings.MixHumanAndPal.label: Allow Mixed Pal/Human Groups
-    nexus.N693: Spawn groups will have a chance to be a mix of pals and humans in the same group. Disable this
+    reference.N693: Spawn groups will have a chance to be a mix of pals and humans in the same group. Disable this
         to keep humans and pals in separate groups.
     controls.mixHumanAndPal.label.0: Allow Mixed Pal/Human Groups
     settings.SeparateAggroHumans.label: Non-Aggro Human Sanity
-    nexus.N695: Prevent non-aggro humans (e.g., merchants or police) from being grouped with aggro pals/humans
+    reference.N695: Prevent non-aggro humans (e.g., merchants or police) from being grouped with aggro pals/humans
         or bosses. This will avoid a forced wanted level when retaliating against aggro characters.
     controls.separateAggroHumans.label.0: Non-Aggro Human Sanity
     settings.BossesEverywhere.label: 'Bosses Everywhere:'
-    nexus.N696: Bosses will spawn on the overworld at the specified percentage rate in non-boss areas. This appends
+    reference.N696: Bosses will spawn on the overworld at the specified percentage rate in non-boss areas. This appends
         a boss spawn list to each non-boss area using all settings exactly like a boss area. This means bosses
         could spawn anywhere, not just at the designated boss locations.
     controls.bossesEverywhere.label.0: 'Bosses Everywhere:'
     settings.BossesEverywhereChance.label: 'Bosses Everywhere:'
     controls.bossesEverywhereChance.label.0: 'Bosses Everywhere:'
     settings.BossesEverywhereDungeons.label: 'Bosses Everywhere (Dungeons):'
-    nexus.N697: Bosses everywhere for dungeons. The normal "Bosses Everywhere" setting only affects the overworld.
+    reference.N697: Bosses everywhere for dungeons. The normal "Bosses Everywhere" setting only affects the overworld.
     controls.bossesEverywhereDungeons.label.0: 'Bosses Everywhere (Dungeons):'
     settings.BossesEverywhereDungeonsChance.label: 'Bosses Everywhere (Dungeons):'
     controls.bossesEverywhereDungeonsChance.label.0: 'Bosses Everywhere (Dungeons):'
     settings.BossEggs.label: 'Boss Eggs:'
-    nexus.N698: Allow overworld egg spawns to be bosses at the specified percentage chance. Works similarly to
+    reference.N698: Allow overworld egg spawns to be bosses at the specified percentage chance. Works similarly to
         "Bosses Everywhere."
     controls.bossEggs.label.0: 'Boss Eggs:'
     settings.BossEggsChance.label: 'Boss Eggs:'
     controls.bossEggsChance.label.0: 'Boss Eggs:'
     settings.SeparateFlying.label: Flying Pal Sanity
-    nexus.N694: High-flying pals will only be grouped with other high-flying pals. Otherwise, it could have awkward
+    reference.N694: High-flying pals will only be grouped with other high-flying pals. Otherwise, it could have awkward
         pals on the ground grouped with pals in the sky.
     controls.separateFlying.label.0: Flying Pal Sanity
     settings.PredatorConstraint.label: Restrict Predators
@@ -247,10 +247,10 @@ Strings:
         constraints.
     controls.predatorConstraint.label.0: Restrict Predators
     settings.AllowCagedHumans.label: Allow Caged Humans
-    nexus.N699: Disable this to prevent humans from appearing in cages.
+    reference.N699: Disable this to prevent humans from appearing in cages.
     controls.allowCagedHumans.label.0: Allow Caged Humans
     settings.StartSheepBall.label: Lamball At Start
-    nexus.N701: 'Guarantees Lamball spawns at the Plateau of Beginnings so the tutorial quest is completable.
+    reference.N701: 'Guarantees Lamball spawns at the Plateau of Beginnings so the tutorial quest is completable.
         Note: This just makes it so the spawn table "green_A_SheepBall" remains untouched.'
     controls.startSheepBall.label.0: Lamball At Start
     settings.MinOneCountSolo.label: Min 1 Count Solo Pals
@@ -283,12 +283,12 @@ Strings:
     controls.raidDamageCap.label.0: 'Damage Multiplier Cap:'
     controls.raidDamageCap.label.1: 'Raid Bosses:'
     settings.WeightTypeUniform.label: 'Random Weight Range:'
-    nexus.N714: All pals will be given a random weight between the two chosen numbers. This makes complete chaos
+    reference.N714: All pals will be given a random weight between the two chosen numbers. This makes complete chaos
         with no balance to the spawns. A powerful legendary pal could spawn just as likely as a weak starting
         area pal.
     controls.weightTypeUniform.label.0: 'Random Weight Range:'
     settings.WeightTypeCustom.label: 'Rarity-Based Weights:'
-    nexus.N715: Sets the weight of each group based on the pal's internal rarity number. This will make legendary
+    reference.N715: Sets the weight of each group based on the pal's internal rarity number. This will make legendary
         pals much rarer to spawn than weaker ones.
     controls.weightTypeCustom.label.0: 'Rarity-Based Weights:'
     settings.WeightUniformMin.label: 'Random Weight Range:'
@@ -296,7 +296,7 @@ Strings:
     settings.WeightUniformMax.label: 'Random Weight Range:'
     controls.weightUniformMax.label.0: 'Random Weight Range:'
     settings.WeightCustom.label: 'Rarity-Based Weights: 1:'
-    nexus.N725: These are the weights that will be set for each rarity value respectively. Setting a weight to
+    reference.N725: These are the weights that will be set for each rarity value respectively. Setting a weight to
         0 will remove all pals of that rarity as possible spawns.
     controls.weightCustom1.label.0: 'Rarity-Based Weights:'
     controls.weightCustom1.label.1: '1:'
@@ -326,12 +326,12 @@ Strings:
         then use that character's rarity weight and weight scale; they do not select the lowest or highest numeric
         weight. When Prioritize Boss Rarity is enabled and a group contains bosses, only bosses participate in
         this calculation.
-    nexus.N730: Determines how the weight will be set for groups of multiple pals.
+    reference.N730: Determines how the weight will be set for groups of multiple pals.
     options.WeightCustomMode.0.label: Weight Sum
-    nexus.N737: Does a simple operation of combining the weights of the pals in a group.
+    reference.N737: Does a simple operation of combining the weights of the pals in a group.
     options.WeightCustomMode.1.label: Weight Average
     options.WeightCustomMode.2.label: Rarity Average (Rounded)
-    nexus.N738: Gets the average rarity and then chooses the weight associated with that rarity. Rounded will
+    reference.N738: Gets the average rarity and then chooses the weight associated with that rarity. Rounded will
         simply round to the closest rarity value. Blend Fractions will blend the weights for fractional rarities
         and Blend 10-20 will round for 1-10 and blend between 10-20.
     options.WeightCustomMode.3.label: Rarity Average (Blend Fractions)
@@ -348,110 +348,110 @@ Strings:
     options.WeightCustomMode.8.label: Weight Maximum
     controls.weightCustomMode.label.0: 'Group Weight Mode:'
     settings.HumanRarity.label: 'Human Rarity:'
-    nexus.N726: Set the rarity of humans which are normally all 1 in the game's data.
+    reference.N726: Set the rarity of humans which are normally all 1 in the game's data.
     controls.humanRarity.label.0: 'Human Rarity:'
     settings.HumanBossRarity.label: 'Human Boss:'
-    nexus.N727: Set the rarity of human bosses which are normally all 1.
+    reference.N727: Set the rarity of human bosses which are normally all 1.
     controls.humanBossRarity.label.0: 'Human Boss:'
     settings.MaxCageRarity.label: 'Max Cage Rarity:'
-    nexus.N700: Will prevent Pals of a higher rarity than the number chosen from appearing in cages.
+    reference.N700: Will prevent Pals of a higher rarity than the number chosen from appearing in cages.
     controls.maxCageRarity.label.0: 'Max Cage Rarity:'
     settings.WeightAdjustProbability.label: Convert Weights To Percentages
-    nexus.N728: 'Will make groups of a given weight have that weight as a percent chance to spawn. For example,
+    reference.N728: 'Will make groups of a given weight have that weight as a percent chance to spawn. For example,
         a group with a weight of 1 will have a 1% chance to spawn. All groups around the same weight will be put
         together and scaled to fit within the 1% chance. This is repeated for 1%, 5%, 10%,  and 25%, then higher
         weighted groups are scaled to fit into the remaining 59%. The following weight values will be fit to the
         specified percentage: 1%: 1-4. 5%: 5-9, 10%: 10-15, 25%: 16-30, 59%: 31 and above.'
     controls.weightAdjustProbability.label.0: Convert Weights To Percentages
     settings.WeightPrioritizeBoss.label: Prioritize Boss Rarity
-    nexus.N729: When a group contains bosses and non-bosses together, only the boss pal(s) will be considered
+    reference.N729: When a group contains bosses and non-bosses together, only the boss pal(s) will be considered
         when choosing the rarity of the group.
     controls.weightPrioritizeBoss.label.0: Prioritize Boss Rarity
     settings.HumanWeight.label: 'Human Weight:'
-    nexus.N741: Multiplies the weight of regular non-aggro humans.
+    reference.N741: Multiplies the weight of regular non-aggro humans.
     controls.humanWeight.label.0: 'Human Weight:'
     settings.HumanWeightAggro.label: 'Aggro Human Weight:'
-    nexus.N742: Multiplies the weight of aggressive humans.
+    reference.N742: Multiplies the weight of aggressive humans.
     controls.humanWeightAggro.label.0: 'Aggro Human Weight:'
     settings.WeightNightOnly.label: 'Night-Only Weight Multiplier:'
-    nexus.N743: Multiplies the weight of night spawns. With a high number, this ensures diurnal pals only spawn
+    reference.N743: Multiplies the weight of night spawns. With a high number, this ensures diurnal pals only spawn
         during the day and nocturnal pals spawn at night. If you would prefer to allow day pals to have a chance
         to spawn at night, reduce this number to a small value like something between 1-10.
     controls.weightNightOnly.label.0: 'Night-Only Weight Multiplier:'
     settings.OverflowFixMode.label: 'Int Overflow Fix:'
-    nexus.N744: If the sum of all weights in an area exceeds the max value of a signed 32-bit integer, it will
+    reference.N744: If the sum of all weights in an area exceeds the max value of a signed 32-bit integer, it will
         cause a bug with spawn probability in the game. It is very unlikely for this to happen with normal settings,
         but I've included a fix for it just in case.
     options.OverflowFixMode.0.label: Scale All
-    nexus.N751: Scale All will simply scale all weights to fit within the allowed sum. Night-Only will prioritize
+    reference.N751: Scale All will simply scale all weights to fit within the allowed sum. Night-Only will prioritize
         scaling night weights first and Dynamic will try to scale day weights without changing probability and
         then fall back to the other two methods.
     options.OverflowFixMode.1.label: Scale Night-Only
     options.OverflowFixMode.2.label: Dynamic (Multi-Pass)
     controls.overflowFixMode.label.0: 'Int Overflow Fix:'
     settings.SpawnPals.label: Pals
-    nexus.N763: Normal Pals. Does not include regular boss pals.
+    reference.N763: Normal Pals. Does not include regular boss pals.
     category.PossiblePalSpawns: Possible Pal Spawns
     controls.spawnPals.label.0: Pals
     settings.SpawnHumans.label: Humans (Aggressive)
-    nexus.N764: Aggressive humans such as Syndicate, Free Pal Alliance, Brothers of the Eternal Fire Martyr, etc.
+    reference.N764: Aggressive humans such as Syndicate, Free Pal Alliance, Brothers of the Eternal Fire Martyr, etc.
     controls.spawnHumans.label.0: Humans (Aggressive)
     settings.SpawnPolice.label: Police
-    nexus.N765: Police that are aggressive if provoked.
+    reference.N765: Police that are aggressive if provoked.
     controls.spawnPolice.label.0: Police
     settings.SpawnGuards.label: Guards
-    nexus.N766: Guards that appear at the entrance of cities, bodyguards, etc. Aggressive only if provoked.
+    reference.N766: Guards that appear at the entrance of cities, bodyguards, etc. Aggressive only if provoked.
     controls.spawnGuards.label.0: Guards
     settings.SpawnTraders.label: Item Merchants
-    nexus.N767: Various item-selling interactable merchants normally found around the map.
+    reference.N767: Various item-selling interactable merchants normally found around the map.
     controls.spawnTraders.label.0: Item Merchants
     settings.SpawnPalTraders.label: Pal Merchants
-    nexus.N768: Various interactable merchants that sell Pals.
+    reference.N768: Various interactable merchants that sell Pals.
     controls.spawnPalTraders.label.0: Pal Merchants
     settings.SpawnTowerBosses.label: Tower Bosses
-    nexus.N771: Bosses found in the Towers, such as Axel & Orserk, Lily & Lyleen, Zoe & Grizzbolt, etc. will be
+    reference.N771: Bosses found in the Towers, such as Axel & Orserk, Lily & Lyleen, Zoe & Grizzbolt, etc. will be
         added as possible boss spawns. Non-alpha versions will also be added as regular Pal spawns (as of writing,
         this only includes Zoe & Grizzbolt).
     controls.spawnTowerBosses.label.0: Tower Bosses
     settings.SpawnAlphas.label: Normal Bosses
-    nexus.N770: Normal boss Pals (Alphas) will be added as possible boss spawns.
+    reference.N770: Normal boss Pals (Alphas) will be added as possible boss spawns.
     controls.spawnAlphas.label.0: Normal Bosses
     settings.SpawnRaidBosses.label: Raid Bosses
-    nexus.N772: Raid versions of Pals normally used in raids will be added as possible boss spawns.
+    reference.N772: Raid versions of Pals normally used in raids will be added as possible boss spawns.
     controls.spawnRaidBosses.label.0: Raid Bosses
     settings.SpawnPredators.label: Predators
-    nexus.N773: Predator bosses added in Feybreak are added as possible boss spawns.
+    reference.N773: Predator bosses added in Feybreak are added as possible boss spawns.
     controls.spawnPredators.label.0: Predators
     settings.SpawnHumanBosses.label: Human Bosses
-    nexus.N774: Special human bosses added in Feybreak are added as possible boss spawns.
+    reference.N774: Special human bosses added in Feybreak are added as possible boss spawns.
     controls.spawnHumanBosses.label.0: Human Bosses
     settings.SpawnSpecial.label: Dr. Brawn
-    nexus.N769: A special doctor that will perform surgery on your Pals.
+    reference.N769: A special doctor that will perform surgery on your Pals.
     controls.spawnSpecial.label.0: Dr. Brawn
     settings.SpawnTerraria.label: Terraria Monsters
-    nexus.N775: Monsters added in Tides of Terraria. E.g, Cave Bat, Slime, Enchanted Sword, Demon Eye, etc.
+    reference.N775: Monsters added in Tides of Terraria. E.g, Cave Bat, Slime, Enchanted Sword, Demon Eye, etc.
     controls.spawnTerraria.label.0: Terraria Monsters
     settings.SpawnTerrariaBosses.label: Terraria Bosses
-    nexus.N776: Boss Monsters added in Tides of Terraria. This is just Eye Of Cthulhu (Alpha).
+    reference.N776: Boss Monsters added in Tides of Terraria. This is just Eye Of Cthulhu (Alpha).
     controls.spawnTerrariaBosses.label.0: Terraria Bosses
     settings.SpawnTowerHumans.label: Tower Humans
-    nexus.N777: Boss humans from the towers but solo without a Pal (e.g., Zoe, Victor, Marcus, Saya, etc.). As
+    reference.N777: Boss humans from the towers but solo without a Pal (e.g., Zoe, Victor, Marcus, Saya, etc.). As
         of writing, only Zoe is fully implemented. The others are missing names and Bjorn has incomplete rigging,
         but they are otherwise functional.
     controls.spawnTowerHumans.label.0: Tower Humans
     settings.SpawnPolicePals.label: Police Pals
-    nexus.N778: Pals with police riding on their backs called PIDF Riders. As of 1.0 this is just Rayhound and
+    reference.N778: Pals with police riding on their backs called PIDF Riders. As of 1.0 this is just Rayhound and
         Nitewing.
     controls.spawnPolicePals.label.0: Police Pals
     settings.SpawnUselessHumans.label: Extra Humans
-    nexus.N779: Dozens of miscellaneous humans with no other purpose than looking pretty. Includes several multi-colored
+    reference.N779: Dozens of miscellaneous humans with no other purpose than looking pretty. Includes several multi-colored
         archetypes added in 1.0.
     controls.spawnUselessHumans.label.0: Extra Humans
     settings.SpawnVillagers.label: Villagers
-    nexus.N780: The generic villager NPC models from each area in the game.
+    reference.N780: The generic villager NPC models from each area in the game.
     controls.spawnVillagers.label.0: Villagers
     settings.FieldLevel.label: 'Overworld:'
-    nexus.N789: Multiply the level of all spawns. Boss or non-boss settings will apply individually on a pal-to-pal
+    reference.N789: Multiply the level of all spawns. Boss or non-boss settings will apply individually on a pal-to-pal
         basis. In a group with a boss and some additional pals, the boss setting only affects the pal that is
         actually a boss.
     category.LevelAdjustment: Level Adjustment
@@ -467,42 +467,42 @@ Strings:
     settings.CageLevel.label: 'Cage:'
     controls.cageLevel.label.0: 'Cage:'
     settings.EnableLevelCap.label: 'Level Cap:'
-    nexus.N791: 'If unchecked: Spawns will be capped to the game''s level cap. If checked: Spawns will be capped
+    reference.N791: 'If unchecked: Spawns will be capped to the game''s level cap. If checked: Spawns will be capped
         to this level. Do not raise this higher than the game''s level cap unless you know what you''re doing.'
     controls.enableLevelCap.label.0: 'Level Cap:'
     settings.LevelCap.label: 'Level Cap:'
     controls.levelCap.label.0: 'Level Cap:'
     settings.BossAddLevel.label: 'w/Boss Level Scale:'
-    nexus.N810: Extra pals that spawn with a boss will have their levels set to this proportion of the boss's
+    reference.N810: Extra pals that spawn with a boss will have their levels set to this proportion of the boss's
         level.
     controls.bossAddLevel.label.0: 'w/Boss Level Scale:'
     settings.ForceAddLevel.label: Enforce Vanilla w/Boss Levels
-    nexus.N812: The aforementioned scaling value won't normally apply to vanilla-based groups if they already
+    reference.N812: The aforementioned scaling value won't normally apply to vanilla-based groups if they already
         exist in the vanilla spawn tables. Enabling this option will force it to affect pals in vanilla-based
         boss groups. This also enables this function for No Randomization. You should enable this if you are changing
         the w/Boss Level Scale to have a custom effect on all boss groups.
     controls.forceAddLevel.label.0: Enforce Vanilla w/Boss Levels
     settings.LevelScaleMode.label: 'Scale Mode:'
-    nexus.N799: Determines how the level scaling settings are applied. Base levels are taken from the weighted
+    reference.N799: Determines how the level scaling settings are applied. Base levels are taken from the weighted
         average of all vanilla levels in a respective area.
     options.LevelScaleMode.0.label: Average Level
-    nexus.N804: Scale the average level of each spawn while maintaining the same level range.
+    reference.N804: Scale the average level of each spawn while maintaining the same level range.
     options.LevelScaleMode.1.label: Full
-    nexus.N801: Scale the minimum and maximum level of every spawn. Should be roughly equivalent to the in-game
+    reference.N801: Scale the minimum and maximum level of every spawn. Should be roughly equivalent to the in-game
         setting.
     options.LevelScaleMode.2.label: Max. Level
-    nexus.N802: Scale only the maximum level.
+    reference.N802: Scale only the maximum level.
     options.LevelScaleMode.3.label: Extend Min./Max.
-    nexus.N806: Scale the average and increase the range while keeping either the maximum or minimum the same.
+    reference.N806: Scale the average and increase the range while keeping either the maximum or minimum the same.
         Which value stays the same depends upon if the scale increases or decreases the average. For example,
         you can double the average level while keeping the minimum level the same.
     options.LevelScaleMode.4.label: Maximize Range
-    nexus.N805: Scale the average and make the level range the maximum possible while maintaining that average.
+    reference.N805: Scale the average and make the level range the maximum possible while maintaining that average.
         Very chaotic.
     options.LevelScaleMode.5.label: Min. Level
-    nexus.N803: Scale only the minimum level.
+    reference.N803: Scale only the minimum level.
     options.LevelScaleMode.6.label: Random
-    nexus.N807: Sets all spawns' minimum and maximum levels to the chosen values for completely unpredictable
+    reference.N807: Sets all spawns' minimum and maximum levels to the chosen values for completely unpredictable
         chaos.
     controls.levelScaleMode.label.0: 'Scale Mode:'
     settings.RandomLevelMin.label: 'Level Range:'
@@ -510,13 +510,13 @@ Strings:
     settings.RandomLevelMax.label: 'Level Range:'
     controls.randomLevelMax.label.0: 'Level Range:'
     settings.BaseCountMin.label: 'Base Count:'
-    nexus.N816: Sets a base count to be scaled for randomized groups.
+    reference.N816: Sets a base count to be scaled for randomized groups.
     category.IndividualCountMultiplier: Individual Count Multiplier
     controls.baseCountMin.label.0: 'Base Count:'
     settings.BaseCountMax.label: 'Base Count:'
     controls.baseCountMax.label.0: 'Base Count:'
     settings.FieldCount.label: 'Overworld:'
-    nexus.N814: Multiply the total spawn amount for individual pal spawns with greater flexibility than the in-game
+    reference.N814: Multiply the total spawn amount for individual pal spawns with greater flexibility than the in-game
         option.
     controls.fieldCount.label.0: 'Overworld:'
     settings.DungeonCount.label: 'Dungeon:'
@@ -528,7 +528,7 @@ Strings:
     settings.PredatorCount.label: 'Predator:'
     controls.predatorCount.label.0: 'Predator:'
     settings.CountClampMin.label: 'Count Min/Max:'
-    nexus.N818: Clamps the values after scaling between the chosen values. First pal values are used only for
+    reference.N818: Clamps the values after scaling between the chosen values. First pal values are used only for
         the first pal of a group.
     controls.countClampMin.label.0: 'Count Min/Max:'
     settings.CountClampMax.label: 'Count Min/Max:'
@@ -558,7 +558,7 @@ Strings:
         lower clamp; it is separate from the clamp used for subsequent boss characters.
     controls.countClampFirstBossMax.label.0: 'First Boss Min/Max:'
     settings.NightOnly.label: Nocturnal Pals Are Night-Only (Overworld)
-    nexus.N820: With this selected, Pals marked as Nocturnal in the game data will appear only at night and other
+    reference.N820: With this selected, Pals marked as Nocturnal in the game data will appear only at night and other
         pals will appear only during the day. ~~I don't recommend setting this for anything other than the basic
         overworld spawns.~~
     category.AdditionalSettings: Additional Settings
@@ -575,7 +575,7 @@ Strings:
         overworld or dungeon, boss or non-boss switches selected for an area.
     controls.nightOnlyPredators.label.0: Nocturnal Pals Are Night-Only (Predators)
     settings.EggRespawnHours.label: 'Egg Respawn Time: h'
-    nexus.N822: The amount of time before a new egg spawns after collecting it on the overworld map. This is 3
+    reference.N822: The amount of time before a new egg spawns after collecting it on the overworld map. This is 3
         hours in vanilla.
     controls.eggRespawnHours.label.0: 'Egg Respawn Time:'
     controls.eggRespawnHours.label.1: h

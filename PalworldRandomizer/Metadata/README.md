@@ -27,16 +27,16 @@ to an existing model. The original model and JSON template contracts are unchang
 - `DescriptionOrigin`, `DescriptionReferences` and `OriginalDescriptionStatus` distinguish source quotations from
   implementation-authored explanations. The original status counts remain 67 verified, 44 shared-range,
   20 missing and six ambiguous; adding an explanation does not relabel an original source gap as verified.
-- The 111 verified/shared setting descriptions retain exact audited Nexus wording. Additional generic Nexus
-  paragraphs are retained where relevant. There are 87 distinct `nexus.*` paragraphs because multiple settings
-  share text. Paragraph IDs refer to the frozen audit of the owner's Nexus description, not live line numbers.
+- The 111 verified/shared setting descriptions retain exact audited reference wording. Additional source
+  paragraphs are retained where relevant. There are 87 distinct `reference.*` paragraphs because multiple settings
+  share text. Paragraph IDs refer to the frozen description audit, not live line numbers.
 - The 26 missing/ambiguous primary explanations are implementation-authored and code-referenced. The undocumented
-  Rarity Minimum/Maximum option explanations are also implementation-authored, not Nexus quotations.
+  Rarity Minimum/Maximum option explanations are also implementation-authored, not reference quotations.
 
 The original source contract is revision `72a836172e7778b5d2c003c81418172c57126e24`. The review evidence is under
 `milestone-evidence/007-settings-metadata/` and the frozen source/provenance audit is under
-`research/007-settings-metadata/` in the parent project workspace. The parent audit's fresh Nexus refetch matches
-its retained full-source SHA-256; this slice did not perform another network fetch or independently verify identity.
+`research/007-settings-metadata/` in the parent project workspace. Detailed source citations remain in that audit,
+not in application identifiers or resources. The retained description text matches its reviewed SHA-256.
 Source text is retained for the identified owner's requested implementation; this is not a separate license grant.
 
 `Tests/Fixtures/FormData.original.json` remains the canonical original model/default/mode fixture and is unchanged.
@@ -73,7 +73,7 @@ dotnet run --project PalworldRandomizer/Tests/Metadata.csproj -c Debug -p:TreatW
 ```
 
 Repeat with `-c Release`, building the application before its compiled-assembly runners. Outputs are isolated by
-runner and configuration. Debug and Release pass 31 regression, 32 shell and 12 metadata checks each. The metadata
+runner and configuration. Debug and Release pass 31 regression, 32 shell and 13 metadata checks each. The metadata
 checks include all original types/defaults, exact source text, nested localization, original controls, radio defaults,
 read-only nested collections, independent array defaults and caller nonmutation. Earlier vertical RED/GREEN logs
 are retained in the milestone evidence; recovery added characterization coverage, not new production behavior.
