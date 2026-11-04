@@ -2,20 +2,9 @@
 
 ## Unreleased — 3.0 development
 
-### Maintenance
+### Improvements
 
-- Preserve existing configuration files and defaults while replacing exposed configuration fields with properties.
-- Resolve documentation and code-style warnings without intentionally changing randomization or editor behavior.
-- Update the transitive Microsoft.Bcl.Memory dependency to address its reported security advisory.
-- Add regression checks for configuration compatibility, deep copies and the editor's virtualized spawn lists.
+- Improved startup reliability and handling of errors when loading game files.
+- Security updates.
 
-### Migration groundwork
-
-- Separate randomizer settings from window controls while preserving existing defaults and legacy template values.
-- Keep PalSchema exports tied to explicitly captured settings, including egg timers and damage caps.
-- Add reusable tab navigation, independent page histories, tab-close undo and restorable shell-state groundwork.
-- Separate generation progress/results and spawn-file conversion from Windows dialogs without changing calculations.
-- Embed a complete YAML settings catalog and English text, preserving original contracts and verified reference wording.
-- Separate read-only game-archive loading and portable data paths from startup controls, with explicit async ownership.
-
-The current interface remains Windows/WPF at this increment. Shared Avalonia hosts and UI follow in later increments.
+Existing settings and templates remain compatible. The redesigned interface and browser version are not available yet.
